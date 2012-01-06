@@ -12,25 +12,5 @@
 #include "ticker.h"
 #include "weather.h"
 
-typedef struct mob_t {
-  PANEL *pan;
-  int      x;
-  int      y;
-  int      w;
-  int      h;
-} MOB;
 
-/*----------------------------------------------------------------------------*/
-MOB *makemob(PANEL *mypanel, int H, int W, int Y, int X)
-{
-  MOB *mob = malloc(sizeof(MOB));
 
-  mob->pan = mypanel;
-  mob->h = H;
-  mob->w = W;
-  mob->y = Y;
-  mob->x = X;
-
-  return mob;
-}
-/*----------------------------------------------------------------------------*/

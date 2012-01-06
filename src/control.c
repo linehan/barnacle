@@ -34,21 +34,21 @@ void *DoListen(void *ptr)
 
        /* boat heading */
        case 'h':
-         BoatOrder('h', WEST); 
+         order_boat('h', WEST); 
          break;
        case 'j':
-         BoatOrder('h', SOUTH); 
+         order_boat('h', SOUTH); 
          break;
        case 'k':
-         BoatOrder('h', NORTH); 
+         order_boat('h', NORTH); 
          break;
        case 'l':
-         BoatOrder('h', EAST); 
+         order_boat('h', EAST); 
          break;
 
        /* sails */
        case 'g':
-         BoatOrder('r', 0); 
+         order_boat('r', 0); 
          break;
 
        /* toggle panel */

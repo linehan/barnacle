@@ -1,6 +1,10 @@
 /* ==========================================================================
     FILENAME:  gfx.c
-    Create the basic graphical element type and perform operations with it.
+    This module makes extensive use of the "famous" doubly linked list 
+    routines written by Rusty Russell <rusty@rustcorp.com.au> for use in 
+    the Linux kernel. He later modified them to an even more general form, 
+    which is implemented here. For more information, see the CCAN entry 
+    at <http://ccodearchive.net/info/list.html>.
    ========================================================================== */
    #include <stdio.h>
    #include <stdlib.h>
@@ -10,65 +14,102 @@
    #include "lib/list/list.h"
    #include "palette.h"
 /* ========================================================================== */
+/* A structure that bundles all the window dimensions */
    typedef struct dimension_t {
-     int h;
-     int w;
-     int y0;
-     int x0;
-     int dy;
-     int dx;
-     int n; /* number of windows */
+     int h;  /* window height */
+     int w;  /* window width  */
+     int y0; /* window initial y */
+     int x0; /* window initial x */
+     int dy; /* window current y */
+     int dx; /* window current x */
+     int n;  /* number of windows */
    } DIMS;
 
+/* A mobile data type containing some object */
+   typedef struct mob_t {
+     PANEL *pan;
+     DIMS   dim;
+     void  *obj;
+   } MOB;
+
+/* A node in a linked list ("wad") of windows */
    typedef struct win_wad {
       WINDOW *window;
       struct list_node winnode; 
-   } WINWAD;
+   } WINNODE;
 
+/* A node in a linked list ("wad") of graphics */
    typedef struct gfx_wad {
-      struct list_head winwad;
+      struct list_head winwad; /* a winwad */
       PANEL *pan;
-      DIMS  *dim;
+      DIMS   dim;
       struct list_node gfxnode;
-   } GFX;
-
+   } GFXNODE;
 /* ========================================================================== */
 /* --------------------------------------------------------------------------
+   Add a new graphics node to a WAD
    -------------------------------------------------------------------------- */
-   void add_gfx(GFX *mynode, struct list_head *head)
+   void add_gfx(GFXNODE *node, struct list_head *head)
    {
-     list_add(head, &(mynode->gfxnode));
+     list_add(head, &(node->gfxnode));
    }
 /* --------------------------------------------------------------------------
+   Initialize a new GFXNODE
    -------------------------------------------------------------------------- */
-   GFX *new_gfx(int h, int w, int y0, int x0, int n)
+   GFXNODE *new_gfx(int h, int w, int y0, int x0, int n)
    {
+     WINNODE *tmp;
      int i;
-     WINWAD *tmp;
 
-     GFX *gfx = (GFX *)malloc(sizeof(GFX));
+     /* Initialize the GFXNODE */
+     GFXNODE *gfx = (GFXNODE *)malloc(sizeof(GFXNODE));
 
-     list_head_init(&(gfx->winwad));
+     list_head_init(&(gfx->winwad)); /* init the winwad head */
+
+     /* Populate the winwad */
      for (i=0; i<n; i++) {
-          WINWAD *new  = (WINWAD *)malloc(sizeof(WINWAD));
-          new->window = newwin(h, w, y0, x0);
-          list_add(&(gfx->winwad), &(new->winnode));
+        WINNODE *new  = (WINNODE *)malloc(sizeof(WINNODE));
+        new->window = newwin(h, w, y0, x0);
+        list_add(&(gfx->winwad), &(new->winnode)); /* add new to winwad */
      }
-     tmp = list_top(&(gfx->winwad), WINWAD, winnode); 
+     /* Attach the first window of the winwad to the panel */
+     tmp = list_top(&(gfx->winwad), WINNODE, winnode);
      gfx->pan = new_panel(tmp->window);
 
-     /* the dimensions that were passed are preserved for later */
-     gfx->dim     = (DIMS *)malloc(sizeof(DIMS));
-     gfx->dim->h  = h;
-     gfx->dim->w  = w;
-     gfx->dim->y0 = y0;
-     gfx->dim->x0 = x0;
-     gfx->dim->dy = 0;
-     gfx->dim->dx = 0;
-     gfx->dim->n  = n;
+     /* Populate the DIMS with the supplied arguments */
+     gfx->dim.h = h;
+     gfx->dim.w = w;
+     gfx->dim.y0 = y0;
+     gfx->dim.x0 = x0;
+     gfx->dim.dy = 0;
+     gfx->dim.dx = 0;
+     gfx->dim.n = n;
 
      return gfx;
    }
+/* --------------------------------------------------------------------------
+   Create a MOB
+   -------------------------------------------------------------------------- */
+   MOB *new_mob(void *ptr, int h, int w, int y0, int x0)
+   {
+     MOB *mob = (MOB *)malloc(sizeof(MOB));
+
+     mob->obj = ptr;
+
+     WINDOW *win = newwin(h, w, y0, x0);
+     mob->pan = new_panel(win);
+
+     mob->dim.h = h;
+     mob->dim.w = w;
+     mob->dim.y0 = y0;
+     mob->dim.x0 = x0;
+     mob->dim.dy = 0;
+     mob->dim.dx = 0;
+     mob->dim.n = 0;
+
+     return mob;
+   }
+
 /* --------------------------------------------------------------------------
    Swap a panel
    -------------------------------------------------------------------------- */

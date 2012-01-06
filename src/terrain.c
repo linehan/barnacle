@@ -23,11 +23,11 @@
    -------------------------------------------------------------------------- */
    void set_gfx_bg(struct list_head *head, int opt)
    {
-     WINWAD *tmp;
+     WINNODE *tmp;
 
-     GFX *bg = new_gfx(LINES, COLS, 0, 0, 1);
+     GFXNODE *bg = new_gfx(LINES, COLS, 0, 0, 1);
 
-     tmp = list_top(&(bg->winwad), WINWAD, winnode);
+     tmp = list_top(&(bg->winwad), WINNODE, winnode);
 
      switch (opt) {
             case 0:
@@ -57,35 +57,34 @@
    -------------------------------------------------------------------------- */
    void new_terrain(struct list_head *head, char type, int h, int w, int y0, int x0)
    {
-     WINWAD *tmp;
+     WINNODE *tmp;
 
-     GFX *edge = new_gfx(h, w, y0, x0, 2);
-     GFX *mant = new_gfx((h-2), (w-2), (y0+1), (x0+1), 1);
-     GFX *core = new_gfx((h-4), (w-4), (y0+2), (x0+2), 1);
+     /* Create nested GFXNODEs */
+     GFXNODE *edge = new_gfx(h, w, y0, x0, 2);
+     GFXNODE *mant = new_gfx((h-2), (w-2), (y0+1), (x0+1), 1);
+     GFXNODE *core = new_gfx((h-4), (w-4), (y0+2), (x0+2), 1);
      
-     /* apply landscape style */
+     /* Apply landscape style */
      switch(type) {
        case 's':
-       tmp = list_top(&(core->winwad), WINWAD, winnode);
-       wbkgrnd(tmp->window, &SAND);
-       tmp = list_top(&(mant->winwad), WINWAD, winnode);
-       wbkgrnd(tmp->window, &SHORE);
+           tmp = list_top(&(core->winwad), WINNODE, winnode);
+                 wbkgrnd(tmp->window, &SAND);
 
-       struct list_head *pos; /* for list iteration */
-       int ind = 0;
+           tmp = list_top(&(mant->winwad), WINNODE, winnode);
+                 wbkgrnd(tmp->window, &SHORE);
 
-       tmp = list_top(&(edge->winwad), WINWAD, winnode);
-
-       list_for_each(&(edge->winwad), tmp, winnode) {        /* for each WINWAD in the ll */
-           wbkgrnd(tmp->window, &SURF0);
-       }
+           tmp = list_top(&(edge->winwad), WINNODE, winnode);
+           list_for_each(&(edge->winwad), tmp, winnode) {
+                 wbkgrnd(tmp->window, &SURF0);
+           }
      }
+     /* Add the GFXNODEs to the wad */
      add_gfx(edge, head);     
      add_gfx(mant, head);     
      add_gfx(core, head);     
    }
 /*----------------------------------------------------------------------------*/
-int hit_test(int y, int x, GFX *gfx)
+int hit_test(int y, int x, GFXNODE *gfx)
 {
    if ((x >= gfx->dim->x0) && 
        (x <= (gfx->dim->x0 + gfx->dim->w)) &&
@@ -94,16 +93,3 @@ int hit_test(int y, int x, GFX *gfx)
        return 0;
    else return 1;
 }
-/*
-void *do_animate(void *ptr)
-{
-  GFX *gfx = (GFX *)ptr;
-  while (1) {
-    animate_gfxlist(gfx);
-    napms(3);
-    doupdate();
-    napms(313);
-  }
-
-}
-  */

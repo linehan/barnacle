@@ -184,7 +184,7 @@ L"    ┡━┓  ▃▃▃▃▃▃▃▃▃▃▃▃▃▃▃▃▃▃▃▃▃
 
 PANEL *_DECK;
 /*----------------------------------------------------------------------------*/
-void DeckInit(void)
+void deck_init(void)
 {
   CAKE *cake = malloc(sizeof(CAKE));
 
