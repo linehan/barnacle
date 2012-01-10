@@ -1,5 +1,5 @@
 extern PANEL *deckp;
-enum cardinal { NORTH = 0, SOUTH = 1, EAST = 2, WEST = 3 };
+enum cardinal { NORTH = 0, EAST = 1, SOUTH = 2, WEST = 3 };
 
 void *DoListen(void *ptr);
 

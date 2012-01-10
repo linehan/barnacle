@@ -20,24 +20,38 @@
    #include "terrain.h"
    #include "control.h"
    #include "boat.h"
+   #include "dice.h"
    #include "palette.h"
-   #include "ticker.h"
    #include "weather.h"
    #include "deck.h"
 /* ========================================================================== */
-   timeout_cb (EV_P_ ev_timer *w, int revents)
+   void BlowWind(EV_P_ ev_timer *w, int revents)
    {
-     puts ("timeout");
-     /* this causes the innermost ev_run to stop iterating */
-     ev_break(EV_A_ EVBREAK_ONE);
-   }
+     MOB *boat = (MOB *)w->data;
+     sail_boat(boat);
 
+     /*int strength = get_wind_str();*/
+     /*w->repeat = (float)(strength*0.10);*/
+
+     ev_timer_again(EV_DEFAULT, w);
+   }
+/* --------------------------------------------------------------------------
+   -------------------------------------------------------------------------- */
+   void WindShift(EV_P_ ev_timer *w, int revents)
+   {
+     DICE *D = (DICE *)w->data;
+     wind_roll(D);
+     wind_gfx();
+     ev_timer_again(EV_DEFAULT, w);
+   }
+/* --------------------------------------------------------------------------
+   -------------------------------------------------------------------------- */
    int main() 
    {
      /* UTF-8 */
      setlocale(LC_ALL,"");
 
-     /* Curses inits */
+     /* NCURSES ***************************************/
      initscr();		
      start_color();
      cbreak();			  
@@ -45,39 +59,54 @@
      keypad(stdscr, TRUE);
      curs_set(0); /* hide cursor */
 
-     /* My inits */
+     /* MYINITS ***************************************/
      init_palette(0);
      init_gfx_colors();
+     init_random();
      weather_init();
-     ticker_init();
      boat_init();
      deck_init();
 
-     /* Make new graphics */
+     /* MAKE NEW GRAPHICS *****************************/
      LIST_HEAD(mywad);
      set_gfx_bg(&mywad, 0);
+
      new_terrain(&mywad, 's', 5, 5, 7, 5); 
      new_terrain(&mywad, 's', 10, 20, 20, 30); 
 
-     GFXNODE *boat = new_boat();
+     MOB *boat = new_boat();
      nominate_boat(boat);
      DeckDraw();
+
+     set_prevailing(NORTH, 0.9);
+
+     DICE *mine = new_dice("1d4", 0.25, 0.25, 0.25);
 
      update_panels();
      doupdate();
 
-     struct ev_loop *loop = EV_DEFAULT;
-     ev_timer timeout_watcher;
+     /* PREPARE EVENT LOOPS  **************************/
+     struct ev_loop *mainloop = EV_DEFAULT;
 
-     ev_timer_init (&timeout_watcher, timeout_cb, 5.5, 0.);
-     ev_timer_start (loop, &timeout_watcher);
+     ev_timer sail_w;
+     ev_init (&sail_w, &BlowWind);
+     sail_w.data = boat;
+     sail_w.repeat = .1;
+     ev_timer_again(mainloop, &sail_w);
 
+     ev_timer wind_w;
+     ev_init (&wind_w, &WindShift);
+     wind_w.data = mine;
+     wind_w.repeat = .1;
+     ev_timer_again(mainloop, &wind_w);
+
+     /* THREADS ***************************************/
      pthread_t listener;
      pthread_create(&listener, NULL, DoListen, boat);
 
-     pthread_join(&listener, NULL);
+     ev_run (mainloop, 0);
 
-     ev_run (loop, 0);
+     pthread_join(listener, NULL);
 
      endwin();			/* end curses mode */
      return 0;

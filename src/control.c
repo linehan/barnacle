@@ -19,14 +19,13 @@
 
 PANEL *deckp;
 
-enum cardinal { NORTH = 0, SOUTH = 1, EAST = 2, WEST = 3 };
+enum cardinal { NORTH = 0, EAST = 1, SOUTH = 2, WEST = 3 };
 /*----------------------------------------------------------------------------*/
 void *DoListen(void *ptr)
 {
   int ch, hdg;
 
-  WINDOW *compass = newwin(1, 1, 0, 0);
-  PANEL *compass_p = new_panel(compass);
+
 
 	while((ch = getch()) != 'q') { 
 
@@ -55,27 +54,24 @@ void *DoListen(void *ptr)
        case 'i':
          DeckTog();
          break;
+     }
 
        /* wind dir */
-       case 'n':
-         wind_set(NORTH);
-         wind_gfx(compass_p);
-         break;
-       case 's':
-         wind_set(SOUTH);
-         wind_gfx(compass_p);
-         break;
-       case 'e':
-         wind_set(EAST);
-         wind_gfx(compass_p);
-         break;
-       case 'w':
-         wind_set(WEST);
-         wind_gfx(compass_p);
-         break;
-      }
-      update_panels();
-      doupdate();
+       /*case 'n':*/
+         /*wind_set(NORTH);*/
+         /*break;*/
+       /*case 's':*/
+         /*wind_set(SOUTH);*/
+         /*break;*/
+       /*case 'e':*/
+         /*wind_set(EAST);*/
+         /*break;*/
+       /*case 'w':*/
+         /*wind_set(WEST);*/
+         /*break;*/
+      /*}*/
+      /*update_panels();*/
+      /*doupdate();*/
   }
   return NULL;
 }

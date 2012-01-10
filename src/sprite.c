@@ -14,6 +14,8 @@
    #include "lib/gfx.h"
    #include "palette.h"
 /* ========================================================================== */
+
+
    const wchar_t HERO_GFX = L'ж';
    const wchar_t WAVE_GFX = L'◟';
    const wchar_t WAVE_BREAK_GFX = L'⟱';
@@ -25,7 +27,6 @@
    const wchar_t BOAT_B = L'◤';
    const wchar_t BOAT_P_R = L'⎣';
    const wchar_t BOAT_P_L = L'⎦';
-
    const wchar_t GFX_SAIL_L_HAUL = L'⎝';
    const wchar_t GFX_SAIL_R_HAUL = L'⎠';
  
@@ -37,10 +38,12 @@
  
    const wchar_t BOAT_BP_R = L'⎥';
    const wchar_t BOAT_BP_L = L'⎢';
-   const wchar_t COMPASS_N = L'⬘';
-   const wchar_t COMPASS_S = L'⬙';
-   const wchar_t COMPASS_E = L'⬗';
-   const wchar_t COMPASS_W = L'⬖';
+
+   const wchar_t gfxWSCK[] = L"⬒⬔◨◪⬓⬕◧◩";
+   const wchar_t ruler[] = L"▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁";
+   const wchar_t dnarrow = L'⬇';
+   const wchar_t pip = L'∙';
+   const wchar_t huhuh[] = L"N ∙ E ∙ S ∙ W ∙ w";
 
    cchar_t HERO;
    cchar_t OCEAN;
@@ -50,10 +53,13 @@
    cchar_t BOAT_BOOM_L, BOAT_BOOM_R;
    cchar_t BOAT_POLE_L, BOAT_POLE_R;
    cchar_t SAIL_L_RUN, SAIL_R_RUN, SAIL_L_HAUL, SAIL_R_HAUL, SAIL_L_CALM, SAIL_R_CALM;
-   cchar_t COMPASS[4];
+   cchar_t WSCK[8];
+   cchar_t DN, PIP;
+   cchar_t HUH[18];
 /* ========================================================================== */
    void init_gfx_colors(void)
    {
+
      setcchar(&OCEAN, &WAVE_GFX,       0, SEA_DEEP,  NULL);
      setcchar(&SURF0, &WAVE_BREAK_GFX, 0, SEA_SURF,  NULL);
      setcchar(&SURF1, &WAVE_FLOW_GFX,  0, SEA_SURF,  NULL);
@@ -77,8 +83,9 @@
      setcchar(&BOAT_POLE_L, &BOAT_BP_L, 0, BOAT_DEEP, NULL);
      setcchar(&BOAT_POLE_R, &BOAT_BP_R, 0, BOAT_DEEP, NULL);
 
-     setcchar(&COMPASS[0], &COMPASS_N, 0, BOAT_DEEP, NULL);
-     setcchar(&COMPASS[1], &COMPASS_S, 0, BOAT_DEEP, NULL);
-     setcchar(&COMPASS[2], &COMPASS_E, 0, BOAT_DEEP, NULL);
-     setcchar(&COMPASS[3], &COMPASS_W, 0, BOAT_DEEP, NULL);
+     setcchar(&DN, &dnarrow, 0, BOAT_DEEP, NULL);
+     int i;
+     for (i=0; i<8; i++) {
+       setcchar(&WSCK[i], &gfxWSCK[i], 0, BOAT_DEEP, NULL);
+     }
    }

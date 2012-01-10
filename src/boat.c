@@ -19,7 +19,6 @@
    #include "sprite.h"
    #include "terrain.h"
    #include "palette.h"
-   #include "ticker.h"
    #include "weather.h"
    #include "control.h"
    #include "deck.h"
@@ -60,7 +59,6 @@
      _GO = malloc(sizeof(sem_t));
      sem_init(_IO, 0, 1);
      sem_init(_GO, 0, 1);
-
    }
 /* --------------------------------------------------------------------------
    Set a boat as active
@@ -80,14 +78,17 @@
      boat->aft = &BOAT_HULL_AFT; 
      boat->mid = &BOAT_HULL_MID;
      boat->bow = &BOAT_HULL_BOW;
+
      boat->boom[0] = &BOAT_BOOM_L; 
      boat->boom[1] = &BOAT_BOOM_R;
+
      boat->sail[0] = &SAIL_L_CALM; /* ⎢ */
      boat->sail[1] = &SAIL_R_CALM; /* ⎟ */
      boat->sail[2] = &SAIL_L_HAUL; /* ⎝ */
      boat->sail[3] = &SAIL_R_HAUL; /* ⎠ */
      boat->sail[4] = &SAIL_L_RUN;  /* ⎛ */
      boat->sail[5] = &SAIL_R_RUN;  /* ⎞ */
+
      boat->pole[0] = &BOAT_POLE_L;
      boat->pole[1] = &BOAT_POLE_R;
      /*
@@ -96,44 +97,44 @@
      wind direction, heading, and sail status.
      */
      /* wind from north ^ */
-     boat->mast[0][0][0] = boat->pole[0]; /* north */
-     boat->mast[0][0][1] = boat->sail[0];  
-     boat->mast[0][1][0] = boat->boom[0]; /* south */
-     boat->mast[0][1][1] = boat->sail[4]; 
-     boat->mast[0][2][0] = boat->boom[0]; /* east  */
-     boat->mast[0][2][1] = boat->sail[3]; 
-     boat->mast[0][3][0] = boat->boom[1]; /* west  */
-     boat->mast[0][3][1] = boat->sail[2]; 
+     boat->mast[NORTH][NORTH][0] = boat->pole[0]; /* north */
+     boat->mast[NORTH][NORTH][1] = boat->sail[0];  
+     boat->mast[NORTH][SOUTH][0] = boat->boom[0]; /* south */
+     boat->mast[NORTH][SOUTH][1] = boat->sail[4]; 
+      boat->mast[NORTH][EAST][0] = boat->boom[0]; /* east  */
+      boat->mast[NORTH][EAST][1] = boat->sail[3]; 
+      boat->mast[NORTH][WEST][0] = boat->boom[1]; /* west  */
+      boat->mast[NORTH][WEST][1] = boat->sail[2]; 
      /* wind from south v */
-     boat->mast[1][0][0] = boat->boom[1]; /* north */
-     boat->mast[1][0][1] = boat->sail[5]; 
-     boat->mast[1][1][0] = boat->pole[1]; /* south */
-     boat->mast[1][1][1] = boat->sail[0]; 
-     boat->mast[1][2][0] = boat->boom[0]; /* east  */
-     boat->mast[1][2][1] = boat->sail[3]; 
-     boat->mast[1][3][0] = boat->boom[1]; /* west  */
-     boat->mast[1][3][1] = boat->sail[2]; 
+     boat->mast[SOUTH][NORTH][0] = boat->boom[1]; /* north */
+     boat->mast[SOUTH][NORTH][1] = boat->sail[5]; 
+     boat->mast[SOUTH][SOUTH][0] = boat->pole[1]; /* south */
+     boat->mast[SOUTH][SOUTH][1] = boat->sail[0]; 
+      boat->mast[SOUTH][EAST][0] = boat->boom[0]; /* east  */
+      boat->mast[SOUTH][EAST][1] = boat->sail[3]; 
+      boat->mast[SOUTH][WEST][0] = boat->boom[1]; /* west  */
+      boat->mast[SOUTH][WEST][1] = boat->sail[2]; 
      /* wind from east <-- */
-     boat->mast[2][0][0] = boat->boom[0]; /* north */
-     boat->mast[2][0][1] = boat->sail[2]; 
-     boat->mast[2][1][0] = boat->boom[0]; /* south */
-     boat->mast[2][1][1] = boat->sail[2]; 
-     boat->mast[2][2][0] = boat->pole[1]; /* east  */
-     boat->mast[2][2][1] = boat->sail[1]; 
-     boat->mast[2][3][0] = boat->boom[1]; /* west  */
-     boat->mast[2][3][1] = boat->sail[2];
+     boat->mast[EAST][NORTH][0] = boat->boom[0]; /* north */
+     boat->mast[EAST][NORTH][1] = boat->sail[2]; 
+     boat->mast[EAST][SOUTH][0] = boat->boom[0]; /* south */
+     boat->mast[EAST][SOUTH][1] = boat->sail[2]; 
+      boat->mast[EAST][EAST][0] = boat->pole[1]; /* east  */
+      boat->mast[EAST][EAST][1] = boat->sail[1]; 
+      boat->mast[EAST][WEST][0] = boat->boom[1]; /* west  */
+      boat->mast[EAST][WEST][1] = boat->sail[2];
      /* wind from west --> */ 
-     boat->mast[3][0][0] = boat->boom[1]; /* north */
-     boat->mast[3][0][1] = boat->sail[3]; 
-     boat->mast[3][1][0] = boat->boom[1]; /* south */
-     boat->mast[3][1][1] = boat->sail[3]; 
-     boat->mast[3][2][0] = boat->boom[0]; /* east  */
-     boat->mast[3][2][1] = boat->sail[3]; 
-     boat->mast[3][3][0] = boat->pole[0]; /* west  */
-     boat->mast[3][3][1] = boat->sail[0]; 
+     boat->mast[WEST][NORTH][0] = boat->boom[1]; /* north */
+     boat->mast[WEST][NORTH][1] = boat->sail[3]; 
+     boat->mast[WEST][SOUTH][0] = boat->boom[1]; /* south */
+     boat->mast[WEST][SOUTH][1] = boat->sail[3]; 
+      boat->mast[WEST][EAST][0] = boat->boom[0]; /* east  */
+      boat->mast[WEST][EAST][1] = boat->sail[3]; 
+      boat->mast[WEST][WEST][0] = boat->pole[0]; /* west  */
+      boat->mast[WEST][WEST][1] = boat->sail[0]; 
 
      boat->ord = &_ORDERS;
-     boat->now.hdg = 0;
+     boat->now.hdg = NORTH;
      boat->now.rig = 0;
      boat->now.anc = 0;
 
@@ -143,15 +144,15 @@
      wbkgrnd(win, &OCEAN);
 
      /* draw it for the first time */
-     mvwadd_wch(win, 0, 1, boat->mast[0][2][0]);
+     mvwadd_wch(win, 0, 1, boat->mast[NORTH][SOUTH][0]);
      mvwadd_wch(win, 1, 0, boat->aft);
        wadd_wch(win,       boat->mid);
        wadd_wch(win,       boat->bow);
 
-     sem_wait(SCRLOCK);
+     /*sem_wait(SCRLOCK);*/
      update_panels();  /* only update that shit here, unless you want to */
      doupdate();       /* be doing the segfault boogaloo                 */
-     sem_post(SCRLOCK);
+     /*sem_post(SCRLOCK);*/
 
      return mob;
    }
@@ -165,61 +166,62 @@
      sem_wait(_IO);
      BOAT *boat = (BOAT *)_BOAT->obj;
      WINDOW *win = panel_window(_BOAT->pan);
-     int hdg = boat->now.hdg = boat->ord->hdg;
-     int rig = boat->now.rig = boat->ord->rig;
-     int anc = boat->now.anc = boat->ord->anc;
+     int h = boat->now.hdg = boat->ord->hdg;
+     int r = boat->now.rig = boat->ord->rig;
+     int a = boat->now.anc = boat->ord->anc;
      sem_post(_IO);
 
-     int wind = wind_get();
+     int w = get_wind_dir();
 
-     switch (hdg) {
-         case NORTH: /* set heading north */
+     switch (h) {
+         case NORTH:
               werase(win);
-              if(wind == 2) mvwadd_wch(win, 0, 1, boat->mast[wind][hdg][rig]);
-              else          mvwadd_wch(win, 0, 2, boat->mast[wind][hdg][rig]);
-                            mvwadd_wch(win, 1, 1, boat->aft);
-                              wadd_wch(win,       boat->bow);
+              if (w == SOUTH) mvwadd_wch(win, 0, 1, boat->mast[w][h][r]);
+              else            mvwadd_wch(win, 0, 2, boat->mast[w][h][r]);
+                mvwadd_wch(win, 1, 1, boat->aft);
+                  wadd_wch(win,       boat->bow);
               break;
-         case SOUTH: /* set heading south */
+
+         case WEST:
               werase(win);
-              if(wind == 3) mvwadd_wch(win, 0, 2, boat->mast[wind][hdg][rig]);
-              else          mvwadd_wch(win, 0, 1, boat->mast[wind][hdg][rig]);
-                            mvwadd_wch(win, 1, 1, boat->aft);
-                              wadd_wch(win,       boat->bow);
-              break;
-         case EAST: /* set heading west */
-              werase(win);
-              mvwadd_wch(win, 0, 1, boat->mast[wind][hdg][rig]);
+              mvwadd_wch(win, 0, 1, boat->mast[w][h][r]);
               mvwadd_wch(win, 1, 0, boat->aft);
                 wadd_wch(win,       boat->mid);
                 wadd_wch(win,       boat->bow);
               break;
-         case WEST: /* set heading east */
+
+         case EAST:
               werase(win);
-              mvwadd_wch(win, 0, 1, boat->mast[wind][hdg][rig]);
+              mvwadd_wch(win, 0, 1, boat->mast[w][h][r]);
               mvwadd_wch(win, 1, 0, boat->aft);
                 wadd_wch(win,       boat->mid);
+                wadd_wch(win,       boat->bow);
+
+              break;
+
+         case SOUTH:
+              werase(win);
+              if (w == WEST) mvwadd_wch(win, 0, 2, boat->mast[w][h][r]);
+              else           mvwadd_wch(win, 0, 1, boat->mast[w][h][r]);
+              mvwadd_wch(win, 1, 1, boat->aft);
                 wadd_wch(win,       boat->bow);
               break;
      }
-     sem_wait(SCRLOCK);
+     /*sem_wait(SCRLOCK);*/
      update_panels();  /* only update that shit here, unless you want to */
      doupdate();       /* be doing the segfault boogaloo                 */
-     sem_post(SCRLOCK);
+     /*sem_post(SCRLOCK);*/
    }
 /* --------------------------------------------------------------------------
    Calculate the movement of the boat panel from the wind and hdg value
    -------------------------------------------------------------------------- */
    void *sail_boat(void *ptr)
    {
-     sem_t *GO = (sem_t *)ptr;
-     mesh(GO, 1);
 
-     while(1) {
-      sem_wait(GO);
+      int x = _BOAT->dim.dx;
+      int y = _BOAT->dim.dy;
 
-      sync_boat();
-      int wind = wind_get();
+      int wind = get_wind_dir();
 
       sem_wait(_IO);
       BOAT *boat = (BOAT *)_BOAT->obj;
@@ -231,30 +233,30 @@
       if (rig == 1) {
          if ( ((abs((wind - hdg)))%4) != 0 ) { /* not in irons */
             switch(hdg) {
-              case NORTH: 
-                if(_BOAT->dim.dy == 0) break;
-                move_panel(_BOAT->pan, --_BOAT->dim.dy, _BOAT->dim.dx);
-                break;
-              case SOUTH:
-                if(_BOAT->dim.dy == LINES) break;
-                move_panel(_BOAT->pan, ++_BOAT->dim.dy, _BOAT->dim.dx);
+              case NORTH:
+                y--;
                 break;
               case EAST:
-                if(_BOAT->dim.dx == COLS) break;
-                move_panel(_BOAT->pan, _BOAT->dim.dy, ++_BOAT->dim.dx);
+                x++;
+                break;
+              case SOUTH:
+                y++;
                 break;
               case WEST:
-                if(_BOAT->dim.dx == 0) break;
-                move_panel(_BOAT->pan, _BOAT->dim.dy, --_BOAT->dim.dx);
-                break;	
+                x--;
+                break;
             }
+            move_panel(_BOAT->pan, y, x);
+
+            _BOAT->dim.dx = x;
+            _BOAT->dim.dy = y;
          }
        }
-       sem_wait(SCRLOCK);
+       /*sem_wait(SCRLOCK);*/
        update_panels();  /* only update that shit here, unless you want to */
        doupdate();       /* be doing the segfault boogaloo                 */
-       sem_post(SCRLOCK);
-     }
+       /*sem_post(SCRLOCK);*/
+       return NULL;
    } 
 /* --------------------------------------------------------------------------
    Issue orders to the _ORDERS global
@@ -280,7 +282,7 @@
    -------------------------------------------------------------------------- */
    int PointOfSail(void)
    {
-     int wind = wind_get();
+     int wind = get_wind_dir();
      sem_wait(_IO);
      int hdg  = _ORDERS.hdg;
      sem_post(_IO);
