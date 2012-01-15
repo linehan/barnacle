@@ -1,3 +1,4 @@
+// vim:fdm=marker
 /* ==========================================================================
     FILENAME:  gfx.c
     This module makes extensive use of the "famous" doubly linked list 
@@ -10,6 +11,8 @@
    #include <stdlib.h>
    #include <ncurses.h>
    #include <panel.h>
+   #include <pthread.h>
+   #include <semaphore.h>
 
    #include "lib/list/list.h"
    #include "palette.h"
@@ -45,7 +48,14 @@
       DIMS   dim;
       struct list_node gfxnode;
    } GFXNODE;
+
+sem_t *REFRESH_LOCK;
 /* ========================================================================== */
+void gfx_init(void)
+{
+        REFRESH_LOCK = (sem_t *)malloc(sizeof(sem_t));
+        sem_init(REFRESH_LOCK, 0, 1);
+}
 /* --------------------------------------------------------------------------
    Add a new graphics node to a WAD
    -------------------------------------------------------------------------- */
@@ -123,3 +133,11 @@
      }
    }
    */
+/* Master refresh */
+void master_refresh(void)
+{
+        sem_wait(REFRESH_LOCK);
+                update_panels();
+                doupdate();
+        sem_post(REFRESH_LOCK);
+}

@@ -1,14 +1,15 @@
 extern int MT_PRIMED;
 
-   typedef struct dice_t {
-     int n; /* number of rolls */
-     int d; /* number of sides */
-     double *w; /* weight of each side */
-   } DICE;
+typedef struct dice_t {
+	int n; /* number of rolls */
+	int d; /* number of sides */
+	double *w; /* weight of each side */
+	void *(*func)(int); /* function pointers */
+} DICE;
 
 int init_random();
 int flip_biased(double bias);
 int roll_fair(int sides);
 DICE *new_dice(const char *str, ...);
-int vose_alias(DICE *D);
+int vose_alias(int n, double *prob_array);
 

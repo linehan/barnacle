@@ -32,6 +32,8 @@
    } GFXNODE;
 /* ========================================================================== */
 
+void gfx_init(void);
 void add_gfx(GFXNODE *node, struct list_head *wad);
 GFXNODE *new_gfx(int h, int w, int y0, int x0, int n);
 MOB *new_mob(void *ptr, int h, int w, int y0, int x0);
+void master_refresh(void);
