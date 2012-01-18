@@ -21,27 +21,37 @@
 #include "palette.h"
 #include "test.h"
 #include "dice.h"
+PANEL *HI[5];
+WINDOW *HIW[5];
+PANEL *BG;
+WINDOW *BGW;
+int xxx[5];
+int yyy[5];
 /******************************************************************************/
 /* Set background of GFXLIST (bottom-most layer) */
 void set_gfx_bg(struct list_head *head, int opt)
 {
-        WINNODE *tmp;
-        GFXNODE *bg = new_gfx(__bg__, LINES, COLS, 0, 0, 1);
+        /*WNODE *tmp;*/
+        /*GNODE *bg = new_gfx(__bg__, LINES, COLS, 0, 0, 1);*/
 
-        tmp = list_top(&(bg->winwad), WINNODE, winnode);
+        /*tmp = top_wnode(bg);*/
+        if ((BGW == NULL)) {
+                BGW = newwin(LINES, COLS, 0, 0);
+                BG = new_panel(BGW);
+        }
 
         switch (opt) {
         case 0:
-                wbkgrnd(tmp->window, &OCEAN);
+                wbkgrnd(BGW, &OCEAN[0]);
                 break;
         case 1:
-                wbkgrnd(tmp->window, &SAND);
+                wbkgrnd(BGW, &SAND);
                 break;
         case 2:
-                wbkgrnd(tmp->window, &SHORE);
+                wbkgrnd(BGW, &SHORE);
                 break;
         }
-        add_gfx(bg, head);
+        /*add_gfx(bg, head);*/
 }
 /* 
  *  +----------------+ 
@@ -57,35 +67,35 @@ void set_gfx_bg(struct list_head *head, int opt)
  * Generate terrain body; conforms to a three-tier pattern: */
 void new_terrain(struct list_head *head, char type, int h, int w, int y0, int x0)
 {
-        WINNODE *tmp;
+        WNODE *tmp, *tmp2;
 
         /* Apply landscape style */
         int j, i = 0;
         if ((type=='s')) {
-                /* Create nested GFXNODEs */
-                GFXNODE *edge = new_gfx(__an__, h, w, y0, x0, 2);
-                GFXNODE *mant = new_gfx(__an__, (h-2), (w-2), (y0+1), (x0+1), 1);
-                GFXNODE *core = new_gfx(__an__, (h-4), (w-4), (y0+2), (x0+2), 1);
+                /* Create nested GNODEs */
+                GNODE *edge = new_gfx(__an__, h, w, y0, x0, 2);
+                GNODE *mant = new_gfx(__an__, (h-2), (w-2), (y0+1), (x0+1), 1);
+                GNODE *core = new_gfx(__an__, (h-4), (w-4), (y0+2), (x0+2), 1);
 
-                tmp = list_top(&(core->winwad), WINNODE, winnode);
+                tmp = top_wnode(core);
                 wbkgrnd(tmp->window, &SAND);
 
-                tmp = list_top(&(mant->winwad), WINNODE, winnode);
+                tmp = top_wnode(mant);
                 wbkgrnd(tmp->window, &SHORE);
 
-                tmp = list_top(&(edge->winwad), WINNODE, winnode);
-                list_for_each(&(edge->winwad), tmp, winnode) {
-                        if (((i++%2) == 0)) wbkgrnd(tmp->window, &SURF0);
-                        else                wbkgrnd(tmp->window, &SURF1);
+                tmp = top_wnode(edge);
+                list_for_each(edge->wins, tmp, node) {
+                        if (((i++%2) == 0)) wbkgrnd(tmp->window, &OCEAN[2]);
+                        else                wbkgrnd(tmp->window, &OCEAN[1]);
                 }
-                /* Add the GFXNODEs to the wad */
+                /* Add the GNODEs to the wad */
                 add_gfx(edge, head);     
                 add_gfx(mant, head);     
                 add_gfx(core, head);     
         }
         else if ((type=='f')) {
-                GFXNODE *forest = new_gfx(__fg__, h, w, y0, x0, 1);
-                tmp = list_top(&(forest->winwad), WINNODE, winnode);
+                GNODE *forest = new_gfx(__fg__, h, w, y0, x0, 1);
+                tmp = top_wnode(forest);
                 for (i=0; i<h; i++) {
                         if ((i==0))
                                 mvwhline_set(tmp->window, 0, 0, &FOREST[0], w); 
@@ -103,10 +113,9 @@ void new_terrain(struct list_head *head, char type, int h, int w, int y0, int x0
         }
         else if ((type=='m')) {
 
-                GFXNODE *gen = new_gfx(__fg__, h, w, y0, x0, 1);
-                tmp = list_top(&(gen->winwad), WINNODE, winnode);
+                GNODE *cliff = new_gfx(__fg__, h, w, y0, x0, 1);
 
-                wbkgrnd(tmp->window, &OCEAN);
+                WNODE *cliffw = top_wnode(cliff);
 
                 int rnoise = 8;
                 int lnoise = 4;
@@ -116,6 +125,7 @@ void new_terrain(struct list_head *head, char type, int h, int w, int y0, int x0
 
                 int wid[h], ofs[h]; /* Line width and x offset arrays */
 
+                wbkgrnd(cliffw->window, &OCEAN[0]);
                 /* Generate offset array. To prevent an unconvincing appearance, it is
                  * necessary that any increase in the offset be maintained for at least
                  * one additional unit of height. */
@@ -147,9 +157,50 @@ void new_terrain(struct list_head *head, char type, int h, int w, int y0, int x0
                  * a line of brighter contrast. */
                 for (i=0; i<(h-1); i++) {
                         /*mvwadd_wch(tmp->window, i, 1, &MTN[0]);*/
-                        mvwhline_set(tmp->window, i, ofs[i], &MTN[1], wid[i]);
-                        mvwhline_set(tmp->window, (i+1), ofs[i], &MTN[2], wid[i]);
+                        mvwhline_set(cliffw->window, i, ofs[i], &MTN[1], wid[i]);
+                        mvwhline_set(cliffw->window, (i+1), ofs[i], &MTN[2], wid[i]);
                 }
-                add_gfx(gen, head);
+                /*GNODE *g;*/
+                /*WNODE *w, *W;*/
+                /*g = get_id(head, __bg__);*/
+                /*w = top_wnode(g);*/
+                add_gfx(cliff, head);
         }
+
+}
+void shift_highlights(void)
+{
+        int w, xo, yo;
+
+        int i;
+
+        if ((HIW[0] == NULL)) {
+                int rnoise = 50;
+                int lnoise = 80;
+                int vnoise = 80;
+                for (i=0; i<5; i++) {
+
+                        w = roll_fair(rnoise);
+                        xxx[i] = roll_fair(lnoise);
+                        yyy[i] = roll_fair(vnoise);
+
+                        HIW[i] = newwin(1, w, yyy[i], xxx[i]);
+                        wbkgrnd(HIW[i], &OCEAN[1]);
+                        HI[i] = new_panel(HIW[i]);
+                        bottom_panel(HI[i]);
+                }
+        }
+        else {
+                int rnoise = 10;
+                int vnoise = 10;
+                for (i=0; i<5; i++) {
+                        xxx[i] = (xxx[i] >= COLS) ? 0 : xxx[i];
+                        yyy[i] = (yyy[i] >= LINES) ? 0 : yyy[i];
+
+                        move_panel(HI[i], xxx[i]++, yyy[i]++);
+                        bottom_panel(HI[i]);
+                }
+        }
+        bottom_panel(BG);
+        master_refresh();
 }

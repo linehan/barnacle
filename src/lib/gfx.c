@@ -17,6 +17,8 @@
 #include "lib/list/list.h"
 #include "palette.h"
 /* ========================================================================== */
+#define top_wnode(gfx) (WNODE *)list_top(gfx->wins, WNODE, node)
+
 enum pan_options { 
         __pan__ = 0,
         __win__ = 1,
@@ -34,7 +36,8 @@ enum pan_options {
 
 enum ids { __bg__ = 0,
            __fg__ = 1,
-           __an__ = 2
+           __an__ = 2,
+           __hi__ = 3
 };
 
 /* A structure that bundles all the window dimensions */
@@ -57,25 +60,27 @@ typedef struct environment_t {
 typedef struct mob_t {
         PANEL *pan;
         DIMS   dim;
+        ENV   *env;
         sem_t *sem;
-        ENV *env;
         void  *obj;
 } MOB;
 
 /* A node in a linked list ("wad") of windows */
 typedef struct win_wad {
+        int id;
+        int z;
         WINDOW *window;
-        struct list_node winnode; 
-} WINNODE;
+        struct list_node node; 
+} WNODE;
 
 /* A node in a linked list ("wad") of graphics */
 typedef struct gfx_wad {
-        struct list_head winwad; /* a winwad */
         int id;
         PANEL *pan;
         DIMS   dim;
-        struct list_node gfxnode;
-} GFXNODE;
+        struct list_head *wins;
+        struct list_node node;
+} GNODE;
 
 sem_t *REFRESH_LOCK;
 /* ========================================================================== */
@@ -102,30 +107,29 @@ ENV *new_env(void)
 
         return new;
 }
-/* Add a new GFXNODE to a graphics wad */
-void add_gfx(GFXNODE *node, struct list_head *head)
+/* Add a new GNODE to a graphics wad */
+void add_gfx(GNODE *node, struct list_head *head)
 {
-        list_add(head, &(node->gfxnode));
+        list_add(head, &(node->node));
 }
 /* Initialize a new graphics node */
-GFXNODE *new_gfx(int id, int h, int w, int y0, int x0, int n)
+GNODE *new_gfx(int id, int h, int w, int y0, int x0, int n)
 {
-        WINNODE *tmp;
+        WNODE *tmp;
         int i;
 
-        /* Initialize the GFXNODE */
-        GFXNODE *gfx = (GFXNODE *)malloc(sizeof(GFXNODE));
+        GNODE *gfx = (GNODE *)malloc(sizeof(GNODE));
 
-        list_head_init(&(gfx->winwad)); /* init the winwad head */
-
+        gfx->wins = malloc(sizeof(struct list_head));
+        list_head_init(gfx->wins);
         /* Populate the winwad */
         for (i=0; i<n; i++) {
-                WINNODE *new  = (WINNODE *)malloc(sizeof(WINNODE));
+                WNODE *new  = (WNODE *)malloc(sizeof(WNODE));
                 new->window = newwin(h, w, y0, x0);
-                list_add(&(gfx->winwad), &(new->winnode)); /* add new to winwad */
+                list_add(gfx->wins, &(new->node)); /* add new to winwad */
         }
         /* Attach the first window of the winwad to the panel */
-        tmp = list_top(&(gfx->winwad), WINNODE, winnode);
+        tmp = list_top(gfx->wins, WNODE, node);
         gfx->pan = new_panel(tmp->window);
 
         /* Populate the DIMS with the supplied arguments */
@@ -141,6 +145,17 @@ GFXNODE *new_gfx(int id, int h, int w, int y0, int x0, int n)
 
         return gfx;
 }
+
+WNODE *next_wnode(GNODE *gfx)
+{
+        WNODE *tmp;
+        tmp = list_top(gfx->wins, WNODE, node);
+              list_del_from(gfx->wins, &tmp->node);
+              list_add_tail(gfx->wins, &tmp->node);
+        tmp = list_top(gfx->wins, WNODE, node);
+        return tmp;
+}
+
 /* Create and initialize a new MOB */
 MOB *new_mob(void *ptr, ENV *env, int h, int w, int y0, int x0)
 {
@@ -169,11 +184,11 @@ MOB *new_mob(void *ptr, ENV *env, int h, int w, int y0, int x0)
 /* Simple collision hit test */
 int hit_test(ENV *env, int y, int x)
 {
-        GFXNODE *tmp;
+        GNODE *tmp;
         int i = 0;
 
         sem_wait(env->sem);
-                list_for_each(&(env->wad), tmp, gfxnode) {
+                list_for_each(&(env->wad), tmp, node) {
                         if ((tmp->id != __bg__)) {
                                 if (((x >= tmp->dim.x0) && 
                                     (x <= (tmp->dim.x0 + tmp->dim.w)) &&
@@ -217,21 +232,27 @@ void move_mob(MOB *mob, int dir)
 }
 void step_all_env(ENV *env)
 {
-        WINNODE *tmpwin;
-        GFXNODE *tmpgfx;
+        WNODE *tmpwin;
+        GNODE *tmpgfx;
 
         sem_wait(env->sem);
-                list_for_each(&(env->wad), tmpgfx, gfxnode) {
+                list_for_each(&(env->wad), tmpgfx, node) {
                         if ((tmpgfx->id == __an__)) {
-                                tmpwin = list_top(&tmpgfx->winwad, WINNODE, winnode);
-                                         list_del_from(&tmpgfx->winwad, &tmpwin->winnode);
-                                         list_add_tail(&tmpgfx->winwad, &tmpwin->winnode);
-                                tmpwin = list_top(&tmpgfx->winwad, WINNODE, winnode);
-
+                                tmpwin = top_wnode(tmpgfx);
+                                tmpwin = next_wnode(tmpgfx);
                                 replace_panel(tmpgfx->pan, tmpwin->window);
                         }
                 }
         sem_post(env->sem);
         master_refresh();
+}
+GNODE *get_id(struct list_head *head, int id)
+{
+        GNODE *tmp;
+        list_for_each(head, tmp, node) {
+                if ((tmp->id == id))
+                        return tmp;
+        }
+        return NULL;
 }
 

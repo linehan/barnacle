@@ -47,7 +47,8 @@ enum palette {
         SHADOW     = 54,
         FOREST_DARK = 55,
         FOREST_MID = 56,
-        FOREST_LIGHT = 57 
+        FOREST_LIGHT = 57, 
+        PALE_BLUE   = 58
 };
 /* FG_BG color pairs; odd ones are swaps of even ones. */
 enum ramp_pairs {
@@ -94,25 +95,27 @@ enum ramp_pairs {
         BEIGE_YELLOW  = 46,
         YELLOW_BEIGE  = 47,
 
-        SEA_DEEP      = 48,
-        SEA_SURF      = 49,
-        SEA_SHORE     = 50,
-        BOAT_DEEP     = 51,
-        SAIL_DEEP     = 52,
+        SEA_DARK      = 48,
+        SEA_MED       = 49,
+        SEA_LIGHT     = 50, 
+        SEA_SHORE     = 51,
+        BOAT_DEEP     = 52,
+        SAIL_DEEP     = 53,
 
-        CMP_BEIGE     = 53,
-        CMP_RED       = 54,
-        CMP_WHITE     = 55,
-        CMP_ORANGE    = 56,
-        CMP_GREEN     = 57,
-        CMP_PINK      = 58,
-        CMP_YELLOW    = 59,
-        CMP_SHADOW    = 60,
-        BOAT_WHITE    = 61,
-        BOAT_WOOD     = 62,
-        TREES         = 63,
-        MONO          = 64,
-        LAND         = 65
+        CMP_BEIGE     = 54,
+        CMP_RED       = 55,
+        CMP_WHITE     = 56,
+        CMP_ORANGE    = 57,
+        CMP_GREEN     = 58,
+        CMP_PINK      = 59,
+        CMP_YELLOW    = 60,
+        CMP_SHADOW    = 61,
+        BOAT_WHITE    = 62,
+        BOAT_WOOD     = 63,
+        TREES         = 64,
+        MONO          = 65,
+        LAND         = 66
+
 };
 /******************************************************************************/
 /* Initialize the color palette with R,G,B values from 0-1000 and the color
@@ -137,6 +140,7 @@ void init_palette(int set)
         init_color(RED,     643,  192,  247);
         init_color(PINK,    729,  384,  463);
         init_color(BEIGE,   886,  725,  529);
+        init_color(PALE_BLUE, 572, 678, 662);
 
         init_color(SEAFOAM,     439,  565,  502);
         init_color(SEAGREEN,    165,  235,  211);
@@ -162,11 +166,14 @@ void init_palette(int set)
         init_pair(CMP_PINK, PINK, SEAGREEN);
         init_pair(CMP_YELLOW, YELLOW, SEAGREEN);
         init_pair(CMP_SHADOW, SHADOW, SEAGREEN);
-        init_pair(SEA_DEEP, SEAFOAM, SEAGREEN);
+
+        init_pair(SEA_DARK, GREEN, SEAGREEN);
+        init_pair(SEA_MED, SEAFOAM, SEAGREEN);
+        init_pair(SEA_LIGHT, PALE_BLUE, SEAGREEN);
+
         init_pair(SEA_SHORE, BROWNSAND, YELLOWSAND);
         init_pair(BOAT_DEEP, LWOOD, SEAGREEN);
         init_pair(SAIL_DEEP, LGREY, SEAGREEN);
-        init_pair(SEA_SURF, LGREY, SEAGREEN);
         init_pair(TREES, FOREST_MID, FOREST_LIGHT);
         init_pair(LAND, BROWN, BEIGE);
         init_pair(MONO, C_FG, C_BG);

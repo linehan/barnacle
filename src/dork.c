@@ -56,6 +56,7 @@ void tumbler(EV_P_ ev_timer *w, int revents)
         seek_heading();
         seek_prevailing();
         draw_compass();
+        shift_highlights();
 
         if ((sem_trywait(bun->sem) == -1))
                 ev_timer_again(EV_DEFAULT, w);
@@ -66,7 +67,9 @@ void do_animate(EV_P_ ev_timer *w, int revents)
 {
         OO_time *bun = container_of(w, OO_time, w);
         ENV *myenv = (ENV *)bun->data;
+
         step_all_env(myenv);
+
 
         if ((sem_trywait(bun->sem) == -1))
                 ev_timer_again(EV_DEFAULT, w);
@@ -102,8 +105,11 @@ int main()
         ENV *myenv = new_env();
         set_gfx_bg(&myenv->wad, 0);
         new_terrain(&myenv->wad, 's', 5, 5, 7, 5); 
-        new_terrain(&myenv->wad, 's', 10, 20, 20, 30); 
-        new_terrain(&myenv->wad, 'm', 20, 20, 30, 70); 
+        /*new_terrain(&myenv->wad, 's', 10, 20, 20, 30); */
+        new_terrain(&myenv->wad, 'm', LINES-40, 20, 15, COLS-30); 
+        new_terrain(&myenv->wad, 'm', 10, 20, LINES-13, 30); 
+        new_terrain(&myenv->wad, 'm', 13, 10, LINES-35, 3); 
+        new_terrain(&myenv->wad, 'h', 1, 52, 15, 0); 
 
         MOB *boat = new_boat(myenv);
         nominate_boat(boat);
