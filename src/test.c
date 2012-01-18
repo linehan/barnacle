@@ -35,3 +35,22 @@ void toggle_dpanel(int opt)
         update_panels();
         doupdate();
 }
+/* show stuff */
+/*void instrument_panel(void)*/
+/*{*/
+        /*int hdg = get_boat("now", "hdg");*/
+        /*int bhdg = get_boat("buf", "hdg");*/
+        /*int rhdg = get_boat("req", "hdg");*/
+        /*int rig = get_boat("now", "rig");*/
+        /*int anc = get_boat("now", "anc");*/
+
+        /*int wind = get_wind("dir");*/
+        /*int pre = get_wind("pre");*/
+
+        /*werase(DIAGNOSTIC_WIN);*/
+        /*wprintw(DIAGNOSTIC_WIN, "NOW_HDG: %d\nBUF_HDG:%d\nREQ_HDG:%d\n"*/
+                                /*"RIG: %d\nANC: %d\nWIN: %d\nPRE: %d", */
+                                 /*hdg, bhdg, rhdg, rig, anc, wind, pre*/
+                                 /*);*/
+/*}*/
+

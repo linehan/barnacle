@@ -37,11 +37,8 @@
 void blow_wind(EV_P_ ev_timer *w, int revents)
 {
         OO_time *bun = container_of(w, OO_time, w);
-        seek_heading();
-        mark_wind();
-        seek_prevailing();
-        draw_compass();
 
+        
         sail_boat(NULL);
 
         /*int strength = get_wind_str();*/
@@ -52,6 +49,31 @@ void blow_wind(EV_P_ ev_timer *w, int revents)
         else
                 ev_break(EV_A_ EVBREAK_ALL);
 }
+void tumbler(EV_P_ ev_timer *w, int revents)
+{
+        OO_time *bun = container_of(w, OO_time, w);
+        mark_wind();
+        seek_heading();
+        seek_prevailing();
+        draw_compass();
+
+        if ((sem_trywait(bun->sem) == -1))
+                ev_timer_again(EV_DEFAULT, w);
+        else
+                ev_break(EV_A_ EVBREAK_ALL);
+}
+void do_animate(EV_P_ ev_timer *w, int revents)
+{
+        OO_time *bun = container_of(w, OO_time, w);
+        ENV *myenv = (ENV *)bun->data;
+        step_all_env(myenv);
+
+        if ((sem_trywait(bun->sem) == -1))
+                ev_timer_again(EV_DEFAULT, w);
+        else
+                ev_break(EV_A_ EVBREAK_ALL);
+}
+
 /* Gentlemen. */
 int main() 
 {
@@ -77,19 +99,20 @@ int main()
         instrument_init();
 
         /* Graphics */
-        LIST_HEAD(mywad);
-        set_gfx_bg(&mywad, 0);
-        new_terrain(&mywad, 's', 5, 5, 7, 5); 
-        new_terrain(&mywad, 's', 10, 20, 20, 30); 
+        ENV *myenv = new_env();
+        set_gfx_bg(&myenv->wad, 0);
+        new_terrain(&myenv->wad, 's', 5, 5, 7, 5); 
+        new_terrain(&myenv->wad, 's', 10, 20, 20, 30); 
+        new_terrain(&myenv->wad, 'm', 20, 20, 30, 70); 
 
-        MOB *boat = new_boat();
+        MOB *boat = new_boat(myenv);
         nominate_boat(boat);
 
         /* master off switch */
         sem_t master_off; 
         sem_init(&master_off, 0, 1);
 
-        set_wind("pre", 4);
+        set_wind(__pre__, 4);
 
         master_refresh();
 
@@ -107,6 +130,21 @@ int main()
         sailor.w.repeat = .1;
         ev_timer_again(mainloop, &(sailor.w));
         sailor.sem = &master_off;
+
+        /* Create the sailboat/wind watcher */
+        OO_time compass;
+        ev_init(&(compass.w), &tumbler);
+        compass.w.repeat = .1;
+        ev_timer_again(mainloop, &(compass.w));
+        compass.sem = &master_off;
+
+        /* Wave animation watcher */
+        OO_time animate_waves;
+        ev_init(&(animate_waves.w), &do_animate);
+        animate_waves.w.repeat = 2.5;
+        animate_waves.data = myenv;
+        ev_timer_again(mainloop, &(animate_waves.w));
+        animate_waves.sem = &master_off;
 
         /* Asynchronus I/O */
         pthread_t thread_listen;

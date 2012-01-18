@@ -25,6 +25,11 @@
 #include "palette.h"
 #include "test.h"
 /******************************************************************************/
+enum wind_options{
+        __dir__ = 0, 
+        __str__ = 1, 
+        __pre__ = 2 
+};
 struct windpackage {
         int dir;
         int str;
@@ -36,47 +41,48 @@ static sem_t *wind_IO;
 /* Initialize weather globals */
 void weather_init(void)
 {
-        int i;
-
         wind_IO = MALLOC(sem_t);
         sem_init(wind_IO, 0, 1);
 
         g_windstate.dir = 0;
         g_windstate.str = 2; 
-        g_windstate.pre = 5;
+        g_windstate.pre = 0;
 
 }
 /* Access the global wind state */
-int get_wind(const char *string)
+int get_wind(int a)
 {
-        int buf;
+        int buf = 0;
         sem_wait(wind_IO);
-        if ((strcmp(string, "dir")) == 0) 
-                buf = g_windstate.dir;
-        else if ((strcmp(string, "str")) == 0) 
-                buf = g_windstate.str;
-        else if ((strcmp(string, "pre")) == 0) 
-                buf = g_windstate.pre;
-        else {
-                perror ("INVALID ARGUMENT TO get_wind()!");
-                buf = 0;
-        }
+                switch (a) {
+                case __dir__:
+                        buf = g_windstate.dir;
+                        break;
+                case __str__:
+                        buf = g_windstate.str;
+                        break;
+                case __pre__:
+                        buf = g_windstate.pre;
+                        break;
+                }
         sem_post(wind_IO);
         return buf;
 }
 /* Set the global wind state */
-void set_wind(const char *string, int a)
+void set_wind(int a, int val)
 {
         sem_wait(wind_IO);
-
-        if ((strcmp(string, "dir")) == 0)
-                g_windstate.dir = a;
-        else if ((strcmp(string, "str")) == 0) 
-                g_windstate.str = a;
-        else if ((strcmp(string, "pre")) == 0) 
-                g_windstate.pre = a;
-        else perror ("INVALID ARGUMENT TO get_wind()!");
-
+                switch (a) {
+                case __dir__:
+                        g_windstate.dir = val;
+                        break;
+                case __str__:
+                        g_windstate.str = val;
+                        break;
+                case __pre__:
+                        g_windstate.pre = val;
+                        break;
+                }
         sem_post(wind_IO);
 }
 

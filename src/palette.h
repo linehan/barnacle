@@ -25,7 +25,10 @@ enum palette {
         BROWNSAND  = 51,
         LWOOD      = 52,
         WOOD       = 53,
-        SHADOW     = 54
+        SHADOW     = 54,
+        FOREST_DARK = 55,
+        FOREST_MID = 56,
+        FOREST_LIGHT = 57 
 };
 /* FG_BG color pairs; odd ones are swaps of even ones. */
 enum ramp_pairs {
@@ -85,7 +88,12 @@ enum ramp_pairs {
         CMP_GREEN     = 57,
         CMP_PINK      = 58,
         CMP_YELLOW    = 59,
-        CMP_SHADOW    = 60
+        CMP_SHADOW    = 60,
+        BOAT_WHITE    = 61,
+        BOAT_WOOD     = 62,
+        TREES         = 63,
+        MONO          = 64,
+        LAND         = 65
 };
 
 int init_palette(int);

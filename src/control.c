@@ -55,31 +55,31 @@ void *iolisten(EV_P_ ev_io *w, int revents)
         while((ch = getch())) { 
                 switch (ch) { 
                 case '0':
-                        set_wind("pre", 0);
+                        set_wind(__pre__, 0);
                         break;
                 case '1':
-                        set_wind("pre", 2);
+                        set_wind(__pre__, 2);
                         break;
                 case '2':
-                        set_wind("pre", 4);
+                        set_wind(__pre__, 4);
                         break;
                 case '3':
-                        set_wind("pre", 6);
+                        set_wind(__pre__, 6);
                         break;
                 case '4':
-                        set_wind("pre", 8);
+                        set_wind(__pre__, 8);
                         break;
                 case '5':
-                        set_wind("pre", 10);
+                        set_wind(__pre__, 10);
                         break;
                 case '6':
-                        set_wind("pre", 12);
+                        set_wind(__pre__, 12);
                         break;
                 case '7':
-                        set_wind("pre", 14);
+                        set_wind(__pre__, 14);
                         break;
                 case '8':
-                        set_wind("pre", 15);
+                        set_wind(__pre__, 15);
                         break;
                 case 'j':
                         order_boat('p', 0);
@@ -87,7 +87,7 @@ void *iolisten(EV_P_ ev_io *w, int revents)
                 case 'k':
                         order_boat('s', 0);
                         break;
-                case 'x':
+                case ' ':
                         order_boat('x', 0);
                         break;
                 /*case 'k':*/

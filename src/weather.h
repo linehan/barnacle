@@ -1,7 +1,13 @@
+enum wind_options{
+        __dir__ = 0, 
+        __str__ = 1, 
+        __pre__ = 2 
+};
 void weather_init(void);
-int get_wind(const char *string);
-void set_wind(const char *string, int a);
 
+int get_wind(int a);
+
+void set_wind(int a, int val);
 //int wind_roll(void);
 
 void wind_gfx(void);

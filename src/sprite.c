@@ -21,34 +21,17 @@ const wchar_t WAVE_BREAK_GFX = L'⟱';
 const wchar_t WAVE_FLOW_GFX = L'∭';
 const wchar_t SHORE_GFX = L'∵';
 const wchar_t SAND_GFX = L'⚋';
-const wchar_t BOAT_A = L'◥';
-const wchar_t BOAT_M = L'■';
-const wchar_t BOAT_B = L'◤';
-const wchar_t BOAT_P_R = L'⎣';
-const wchar_t BOAT_P_L = L'⎦';
-const wchar_t GFX_SAIL_L_HAUL = L'⎝';
-const wchar_t GFX_SAIL_R_HAUL = L'⎠';
-
-const wchar_t GFX_SAIL_L_CALM = L'⎢';
-const wchar_t GFX_SAIL_R_CALM = L'⎟';
-
-const wchar_t GFX_SAIL_L_RUN = L'⎛';
-const wchar_t GFX_SAIL_R_RUN = L'⎞';
-
-const wchar_t BOAT_BP_R = L'⎥';
-const wchar_t BOAT_BP_L = L'⎢';
-
 const wchar_t gfxWSCK[] = L"⬒⬔◨◪⬓⬕◧◩";
+const wchar_t gfxFOREST[] = L"▁▓▒⤋⟱";
+const wchar_t gfxMTN[] = L"▕▒▓";
 
 cchar_t HERO;
 cchar_t OCEAN;
 cchar_t SURF0, SURF1, SURF2;
 cchar_t SHORE, SAND;
-cchar_t BOAT_HULL_AFT, BOAT_HULL_MID, BOAT_HULL_BOW;
-cchar_t BOAT_BOOM_L, BOAT_BOOM_R;
-cchar_t BOAT_POLE_L, BOAT_POLE_R;
-cchar_t SAIL_L_RUN, SAIL_R_RUN, SAIL_L_HAUL, SAIL_R_HAUL, SAIL_L_CALM, SAIL_R_CALM;
 cchar_t WSCK[8];
+cchar_t FOREST[5];
+cchar_t MTN[3];
 /******************************************************************************/
 void init_gfx_colors(void)
 {
@@ -58,25 +41,14 @@ void init_gfx_colors(void)
         setcchar(&SAND,  &SAND_GFX,       0, SEA_SHORE, NULL);
         setcchar(&SHORE, &SHORE_GFX,      0, SEA_SHORE, NULL);
 
-        setcchar(&BOAT_HULL_AFT, &BOAT_A, 0, BOAT_DEEP, NULL);
-        setcchar(&BOAT_HULL_MID, &BOAT_M, 0, BOAT_DEEP, NULL);
-        setcchar(&BOAT_HULL_BOW, &BOAT_B, 0, BOAT_DEEP, NULL);
-
-        setcchar(&BOAT_BOOM_L, &BOAT_P_L, 0, BOAT_DEEP, NULL);
-        setcchar(&BOAT_BOOM_R, &BOAT_P_R, 0, BOAT_DEEP, NULL);
-
-        setcchar(&SAIL_L_RUN,  &GFX_SAIL_L_RUN,  0, SAIL_DEEP, NULL);
-        setcchar(&SAIL_R_RUN,  &GFX_SAIL_R_RUN,  0, SAIL_DEEP, NULL);
-        setcchar(&SAIL_L_HAUL, &GFX_SAIL_L_HAUL, 0, SAIL_DEEP, NULL);
-        setcchar(&SAIL_R_HAUL, &GFX_SAIL_R_HAUL, 0, SAIL_DEEP, NULL);
-        setcchar(&SAIL_L_CALM, &GFX_SAIL_L_CALM, 0, SAIL_DEEP, NULL);
-        setcchar(&SAIL_R_CALM, &GFX_SAIL_R_CALM, 0, SAIL_DEEP, NULL);
-
-        setcchar(&BOAT_POLE_L, &BOAT_BP_L, 0, BOAT_DEEP, NULL);
-        setcchar(&BOAT_POLE_R, &BOAT_BP_R, 0, BOAT_DEEP, NULL);
-
         int i;
         for (i=0; i<8; i++) {
                 setcchar(&WSCK[i], &gfxWSCK[i], 0, BOAT_DEEP, NULL);
+        }
+        for (i=0; i<5; i++) {
+                setcchar(&FOREST[i], &gfxFOREST[i], 0, TREES, NULL);
+        }
+        for (i=0; i<3; i++) {
+                setcchar(&MTN[i], &gfxMTN[i], 0, LAND, NULL);
         }
 }

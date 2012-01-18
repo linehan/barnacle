@@ -27,15 +27,43 @@
 #include "palette.h"
 #include "weather.h"
 #include "control.h"
+#include "instruments.h"
 /******************************************************************************/
-/* BOAT MAP VIEW                                                         {{{1 */
+/* BOAT MAP VIEW                                                              */
+/*
+  { L"⎛⎝  ",   
+    L"◥■◤ " },
+  { L"⎛⎝  ",
+    L"◥◤  " },
+  { L"⎛⎞  ",
+    L"◥◤  " },
+  { L"⎠⎞  ",
+    L"◥◤  " },
+  { L" ⎠⎞ ",
+    L"◥■◤ " },
+  { L"  ⎠ ",
+    L" ◥■◤" },
+  { L"  ⎠⎞",
+    L" ◥■◤" },
+  { L"  ⎠⎞",
+    L"  ◥◤" },
+  { L"  ⎛⎞",
+    L"  ◥◤" },
+  { L"  ⎛⎝",
+    L"  ◥◤" }
+  { L" ⎛⎝ ",   
+    L" ◥■◤" },
+  };
+*/
 /******************************************************************************/
-enum { _hdg_ = 1751410432,_rig_ = 1919510272,_anc_ = 1634624256,
-       _now_ = 1852798720,_req_ = 1919250688,_pan_ = 1885433344,
-       _win_ = 2003398144,_dim_ = 1684630784,  _h_ = 1744860928,  
-         _w_ = 1996519728, _y0_ = 2033188984, _x0_ = 2016411748, 
-        _dy_ = 1685651556, _dx_ = 1685586030,  _n_ = 1845520484,
-       _buf_ = 1651860992 
+enum boat_options {
+        __now__ = 0, 
+        __req__ = 1, 
+        __buf__ = 2, 
+
+        __hdg__ = 3, 
+        __rig__ = 4, 
+        __anc__ = 5
 };
 
 struct shipstate {
@@ -43,36 +71,174 @@ struct shipstate {
         int rig;
         int anc;
 };
+
 typedef struct boat_t {
-        cchar_t *aft;
-        cchar_t *mid;
-        cchar_t *bow;
-        cchar_t *boom[2];
-        cchar_t *sail[6];
-        cchar_t *pole[2];
-        cchar_t *mast[4][4][2]; /* mast state */
         struct shipstate now; /* initialize to zero */
         struct shipstate req;
         struct shipstate buf;
 } BOAT;
 
-static struct shipstate ORDERS;
 MOB *_BOAT;
-sem_t *BOAT_OBJ_LOCK;
-sem_t *BOAT_MOB_LOCK;
+
+const wchar_t gMAST_I[] = L"⎢";
+const wchar_t gMAST_J[] = L"⎦";
+const wchar_t gMAST_L[] = L"⎣";
+const wchar_t gHULL_V[] = L"◥◤";
+const wchar_t gHULL_W[] = L"◥■◤";
+const wchar_t gSAIL_DL[] = L"⎝";
+const wchar_t gSAIL_DR[] = L"⎠";
+const wchar_t gSAIL_UL[] = L"⎛";
+const wchar_t gSAIL_UR[] = L"⎞";
+const wchar_t gSAIL_PINCH[] = L"⎠⎝";
+const wchar_t gSAIL_SWELL[] = L"⎛⎞";
+const wchar_t gSAIL_LSWELL[] = L"⎛⎝";
+const wchar_t gSAIL_RSWELL[] = L"⎠⎞";
+
+cchar_t MAST_I[2], MAST_J[2], MAST_L[2];
+cchar_t HULL_V[3], HULL_W[4];
+cchar_t SAIL_DL[2], SAIL_DR[2], SAIL_UL[2], SAIL_UR[2];
+cchar_t SAIL_PINCH[3], SAIL_SWELL[3], SAIL_LSWELL[3], SAIL_RSWELL[3];
+
+cchar_t *HULL[16];
+cchar_t *SAIL[16][16];
+cchar_t *MAST[16][16];
+
+int ofs_H[16];
+int ofs_S[16][16];
+int ofs_M[16][16];
+
+static int NON = 0;
+static int ONE = 1;
+static int TWO = 2;
 /******************************************************************************/
 /* Initialize the standing orders global variable and the semaphores used for 
  * locking boat objects. */
 void boat_init(void)
 {
-        ORDERS.hdg = 0;
-        ORDERS.rig = 0;
-        ORDERS.anc = 0;
+        int i, j;
+        for (i=0; i<2; i++) {
+                setcchar(&MAST_I[i], &gMAST_I[i], 0, BOAT_WOOD, NULL);
+                setcchar(&MAST_J[i], &gMAST_J[i], 0, BOAT_WOOD, NULL);
+                setcchar(&MAST_L[i], &gMAST_L[i], 0, BOAT_WOOD, NULL);
 
-        BOAT_OBJ_LOCK = MALLOC(sem_t);
-        BOAT_MOB_LOCK = MALLOC(sem_t);
-        sem_init(BOAT_OBJ_LOCK, 0, 1);
-        sem_init(BOAT_MOB_LOCK, 0, 1);
+                setcchar(&SAIL_DL[i], &gSAIL_DL[i], 0, BOAT_WHITE, NULL);
+                setcchar(&SAIL_DR[i], &gSAIL_DR[i], 0, BOAT_WHITE, NULL);
+                setcchar(&SAIL_UL[i], &gSAIL_UL[i], 0, BOAT_WHITE, NULL);
+                setcchar(&SAIL_UR[i], &gSAIL_UR[i], 0, BOAT_WHITE, NULL);
+        }
+        for (i=0; i<3; i++) {
+                setcchar(&HULL_V[i], &gHULL_V[i], 0, BOAT_WOOD, NULL);
+
+                setcchar(&SAIL_PINCH[i], &gSAIL_PINCH[i], 0, BOAT_WHITE, NULL);
+                setcchar(&SAIL_SWELL[i], &gSAIL_SWELL[i], 0, BOAT_WHITE, NULL);
+                setcchar(&SAIL_LSWELL[i], &gSAIL_LSWELL[i], 0, BOAT_WHITE, NULL);
+                setcchar(&SAIL_RSWELL[i], &gSAIL_RSWELL[i], 0, BOAT_WHITE, NULL);
+        }
+        for (i=0; i<4; i++) {
+                setcchar(&HULL_W[i], &gHULL_W[i], 0, BOAT_WOOD, NULL);
+        }
+
+        for (i=0; i<16; i++) {
+
+                if (((i<=NE))||((i>=NW)))   HULL[i] = HULL_V;
+                else if ((i>NE)&&(i<SE))    HULL[i] = HULL_W;
+                else if ((i>=SE)&&(i<=SW))  HULL[i] = HULL_V;
+                else                        HULL[i] = HULL_W;
+
+
+                ofs_H[i] = ((i>SOUTH)) ? ONE : NON;
+
+                for (j=0; j<16; j++) {
+                        ofs_S[i][j] = ((j>SW)&&(j<NW)) ? TWO : ONE;
+                        ofs_M[i][j] = ((i>NORTH)&&(i<SOUTH)) ? ONE : NON;
+                        
+                        /* MAST SHIT */
+                        
+                        if (((i<=NE))||((i>=NW))) {
+                                if (((j<=NE))||((j>=NW)))  MAST[i][j] = MAST_I;
+                                else if ((j>NE)&&(j<SE))   MAST[i][j] = MAST_L;
+                                else if ((j>=SE)&&(j<=SW)) MAST[i][j] = MAST_I;
+                                else                       MAST[i][j] = MAST_J;
+                        }
+                        else if ((i>NE)&&(i<SE)) MAST[i][j] = MAST_J;
+                        else if ((i>=SE)&&(i<=SW)) {
+                                if (((j<=NE))||((j>=NW)))  MAST[i][j] = MAST_I;
+                                else if ((j>NE)&&(j<SE))   MAST[i][j] = MAST_L;
+                                else if ((j>=SE)&&(j<=SW)) MAST[i][j] = MAST_I;
+                                else                       MAST[i][j] = MAST_J;
+                        }
+                        else if ((i>SW)&&(i<NW)) MAST[i][j] = MAST_L;
+
+                        /* SAIL SHIT */
+
+                        if (((i<=NE))||((i>=NW))) {
+                                switch (j) {
+                                case NORTH:     SAIL[i][j] = SAIL_PINCH;
+                                                break;
+                                case NNE:
+                                case NE:        SAIL[i][j] = SAIL_LSWELL;
+                                                break;
+                                case ENE: 
+                                case EAST:
+                                case ESE:       SAIL[i][j] = SAIL_DL;
+                                                break;
+                                case SE:
+                                case SSE:       SAIL[i][j] = SAIL_LSWELL;
+                                                break;
+                                case SOUTH:     SAIL[i][j] = SAIL_SWELL;
+                                                break;
+                                case SSW:
+                                case SW:        SAIL[i][j] = SAIL_RSWELL;
+                                                break;
+                                case WSW:
+                                case WEST:
+                                case WNW:       SAIL[i][j] = SAIL_DR;
+                                                break;
+                                case NW:
+                                case NNW:       SAIL[i][j] = SAIL_RSWELL;
+                                                break;
+                                }
+                        }
+                        else if ((i>NE)&&(i<SE)) {
+                                if ((i==j))         SAIL[i][j] = SAIL_DL;
+                                else if ((j==WEST)) SAIL[i][j] = SAIL_UR;
+                                else                SAIL[i][j] = SAIL_DR;
+                        }
+                        else if ((i>=SE)&&(i<=SW)) {
+                                switch (j) {
+                                case NORTH:     SAIL[i][j] = SAIL_SWELL;
+                                                break;
+                                case NNE:
+                                case NE:        SAIL[i][j] = SAIL_LSWELL;
+                                                break;
+                                case ENE: 
+                                case EAST:
+                                case ESE:       SAIL[i][j] = SAIL_DL;
+                                                break;
+                                case SE:
+                                case SSE:       SAIL[i][j] = SAIL_LSWELL;
+                                                break;
+                                case SOUTH:     SAIL[i][j] = SAIL_PINCH;
+                                                break;
+                                case SSW:
+                                case SW:        SAIL[i][j] = SAIL_RSWELL;
+                                                break;
+                                case WSW:
+                                case WEST:
+                                case WNW:       SAIL[i][j] = SAIL_DR;
+                                                break;
+                                case NW:
+                                case NNW:       SAIL[i][j] = SAIL_RSWELL;
+                                                break;
+                                }
+                        }
+                        else if ((i>SW)&&(i<NW)) {
+                                if ((i==j))         SAIL[i][j] = SAIL_DR;
+                                else if ((j==EAST)) SAIL[i][j] = SAIL_UL;
+                                else                SAIL[i][j] = SAIL_DL;
+                        }
+                }
+        }
 }
 /* Set boat as active */
 void nominate_boat(MOB *mob)
@@ -80,82 +246,16 @@ void nominate_boat(MOB *mob)
         _BOAT = mob;
 }
 /* Initialize and create a new boat MOB */
-MOB *new_boat(void)
+MOB *new_boat(ENV *env)
 {
         BOAT *boat = MALLOC(BOAT);
         if (boat == NULL) 
                 perror ("BOAT was not allocated properly!");
 
-        /* Connect graphics to the data structure */
-        boat->aft = &BOAT_HULL_AFT; 
-        boat->mid = &BOAT_HULL_MID;
-        boat->bow = &BOAT_HULL_BOW;
-
-        boat->boom[0] = &BOAT_BOOM_L; 
-        boat->boom[1] = &BOAT_BOOM_R;
-
-        boat->sail[0] = &SAIL_L_CALM; /* ⎢ */
-        boat->sail[1] = &SAIL_R_CALM; /* ⎟ */
-        boat->sail[2] = &SAIL_L_HAUL; /* ⎝ */
-        boat->sail[3] = &SAIL_R_HAUL; /* ⎠ */
-        boat->sail[4] = &SAIL_L_RUN;  /* ⎛ */
-        boat->sail[5] = &SAIL_R_RUN;  /* ⎞ */
-
-        boat->pole[0] = &BOAT_POLE_L;
-        boat->pole[1] = &BOAT_POLE_R;
-
-        /* MAST STATE                                                {{{2
-        The mast object is used to retreive the proper character for the
-        representation of the mast, based on the current wind direction, 
-        heading, and sail status.                                             
-        */
-        /* wind from north ^ */
-        boat->mast[0][0][0] = boat->pole[0]; /* north */
-        boat->mast[0][0][1] = boat->sail[0];  
-        boat->mast[0][1][0] = boat->boom[0]; /* east  */
-        boat->mast[0][1][1] = boat->sail[3]; 
-        boat->mast[0][2][0] = boat->boom[0]; /* south */
-        boat->mast[0][2][1] = boat->sail[4]; 
-        boat->mast[0][3][0] = boat->boom[1]; /* west  */
-        boat->mast[0][3][1] = boat->sail[2]; 
-        /* wind from south v */
-        boat->mast[2][0][0] = boat->boom[1]; /* north */
-        boat->mast[2][0][1] = boat->sail[5]; 
-        boat->mast[2][1][0] = boat->boom[0]; /* east  */
-        boat->mast[2][1][1] = boat->sail[3]; 
-        boat->mast[2][2][0] = boat->pole[1]; /* south */
-        boat->mast[2][2][1] = boat->sail[0]; 
-        boat->mast[2][3][0] = boat->boom[1]; /* west  */
-        boat->mast[2][3][1] = boat->sail[2]; 
-        /* wind from east <-- */
-        boat->mast[1][0][0] = boat->boom[0]; /* north */
-        boat->mast[1][0][1] = boat->sail[2]; 
-        boat->mast[1][1][0] = boat->pole[1]; /* east  */
-        boat->mast[1][1][1] = boat->sail[1]; 
-        boat->mast[1][2][0] = boat->boom[0]; /* south */
-        boat->mast[1][2][1] = boat->sail[2]; 
-        boat->mast[1][3][0] = boat->boom[1]; /* west  */
-        boat->mast[1][3][1] = boat->sail[2];
-        /* wind from west --> */ 
-        boat->mast[3][0][0] = boat->boom[1]; /* north */
-        boat->mast[3][0][1] = boat->sail[3]; 
-        boat->mast[3][1][0] = boat->boom[0]; /* east  */
-        boat->mast[3][1][1] = boat->sail[3]; 
-        boat->mast[3][2][0] = boat->boom[1]; /* south */
-        boat->mast[3][2][1] = boat->sail[3]; 
-        boat->mast[3][3][0] = boat->pole[0]; /* west  */
-        boat->mast[3][3][1] = boat->sail[0];                      /* }}}2 */
-
-        MOB *mob = new_mob(boat, 2, 3, 0, 0);
+        MOB *mob = new_mob(boat, env, 2, 4, 0, 0);
 
         WINDOW *win = panel_window(mob->pan);
         wbkgrnd(win, &OCEAN);
-
-        /* draw it for the first time */
-        mvwadd_wch(win, 0, 1, boat->mast[0][2][0]);
-        mvwadd_wch(win, 1, 0, boat->aft);
-        wadd_wch(win,       boat->mid);
-        wadd_wch(win,       boat->bow);
 
         master_refresh();
 
@@ -173,110 +273,83 @@ MOB *new_boat(void)
                                dx
                                n
 Return bits of boat state */
-int get_boat(const char *str1, const char *str2)
+int get_boat(MOB *mob, int a, int b)
 {
         int buf = 0;
         struct shipstate *state;
 
-        int32_t strnum1 =
-            str1[0] << 24 | 
-            str1[1] << 16 |
-            str1[2] << 8  |
-            str1[3];
-        int32_t strnum2 =
-            str2[0] << 24 | 
-            str2[1] << 16 |
-            str2[2] << 8  |
-            str2[3];
+        sem_wait(mob->sem);
+                BOAT *boat = (BOAT *)mob->obj;
+        sem_post(mob->sem);
 
-        sem_wait(BOAT_MOB_LOCK);
-                BOAT *boat = (BOAT *)_BOAT->obj;
-        sem_post(BOAT_MOB_LOCK);
-
-        sem_wait(BOAT_OBJ_LOCK);
-                switch (strnum1) {
-                case _now_:
-                        state = &(boat->now);
-                        break;
-                case _req_:
-                        state = &(boat->req);
-                        break;
-                case _buf_:
-                        state = &(boat->buf);
-                        break;
-                }
-                switch (strnum2) {
-                case _hdg_:
-                        buf = state->hdg;
-                        break;
-                case _rig_:
-                        buf = state->rig;
-                        break;
-                case _anc_:
-                        buf = state->anc;
-                        break;
-                }
-        sem_post(BOAT_OBJ_LOCK);
+        switch (a) {
+        case __now__:
+                state = &(boat->now);
+                break;
+        case __req__:
+                state = &(boat->req);
+                break;
+        case __buf__:
+                state = &(boat->buf);
+                break;
+        }
+        switch (b) {
+        case __hdg__:
+                buf = state->hdg;
+                break;
+        case __rig__:
+                buf = state->rig;
+                break;
+        case __anc__:
+                buf = state->anc;
+                break;
+        }
         return buf;
 }
 /* Set the global wind state */
-void set_boat(const char *str1, const char *str2, int val)
+void set_boat(MOB *mob, int a, int b, int val)
 {
-        int buf = 0;
         struct shipstate *state;
 
-        int32_t strnum1 =
-            str1[0] << 24 | 
-            str1[1] << 16 |
-            str1[2] << 8  |
-            str1[3];
-        int32_t strnum2 =
-            str2[0] << 24 | 
-            str2[1] << 16 |
-            str2[2] << 8  |
-            str2[3];
+        sem_wait(mob->sem);
+                BOAT *boat = (BOAT *)mob->obj;
+        sem_post(mob->sem);
 
-        sem_wait(BOAT_MOB_LOCK);
-                BOAT *boat = (BOAT *)_BOAT->obj;
-        sem_post(BOAT_MOB_LOCK);
-
-        sem_wait(BOAT_OBJ_LOCK);
-                switch (strnum1) {
-                case _now_:
-                        state = &(boat->now);
-                        break;
-                case _req_:
-                        state = &(boat->req);
-                        break;
-                case _buf_:
-                        state = &(boat->buf);
-                        break;
-                }
-                switch (strnum2) {
-                case _hdg_:
-                        state->hdg = val;
-                        break;
-                case _rig_:
-                        state->rig = val;
-                        break;
-                case _anc_:
-                        state->anc = val;
-                        break;
-                }
-        sem_post(BOAT_OBJ_LOCK);
+        switch (a) {
+        case __now__:
+                state = &(boat->now);
+                break;
+        case __req__:
+                state = &(boat->req);
+                break;
+        case __buf__:
+                state = &(boat->buf);
+                break;
+        }
+        switch (b) {
+        case __hdg__:
+                state->hdg = val;
+                break;
+        case __rig__:
+                state->rig = val;
+                break;
+        case __anc__:
+                state->anc = val;
+                break;
+        }
 
 }
 void sync_orders(void)
 {
         int newhdg, newrig, newanc;
 
-        newhdg = get_boat("buf", "hdg");
-        newrig = get_boat("buf", "rig");
-        newanc = get_boat("buf", "anc");
+        newhdg = get_boat(_BOAT, __buf__, __hdg__);
+        newrig = get_boat(_BOAT, __buf__, __rig__);
+        newanc = get_boat(_BOAT, __buf__, __anc__);
 
-        set_boat("req", "hdg", newhdg);
-        set_boat("req", "rig", newrig);
-        set_boat("req", "anc", newanc);
+        set_boat(_BOAT, __req__, __hdg__, newhdg);
+        set_boat(_BOAT, __req__, __rig__, newrig);
+        set_boat(_BOAT, __req__, __anc__, newanc);
 }
 /* Refresh the graphics used to draw a boat, and update its .now to reflect 
  * the current values in &.ord */
@@ -284,176 +357,75 @@ void sync_boat(void)
 {
         seek_heading();
 
-        sem_wait(BOAT_MOB_LOCK);
-                BOAT *boat = (BOAT *)_BOAT->obj;
+        sem_wait(_BOAT->sem);
                 WINDOW *win = panel_window(_BOAT->pan);
-        sem_post(BOAT_MOB_LOCK);
+        sem_post(_BOAT->sem);
 
-        int h = get_boat("now", "hdg");
-        int r = get_boat("now", "rig");
-        int w = get_wind("dir");
+        int H = get_boat(_BOAT, __now__, __hdg__);
+        int R = get_boat(_BOAT, __now__, __rig__);
+        int W = get_wind(__dir__);
 
-        int w4 = floor(w/4);
-        int h4 = floor(h/4);
+        werase(win); /* Erase window */
 
-                switch (h) {
-                case NNW:
-                case NORTH:
-                case NNE:
-                        werase(win);
-                        if (w == SOUTH) 
-                                mvwadd_wch(win, 0, 1, boat->mast[w4][0][r]);
-                        else
-                                mvwadd_wch(win, 0, 2, boat->mast[w4][0][r]);
-                        mvwadd_wch(win, 1, 1, boat->aft);
-                          wadd_wch(win,       boat->bow);
-                        master_refresh();
-                        break;
-                case WSW:
-                case WEST:
-                case WNW:
-                        werase(win);
-                        mvwadd_wch(win, 0, 1, boat->mast[w4][3][r]);
-                        mvwadd_wch(win, 1, 0, boat->aft);
-                          wadd_wch(win,       boat->mid);
-                          wadd_wch(win,       boat->bow);
-                        master_refresh();
-                        break;
-                case ENE:
-                case EAST:
-                case ESE:
-                        werase(win);
-                        mvwadd_wch(win, 0, 1, boat->mast[w4][1][r]);
-                        mvwadd_wch(win, 1, 0, boat->aft);
-                          wadd_wch(win,       boat->mid);
-                          wadd_wch(win,       boat->bow);
-                        master_refresh();
-                        break;
-                case SSE:
-                case SOUTH:
-                case SSW:
-                        werase(win);
-                        if (w == WEST) 
-                                mvwadd_wch(win, 0, 2, boat->mast[w4][2][r]);
-                        else           
-                                mvwadd_wch(win, 0, 1, boat->mast[w4][2][r]);
-                        mvwadd_wch(win, 1, 1, boat->aft);
-                          wadd_wch(win,       boat->bow);
-                        master_refresh();
-                        break;
-                }
+        if ((R==1))  mvwadd_wchstr(win, 0, ofs_S[H][W], SAIL[H][W]);
+        else         mvwadd_wchstr(win, 0, ofs_M[H][W], MAST[H][W]);
+        mvwadd_wchstr(win, 1, ofs_H[H], HULL[H]);
+
+        master_refresh();
 }
 /* Calculate the movement of the boat panel from the wind and hdg value */
 void *sail_boat(void *ptr)
 {
-        sem_wait(BOAT_MOB_LOCK);
-                int x = _BOAT->dim.dx;
-                int y = _BOAT->dim.dy;
-        sem_post(BOAT_MOB_LOCK);
+        sync_boat();
+        int rig = get_boat(_BOAT, __now__, __rig__);
+        int hdg = get_boat(_BOAT, __now__, __hdg__);
+        int wind = get_wind(__dir__);
 
-        int hdg = get_boat("now", "hdg");
-        int bhdg = get_boat("buf", "hdg");
-        int rhdg = get_boat("req", "hdg");
-        int rig = get_boat("now", "rig");
-        int anc = get_boat("now", "anc");
+        if ((rig == 1)&&(wind != hdg)) { /* not in irons */
+                switch(hdg) {
+                case NORTH:
+                case NNE:
+                case NE:
+                case NNW:
+                case NW:        move_mob(_BOAT, 'u');
+                                break;
 
-
-        int wind = get_wind("dir");
-        int pre = get_wind("pre");
-
-        werase(DIAGNOSTIC_WIN);
-        wprintw(DIAGNOSTIC_WIN, "NOW_HDG: %d\nBUF_HDG:%d\nREQ_HDG:%d\nRIG: %d\nANC: %d\nWIN: %d\nPRE: %d", hdg, bhdg, rhdg, rig, anc, wind, pre);
-
-        if (rig == 1) {
-                if (wind != hdg) { /* not in irons */
-                        switch(hdg) {
-                        case NORTH:
-                                if (y > 0) y--;
+                case EAST:
+                case ENE:
+                case ESE:       move_mob(_BOAT, 'r');
                                 break;
-                        case NNE:
-                                if (y > 0) y--;
+                case SOUTH:
+                case SSE:
+                case SE:
+                case SSW:
+                case SW:        move_mob(_BOAT, 'd');
                                 break;
-                        case NE:
-                                if (y > 0) y--;
-                                if (x < COLS) x++;
+                case WEST:
+                case WSW:
+                case WNW:       move_mob(_BOAT, 'l');
                                 break;
-                        case ENE:
-                                if (x < COLS) x++;
-                                break;
-                        case EAST:
-                                if (x < COLS) x++;
-                                break;
-                        case ESE:
-                                if (x < COLS) x++;
-                                break;
-                        case SE:
-                                if (x < COLS) x++;
-                                if (y < LINES) y++;
-                                break;
-                        case SSE:
-                                if (y < LINES) y++;
-                                break;
-                        case SOUTH:
-                                if (y < LINES) y++;
-                                break;
-                        case SSW:
-                                if (y < LINES) y++;
-                                break;
-                        case SW:
-                                if (y < LINES) y++;
-                                if (x > 0) x--;
-                                break;
-                        case WSW:
-                                if (x > 0) x--;
-                                break;
-                        case WEST:
-                                if (x > 0) x--;
-                                break;
-                        case WNW:
-                                if (x > 0) x--;
-                                break;
-                        case NW:
-                                if (x > 0) x--;
-                                if (y > 0) y--;
-                                break;
-                        case NNW:
-                                if (y > 0) y--;
-                                break;
-                        }
-                        sem_wait(BOAT_MOB_LOCK);
-                                move_panel(_BOAT->pan, y, x);
-                                _BOAT->dim.dx = x;
-                                _BOAT->dim.dy = y;
-                        sem_post(BOAT_MOB_LOCK);
                 }
         }
         master_refresh();
-        
         return NULL;
 } 
 /* Issue orders to the ORDERS global */
 void order_boat(int order, int val)
 {
-        int hh = get_boat("buf", "hdg");
-        int rr = get_boat("now", "rig");
+        int hh = get_boat(_BOAT, __buf__, __hdg__);
+        int rr = get_boat(_BOAT, __now__, __rig__);
 
                 switch(order) { 
                 case 'p':
-                        set_boat("buf", "hdg", ((16+(hh-1))%16));
+                        set_boat(_BOAT, __buf__, __hdg__, ((16+(hh-1))%16));
                         mark_hdg('L');
                         break;
                 case 's':
-                        set_boat("buf", "hdg", ((hh+1)%16));
+                        set_boat(_BOAT, __buf__, __hdg__, ((hh+1)%16));
                         mark_hdg('R');
                         break;
-                case 'h':
-                        ORDERS.hdg = val;
-                        break;
                 case 'r':
-                        set_boat("now", "rig", (rr+1)%2); /* toggle 0/1 */
-                        break;
-                case 'a':
-                        ORDERS.anc = val;
+                        set_boat(_BOAT, __now__, __rig__, (rr+1)%2); /* toggle 0/1 */
                         break;
                 case 'x':
                         sync_orders();
@@ -461,18 +433,6 @@ void order_boat(int order, int val)
                 }
         sync_boat();
 }
-/* Return the current point of sail */
-int get_pointofsail(void)
-{
-        int wind = get_wind("dir");
-        wind = wind%4;
-        sem_wait(BOAT_OBJ_LOCK); 
-                int hdg  = ORDERS.hdg;
-        sem_post(BOAT_OBJ_LOCK); 
-
-        return ((abs((wind - hdg)))%4);
-}
-/*                                                                       }}}1 */
 /* ========================================================================== */
 /* BOAT DECK VIEW                                                        {{{1 */
 /* -------------------------------------------------------------------------- */

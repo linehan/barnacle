@@ -44,7 +44,10 @@ enum palette {
         BROWNSAND  = 51,
         LWOOD      = 52,
         WOOD       = 53,
-        SHADOW     = 54
+        SHADOW     = 54,
+        FOREST_DARK = 55,
+        FOREST_MID = 56,
+        FOREST_LIGHT = 57 
 };
 /* FG_BG color pairs; odd ones are swaps of even ones. */
 enum ramp_pairs {
@@ -104,7 +107,12 @@ enum ramp_pairs {
         CMP_GREEN     = 57,
         CMP_PINK      = 58,
         CMP_YELLOW    = 59,
-        CMP_SHADOW    = 60
+        CMP_SHADOW    = 60,
+        BOAT_WHITE    = 61,
+        BOAT_WOOD     = 62,
+        TREES         = 63,
+        MONO          = 64,
+        LAND         = 65
 };
 /******************************************************************************/
 /* Initialize the color palette with R,G,B values from 0-1000 and the color
@@ -112,7 +120,7 @@ enum ramp_pairs {
 void init_palette(int set)
 {
         init_color(C_BG,    255,  255,  255);
-        init_color(C_FG,      0, 1000,    0);
+        init_color(C_FG,   1000, 1000, 1000);
         init_color(BLACK,     0,    0,    0);
         init_color(DGREY,   239,  204,  251);
         init_color(GREY,    564,  564,  564);
@@ -139,6 +147,12 @@ void init_palette(int set)
         init_color(WHITE,       902,  894,  835);
         /*init_color(SHADOW,      372,  349,  376);*/
         init_color(SHADOW,      400,  372,  412);
+        init_color(FOREST_MID,  223,  419,  220);
+        init_color(FOREST_LIGHT,   561,  749, 329);
+        init_color(FOREST_DARK, 137, 318, 172);
+
+        init_pair(BOAT_WHITE, WHITE, SEAGREEN);
+        init_pair(BOAT_WOOD, LWOOD, SEAGREEN);
 
         init_pair(CMP_BEIGE, BEIGE, SEAGREEN);
         init_pair(CMP_RED, RED, SEAGREEN);
@@ -153,4 +167,7 @@ void init_palette(int set)
         init_pair(BOAT_DEEP, LWOOD, SEAGREEN);
         init_pair(SAIL_DEEP, LGREY, SEAGREEN);
         init_pair(SEA_SURF, LGREY, SEAGREEN);
+        init_pair(TREES, FOREST_MID, FOREST_LIGHT);
+        init_pair(LAND, BROWN, BEIGE);
+        init_pair(MONO, C_FG, C_BG);
 }

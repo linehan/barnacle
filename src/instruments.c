@@ -132,7 +132,7 @@ void mark_hdg(int dir)
         tmp = list_top(&CMP, struct compass_char, node);
         int origin = tmp->dir;
         offsgh = offsdn;
-        set_boat("buf", "hdg", (origin+(offsdn-1))%16);
+        set_boat(_BOAT, __buf__, __hdg__, (origin+(offsdn-1))%16);
 
 }
 /* Calculate the offset of the wind arrow. This is not under the control of
@@ -145,7 +145,7 @@ void mark_wind(void)
         tmp = list_top(&CMP, struct compass_char, node);
         int origin = tmp->dir;
         /* The current wind direction */
-        int cur = get_wind("dir");
+        int cur = get_wind(__dir__);
         /* The distance between the origin and the current wind direction */
         int delta = (17+(cur-origin))%16;
 
@@ -179,7 +179,7 @@ void tumble_compass(int dir)
 int seek_heading(void)
 {
         struct compass_char *tmp;
-        int req = get_boat("req", "hdg");
+        int req = get_boat(_BOAT, __req__, __hdg__);
         int origin;
 
         /* Get the value of the first printed direction */
@@ -190,7 +190,7 @@ int seek_heading(void)
         int mid = ((origin+6)%cmp_num);
 
         /* Set the current heading to the midpoint */
-        set_boat("now", "hdg", mid); 
+        set_boat(_BOAT, __now__, __hdg__, mid); 
 
         /* If the midpoint is not the required heading, tumble the compass, 
          * which will cause the value of the midpoint to be shifted one way 
@@ -212,14 +212,14 @@ int seek_heading(void)
 /* Allow the current wind direction to seek the prevailing wind direction. */
 int seek_prevailing(void)
 {
-        int pre = get_wind("pre");
-        int cur = get_wind("dir");
+        int pre = get_wind(__pre__);
+        int cur = get_wind(__dir__);
 
         if (cur != pre) {
                 if (cur < pre)
-                        set_wind("dir", ((cur+1)%16));
+                        set_wind(__dir__, ((cur+1)%16));
                 else if (cur > pre)
-                        set_wind("dir", ((16+(cur-1))%16)); 
+                        set_wind(__dir__, ((16+(cur-1))%16)); 
         }
         return 0;
 }
