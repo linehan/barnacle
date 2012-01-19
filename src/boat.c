@@ -28,6 +28,18 @@
 #include "weather.h"
 #include "control.h"
 #include "instruments.h"
+#define NORTHING(x) ((x<=NE)||(x>=NW))
+#define EASTING(x)  ((x>NE)&&(x<SE))
+#define SOUTHING(x) ((x>=SE)&&(x<=SW))
+#define WESTING(x)  ((x<NW)&&(x>SW))
+#define STRICTNORTHING(x) ((x<NE)||(x>NW))
+#define STRICTEASTING(x)  ((x>NE)&&(x<SE))
+#define STRICTSOUTHING(x) ((x>SE)&&(x<SW))
+#define STRICTWESTING(x)  ((x<NW)&&(x>SW))
+#define NWESTING(x) ((x==NW))
+#define SWESTING(x) ((x==SW))
+#define NEASTING(x) ((x==NE))
+#define SEASTING(x) ((x==SE))
 /******************************************************************************/
 /* BOAT MAP VIEW                                                              */
 /*
@@ -137,105 +149,116 @@ void boat_init(void)
         for (i=0; i<4; i++) {
                 setcchar(&HULL_W[i], &gHULL_W[i], 0, BOAT_WOOD, NULL);
         }
-
         for (i=0; i<16; i++) {
 
-                if (((i<=NE))||((i>=NW)))   HULL[i] = HULL_V;
-                else if ((i>NE)&&(i<SE))    HULL[i] = HULL_W;
-                else if ((i>=SE)&&(i<=SW))  HULL[i] = HULL_V;
-                else                        HULL[i] = HULL_W;
+                /* Hull is dependent on heading only */
+                if NORTHING(i)      HULL[i] = HULL_V;
+                else if EASTING(i)  HULL[i] = HULL_W;
+                else if SOUTHING(i) HULL[i] = HULL_V;
+                else if WESTING(i)  HULL[i] = HULL_W;
 
-
-                ofs_H[i] = ((i>SOUTH)) ? ONE : NON;
+                /* Set hull offset */
+                ofs_H[i] = NON;
 
                 for (j=0; j<16; j++) {
-                        ofs_S[i][j] = ((j>SW)&&(j<NW)) ? TWO : ONE;
-                        ofs_M[i][j] = ((i>NORTH)&&(i<SOUTH)) ? ONE : NON;
-                        
-                        /* MAST SHIT */
-                        
-                        if (((i<=NE))||((i>=NW))) {
-                                if (((j<=NE))||((j>=NW)))  MAST[i][j] = MAST_I;
-                                else if ((j>NE)&&(j<SE))   MAST[i][j] = MAST_L;
-                                else if ((j>=SE)&&(j<=SW)) MAST[i][j] = MAST_I;
-                                else                       MAST[i][j] = MAST_J;
-                        }
-                        else if ((i>NE)&&(i<SE)) MAST[i][j] = MAST_J;
-                        else if ((i>=SE)&&(i<=SW)) {
-                                if (((j<=NE))||((j>=NW)))  MAST[i][j] = MAST_I;
-                                else if ((j>NE)&&(j<SE))   MAST[i][j] = MAST_L;
-                                else if ((j>=SE)&&(j<=SW)) MAST[i][j] = MAST_I;
-                                else                       MAST[i][j] = MAST_J;
-                        }
-                        else if ((i>SW)&&(i<NW)) MAST[i][j] = MAST_L;
 
-                        /* SAIL SHIT */
-
-                        if (((i<=NE))||((i>=NW))) {
-                                switch (j) {
-                                case NORTH:     SAIL[i][j] = SAIL_PINCH;
-                                                break;
-                                case NNE:
-                                case NE:        SAIL[i][j] = SAIL_LSWELL;
-                                                break;
-                                case ENE: 
-                                case EAST:
-                                case ESE:       SAIL[i][j] = SAIL_DL;
-                                                break;
-                                case SE:
-                                case SSE:       SAIL[i][j] = SAIL_LSWELL;
-                                                break;
-                                case SOUTH:     SAIL[i][j] = SAIL_SWELL;
-                                                break;
-                                case SSW:
-                                case SW:        SAIL[i][j] = SAIL_RSWELL;
-                                                break;
-                                case WSW:
-                                case WEST:
-                                case WNW:       SAIL[i][j] = SAIL_DR;
-                                                break;
-                                case NW:
-                                case NNW:       SAIL[i][j] = SAIL_RSWELL;
-                                                break;
+                        /* Set mast offset */
+                        ofs_M[i][j] = ONE;
+                        
+                        /* Heading(i) and Wind direction (j) */
+                        if NORTHING(i) {
+                                if STRICTNORTHING(j) {
+                                        MAST[i][j] = MAST_I;
+                                        SAIL[i][j] = SAIL_PINCH;
+                                        ofs_S[i][j] = NON;
+                                }
+                                else if NEASTING(j) {
+                                        MAST[i][j] = MAST_L;
+                                        SAIL[i][j] = SAIL_LSWELL;
+                                        ofs_S[i][j] = NON;
+                                }
+                                else if STRICTEASTING(j) {
+                                        MAST[i][j] = MAST_L;
+                                        SAIL[i][j] = SAIL_DL;
+                                        ofs_S[i][j] = ONE;
+                                }
+                                else if SEASTING(j) {
+                                        MAST[i][j] = MAST_L;
+                                        SAIL[i][j] = SAIL_LSWELL;
+                                        ofs_S[i][j] = NON;
+                                }
+                                else if STRICTSOUTHING(j) {
+                                        MAST[i][j] = MAST_I;
+                                        SAIL[i][j] = SAIL_SWELL;
+                                        ofs_S[i][j] = NON;
+                                }
+                                else if SWESTING(j) {
+                                        MAST[i][j] = MAST_J;
+                                        SAIL[i][j] = SAIL_RSWELL;
+                                        ofs_S[i][j] = NON;
+                                }
+                                else if STRICTWESTING(j) { 
+                                        MAST[i][j] = MAST_J;
+                                        SAIL[i][j] = SAIL_DR;
+                                        ofs_S[i][j] = ONE;
+                                }
+                                else if NWESTING(j) {
+                                        MAST[i][j] = MAST_J;
+                                        SAIL[i][j] = SAIL_RSWELL;
+                                        ofs_S[i][j] = NON;
                                 }
                         }
-                        else if ((i>NE)&&(i<SE)) {
-                                if ((i==j))         SAIL[i][j] = SAIL_DL;
-                                else if ((j==WEST)) SAIL[i][j] = SAIL_UR;
-                                else                SAIL[i][j] = SAIL_DR;
+                        else if EASTING(i) {
+                                MAST[i][j] = MAST_J;
+                                SAIL[i][j] = SAIL_DR;
+                                ofs_S[i][j] = ONE;
                         }
-                        else if ((i>=SE)&&(i<=SW)) {
-                                switch (j) {
-                                case NORTH:     SAIL[i][j] = SAIL_SWELL;
-                                                break;
-                                case NNE:
-                                case NE:        SAIL[i][j] = SAIL_LSWELL;
-                                                break;
-                                case ENE: 
-                                case EAST:
-                                case ESE:       SAIL[i][j] = SAIL_DL;
-                                                break;
-                                case SE:
-                                case SSE:       SAIL[i][j] = SAIL_LSWELL;
-                                                break;
-                                case SOUTH:     SAIL[i][j] = SAIL_PINCH;
-                                                break;
-                                case SSW:
-                                case SW:        SAIL[i][j] = SAIL_RSWELL;
-                                                break;
-                                case WSW:
-                                case WEST:
-                                case WNW:       SAIL[i][j] = SAIL_DR;
-                                                break;
-                                case NW:
-                                case NNW:       SAIL[i][j] = SAIL_RSWELL;
-                                                break;
+                        else if SOUTHING(i) {
+                                if STRICTNORTHING(j) {
+                                        MAST[i][j] = MAST_I;
+                                        SAIL[i][j] = SAIL_SWELL;
+                                        ofs_S[i][j] = NON;
+                                }
+                                else if NEASTING(j) {
+                                        MAST[i][j] = MAST_L;
+                                        SAIL[i][j] = SAIL_LSWELL;
+                                        ofs_S[i][j] = NON;
+                                }
+                                else if STRICTEASTING(j) {  
+                                        MAST[i][j] = MAST_L;
+                                        SAIL[i][j] = SAIL_DL;
+                                        ofs_S[i][j] = ONE;
+                                }
+                                else if SEASTING(j) {
+                                        MAST[i][j] = MAST_L;
+                                        SAIL[i][j] = SAIL_LSWELL;
+                                        ofs_S[i][j] = NON;
+                                }
+                                else if STRICTSOUTHING(j) { 
+                                        MAST[i][j] = MAST_I;
+                                        SAIL[i][j] = SAIL_PINCH;
+                                        ofs_S[i][j] = NON;
+                                }
+                                else if SWESTING(j) {
+                                        MAST[i][j] = MAST_J;
+                                        SAIL[i][j] = SAIL_RSWELL;
+                                        ofs_S[i][j] = NON;
+                                }
+                                else if STRICTWESTING(j) {
+                                        MAST[i][j] = MAST_J;
+                                        SAIL[i][j] = SAIL_DR;
+                                        ofs_S[i][j] = ONE;
+                                }
+                                else if NWESTING(j) {
+                                        MAST[i][j] = MAST_J;
+                                        SAIL[i][j] = SAIL_RSWELL;
+                                        ofs_S[i][j] = NON;
                                 }
                         }
-                        else if ((i>SW)&&(i<NW)) {
-                                if ((i==j))         SAIL[i][j] = SAIL_DR;
-                                else if ((j==EAST)) SAIL[i][j] = SAIL_UL;
-                                else                SAIL[i][j] = SAIL_DL;
+                        else if WESTING(i) {
+                                MAST[i][j] = MAST_L;
+                                SAIL[i][j] = SAIL_DL;
+                                ofs_S[i][j] = ONE;
                         }
                 }
         }
@@ -382,29 +405,14 @@ void *sail_boat(void *ptr)
         int wind = get_wind(__dir__);
 
         if ((rig == 1)&&(wind != hdg)) { /* not in irons */
-                switch(hdg) {
-                case NORTH:
-                case NNE:
-                case NE:
-                case NNW:
-                case NW:        move_mob(_BOAT, 'u');
-                                break;
-
-                case EAST:
-                case ENE:
-                case ESE:       move_mob(_BOAT, 'r');
-                                break;
-                case SOUTH:
-                case SSE:
-                case SE:
-                case SSW:
-                case SW:        move_mob(_BOAT, 'd');
-                                break;
-                case WEST:
-                case WSW:
-                case WNW:       move_mob(_BOAT, 'l');
-                                break;
-                }
+                if NORTHING(hdg)
+                        move_mob(_BOAT, 'u');
+                else if EASTING(hdg)
+                        move_mob(_BOAT, 'r');
+                else if SOUTHING(hdg)
+                        move_mob(_BOAT, 'd');
+                else if WESTING(hdg)
+                        move_mob(_BOAT, 'l');
         }
         master_refresh();
         return NULL;

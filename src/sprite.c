@@ -37,9 +37,9 @@ cchar_t MTN[3];
 void init_gfx_colors(void)
 {
         setcchar(&OCEAN[0], &gfxOCEAN[0], 0, SEA_MED,  NULL);
-        setcchar(&OCEAN[1], &gfxOCEAN[0], 0, SEA_LIGHT,  NULL);
-        setcchar(&OCEAN[2], &gfxOCEAN[1], 0, SEA_MED,  NULL);
-        setcchar(&OCEAN[3], &gfxOCEAN[2], 0, SEA_MED,  NULL);
+        setcchar(&OCEAN[1], &gfxOCEAN[1], 0, SEA_MED,  NULL);
+        setcchar(&OCEAN[2], &gfxOCEAN[0], 0, SEA_LIGHT,  NULL);
+        setcchar(&OCEAN[3], &gfxOCEAN[1], 0, SEA_LIGHT,  NULL);
 
         setcchar(&SURF0, &WAVE_BREAK_GFX, 0, SEA_LIGHT,  NULL);
         setcchar(&SURF1, &WAVE_FLOW_GFX,  0, SEA_LIGHT,  NULL);

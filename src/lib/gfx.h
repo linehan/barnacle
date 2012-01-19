@@ -2,12 +2,12 @@
 #include <semaphore.h>
 /* ========================================================================== */
 #define TOP_WNODE(gfx) (WNODE *)list_top(gfx->wins, WNODE, node)
-#define LAST_WNODE(gfx) (WNODE *)list_tail(gfx->wind, WNODE, node)
-#define NEXT_WNODE(gfx) (WNODE *)next_wnode(gfx)
+#define LST_WNODE(gfx) (WNODE *)list_tail(gfx->wind, WNODE, node)
+#define NXT_WNODE(gfx) (WNODE *)next_wnode(gfx)
 
 #define TOP_GNODE(env) (GNODE *)list_top(env->wad, GNODE, node)
-#define LAST_GNODE(env) (GNODE *)list_tail(env->wad, GNODE, node)
-#define NEXT_GNODE(env) (GNODE *)next_gnode(env)
+#define LST_GNODE(env) (GNODE *)list_tail(env->wad, GNODE, node)
+#define NXT_GNODE(env) (GNODE *)next_gnode(env)
 
 /* Panel options that can be used to identify the parameter that
  * one wishes returned from a GNODE structure */
@@ -31,7 +31,8 @@ enum pan_options {
 enum ids { __bg__ = 0,
            __fg__ = 1,
            __an__ = 2,
-           __hi__ = 3
+           __hi__ = 3,
+           __rw__ = 4
 };
 
 /* A structure that bundles all the window dimensions */
@@ -56,6 +57,7 @@ typedef struct win_wad {
         int id;
         int z;
         WINDOW *window;
+        WINDOW *rw;
         struct list_node node; 
 } WNODE;
 
@@ -86,8 +88,10 @@ void step_all_env(ENV *env);
 GNODE *new_gfx(int id, int h, int w, int y0, int x0, int n);
 void   add_gfx(GNODE *node, struct list_head *wad);
 GNODE *find_gnode(struct list_head *head, int id);
+GNODE *next_gnode(ENV *env);
 
 WNODE *find_wnode(GNODE *gfx, int id);
+WNODE *next_wnode(GNODE *gfx);
 
 MOB *new_mob(void *ptr, ENV *env, int h, int w, int y0, int x0);
 void move_mob(MOB *mob, int dir);

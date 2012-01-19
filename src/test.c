@@ -24,6 +24,7 @@ void test_init(void)
 {
 	DIAGNOSTIC_WIN = newwin((LINES-30), (COLS-6), 30, 3);
         DIAGNOSTIC_PAN = new_panel(DIAGNOSTIC_WIN);
+        hide_panel(DIAGNOSTIC_PAN);
 }
 /* Toggle the diagnostic panel's visibility */
 void toggle_dpanel(int opt)
@@ -32,8 +33,6 @@ void toggle_dpanel(int opt)
                 show_panel(DIAGNOSTIC_PAN);
         else 
                 hide_panel(DIAGNOSTIC_PAN);
-        update_panels();
-        doupdate();
 }
 /* show stuff */
 /*void instrument_panel(void)*/

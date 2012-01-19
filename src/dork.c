@@ -104,12 +104,9 @@ int main()
         /* Graphics */
         ENV *myenv = new_env();
         set_gfx_bg(&myenv->wad, 0);
-        new_terrain(&myenv->wad, 's', 5, 5, 7, 5); 
-        /*new_terrain(&myenv->wad, 's', 10, 20, 20, 30); */
-        new_terrain(&myenv->wad, 'm', LINES-40, 20, 15, COLS-30); 
-        new_terrain(&myenv->wad, 'm', 10, 20, LINES-13, 30); 
-        new_terrain(&myenv->wad, 'm', 13, 10, LINES-35, 3); 
-        new_terrain(&myenv->wad, 'h', 1, 52, 15, 0); 
+        gen_terrain(myenv, 'm', LINES-40, 20, 15, COLS-30); 
+        gen_terrain(myenv, 'm', 10, 20, LINES-13, 30); 
+        gen_terrain(myenv, 'm', 13, 10, LINES-35, 3); 
 
         MOB *boat = new_boat(myenv);
         nominate_boat(boat);
