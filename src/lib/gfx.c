@@ -17,8 +17,16 @@
 #include "lib/list/list.h"
 #include "palette.h"
 /* ========================================================================== */
-#define top_wnode(gfx) (WNODE *)list_top(gfx->wins, WNODE, node)
+#define TOP_WNODE(gfx) (WNODE *)list_top(gfx->wins, WNODE, node)
+#define LAST_WNODE(gfx) (WNODE *)list_tail(gfx->wins, WNODE, node)
+#define NEXT_WNODE(gfx) (WNODE *)next_wnode(gfx)
 
+#define TOP_GNODE(env) (GNODE *)list_top(&env->wad, GNODE, node)
+#define LAST_GNODE(env) (GNODE *)list_tail(&env->wad, GNODE, node)
+#define NEXT_GNODE(env) (GNODE *)next_gnode(env)
+
+/* Panel options that can be used to identify the parameter that
+ * one wishes returned from a GNODE structure */
 enum pan_options { 
         __pan__ = 0,
         __win__ = 1,
@@ -34,6 +42,8 @@ enum pan_options {
         __n__   = 11
 };
 
+/* Panel identifiers that can be used to identify a particular
+ * type of GNODE when searching the graphics stack. */
 enum ids { __bg__ = 0,
            __fg__ = 1,
            __an__ = 2,
@@ -51,10 +61,28 @@ typedef struct dimension_t {
         int n;  /* number of windows */
 } DIMS;
 
+/* A container to hold one entire "environment" */
 typedef struct environment_t {
         struct list_head wad;
         sem_t *sem;
 } ENV;
+
+/* A node in the windowset */
+typedef struct win_wad {
+        int id;
+        int z;
+        WINDOW *window;
+        struct list_node node; 
+} WNODE;
+
+/* A node in the graphics wad */
+typedef struct gfx_wad {
+        int id;
+        PANEL *pan;
+        DIMS   dim;
+        struct list_head *wins;
+        struct list_node node;
+} GNODE;
 
 /* A mobile data type containing some object */
 typedef struct mob_t {
@@ -64,23 +92,6 @@ typedef struct mob_t {
         sem_t *sem;
         void  *obj;
 } MOB;
-
-/* A node in a linked list ("wad") of windows */
-typedef struct win_wad {
-        int id;
-        int z;
-        WINDOW *window;
-        struct list_node node; 
-} WNODE;
-
-/* A node in a linked list ("wad") of graphics */
-typedef struct gfx_wad {
-        int id;
-        PANEL *pan;
-        DIMS   dim;
-        struct list_head *wins;
-        struct list_node node;
-} GNODE;
 
 sem_t *REFRESH_LOCK;
 /* ========================================================================== */
@@ -98,6 +109,7 @@ void master_refresh(void)
                 doupdate();
         sem_post(REFRESH_LOCK);
 }
+/* Create a new environment */
 ENV *new_env(void)
 {
         ENV *new = malloc(sizeof(ENV));
@@ -122,7 +134,6 @@ GNODE *new_gfx(int id, int h, int w, int y0, int x0, int n)
 
         gfx->wins = malloc(sizeof(struct list_head));
         list_head_init(gfx->wins);
-        /* Populate the winwad */
         for (i=0; i<n; i++) {
                 WNODE *new  = (WNODE *)malloc(sizeof(WNODE));
                 new->window = newwin(h, w, y0, x0);
@@ -145,7 +156,17 @@ GNODE *new_gfx(int id, int h, int w, int y0, int x0, int n)
 
         return gfx;
 }
-
+/* Rotate through an ENV list, returning the next GNODE */
+GNODE *next_gnode(ENV *env)
+{
+        GNODE *tmp;
+        tmp = list_top(&env->wad, GNODE, node);
+              list_del_from(&env->wad, &tmp->node);
+              list_add_tail(&env->wad, &tmp->node);
+        tmp = list_top(&env->wad, GNODE, node);
+        return tmp;
+}
+/* Rotate through a GNODE list, returning the next WNODE */
 WNODE *next_wnode(GNODE *gfx)
 {
         WNODE *tmp;
@@ -155,14 +176,11 @@ WNODE *next_wnode(GNODE *gfx)
         tmp = list_top(gfx->wins, WNODE, node);
         return tmp;
 }
-
 /* Create and initialize a new MOB */
 MOB *new_mob(void *ptr, ENV *env, int h, int w, int y0, int x0)
 {
         MOB *mob = (MOB *)malloc(sizeof(MOB));
-
         mob->obj = ptr;
-
         mob->env = env;
 
         WINDOW *win = newwin(h, w, y0, x0);
@@ -230,6 +248,7 @@ void move_mob(MOB *mob, int dir)
                 move_panel(mob->pan, mob->dim.dy, mob->dim.dx);
         sem_post(mob->sem);
 }
+/* Traverse an ENV list, stepping any GNODEs with the id __ani__ */
 void step_all_env(ENV *env)
 {
         WNODE *tmpwin;
@@ -238,21 +257,34 @@ void step_all_env(ENV *env)
         sem_wait(env->sem);
                 list_for_each(&(env->wad), tmpgfx, node) {
                         if ((tmpgfx->id == __an__)) {
-                                tmpwin = top_wnode(tmpgfx);
-                                tmpwin = next_wnode(tmpgfx);
+                                tmpwin = TOP_WNODE(tmpgfx);
+                                tmpwin = NEXT_WNODE(tmpgfx);
                                 replace_panel(tmpgfx->pan, tmpwin->window);
                         }
                 }
         sem_post(env->sem);
         master_refresh();
 }
-GNODE *get_id(struct list_head *head, int id)
+/* Return the first GNODE matching 'id' */
+GNODE *find_gnode(ENV *env, int id)
 {
+        sem_wait(env->sem);
+
         GNODE *tmp;
-        list_for_each(head, tmp, node) {
+        list_for_each(&env->wad, tmp, node) {
+                if ((tmp->id == id))
+                        return tmp;
+        }
+        sem_post(env->sem);
+        return NULL;
+}
+/* Return the first WNODE matching 'id' */
+WNODE *find_wnode(GNODE *gfx, int id)
+{
+        WNODE *tmp;
+        list_for_each(gfx->wins, tmp, node) {
                 if ((tmp->id == id))
                         return tmp;
         }
         return NULL;
 }
-

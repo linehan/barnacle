@@ -64,8 +64,8 @@ void instrument_init(void)
         int i;
         cmpbox_win = newwin(3, box_wid, 0, ((COLS/2)-(box_hlf)));
         cmprib_win = newwin(1, 13, 1, ((COLS/2)-(rib_hlf)));
-        wbkgrnd(cmpbox_win, &OCEAN);
-        wbkgrnd(cmprib_win, &OCEAN);
+        wbkgrnd(cmpbox_win, &OCEAN[0]);
+        wbkgrnd(cmprib_win, &OCEAN[0]);
         cmpbox_pan = new_panel(cmpbox_win);
         cmprib_pan = new_panel(cmprib_win);
 

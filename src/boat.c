@@ -255,7 +255,7 @@ MOB *new_boat(ENV *env)
         MOB *mob = new_mob(boat, env, 2, 4, 0, 0);
 
         WINDOW *win = panel_window(mob->pan);
-        wbkgrnd(win, &OCEAN);
+        wbkgrnd(win, &OCEAN[0]);
 
         master_refresh();
 
