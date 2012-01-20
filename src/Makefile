@@ -46,8 +46,9 @@ am__installdirs = "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS)
 am_rope_OBJECTS = boat.$(OBJEXT) control.$(OBJEXT) dice.$(OBJEXT) \
 	dork.$(OBJEXT) palette.$(OBJEXT) sprite.$(OBJEXT) \
-	terrain.$(OBJEXT) test.$(OBJEXT) weather.$(OBJEXT) \
-	instruments.$(OBJEXT) gfx.$(OBJEXT) mtwist.$(OBJEXT)
+	terrain.$(OBJEXT) test.$(OBJEXT) menus.$(OBJEXT) \
+	weather.$(OBJEXT) instruments.$(OBJEXT) gfx.$(OBJEXT) \
+	mtwist.$(OBJEXT)
 rope_OBJECTS = $(am_rope_OBJECTS)
 rope_LDADD = $(LDADD)
 DEFAULT_INCLUDES = -I.
@@ -150,7 +151,7 @@ top_build_prefix = ../
 top_builddir = ..
 top_srcdir = ..
 AUTOMAKE_OPTIONS = foreign
-rope_SOURCES = boat.c control.c dice.c dork.c palette.c sprite.c terrain.c test.c weather.c instruments.c lib/gfx.c lib/mtwist.c
+rope_SOURCES = boat.c control.c dice.c dork.c palette.c sprite.c terrain.c test.c menus.c weather.c instruments.c lib/gfx.c lib/mtwist.c
 all: all-am
 
 .SUFFIXES:
@@ -238,6 +239,7 @@ include ./$(DEPDIR)/dice.Po
 include ./$(DEPDIR)/dork.Po
 include ./$(DEPDIR)/gfx.Po
 include ./$(DEPDIR)/instruments.Po
+include ./$(DEPDIR)/menus.Po
 include ./$(DEPDIR)/mtwist.Po
 include ./$(DEPDIR)/palette.Po
 include ./$(DEPDIR)/sprite.Po

@@ -46,8 +46,9 @@ am__installdirs = "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS)
 am_rope_OBJECTS = boat.$(OBJEXT) control.$(OBJEXT) dice.$(OBJEXT) \
 	dork.$(OBJEXT) palette.$(OBJEXT) sprite.$(OBJEXT) \
-	terrain.$(OBJEXT) test.$(OBJEXT) weather.$(OBJEXT) \
-	instruments.$(OBJEXT) gfx.$(OBJEXT) mtwist.$(OBJEXT)
+	terrain.$(OBJEXT) test.$(OBJEXT) menus.$(OBJEXT) \
+	weather.$(OBJEXT) instruments.$(OBJEXT) gfx.$(OBJEXT) \
+	mtwist.$(OBJEXT)
 rope_OBJECTS = $(am_rope_OBJECTS)
 rope_LDADD = $(LDADD)
 DEFAULT_INCLUDES = -I.@am__isrc@
@@ -150,7 +151,7 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 AUTOMAKE_OPTIONS = foreign
-rope_SOURCES = boat.c control.c dice.c dork.c palette.c sprite.c terrain.c test.c weather.c instruments.c lib/gfx.c lib/mtwist.c
+rope_SOURCES = boat.c control.c dice.c dork.c palette.c sprite.c terrain.c test.c menus.c weather.c instruments.c lib/gfx.c lib/mtwist.c
 all: all-am
 
 .SUFFIXES:
@@ -238,6 +239,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dork.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gfx.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/instruments.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/menus.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mtwist.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/palette.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sprite.Po@am__quote@

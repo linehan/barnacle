@@ -29,6 +29,7 @@
 #include "weather.h"
 #include "instruments.h"
 #include "test.h"
+#include "menus.h"
 /******************************************************************************/
 /* The callback function for the sailing event watcher. Manages the wind
  * and the sailboat's response to it. Checks a semaphore which is also
@@ -100,6 +101,7 @@ int main()
         boat_init();
         test_init();
         instrument_init();
+        menus_init();
 
         /* Graphics */
         ENV *myenv = new_env();
@@ -148,6 +150,12 @@ int main()
         animate_waves.data = myenv;
         ev_timer_again(mainloop, &(animate_waves.w));
         animate_waves.sem = &master_off;
+
+        /* Prompt user input */
+        /*OO_io prompt;*/
+        /*ev_io_init (&prompt.w, &cmd_prompt, STDIN_FILENO, EV_READ);*/
+        /*prompt.loop = mainloop;*/
+        /*prompt.sem = &master_off;*/
 
         /* Asynchronus I/O */
         pthread_t thread_listen;

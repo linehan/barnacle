@@ -5,5 +5,7 @@ extern cchar_t WSCK[8];
 extern cchar_t FOREST[5];
 extern cchar_t MTN[3];
 extern cchar_t OCEAN[4];
+extern cchar_t BLANK;
+extern cchar_t BORDER;
 
 void init_gfx_colors(void);

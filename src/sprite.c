@@ -22,9 +22,11 @@ const wchar_t WAVE_BREAK_GFX = L'⟱';
 const wchar_t WAVE_FLOW_GFX = L'∭';
 const wchar_t SHORE_GFX = L'∵';
 const wchar_t SAND_GFX = L'⚋';
+const wchar_t gfxBLANK = L' ';
 const wchar_t gfxWSCK[] = L"⬒⬔◨◪⬓⬕◧◩";
 const wchar_t gfxFOREST[] = L"▁▓▒⤋⟱";
 const wchar_t gfxMTN[] = L"▕▒▓";
+const wchar_t gfxBORDER = L'▔';
 
 cchar_t HERO;
 cchar_t OCEAN[4];
@@ -33,6 +35,8 @@ cchar_t SHORE, SAND;
 cchar_t WSCK[8];
 cchar_t FOREST[5];
 cchar_t MTN[3];
+cchar_t BLANK;
+cchar_t BORDER;
 /******************************************************************************/
 void init_gfx_colors(void)
 {
@@ -45,6 +49,9 @@ void init_gfx_colors(void)
         setcchar(&SURF1, &WAVE_FLOW_GFX,  0, SEA_LIGHT,  NULL);
         setcchar(&SAND,  &SAND_GFX,       0, SEA_SHORE, NULL);
         setcchar(&SHORE, &SHORE_GFX,      0, SEA_SHORE, NULL);
+
+        setcchar(&BLANK, &gfxBLANK, 0, MENU, NULL);
+        setcchar(&BORDER, &gfxBORDER, 0, MENU, NULL);
 
         int i;
         for (i=0; i<8; i++) {

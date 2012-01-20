@@ -24,6 +24,7 @@
 #include "palette.h"
 #include "test.h"
 #include "weather.h"
+#include "menus.h"
 /******************************************************************************/
 PANEL *deckp;
 
@@ -102,8 +103,8 @@ void *iolisten(EV_P_ ev_io *w, int revents)
                 case 'd':
                         toggle_dpanel(0);
                         break;
-                case 'D':
-                        toggle_dpanel(1);
+                case '`':
+                        toggle_mm();
                         break;
                 case 'q':
                         ev_break(EV_A_ EVBREAK_ALL);
