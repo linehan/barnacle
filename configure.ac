@@ -2,9 +2,9 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.68])
-AC_INIT([ROPE], [0.01], [flip@flop.org])
-AC_CONFIG_SRCDIR([src/dork.c])
-AM_INIT_AUTOMAKE([ROPE], [0.01])
+AC_INIT([WHALEROAD], [0.0.2], [jdl@flexagon.homeunix.org])
+AC_CONFIG_SRCDIR([SRC/whaleroad.c])
+AM_INIT_AUTOMAKE([WHALEROAD], [0.0.2])
 
 # Checks for programs.
 AC_PROG_CC
@@ -35,5 +35,5 @@ AC_TYPE_SIZE_T
 AC_FUNC_MALLOC
 AC_CHECK_FUNCS([setlocale])
 
-AC_CONFIG_FILES([Makefile src/Makefile])
+AC_CONFIG_FILES([Makefile SRC/Makefile])
 AC_OUTPUT

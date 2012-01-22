@@ -1,0 +1,10 @@
+# Autotools mess #
+##################
+*.log
+*.cache
+*.m4
+depcomp
+install-sh
+missing
+configure
+config.status
