@@ -32,7 +32,7 @@ POST_INSTALL = :
 NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
-bin_PROGRAMS = whaleroad$(EXEEXT)
+bin_PROGRAMS = loam$(EXEEXT)
 subdir = SRC
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
@@ -45,14 +45,14 @@ CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS)
 am__dirstamp = $(am__leading_dot)dirstamp
-am_whaleroad_OBJECTS = whaleroad.$(OBJEXT) cmd/control.$(OBJEXT) \
+am_loam_OBJECTS = loam.$(OBJEXT) cmd/control.$(OBJEXT) \
 	gen/dice.$(OBJEXT) gen/mtwist.$(OBJEXT) geo/weather.$(OBJEXT) \
 	geo/terrain.$(OBJEXT) gfx/gfx.$(OBJEXT) gfx/palette.$(OBJEXT) \
 	gfx/sprite.$(OBJEXT) mob/boat.$(OBJEXT) \
 	pan/instruments.$(OBJEXT) pan/menus.$(OBJEXT) \
 	pan/test.$(OBJEXT)
-whaleroad_OBJECTS = $(am_whaleroad_OBJECTS)
-whaleroad_LDADD = $(LDADD)
+loam_OBJECTS = $(am_loam_OBJECTS)
+loam_LDADD = $(LDADD)
 DEFAULT_INCLUDES = -I.@am__isrc@
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
@@ -61,8 +61,8 @@ COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 CCLD = $(CC)
 LINK = $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
-SOURCES = $(whaleroad_SOURCES)
-DIST_SOURCES = $(whaleroad_SOURCES)
+SOURCES = $(loam_SOURCES)
+DIST_SOURCES = $(loam_SOURCES)
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -153,19 +153,19 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 AUTOMAKE_OPTIONS = foreign subdir-objects
-whaleroad_SOURCES = whaleroad.c \
-		    cmd/control.c \
-		    gen/dice.c \
-		    gen/mtwist.c \
-		    geo/weather.c \
-		    geo/terrain.c \
-		    gfx/gfx.c \
-		    gfx/palette.c \
-		    gfx/sprite.c \
-		    mob/boat.c \
-		    pan/instruments.c \
-		    pan/menus.c \
-		    pan/test.c
+loam_SOURCES = loam.c \
+	       cmd/control.c \
+	       gen/dice.c \
+	       gen/mtwist.c \
+	       geo/weather.c \
+	       geo/terrain.c \
+	       gfx/gfx.c \
+	       gfx/palette.c \
+	       gfx/sprite.c \
+	       mob/boat.c \
+	       pan/instruments.c \
+	       pan/menus.c \
+	       pan/test.c
 
 all: all-am
 
@@ -293,9 +293,9 @@ pan/instruments.$(OBJEXT): pan/$(am__dirstamp) \
 	pan/$(DEPDIR)/$(am__dirstamp)
 pan/menus.$(OBJEXT): pan/$(am__dirstamp) pan/$(DEPDIR)/$(am__dirstamp)
 pan/test.$(OBJEXT): pan/$(am__dirstamp) pan/$(DEPDIR)/$(am__dirstamp)
-whaleroad$(EXEEXT): $(whaleroad_OBJECTS) $(whaleroad_DEPENDENCIES) 
-	@rm -f whaleroad$(EXEEXT)
-	$(LINK) $(whaleroad_OBJECTS) $(whaleroad_LDADD) $(LIBS)
+loam$(EXEEXT): $(loam_OBJECTS) $(loam_DEPENDENCIES) 
+	@rm -f loam$(EXEEXT)
+	$(LINK) $(loam_OBJECTS) $(loam_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -315,7 +315,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/whaleroad.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/loam.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@cmd/$(DEPDIR)/control.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@gen/$(DEPDIR)/dice.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@gen/$(DEPDIR)/mtwist.Po@am__quote@

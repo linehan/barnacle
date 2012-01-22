@@ -2,9 +2,9 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.68])
-AC_INIT([WHALEROAD], [0.0.2], [jdl@flexagon.homeunix.org])
-AC_CONFIG_SRCDIR([SRC/whaleroad.c])
-AM_INIT_AUTOMAKE([WHALEROAD], [0.0.2])
+AC_INIT([LOAM], [0.0.2], [jdl@flexagon.homeunix.org])
+AC_CONFIG_SRCDIR([SRC/loam.c])
+AM_INIT_AUTOMAKE([LOAM], [0.0.2])
 
 # Checks for programs.
 AC_PROG_CC
