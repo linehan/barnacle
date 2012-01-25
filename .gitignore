@@ -1,5 +1,5 @@
-# Autotools mess #
-##################
+# Autotools' messy mess #
+#########################
 *.log
 *.cache
 *.m4

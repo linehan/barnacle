@@ -22,7 +22,7 @@ static int counter = 0;
 /* Create the diagnostic window */
 void test_init(void)
 {
-	DIAGNOSTIC_WIN = newwin((LINES-30), (COLS-6), 30, 3);
+	DIAGNOSTIC_WIN = newwin((LINES-30), (COLS/3), 15, 0);
         DIAGNOSTIC_PAN = new_panel(DIAGNOSTIC_WIN);
         hide_panel(DIAGNOSTIC_PAN);
 }

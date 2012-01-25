@@ -16,8 +16,31 @@
 #include "../lib/llist/list.h"
 #include "../gfx/palette.h"
 #include "../gfx/sprite.h"
+#include "../gen/perlin.h"
 #include "test.h"
 /******************************************************************************/
+#define SENTENCE_MAX 10 
+#define SENTENCE_NPUNCT 3
+#define PHRASE_NPUNCT 2
+#define PHRASE_MAX 20
+#define WORD_MAX 50
+
+/* Print the prompt character on the desired window */
+#define PROMPT(win) mvwprintw(win, 1, 0, " > ")
+/* Erase WINDOW win and re-print the prompt string */
+#define REPROMPT(win) { werase(win); \
+                        PROMPT(win); \
+                      }
+/* Prepare the ncurses window for text entry */
+#define PROMPT_ON(win) { PROMPT(win);    \
+                         keypad(win, 0); \
+                         echo();         \
+                       }
+/* Return the ncurses window to its previous state. */
+#define PROMPT_OFF(win) { werase(win);    \
+                          keypad(win, 1); \
+                          noecho();       \
+                        }
 /* Return a pointer to a char array precisely as large as the argument. */
 #define bigas(string) (char *)malloc(strlen(string) * sizeof(char))
 /* Initialize an existing pointer to an array of char to the size of the
@@ -33,8 +56,8 @@ struct catenae {
         struct list_node node;
 };
 
-struct strings {
-        char *string;
+struct strnode {
+        char *word;
         struct list_node node;
 };
 
@@ -50,65 +73,84 @@ void menus_init(void)
         wcolor_set(TALKW, MENU, NULL);
         wbkgd(TALKW, ' ');
 }
-/* Process the input (line) buffer into finer and finer syntactic elements.
- * The "morpho-syntactic hierarchy goes like this:
- * 
- *   Text --> Sentence/Clause --> Phrase --> Word --> Morpheme
+/* Process the \0-terminated input string into whitespace-separated tokens. 
+ * A linked list is created to store the input, and strtok_r() is used to 
+ * iterate over the input string, splitting it at each whitespace. The result 
+ * (a word) is copied into a new node, and this node is appended to the linked 
+ * list.
  *
- * The input received by the function corresponds to a single line input at
- * the prompt, which is the "text". Various stages of this function will sift
- * it into its various parts. */
+ * Once any processing is completed, the linked list is looped over again,
+ * and each node is first removed from the list, then free()'d, before the
+ * function returns. */
 void process_input(const char *input)
 {
-        /* Texts are divided into sentences and clauses by the application of
-         * certain punctuation */
-        char *match = "!,.?:;";
-        char *hopper, *save;
-        char *sentence, *phrase, *word;
+        char *BANG = "!";
+        char *PERIOD = ".";
+        char *QMARK = "?";
+        char *COMMA = ",";
 
-        dup(sentence, input);
-        fit(hopper, input);
+        char *word, *save;
 
-        for (phrase = strtok_r(input, match, &save);
-             phrase;
-             phrase = strtok_r(NULL, match, &save))
+        LIST_HEAD(mystring);
+        struct strnode *tmp, *next; /* For iterating over the ll */
+
+        /* Tokenize the input string */
+        for (word = strtok_r(input, " ", &save);
+             word;
+             word = strtok_r(NULL, " ", &save))
         {
-                wprintw(DIAGNOSTIC_WIN, "%s\n", phrase);
-                hopper = strstr(phrase, "who");
-                if ((hopper != NULL))
-                        wprintw(DIAGNOSTIC_WIN, "%s\n", hopper);
+                struct strnode *new = malloc(sizeof(struct strnode));
+                dup(new->word, word);
+                list_add(&mystring, &new->node);
+        }
+        /* Test print */
+        tmp = list_tail(&mystring, struct strnode, node);
+                if ((strcmp(tmp->word, "clear") == 0))
+                        werase(DIAGNOSTIC_WIN);
+                else if ((strcmp(tmp->word, "perlin") == 0)) {
+                      list_del_from(&mystring, &tmp->node);
+                      list_add(&mystring, &tmp->node);
+                      tmp = list_tail(&mystring, struct strnode, node);
+                      test_simplex_noise(strtod(tmp->word, NULL));
+                }
+                else
+                        tmp = NULL;
+        
+        /*list_for_each_rev(&mystring, tmp, node) {*/
+                /*[>wprintw(DIAGNOSTIC_WIN, "%s\n", tmp->word);<]*/
+
+
+        /*}*/
+        /* Safely delete and free() */
+        list_for_each_safe(&mystring, tmp, next, node) {
+                list_del_from(&mystring, &tmp->node);
+                free(tmp);
         }
 }
 /* Receive a line of text */
-void get_stuff(void)
+void receive_text(void)
 {
-        char buf[800];
+        char buf[100];
         char *c;
-        mvwprintw(TALKW, 1, 0, " > ");
-        keypad(TALKW, 0);
-        echo();
+        PROMPT_ON(TALKW);
         while (((c = getch())!= '`')) {
                 ungetch(c);
                 wgetstr(TALKW, buf);
                 if ((strcmp(buf, "clear") == 0)) {
-                        werase(TALKW);
-                        mvwprintw(TALKW, 1, 0, " > ");
+                        REPROMPT(TALKW);
                 }
                 process_input(buf);
-                werase(TALKW);
-                mvwprintw(TALKW, 1, 0, " > ");
+                REPROMPT(TALKW);
         }
         hide_panel(TALKP);
-        werase(TALKW);
-        keypad(TALKW, 1);
-        noecho();
+        PROMPT_OFF(TALKW);
 }
 /* Show/hide the main menu prompt */
 void toggle_mm(void)
 {
         if ((panel_hidden(TALKP))) {
                 show_panel(TALKP);
-                get_stuff();
+                receive_text();
         }
         else 
                 hide_panel(TALKP);

@@ -21,6 +21,7 @@
 #include "typedefs.h"
 #include "cmd/control.h"
 #include "gen/dice.h"
+#include "gen/perlin.h"
 #include "gfx/gfx.h"
 #include "gfx/palette.h"
 #include "gfx/sprite.h"
@@ -38,7 +39,6 @@
 void blow_wind(EV_P_ ev_timer *w, int revents)
 {
         OO_time *bun = container_of(w, OO_time, w);
-
         
         sail_boat(NULL);
 
@@ -53,6 +53,7 @@ void blow_wind(EV_P_ ev_timer *w, int revents)
 void tumbler(EV_P_ ev_timer *w, int revents)
 {
         OO_time *bun = container_of(w, OO_time, w);
+
         mark_wind();
         seek_heading();
         seek_prevailing();
@@ -70,7 +71,6 @@ void do_animate(EV_P_ ev_timer *w, int revents)
         ENV *myenv = (ENV *)bun->data;
 
         step_all_env(myenv);
-
 
         if ((sem_trywait(bun->sem) == -1))
                 ev_timer_again(EV_DEFAULT, w);
@@ -102,10 +102,11 @@ int main()
         test_init();
         instrument_init();
         menus_init();
+        simplex_init();
 
         /* Graphics */
-        ENV *myenv = new_env();
-        set_gfx_bg(&myenv->wad, 0);
+        ENV *myenv = new_ocean_env();
+        highlights_init(myenv);
         gen_terrain(myenv, 'm', LINES-40, 20, 15, COLS-30); 
         gen_terrain(myenv, 'm', 10, 20, LINES-13, 30); 
         gen_terrain(myenv, 'm', 13, 10, LINES-35, 3); 
@@ -119,7 +120,7 @@ int main()
 
         set_wind(__pre__, 4);
 
-        master_refresh();
+        scr_refresh();
 
         /* Main event loop */
         struct ev_loop *mainloop = EV_DEFAULT;
@@ -140,6 +141,7 @@ int main()
         OO_time compass;
         ev_init(&(compass.w), &tumbler);
         compass.w.repeat = .1;
+        compass.data = myenv;
         ev_timer_again(mainloop, &(compass.w));
         compass.sem = &master_off;
 

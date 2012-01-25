@@ -32,7 +32,7 @@ POST_INSTALL = :
 NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
-bin_PROGRAMS = loam$(EXEEXT)
+bin_PROGRAMS = cucumber$(EXEEXT)
 subdir = SRC
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
@@ -45,14 +45,14 @@ CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS)
 am__dirstamp = $(am__leading_dot)dirstamp
-am_loam_OBJECTS = loam.$(OBJEXT) cmd/control.$(OBJEXT) \
-	gen/dice.$(OBJEXT) gen/mtwist.$(OBJEXT) geo/weather.$(OBJEXT) \
-	geo/terrain.$(OBJEXT) gfx/gfx.$(OBJEXT) gfx/palette.$(OBJEXT) \
-	gfx/sprite.$(OBJEXT) mob/boat.$(OBJEXT) \
-	pan/instruments.$(OBJEXT) pan/menus.$(OBJEXT) \
-	pan/test.$(OBJEXT)
-loam_OBJECTS = $(am_loam_OBJECTS)
-loam_LDADD = $(LDADD)
+am_cucumber_OBJECTS = cucumber.$(OBJEXT) cmd/control.$(OBJEXT) \
+	gen/dice.$(OBJEXT) gen/mtwist.$(OBJEXT) gen/perlin.$(OBJEXT) \
+	geo/weather.$(OBJEXT) geo/terrain.$(OBJEXT) \
+	gfx/palette.$(OBJEXT) gfx/sprite.$(OBJEXT) gfx/gfx.$(OBJEXT) \
+	mob/boat.$(OBJEXT) pan/instruments.$(OBJEXT) \
+	pan/menus.$(OBJEXT) pan/test.$(OBJEXT)
+cucumber_OBJECTS = $(am_cucumber_OBJECTS)
+cucumber_LDADD = $(LDADD)
 DEFAULT_INCLUDES = -I.@am__isrc@
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
@@ -61,8 +61,8 @@ COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 CCLD = $(CC)
 LINK = $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
-SOURCES = $(loam_SOURCES)
-DIST_SOURCES = $(loam_SOURCES)
+SOURCES = $(cucumber_SOURCES)
+DIST_SOURCES = $(cucumber_SOURCES)
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -153,19 +153,20 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 AUTOMAKE_OPTIONS = foreign subdir-objects
-loam_SOURCES = loam.c \
-	       cmd/control.c \
-	       gen/dice.c \
-	       gen/mtwist.c \
-	       geo/weather.c \
-	       geo/terrain.c \
-	       gfx/gfx.c \
-	       gfx/palette.c \
-	       gfx/sprite.c \
-	       mob/boat.c \
-	       pan/instruments.c \
-	       pan/menus.c \
-	       pan/test.c
+cucumber_SOURCES = cucumber.c \
+                   cmd/control.c \
+                   gen/dice.c \
+                   gen/mtwist.c \
+                   gen/perlin.c \
+                   geo/weather.c \
+                   geo/terrain.c \
+                   gfx/palette.c \
+                   gfx/sprite.c \
+                   gfx/gfx.c \
+                   mob/boat.c \
+                   pan/instruments.c \
+                   pan/menus.c \
+                   pan/test.c
 
 all: all-am
 
@@ -255,6 +256,8 @@ gen/$(DEPDIR)/$(am__dirstamp):
 gen/dice.$(OBJEXT): gen/$(am__dirstamp) gen/$(DEPDIR)/$(am__dirstamp)
 gen/mtwist.$(OBJEXT): gen/$(am__dirstamp) \
 	gen/$(DEPDIR)/$(am__dirstamp)
+gen/perlin.$(OBJEXT): gen/$(am__dirstamp) \
+	gen/$(DEPDIR)/$(am__dirstamp)
 geo/$(am__dirstamp):
 	@$(MKDIR_P) geo
 	@: > geo/$(am__dirstamp)
@@ -271,11 +274,11 @@ gfx/$(am__dirstamp):
 gfx/$(DEPDIR)/$(am__dirstamp):
 	@$(MKDIR_P) gfx/$(DEPDIR)
 	@: > gfx/$(DEPDIR)/$(am__dirstamp)
-gfx/gfx.$(OBJEXT): gfx/$(am__dirstamp) gfx/$(DEPDIR)/$(am__dirstamp)
 gfx/palette.$(OBJEXT): gfx/$(am__dirstamp) \
 	gfx/$(DEPDIR)/$(am__dirstamp)
 gfx/sprite.$(OBJEXT): gfx/$(am__dirstamp) \
 	gfx/$(DEPDIR)/$(am__dirstamp)
+gfx/gfx.$(OBJEXT): gfx/$(am__dirstamp) gfx/$(DEPDIR)/$(am__dirstamp)
 mob/$(am__dirstamp):
 	@$(MKDIR_P) mob
 	@: > mob/$(am__dirstamp)
@@ -293,15 +296,16 @@ pan/instruments.$(OBJEXT): pan/$(am__dirstamp) \
 	pan/$(DEPDIR)/$(am__dirstamp)
 pan/menus.$(OBJEXT): pan/$(am__dirstamp) pan/$(DEPDIR)/$(am__dirstamp)
 pan/test.$(OBJEXT): pan/$(am__dirstamp) pan/$(DEPDIR)/$(am__dirstamp)
-loam$(EXEEXT): $(loam_OBJECTS) $(loam_DEPENDENCIES) 
-	@rm -f loam$(EXEEXT)
-	$(LINK) $(loam_OBJECTS) $(loam_LDADD) $(LIBS)
+cucumber$(EXEEXT): $(cucumber_OBJECTS) $(cucumber_DEPENDENCIES) 
+	@rm -f cucumber$(EXEEXT)
+	$(LINK) $(cucumber_OBJECTS) $(cucumber_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
 	-rm -f cmd/control.$(OBJEXT)
 	-rm -f gen/dice.$(OBJEXT)
 	-rm -f gen/mtwist.$(OBJEXT)
+	-rm -f gen/perlin.$(OBJEXT)
 	-rm -f geo/terrain.$(OBJEXT)
 	-rm -f geo/weather.$(OBJEXT)
 	-rm -f gfx/gfx.$(OBJEXT)
@@ -315,10 +319,11 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/loam.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/cucumber.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@cmd/$(DEPDIR)/control.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@gen/$(DEPDIR)/dice.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@gen/$(DEPDIR)/mtwist.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@gen/$(DEPDIR)/perlin.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@geo/$(DEPDIR)/terrain.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@geo/$(DEPDIR)/weather.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@gfx/$(DEPDIR)/gfx.Po@am__quote@

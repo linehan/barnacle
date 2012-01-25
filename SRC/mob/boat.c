@@ -282,7 +282,7 @@ MOB *new_boat(ENV *env)
         WINDOW *win = panel_window(mob->pan);
         wbkgrnd(win, &OCEAN[0]);
 
-        master_refresh();
+        scr_refresh();
 
         return mob;
 }
@@ -396,7 +396,7 @@ void sync_boat(void)
         else         mvwadd_wchstr(win, 0, ofs_M[H][W], MAST[H][W]);
         mvwadd_wchstr(win, 1, ofs_H[H], HULL[H]);
 
-        master_refresh();
+        scr_refresh();
 }
 /* Calculate the movement of the boat panel from the wind and hdg value */
 void *sail_boat(void *ptr)
@@ -416,7 +416,7 @@ void *sail_boat(void *ptr)
                 else if WESTING(hdg)
                         move_mob(_BOAT, 'l');
         }
-        master_refresh();
+        scr_refresh();
         return NULL;
 } 
 /* Issue orders to the ORDERS global */

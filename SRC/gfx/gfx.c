@@ -7,6 +7,7 @@
     which is implemented here. For more information, see the CCAN entry 
     at <http://ccodearchive.net/info/list.html>.
    ========================================================================== */
+#define _XOPEN_SOURCE_EXTENDED = 1  /* extended character sets */
 #include <stdio.h>
 #include <stdlib.h>
 #include <ncurses.h>
@@ -14,9 +15,30 @@
 #include <pthread.h>
 #include <semaphore.h>
 
-#include "lib/llist/list.h"
+#include "../lib/llist/list.h"
 #include "palette.h"
+#include "sprite.h"
 /* ========================================================================== */
+/* Refresh the environment's pad by calling pnoutrefresh() followed by
+ * doupdate(). */
+#define ENV_REFRESH(env) prefresh(env->pad,                   \
+                                  env->pminrow, env->pmincol, \
+                                  env->sminrow, env->smincol, \
+                                  env->smaxrow, env->smaxcol)
+/* Synchronize the environment's pad by refreshing its VIRTUAL screen,
+ * without yet refreshing the ACTUAL screen that the monitor displays.
+ * There are many situations in which it is advantageous to modify the
+ * virtual screen multiple times without calling for doupdate(). Using
+ * both calls increases CPU usage and screen flicker. */
+#define ENV_SYNC(env) pnoutrefresh(env->pad,                   \
+                                   env->pminrow, env->pmincol, \
+                                   env->sminrow, env->smincol, \
+                                   env->smaxrow, env->smaxcol)
+/* Calls ENV_SYNC, followed by doupdate(), to modify the virtual screen
+ * one last time, and then write the virtual screen to the monitor. */
+#define ENV_SYNCUP(env) ENV_SYNC(env) \
+                        doupdate()
+
 #define TOP_WNODE(gfx) (WNODE *)list_top(gfx->wins, WNODE, node)
 #define LST_WNODE(gfx) (WNODE *)list_tail(gfx->wins, WNODE, node)
 #define NXT_WNODE(gfx) (WNODE *)next_wnode(gfx)
@@ -65,7 +87,11 @@ typedef struct dimension_t {
 /* A container to hold one entire "environment" */
 typedef struct environment_t {
         struct list_head wad;
-        sem_t *sem;
+        signed int x_co;
+        signed int y_co;
+        WINDOW *bgw;
+        PANEL  *bgp;
+        sem_t  *sem;
 } ENV;
 
 /* A node in the windowset */
@@ -104,21 +130,40 @@ void gfx_init(void)
         sem_init(REFRESH_LOCK, 0, 1);
 }
 /* Master refresh */
-void master_refresh(void)
+void scr_refresh(void)
 {
-        sem_wait(REFRESH_LOCK);
-                update_panels();
-                doupdate();
-        sem_post(REFRESH_LOCK);
+        update_panels();
+        doupdate();
 }
-/* Create a new environment */
-ENV *new_env(void)
+/* Refresh the virtual screen */
+void vrt_refresh(void)
+{
+        update_panels();
+}
+/* Create a new environment with an ocean background */
+ENV *new_ocean_env(void)
 {
         ENV *new = malloc(sizeof(ENV));
         list_head_init(&(new->wad));
         new->sem = malloc(sizeof(sem_t));
         sem_init(new->sem, 0, 1);
 
+        new->bgw = newwin(LINES, COLS, 0, 0);
+        wbkgrnd(new->bgw, &OCEAN[0]);
+        new->bgp = new_panel(new->bgw);
+        bottom_panel(new->bgp);
+        return new;
+}
+/* Create a new environment with no background */
+ENV *new_blank_env(void)
+{
+        ENV *new = malloc(sizeof(ENV));
+        list_head_init(&(new->wad));
+        new->sem = malloc(sizeof(sem_t));
+        sem_init(new->sem, 0, 1);
+
+        new->bgw = NULL;
+        new->bgp = NULL;
         return new;
 }
 /* Add a new GNODE to a graphics wad */
@@ -262,10 +307,11 @@ void step_all_env(ENV *env)
                                 tmpwin = TOP_WNODE(tmpgfx);
                                 tmpwin = NXT_WNODE(tmpgfx);
                                 replace_panel(tmpgfx->pan, tmpwin->window);
+                                vrt_refresh();
                         }
                 }
         sem_post(env->sem);
-        master_refresh();
+        scr_refresh();
 }
 /* Return the first GNODE matching 'id' */
 GNODE *find_gnode(ENV *env, int id)

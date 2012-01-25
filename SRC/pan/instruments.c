@@ -240,12 +240,14 @@ void draw_compass(void)
         /* Erase windows */
         werase(cmpbox_win);
         werase(cmprib_win);
+        vrt_refresh();
 
         /* LINE 0 */
         mvwadd_wch(cmpbox_win, 0, offsgh, &(CMRK[GH]));
         mvwadd_wch(cmpbox_win, 0, offsdn, &(CMRK[DN]));
         mvwadd_wch(cmpbox_win, 0, 0, &(CBOX[TL]));
         mvwadd_wch(cmpbox_win, 0, (box_wid-1), &(CBOX[TR]));
+        vrt_refresh();
 
         /* LINE 1 */
         mvwadd_wch(cmpbox_win, 1, 0, &(CBOX[VR]));
@@ -253,11 +255,13 @@ void draw_compass(void)
                 mvwadd_wch(cmprib_win, 0, i++, &(tmp->cch));
         }
         mvwadd_wch(cmpbox_win, 1, (box_wid-1), &(CBOX[VR]));
+        vrt_refresh();
 
         /* LINE 2 */
         mvwadd_wch(cmpbox_win, 2, (offsup), &(CMRK[UP]));
         mvwadd_wch(cmpbox_win, 2, 0, &(CBOX[BL]));
         mvwadd_wch(cmpbox_win, 2, (box_wid-1), &(CBOX[BR]));
+        vrt_refresh();
 
-        master_refresh();
+        scr_refresh();
 }

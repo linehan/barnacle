@@ -27,30 +27,7 @@
 #include "weather.h"
 /******************************************************************************/
 ENV *hi; /* Temporary highlight environment list_head */
-/* Temporary globals so I can keep track of where the background is. */
-PANEL *BG;  
-WINDOW *BGW;
 /******************************************************************************/
-/* Set a background GNODE as the bottom-most layer of the supplied list head. */
-void set_gfx_bg(struct list_head *head, int opt)
-{
-        if ((BGW == NULL)) {
-                BGW = newwin(LINES, COLS, 0, 0);
-                BG = new_panel(BGW);
-        }
-
-        switch (opt) {
-        case 0:
-                wbkgrnd(BGW, &OCEAN[0]);
-                break;
-        case 1:
-                wbkgrnd(BGW, &SAND);
-                break;
-        case 2:
-                wbkgrnd(BGW, &SHORE);
-                break;
-        }
-}
 /* 
  *  +----------------+ 
  *  | +------------+ <---- edge       These are, essentially, a stacked
@@ -167,14 +144,14 @@ void gen_terrain(ENV *env, char type, int h, int w, int y0, int x0)
         add_gfx(gen, &env->wad);
 }
 /* Allocate a new environment to store the terrain highlights */
-void highlights_init(void)
+void highlights_init(ENV *env)
 {
         int i, w, wnoise, x0, xnoise, y0, ynoise;
         wnoise = 50;
         xnoise = 50;
         ynoise = 80;
 
-        hi = new_env();
+        hi = new_blank_env();
 
         for (i=0; i<5; i++) {
 
@@ -188,16 +165,15 @@ void highlights_init(void)
 
                 bottom_panel(new->pan);
                 add_gfx(new, &hi->wad);
+                vrt_refresh();
         }
-        bottom_panel(BG);
-        master_refresh();
+        /*bottom_panel(env->bgp);*/
+        scr_refresh();
 }
 /* Move terrain highlights in a direction determined by the current wind
  * direction. */
 void shift_highlights(void)
 {
-        if ((hi == NULL)) highlights_init();
-
         int wind = get_wind(__dir__);
 
         GNODE *tmp;
@@ -242,6 +218,7 @@ void shift_highlights(void)
                         break;
                 }
                 move_panel(tmp->pan, tmp->dim.y0, tmp->dim.x0);
+                vrt_refresh();
         }
-        master_refresh();
+        scr_refresh();
 }
