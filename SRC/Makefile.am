@@ -4,8 +4,8 @@ CFLAGS=-Wall -DVERSION=\"$(VERSION)\" -DPROG="\"$(PACKAGE)\""
 LDFLAGS=-lm -lpthread -lmenu -lpanel -lncursesw -lev
 
 
-bin_PROGRAMS = cucumber 
-cucumber_SOURCES = cucumber.c \
+bin_PROGRAMS = arawak
+arawak_SOURCES = arawak.c \
                    cmd/control.c \
                    gen/dice.c \
                    gen/mtwist.c \
@@ -18,6 +18,9 @@ cucumber_SOURCES = cucumber.c \
                    mob/boat.c \
                    pan/instruments.c \
                    pan/menus.c \
-                   pan/test.c
+                   pan/test.c \
+                   txt/rk.c \
+                   txt/psh.c
+
 
 

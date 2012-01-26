@@ -27,7 +27,7 @@ void test_init(void)
         hide_panel(DIAGNOSTIC_PAN);
 }
 /* Toggle the diagnostic panel's visibility */
-void toggle_dpanel(int opt)
+void toggle_dpanel(void)
 {
         if ((panel_hidden(DIAGNOSTIC_PAN)))                 
                 show_panel(DIAGNOSTIC_PAN);

@@ -17,52 +17,18 @@
 #include "../gfx/palette.h"
 #include "../gfx/sprite.h"
 #include "../gen/perlin.h"
+#include "../txt/psh.h"
+#include "../gen/dice.h"
 #include "test.h"
+#include "menus.h"
 /******************************************************************************/
-#define SENTENCE_MAX 10 
-#define SENTENCE_NPUNCT 3
-#define PHRASE_NPUNCT 2
-#define PHRASE_MAX 20
-#define WORD_MAX 50
-
-/* Print the prompt character on the desired window */
-#define PROMPT(win) mvwprintw(win, 1, 0, " > ")
-/* Erase WINDOW win and re-print the prompt string */
-#define REPROMPT(win) { werase(win); \
-                        PROMPT(win); \
-                      }
-/* Prepare the ncurses window for text entry */
-#define PROMPT_ON(win) { PROMPT(win);    \
-                         keypad(win, 0); \
-                         echo();         \
-                       }
-/* Return the ncurses window to its previous state. */
-#define PROMPT_OFF(win) { werase(win);    \
-                          keypad(win, 1); \
-                          noecho();       \
-                        }
-/* Return a pointer to a char array precisely as large as the argument. */
-#define bigas(string) (char *)malloc(strlen(string) * sizeof(char))
-/* Initialize an existing pointer to an array of char to the size of the
- * argument string. */
-#define fit(dest, source) dest = bigas(source);
-/* Allocate memory for and copy string 'source' to the (uninitialized)
- * char pointer 'dest' */
-#define dup(dest, source) { fit(dest, source); strcpy(dest, source); }
-/******************************************************************************/
-struct catenae {
-        char *dependency;
-        struct list_head strings;
-        struct list_node node;
-};
-
-struct strnode {
-        char *word;
-        struct list_node node;
-};
-
 WINDOW *TALKW, *TALKW;
 PANEL *TALKP, *TALKP;
+
+const char BANG = '!';
+const char PERIOD = '.';
+const char QMARK = '?';
+const char COMMA = ',';
 /******************************************************************************/
 /* Initialize */
 void menus_init(void)
@@ -73,6 +39,16 @@ void menus_init(void)
         wcolor_set(TALKW, MENU, NULL);
         wbkgd(TALKW, ' ');
 }
+
+int get_first_digit(int number)
+{
+        while (number > 10) {
+                number /= 10;
+        }
+        return number;
+}
+
+
 /* Process the \0-terminated input string into whitespace-separated tokens. 
  * A linked list is created to store the input, and strtok_r() is used to 
  * iterate over the input string, splitting it at each whitespace. The result 
@@ -82,69 +58,108 @@ void menus_init(void)
  * Once any processing is completed, the linked list is looped over again,
  * and each node is first removed from the list, then free()'d, before the
  * function returns. */
-void process_input(const char *input)
+void process_input(PHRASE *ph)
 {
-        char *BANG = "!";
-        char *PERIOD = ".";
-        char *QMARK = "?";
-        char *COMMA = ",";
+        ph->prevword(ph);
 
-        char *word, *save;
-
-        LIST_HEAD(mystring);
-        struct strnode *tmp, *next; /* For iterating over the ll */
-
-        /* Tokenize the input string */
-        for (word = strtok_r(input, " ", &save);
-             word;
-             word = strtok_r(NULL, " ", &save))
-        {
-                struct strnode *new = malloc(sizeof(struct strnode));
-                dup(new->word, word);
-                list_add(&mystring, &new->node);
+        IFMATCH(ph->w->word, "clear") 
+                werase(DIAGNOSTIC_WIN);
+        ELMATCH(ph->w->word, "workbox")
+                toggle_dpanel();
+        ELMATCH(ph->w->word, "perlin") {
+                ph->prevword(ph);
+                test_simplex_noise(strtod(ph->w->word, NULL));
         }
-        /* Test print */
-        tmp = list_tail(&mystring, struct strnode, node);
-                if ((strcmp(tmp->word, "clear") == 0))
-                        werase(DIAGNOSTIC_WIN);
-                else if ((strcmp(tmp->word, "perlin") == 0)) {
-                      list_del_from(&mystring, &tmp->node);
-                      list_add(&mystring, &tmp->node);
-                      tmp = list_tail(&mystring, struct strnode, node);
-                      test_simplex_noise(strtod(tmp->word, NULL));
-                }
+        ELMATCH(ph->w->word, "roll") {
+                ph->prevword(ph);
+                int d = atoi(ph->w->word);
+                int r = roll_fair(d);
+                char article[3];
+
+                if (((r == 11)||(get_first_digit(r)) == 8))
+                        strcpy(article, "an");
                 else
-                        tmp = NULL;
-        
-        /*list_for_each_rev(&mystring, tmp, node) {*/
-                /*[>wprintw(DIAGNOSTIC_WIN, "%s\n", tmp->word);<]*/
+                        strcpy(article, "a");
 
-
-        /*}*/
-        /* Safely delete and free() */
-        list_for_each_safe(&mystring, tmp, next, node) {
-                list_del_from(&mystring, &tmp->node);
-                free(tmp);
+                wprintw(DIAGNOSTIC_WIN, "Rolling ");
+                wattron(DIAGNOSTIC_WIN, A_BOLD);
+                wprintw(DIAGNOSTIC_WIN, "1d%d", d);
+                wattroff(DIAGNOSTIC_WIN, A_BOLD);
+                wprintw(DIAGNOSTIC_WIN, "...you rolled %s ", article);
+                wattron(DIAGNOSTIC_WIN, A_BOLD);
+                wprintw(DIAGNOSTIC_WIN, "%d", r);
+                wattroff(DIAGNOSTIC_WIN, A_BOLD);
+                wprintw(DIAGNOSTIC_WIN, "!\n");
         }
 }
-/* Receive a line of text */
 void receive_text(void)
 {
-        char buf[100];
-        char *c;
+        char buffer[MAX_PHRASE_LEN];
+        short peek;
+        STRING *str = new_string();
+
         PROMPT_ON(TALKW);
-        while (((c = getch())!= '`')) {
-                ungetch(c);
-                wgetstr(TALKW, buf);
-                if ((strcmp(buf, "clear") == 0)) {
-                        REPROMPT(TALKW);
+        while ((peek = wgetch(TALKW)) != '`') {
+                if ((peek == KEY_UP)) {
+                       /* As long as the user keeps pressing KEY_UP,
+                        * don't call ungetch(), but cycle backwards
+                        * through the phraselist and print each phrase
+                        * on the prompt. */
+                        do {    REPROMPT(TALKW);
+                                if (str->nextphrase(str))
+                                        wprintw(TALKW, "%s ", str->p->phrase);
+                        } while ((peek = wgetch(TALKW)) == KEY_UP);
+                       /* Since the last peek was the one which broke the
+                        * do loop, it follows that it's probably actual
+                        * input that belongs in the input stream, so that's
+                        * where we send it. */
+                        ungetch(peek);
+                       /* Next, we feed the phrase we've selected back into
+                        * the input stream as well. This is an important
+                        * point -- although we printed this phrase in the
+                        * do loop above, the line buffer cannot see it. The
+                        * line buffer consists entirely of characters from
+                        * an input stream opened during a call to wgetch()
+                        * or wgetstr(), et al.
+                        *
+                        * The function ungetch() places its argument in the 
+                        * input stream, and there it sits until another 
+                        * function like wgetch() opens the input stream and 
+                        * captures it, along with any other chars that have 
+                        * accumulated, as though the user had typed them in 
+                        * almost instantaneously. */
+                        if (str->p != NULL) {
+                                int i = (str->p->l);
+                                while (i--) ungetch(str->p->phrase[i]);
+                        }
+                       /* Now we can proceed normally. */
                 }
-                process_input(buf);
+                else ungetch(peek);
+                
+                REPROMPT(TALKW);
+               /* Open the input string and receive a string of length
+                * MAX_PHRASE_LEN in the buffer. Because the function
+                * wants to get a *string*, it will loiter at the input
+                * stream until it receives a newline. */
+                wgetnstr(TALKW, buffer, MAX_PHRASE_LEN);
+               /* As long as the buffer (the line) wasn't empty, create
+                * a new PHRASE node for it and send the node to the
+                * processing function. Once the processing function returns
+                * successfully, go ahead and add the node to the phraselist. */
+                if (buffer[0] != '\0') {
+                        PHRASE *ph = new_phrase(buffer);
+                        process_input(ph);
+                        ADD_PHRASE(ph, str);
+                }
+               /* Erase the prompt and loop. */
                 REPROMPT(TALKW);
         }
         hide_panel(TALKP);
         PROMPT_OFF(TALKW);
+       /* Unspool the STRING we've been working with. */
+        str->unspool(str);
 }
+
 /* Show/hide the main menu prompt */
 void toggle_mm(void)
 {

@@ -32,7 +32,7 @@ POST_INSTALL = :
 NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
-bin_PROGRAMS = cucumber$(EXEEXT)
+bin_PROGRAMS = arawak$(EXEEXT)
 subdir = SRC
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
@@ -45,14 +45,15 @@ CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS)
 am__dirstamp = $(am__leading_dot)dirstamp
-am_cucumber_OBJECTS = cucumber.$(OBJEXT) cmd/control.$(OBJEXT) \
+am_arawak_OBJECTS = arawak.$(OBJEXT) cmd/control.$(OBJEXT) \
 	gen/dice.$(OBJEXT) gen/mtwist.$(OBJEXT) gen/perlin.$(OBJEXT) \
 	geo/weather.$(OBJEXT) geo/terrain.$(OBJEXT) \
 	gfx/palette.$(OBJEXT) gfx/sprite.$(OBJEXT) gfx/gfx.$(OBJEXT) \
 	mob/boat.$(OBJEXT) pan/instruments.$(OBJEXT) \
-	pan/menus.$(OBJEXT) pan/test.$(OBJEXT)
-cucumber_OBJECTS = $(am_cucumber_OBJECTS)
-cucumber_LDADD = $(LDADD)
+	pan/menus.$(OBJEXT) pan/test.$(OBJEXT) txt/rk.$(OBJEXT) \
+	txt/psh.$(OBJEXT)
+arawak_OBJECTS = $(am_arawak_OBJECTS)
+arawak_LDADD = $(LDADD)
 DEFAULT_INCLUDES = -I.@am__isrc@
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
@@ -61,8 +62,8 @@ COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 CCLD = $(CC)
 LINK = $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
-SOURCES = $(cucumber_SOURCES)
-DIST_SOURCES = $(cucumber_SOURCES)
+SOURCES = $(arawak_SOURCES)
+DIST_SOURCES = $(arawak_SOURCES)
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -153,7 +154,7 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 AUTOMAKE_OPTIONS = foreign subdir-objects
-cucumber_SOURCES = cucumber.c \
+arawak_SOURCES = arawak.c \
                    cmd/control.c \
                    gen/dice.c \
                    gen/mtwist.c \
@@ -166,7 +167,9 @@ cucumber_SOURCES = cucumber.c \
                    mob/boat.c \
                    pan/instruments.c \
                    pan/menus.c \
-                   pan/test.c
+                   pan/test.c \
+                   txt/rk.c \
+                   txt/psh.c
 
 all: all-am
 
@@ -296,9 +299,17 @@ pan/instruments.$(OBJEXT): pan/$(am__dirstamp) \
 	pan/$(DEPDIR)/$(am__dirstamp)
 pan/menus.$(OBJEXT): pan/$(am__dirstamp) pan/$(DEPDIR)/$(am__dirstamp)
 pan/test.$(OBJEXT): pan/$(am__dirstamp) pan/$(DEPDIR)/$(am__dirstamp)
-cucumber$(EXEEXT): $(cucumber_OBJECTS) $(cucumber_DEPENDENCIES) 
-	@rm -f cucumber$(EXEEXT)
-	$(LINK) $(cucumber_OBJECTS) $(cucumber_LDADD) $(LIBS)
+txt/$(am__dirstamp):
+	@$(MKDIR_P) txt
+	@: > txt/$(am__dirstamp)
+txt/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) txt/$(DEPDIR)
+	@: > txt/$(DEPDIR)/$(am__dirstamp)
+txt/rk.$(OBJEXT): txt/$(am__dirstamp) txt/$(DEPDIR)/$(am__dirstamp)
+txt/psh.$(OBJEXT): txt/$(am__dirstamp) txt/$(DEPDIR)/$(am__dirstamp)
+arawak$(EXEEXT): $(arawak_OBJECTS) $(arawak_DEPENDENCIES) 
+	@rm -f arawak$(EXEEXT)
+	$(LINK) $(arawak_OBJECTS) $(arawak_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -315,11 +326,13 @@ mostlyclean-compile:
 	-rm -f pan/instruments.$(OBJEXT)
 	-rm -f pan/menus.$(OBJEXT)
 	-rm -f pan/test.$(OBJEXT)
+	-rm -f txt/psh.$(OBJEXT)
+	-rm -f txt/rk.$(OBJEXT)
 
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/cucumber.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/arawak.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@cmd/$(DEPDIR)/control.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@gen/$(DEPDIR)/dice.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@gen/$(DEPDIR)/mtwist.Po@am__quote@
@@ -333,6 +346,8 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@pan/$(DEPDIR)/instruments.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@pan/$(DEPDIR)/menus.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@pan/$(DEPDIR)/test.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@txt/$(DEPDIR)/psh.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@txt/$(DEPDIR)/rk.Po@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.o$$||'`;\
@@ -477,6 +492,8 @@ distclean-generic:
 	-rm -f mob/$(am__dirstamp)
 	-rm -f pan/$(DEPDIR)/$(am__dirstamp)
 	-rm -f pan/$(am__dirstamp)
+	-rm -f txt/$(DEPDIR)/$(am__dirstamp)
+	-rm -f txt/$(am__dirstamp)
 
 maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"
@@ -486,7 +503,7 @@ clean: clean-am
 clean-am: clean-binPROGRAMS clean-generic mostlyclean-am
 
 distclean: distclean-am
-	-rm -rf ./$(DEPDIR) cmd/$(DEPDIR) gen/$(DEPDIR) geo/$(DEPDIR) gfx/$(DEPDIR) mob/$(DEPDIR) pan/$(DEPDIR)
+	-rm -rf ./$(DEPDIR) cmd/$(DEPDIR) gen/$(DEPDIR) geo/$(DEPDIR) gfx/$(DEPDIR) mob/$(DEPDIR) pan/$(DEPDIR) txt/$(DEPDIR)
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
 	distclean-tags
@@ -532,7 +549,7 @@ install-ps-am:
 installcheck-am:
 
 maintainer-clean: maintainer-clean-am
-	-rm -rf ./$(DEPDIR) cmd/$(DEPDIR) gen/$(DEPDIR) geo/$(DEPDIR) gfx/$(DEPDIR) mob/$(DEPDIR) pan/$(DEPDIR)
+	-rm -rf ./$(DEPDIR) cmd/$(DEPDIR) gen/$(DEPDIR) geo/$(DEPDIR) gfx/$(DEPDIR) mob/$(DEPDIR) pan/$(DEPDIR) txt/$(DEPDIR)
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 

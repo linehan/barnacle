@@ -16,10 +16,10 @@
 
 
 
-pkgdatadir = $(datadir)/CUCUMBER
-pkgincludedir = $(includedir)/CUCUMBER
-pkglibdir = $(libdir)/CUCUMBER
-pkglibexecdir = $(libexecdir)/CUCUMBER
+pkgdatadir = $(datadir)/ARAWAK
+pkgincludedir = $(includedir)/ARAWAK
+pkglibdir = $(libdir)/ARAWAK
+pkglibexecdir = $(libexecdir)/ARAWAK
 am__cd = CDPATH="$${ZSH_VERSION+.}$(PATH_SEPARATOR)" && cd
 install_sh_DATA = $(install_sh) -c -m 644
 install_sh_PROGRAM = $(install_sh) -c
@@ -32,7 +32,7 @@ POST_INSTALL = :
 NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
-bin_PROGRAMS = cucumber$(EXEEXT)
+bin_PROGRAMS = arawak$(EXEEXT)
 subdir = SRC
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
@@ -45,14 +45,15 @@ CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS)
 am__dirstamp = $(am__leading_dot)dirstamp
-am_cucumber_OBJECTS = cucumber.$(OBJEXT) cmd/control.$(OBJEXT) \
+am_arawak_OBJECTS = arawak.$(OBJEXT) cmd/control.$(OBJEXT) \
 	gen/dice.$(OBJEXT) gen/mtwist.$(OBJEXT) gen/perlin.$(OBJEXT) \
 	geo/weather.$(OBJEXT) geo/terrain.$(OBJEXT) \
 	gfx/palette.$(OBJEXT) gfx/sprite.$(OBJEXT) gfx/gfx.$(OBJEXT) \
 	mob/boat.$(OBJEXT) pan/instruments.$(OBJEXT) \
-	pan/menus.$(OBJEXT) pan/test.$(OBJEXT)
-cucumber_OBJECTS = $(am_cucumber_OBJECTS)
-cucumber_LDADD = $(LDADD)
+	pan/menus.$(OBJEXT) pan/test.$(OBJEXT) txt/rk.$(OBJEXT) \
+	txt/psh.$(OBJEXT)
+arawak_OBJECTS = $(am_arawak_OBJECTS)
+arawak_LDADD = $(LDADD)
 DEFAULT_INCLUDES = -I.
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
@@ -61,16 +62,16 @@ COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 CCLD = $(CC)
 LINK = $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
-SOURCES = $(cucumber_SOURCES)
-DIST_SOURCES = $(cucumber_SOURCES)
+SOURCES = $(arawak_SOURCES)
+DIST_SOURCES = $(arawak_SOURCES)
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
-ACLOCAL = ${SHELL} /home/hubert/cucumber/missing --run aclocal-1.11
-AMTAR = ${SHELL} /home/hubert/cucumber/missing --run tar
-AUTOCONF = ${SHELL} /home/hubert/cucumber/missing --run autoconf
-AUTOHEADER = ${SHELL} /home/hubert/cucumber/missing --run autoheader
-AUTOMAKE = ${SHELL} /home/hubert/cucumber/missing --run automake-1.11
+ACLOCAL = ${SHELL} /home/hubert/arawak/missing --run aclocal-1.11
+AMTAR = ${SHELL} /home/hubert/arawak/missing --run tar
+AUTOCONF = ${SHELL} /home/hubert/arawak/missing --run autoconf
+AUTOHEADER = ${SHELL} /home/hubert/arawak/missing --run autoheader
+AUTOMAKE = ${SHELL} /home/hubert/arawak/missing --run automake-1.11
 AWK = gawk
 CC = gcc
 CCDEPMODE = depmode=gcc3
@@ -78,7 +79,7 @@ CFLAGS = -Wall -DVERSION=\"$(VERSION)\" -DPROG="\"$(PACKAGE)\""
 CPP = gcc -E
 CPPFLAGS = 
 CYGPATH_W = echo
-DEFS = -DPACKAGE_NAME=\"CUCUMBER\" -DPACKAGE_TARNAME=\"cucumber\" -DPACKAGE_VERSION=\"0.0.2\" -DPACKAGE_STRING=\"CUCUMBER\ 0.0.2\" -DPACKAGE_BUGREPORT=\"jdl@flexagon.homeunix.org\" -DPACKAGE_URL=\"\" -DPACKAGE=\"CUCUMBER\" -DVERSION=\"0.0.2\" -DHAVE_LIBEV=1 -DHAVE_LIBM=1 -DHAVE_LIBMENU=1 -DHAVE_LIBNCURSESW=1 -DHAVE_LIBPANEL=1 -DHAVE_LIBPTHREAD=1 -DSTDC_HEADERS=1 -DHAVE_SYS_TYPES_H=1 -DHAVE_SYS_STAT_H=1 -DHAVE_STDLIB_H=1 -DHAVE_STRING_H=1 -DHAVE_MEMORY_H=1 -DHAVE_STRINGS_H=1 -DHAVE_INTTYPES_H=1 -DHAVE_STDINT_H=1 -DHAVE_UNISTD_H=1 -DHAVE_LOCALE_H=1 -DHAVE_STDDEF_H=1 -DHAVE_STDLIB_H=1 -DHAVE_STRING_H=1 -DHAVE_UNISTD_H=1 -DHAVE_WCHAR_H=1 -DHAVE__BOOL=1 -DHAVE_STDBOOL_H=1 -DHAVE_STDLIB_H=1 -DHAVE_MALLOC=1 -DHAVE_SETLOCALE=1
+DEFS = -DPACKAGE_NAME=\"ARAWAK\" -DPACKAGE_TARNAME=\"arawak\" -DPACKAGE_VERSION=\"0.0.2\" -DPACKAGE_STRING=\"ARAWAK\ 0.0.2\" -DPACKAGE_BUGREPORT=\"jdl@flexagon.homeunix.org\" -DPACKAGE_URL=\"\" -DPACKAGE=\"ARAWAK\" -DVERSION=\"0.0.2\" -DHAVE_LIBEV=1 -DHAVE_LIBM=1 -DHAVE_LIBMENU=1 -DHAVE_LIBNCURSESW=1 -DHAVE_LIBPANEL=1 -DHAVE_LIBPTHREAD=1 -DSTDC_HEADERS=1 -DHAVE_SYS_TYPES_H=1 -DHAVE_SYS_STAT_H=1 -DHAVE_STDLIB_H=1 -DHAVE_STRING_H=1 -DHAVE_MEMORY_H=1 -DHAVE_STRINGS_H=1 -DHAVE_INTTYPES_H=1 -DHAVE_STDINT_H=1 -DHAVE_UNISTD_H=1 -DHAVE_LOCALE_H=1 -DHAVE_STDDEF_H=1 -DHAVE_STDLIB_H=1 -DHAVE_STRING_H=1 -DHAVE_UNISTD_H=1 -DHAVE_WCHAR_H=1 -DHAVE__BOOL=1 -DHAVE_STDBOOL_H=1 -DHAVE_STDLIB_H=1 -DHAVE_MALLOC=1 -DHAVE_SETLOCALE=1
 DEPDIR = .deps
 ECHO_C = 
 ECHO_N = -n
@@ -95,14 +96,14 @@ LDFLAGS = -lm -lpthread -lmenu -lpanel -lncursesw -lev
 LIBOBJS = 
 LIBS = -lpthread -lpanel -lncursesw -lmenu -lm -lev 
 LTLIBOBJS = 
-MAKEINFO = ${SHELL} /home/hubert/cucumber/missing --run makeinfo
+MAKEINFO = ${SHELL} /home/hubert/arawak/missing --run makeinfo
 MKDIR_P = /bin/mkdir -p
 OBJEXT = o
-PACKAGE = CUCUMBER
+PACKAGE = ARAWAK
 PACKAGE_BUGREPORT = jdl@flexagon.homeunix.org
-PACKAGE_NAME = CUCUMBER
-PACKAGE_STRING = CUCUMBER 0.0.2
-PACKAGE_TARNAME = cucumber
+PACKAGE_NAME = ARAWAK
+PACKAGE_STRING = ARAWAK 0.0.2
+PACKAGE_TARNAME = arawak
 PACKAGE_URL = 
 PACKAGE_VERSION = 0.0.2
 PATH_SEPARATOR = :
@@ -110,10 +111,10 @@ SET_MAKE =
 SHELL = /bin/sh
 STRIP = 
 VERSION = 0.0.2
-abs_builddir = /home/hubert/cucumber/SRC
-abs_srcdir = /home/hubert/cucumber/SRC
-abs_top_builddir = /home/hubert/cucumber
-abs_top_srcdir = /home/hubert/cucumber
+abs_builddir = /home/hubert/arawak/SRC
+abs_srcdir = /home/hubert/arawak/SRC
+abs_top_builddir = /home/hubert/arawak
+abs_top_srcdir = /home/hubert/arawak
 ac_ct_CC = gcc
 am__include = include
 am__leading_dot = .
@@ -132,7 +133,7 @@ host_alias =
 htmldir = ${docdir}
 includedir = ${prefix}/include
 infodir = ${datarootdir}/info
-install_sh = ${SHELL} /home/hubert/cucumber/install-sh
+install_sh = ${SHELL} /home/hubert/arawak/install-sh
 libdir = ${exec_prefix}/lib
 libexecdir = ${exec_prefix}/libexec
 localedir = ${datarootdir}/locale
@@ -153,7 +154,7 @@ top_build_prefix = ../
 top_builddir = ..
 top_srcdir = ..
 AUTOMAKE_OPTIONS = foreign subdir-objects
-cucumber_SOURCES = cucumber.c \
+arawak_SOURCES = arawak.c \
                    cmd/control.c \
                    gen/dice.c \
                    gen/mtwist.c \
@@ -166,7 +167,9 @@ cucumber_SOURCES = cucumber.c \
                    mob/boat.c \
                    pan/instruments.c \
                    pan/menus.c \
-                   pan/test.c
+                   pan/test.c \
+                   txt/rk.c \
+                   txt/psh.c
 
 all: all-am
 
@@ -296,9 +299,17 @@ pan/instruments.$(OBJEXT): pan/$(am__dirstamp) \
 	pan/$(DEPDIR)/$(am__dirstamp)
 pan/menus.$(OBJEXT): pan/$(am__dirstamp) pan/$(DEPDIR)/$(am__dirstamp)
 pan/test.$(OBJEXT): pan/$(am__dirstamp) pan/$(DEPDIR)/$(am__dirstamp)
-cucumber$(EXEEXT): $(cucumber_OBJECTS) $(cucumber_DEPENDENCIES) 
-	@rm -f cucumber$(EXEEXT)
-	$(LINK) $(cucumber_OBJECTS) $(cucumber_LDADD) $(LIBS)
+txt/$(am__dirstamp):
+	@$(MKDIR_P) txt
+	@: > txt/$(am__dirstamp)
+txt/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) txt/$(DEPDIR)
+	@: > txt/$(DEPDIR)/$(am__dirstamp)
+txt/rk.$(OBJEXT): txt/$(am__dirstamp) txt/$(DEPDIR)/$(am__dirstamp)
+txt/psh.$(OBJEXT): txt/$(am__dirstamp) txt/$(DEPDIR)/$(am__dirstamp)
+arawak$(EXEEXT): $(arawak_OBJECTS) $(arawak_DEPENDENCIES) 
+	@rm -f arawak$(EXEEXT)
+	$(LINK) $(arawak_OBJECTS) $(arawak_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -315,11 +326,13 @@ mostlyclean-compile:
 	-rm -f pan/instruments.$(OBJEXT)
 	-rm -f pan/menus.$(OBJEXT)
 	-rm -f pan/test.$(OBJEXT)
+	-rm -f txt/psh.$(OBJEXT)
+	-rm -f txt/rk.$(OBJEXT)
 
 distclean-compile:
 	-rm -f *.tab.c
 
-include ./$(DEPDIR)/cucumber.Po
+include ./$(DEPDIR)/arawak.Po
 include cmd/$(DEPDIR)/control.Po
 include gen/$(DEPDIR)/dice.Po
 include gen/$(DEPDIR)/mtwist.Po
@@ -333,6 +346,8 @@ include mob/$(DEPDIR)/boat.Po
 include pan/$(DEPDIR)/instruments.Po
 include pan/$(DEPDIR)/menus.Po
 include pan/$(DEPDIR)/test.Po
+include txt/$(DEPDIR)/psh.Po
+include txt/$(DEPDIR)/rk.Po
 
 .c.o:
 	depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.o$$||'`;\
@@ -477,6 +492,8 @@ distclean-generic:
 	-rm -f mob/$(am__dirstamp)
 	-rm -f pan/$(DEPDIR)/$(am__dirstamp)
 	-rm -f pan/$(am__dirstamp)
+	-rm -f txt/$(DEPDIR)/$(am__dirstamp)
+	-rm -f txt/$(am__dirstamp)
 
 maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"
@@ -486,7 +503,7 @@ clean: clean-am
 clean-am: clean-binPROGRAMS clean-generic mostlyclean-am
 
 distclean: distclean-am
-	-rm -rf ./$(DEPDIR) cmd/$(DEPDIR) gen/$(DEPDIR) geo/$(DEPDIR) gfx/$(DEPDIR) mob/$(DEPDIR) pan/$(DEPDIR)
+	-rm -rf ./$(DEPDIR) cmd/$(DEPDIR) gen/$(DEPDIR) geo/$(DEPDIR) gfx/$(DEPDIR) mob/$(DEPDIR) pan/$(DEPDIR) txt/$(DEPDIR)
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
 	distclean-tags
@@ -532,7 +549,7 @@ install-ps-am:
 installcheck-am:
 
 maintainer-clean: maintainer-clean-am
-	-rm -rf ./$(DEPDIR) cmd/$(DEPDIR) gen/$(DEPDIR) geo/$(DEPDIR) gfx/$(DEPDIR) mob/$(DEPDIR) pan/$(DEPDIR)
+	-rm -rf ./$(DEPDIR) cmd/$(DEPDIR) gen/$(DEPDIR) geo/$(DEPDIR) gfx/$(DEPDIR) mob/$(DEPDIR) pan/$(DEPDIR) txt/$(DEPDIR)
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 

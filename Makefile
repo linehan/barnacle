@@ -15,10 +15,10 @@
 
 
 
-pkgdatadir = $(datadir)/CUCUMBER
-pkgincludedir = $(includedir)/CUCUMBER
-pkglibdir = $(libdir)/CUCUMBER
-pkglibexecdir = $(libexecdir)/CUCUMBER
+pkgdatadir = $(datadir)/ARAWAK
+pkgincludedir = $(includedir)/ARAWAK
+pkglibdir = $(libdir)/ARAWAK
+pkglibexecdir = $(libexecdir)/ARAWAK
 am__cd = CDPATH="$${ZSH_VERSION+.}$(PATH_SEPARATOR)" && cd
 install_sh_DATA = $(install_sh) -c -m 644
 install_sh_PROGRAM = $(install_sh) -c
@@ -99,11 +99,11 @@ distuninstallcheck_listfiles = find . -type f -print
 am__distuninstallcheck_listfiles = $(distuninstallcheck_listfiles) \
   | sed 's|^\./|$(prefix)/|' | grep -v '$(infodir)/dir$$'
 distcleancheck_listfiles = find . -type f -print
-ACLOCAL = ${SHELL} /home/hubert/cucumber/missing --run aclocal-1.11
-AMTAR = ${SHELL} /home/hubert/cucumber/missing --run tar
-AUTOCONF = ${SHELL} /home/hubert/cucumber/missing --run autoconf
-AUTOHEADER = ${SHELL} /home/hubert/cucumber/missing --run autoheader
-AUTOMAKE = ${SHELL} /home/hubert/cucumber/missing --run automake-1.11
+ACLOCAL = ${SHELL} /home/hubert/arawak/missing --run aclocal-1.11
+AMTAR = ${SHELL} /home/hubert/arawak/missing --run tar
+AUTOCONF = ${SHELL} /home/hubert/arawak/missing --run autoconf
+AUTOHEADER = ${SHELL} /home/hubert/arawak/missing --run autoheader
+AUTOMAKE = ${SHELL} /home/hubert/arawak/missing --run automake-1.11
 AWK = gawk
 CC = gcc
 CCDEPMODE = depmode=gcc3
@@ -111,7 +111,7 @@ CFLAGS = -g -O2
 CPP = gcc -E
 CPPFLAGS = 
 CYGPATH_W = echo
-DEFS = -DPACKAGE_NAME=\"CUCUMBER\" -DPACKAGE_TARNAME=\"cucumber\" -DPACKAGE_VERSION=\"0.0.2\" -DPACKAGE_STRING=\"CUCUMBER\ 0.0.2\" -DPACKAGE_BUGREPORT=\"jdl@flexagon.homeunix.org\" -DPACKAGE_URL=\"\" -DPACKAGE=\"CUCUMBER\" -DVERSION=\"0.0.2\" -DHAVE_LIBEV=1 -DHAVE_LIBM=1 -DHAVE_LIBMENU=1 -DHAVE_LIBNCURSESW=1 -DHAVE_LIBPANEL=1 -DHAVE_LIBPTHREAD=1 -DSTDC_HEADERS=1 -DHAVE_SYS_TYPES_H=1 -DHAVE_SYS_STAT_H=1 -DHAVE_STDLIB_H=1 -DHAVE_STRING_H=1 -DHAVE_MEMORY_H=1 -DHAVE_STRINGS_H=1 -DHAVE_INTTYPES_H=1 -DHAVE_STDINT_H=1 -DHAVE_UNISTD_H=1 -DHAVE_LOCALE_H=1 -DHAVE_STDDEF_H=1 -DHAVE_STDLIB_H=1 -DHAVE_STRING_H=1 -DHAVE_UNISTD_H=1 -DHAVE_WCHAR_H=1 -DHAVE__BOOL=1 -DHAVE_STDBOOL_H=1 -DHAVE_STDLIB_H=1 -DHAVE_MALLOC=1 -DHAVE_SETLOCALE=1
+DEFS = -DPACKAGE_NAME=\"ARAWAK\" -DPACKAGE_TARNAME=\"arawak\" -DPACKAGE_VERSION=\"0.0.2\" -DPACKAGE_STRING=\"ARAWAK\ 0.0.2\" -DPACKAGE_BUGREPORT=\"jdl@flexagon.homeunix.org\" -DPACKAGE_URL=\"\" -DPACKAGE=\"ARAWAK\" -DVERSION=\"0.0.2\" -DHAVE_LIBEV=1 -DHAVE_LIBM=1 -DHAVE_LIBMENU=1 -DHAVE_LIBNCURSESW=1 -DHAVE_LIBPANEL=1 -DHAVE_LIBPTHREAD=1 -DSTDC_HEADERS=1 -DHAVE_SYS_TYPES_H=1 -DHAVE_SYS_STAT_H=1 -DHAVE_STDLIB_H=1 -DHAVE_STRING_H=1 -DHAVE_MEMORY_H=1 -DHAVE_STRINGS_H=1 -DHAVE_INTTYPES_H=1 -DHAVE_STDINT_H=1 -DHAVE_UNISTD_H=1 -DHAVE_LOCALE_H=1 -DHAVE_STDDEF_H=1 -DHAVE_STDLIB_H=1 -DHAVE_STRING_H=1 -DHAVE_UNISTD_H=1 -DHAVE_WCHAR_H=1 -DHAVE__BOOL=1 -DHAVE_STDBOOL_H=1 -DHAVE_STDLIB_H=1 -DHAVE_MALLOC=1 -DHAVE_SETLOCALE=1
 DEPDIR = .deps
 ECHO_C = 
 ECHO_N = -n
@@ -128,14 +128,14 @@ LDFLAGS =
 LIBOBJS = 
 LIBS = -lpthread -lpanel -lncursesw -lmenu -lm -lev 
 LTLIBOBJS = 
-MAKEINFO = ${SHELL} /home/hubert/cucumber/missing --run makeinfo
+MAKEINFO = ${SHELL} /home/hubert/arawak/missing --run makeinfo
 MKDIR_P = /bin/mkdir -p
 OBJEXT = o
-PACKAGE = CUCUMBER
+PACKAGE = ARAWAK
 PACKAGE_BUGREPORT = jdl@flexagon.homeunix.org
-PACKAGE_NAME = CUCUMBER
-PACKAGE_STRING = CUCUMBER 0.0.2
-PACKAGE_TARNAME = cucumber
+PACKAGE_NAME = ARAWAK
+PACKAGE_STRING = ARAWAK 0.0.2
+PACKAGE_TARNAME = arawak
 PACKAGE_URL = 
 PACKAGE_VERSION = 0.0.2
 PATH_SEPARATOR = :
@@ -143,10 +143,10 @@ SET_MAKE =
 SHELL = /bin/sh
 STRIP = 
 VERSION = 0.0.2
-abs_builddir = /home/hubert/cucumber
-abs_srcdir = /home/hubert/cucumber
-abs_top_builddir = /home/hubert/cucumber
-abs_top_srcdir = /home/hubert/cucumber
+abs_builddir = /home/hubert/arawak
+abs_srcdir = /home/hubert/arawak
+abs_top_builddir = /home/hubert/arawak
+abs_top_srcdir = /home/hubert/arawak
 ac_ct_CC = gcc
 am__include = include
 am__leading_dot = .
@@ -165,7 +165,7 @@ host_alias =
 htmldir = ${docdir}
 includedir = ${prefix}/include
 infodir = ${datarootdir}/info
-install_sh = ${SHELL} /home/hubert/cucumber/install-sh
+install_sh = ${SHELL} /home/hubert/arawak/install-sh
 libdir = ${exec_prefix}/lib
 libexecdir = ${exec_prefix}/libexec
 localedir = ${datarootdir}/locale
