@@ -75,7 +75,12 @@ AUTOMAKE = @AUTOMAKE@
 AWK = @AWK@
 CC = @CC@
 CCDEPMODE = @CCDEPMODE@
-CFLAGS = -Wall -DVERSION=\"$(VERSION)\" -DPROG="\"$(PACKAGE)\""
+#                      |            \
+#         gprof       non-GNU     compile objects in the 
+#           |                      indicated relative paths
+# optimize  | warnings
+# lvl 3 \   |    /
+CFLAGS = -O3 -pg -Wall -DVERSION=\"$(VERSION)\" -DPROG="\"$(PACKAGE)\""
 CPP = @CPP@
 CPPFLAGS = @CPPFLAGS@
 CYGPATH_W = @CYGPATH_W@

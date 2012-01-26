@@ -28,6 +28,9 @@ const wchar_t gfxFOREST[] = L"▁▓▒⤋⟱";
 const wchar_t gfxMTN[] = L"▕▒▓";
 const wchar_t gfxBORDER = L'▔';
 
+const wchar_t gfxSHADOW = L'░';
+const wchar_t gfxWARNPIP = L'⋇';
+
 cchar_t HERO;
 cchar_t OCEAN[4];
 cchar_t SURF0, SURF1, SURF2;
@@ -37,6 +40,7 @@ cchar_t FOREST[5];
 cchar_t MTN[3];
 cchar_t BLANK;
 cchar_t BORDER;
+cchar_t WARNBG, WARNSH, WARNPIP;
 /******************************************************************************/
 void init_gfx_colors(void)
 {
@@ -51,7 +55,12 @@ void init_gfx_colors(void)
         setcchar(&SHORE, &SHORE_GFX,      0, SEA_SHORE, NULL);
 
         setcchar(&BLANK, &gfxBLANK, 0, MENU, NULL);
+
         setcchar(&BORDER, &gfxBORDER, 0, MENU, NULL);
+
+        setcchar(&WARNBG, &gfxBLANK, 0, WARNING, NULL);
+        setcchar(&WARNSH, &gfxBLANK, 0, WARNSHADOW, NULL);
+        setcchar(&WARNPIP, &gfxBLANK, 0, WARNING, NULL);
 
         int i;
         for (i=0; i<8; i++) {

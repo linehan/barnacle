@@ -28,7 +28,8 @@ enum extra_colors {
         WOOD       = 53,
         SHADOW     = 54,
         PALE_BLUE  = 58,
-        OFF_WHITE  = 59
+        OFF_WHITE  = 59,
+        DARK_RED   = 60
 };
 /* FG_BG color pairs; odd ones are swaps of even ones. */
 enum ramp_pairs {
@@ -96,6 +97,8 @@ enum ramp_pairs {
         MONO          = 65,
         LAND          = 66,
         MENU          = 67,
-        MENU_HINT     = 68
+        MENU_HINT     = 68,
+        WARNING       = 69,
+        WARNSHADOW    = 70
 };
 int init_palette(int);

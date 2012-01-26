@@ -1,8 +1,16 @@
 AUTOMAKE_OPTIONS = foreign subdir-objects
-
-CFLAGS=-Wall -DVERSION=\"$(VERSION)\" -DPROG="\"$(PACKAGE)\""
+#                      |            \
+#         gprof       non-GNU     compile objects in the 
+#           |                      indicated relative paths
+# optimize  | warnings
+# lvl 3 \   |    /
+CFLAGS=-O3 -pg -Wall -DVERSION=\"$(VERSION)\" -DPROG="\"$(PACKAGE)\""
 LDFLAGS=-lm -lpthread -lmenu -lpanel -lncursesw -lev
-
+#       /      |        \         |       \       |_____________
+#  math.h      |       menu     panels     \                    \
+#          POSIX     (curses)  (curses)   ncurses with          libev   
+#          threads                        wide character   (event handler)
+#                                         support
 
 bin_PROGRAMS = arawak
 arawak_SOURCES = arawak.c \

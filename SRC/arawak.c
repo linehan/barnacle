@@ -19,6 +19,7 @@
 #include "lib/memmacro.h"
 
 #include "typedefs.h"
+#include "txt/psh.h"
 #include "cmd/control.h"
 #include "gen/dice.h"
 #include "gen/perlin.h"
@@ -104,6 +105,7 @@ int main()
         menus_init();
         simplex_init();
 
+
         /* Graphics */
         ENV *myenv = new_ocean_env();
         highlights_init(myenv);
@@ -119,8 +121,6 @@ int main()
         sem_init(&master_off, 0, 1);
 
         set_wind(__pre__, 4);
-
-        scr_refresh();
 
         /* Main event loop */
         struct ev_loop *mainloop = EV_DEFAULT;

@@ -75,7 +75,12 @@ AUTOMAKE = ${SHELL} /home/hubert/arawak/missing --run automake-1.11
 AWK = gawk
 CC = gcc
 CCDEPMODE = depmode=gcc3
-CFLAGS = -Wall -DVERSION=\"$(VERSION)\" -DPROG="\"$(PACKAGE)\""
+#                      |            \
+#         gprof       non-GNU     compile objects in the 
+#           |                      indicated relative paths
+# optimize  | warnings
+# lvl 3 \   |    /
+CFLAGS = -O3 -pg -Wall -DVERSION=\"$(VERSION)\" -DPROG="\"$(PACKAGE)\""
 CPP = gcc -E
 CPPFLAGS = 
 CYGPATH_W = echo

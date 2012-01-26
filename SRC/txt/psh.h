@@ -14,12 +14,11 @@
                         PROMPT(win); \
                       }
 /* Prepare the ncurses window for text entry */
-#define PROMPT_ON(win) { PROMPT(win);    \
-                         keypad(win, 1); \
+#define PROMPT_ON(win) { keypad(win, 1); \
                          echo();         \
                        }
 /* Return the ncurses window to its previous state. */
-#define PROMPT_OFF(win) { werase(win);    \
+#define PROMPT_OFF(win) { REPROMPT(win);  \
                           keypad(win, 0); \
                           noecho();       \
                         }
@@ -38,7 +37,7 @@
 /* Strings are the horizontal component of sentences. */
 typedef struct strnode {
         char *word;
-        int l;
+        int len;
         struct list_node node;
 } WORD;
 
@@ -47,7 +46,7 @@ typedef struct phrase {
         const char *phrase;
         char terminator;
         int n;
-        int l;
+        int len;
         WORD *w;
         struct list_head *words;
         struct list_node node;
@@ -57,7 +56,7 @@ typedef struct phrase {
 
 typedef struct string_node {
         int n;
-        int l;
+        int len;
         PHRASE *p;
         struct list_head *phraselist;
         int (*nextphrase)(const void *self);
@@ -67,3 +66,5 @@ typedef struct string_node {
 
 PHRASE *new_phrase(const char *input);
 STRING *new_string(void);
+
+int wlisten(WINDOW *win, void (*callback)(void *input));

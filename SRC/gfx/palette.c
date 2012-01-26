@@ -47,7 +47,8 @@ enum extra_colors {
         WOOD       = 53,
         SHADOW     = 54,
         PALE_BLUE  = 58,
-        OFF_WHITE  = 59
+        OFF_WHITE  = 59,
+        DARK_RED   = 60
 };
 /* FG_BG color pairs; odd ones are swaps of even ones. */
 enum ramp_pairs {
@@ -115,7 +116,9 @@ enum ramp_pairs {
         MONO          = 65,
         LAND          = 66,
         MENU          = 67,
-        MENU_HINT     = 68
+        MENU_HINT     = 68,
+        WARNING       = 69,
+        WARNSHADOW    = 70
 
 };
 /******************************************************************************/
@@ -153,6 +156,7 @@ void init_palette(int set)
         /*init_color(SHADOW,   372,  349,  376);*/
         init_color(SHADOW,     400,  372,  412);
         init_color(OFF_WHITE,  831,  827,  780);
+        init_color(DARK_RED,   416,  141,  176);
 
         /* Color pair inits */
         init_pair(BOAT_WHITE, WHITE, SEAGREEN);
@@ -175,4 +179,6 @@ void init_palette(int set)
         init_pair(MONO, C_FG, C_BG);
         init_pair(MENU, DGREY, OFF_WHITE);
         init_pair(MENU_HINT, OFF_WHITE, WHITE);
+        init_pair(WARNING, OFF_WHITE, RED);
+        init_pair(WARNSHADOW, RED, DARK_RED);
 }

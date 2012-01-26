@@ -7,11 +7,16 @@
 #include <stdio.h>
 #include <stdarg.h>
 #include <stdlib.h>
+#include <ncurses.h>
+#include <panel.h>
 #include <wchar.h>
 #include <locale.h>
 #include <string.h>
 
 #include "../lib/llist/list.h"
+#include "../lib/hash/hash.h"
+#include "../gen/dice.h"
+#include "../gen/perlin.h"
 /******************************************************************************/
 #define MAX_PHRASE_LEN 500
 #define MAX_PHRASE_NUM 10
@@ -26,14 +31,13 @@
                         PROMPT(win); \
                       }
 /* Prepare the ncurses window for text entry */
-#define PROMPT_ON(win) { PROMPT(win);       \
-                         keypad(win, TRUE); \
-                         echo();            \
+#define PROMPT_ON(win) { keypad(win, 1); \
+                         echo();         \
                        }
 /* Return the ncurses window to its previous state. */
-#define PROMPT_OFF(win) { werase(win);        \
-                          keypad(win, FALSE); \
-                          noecho();           \
+#define PROMPT_OFF(win) { REPROMPT(win);  \
+                          keypad(win, 0); \
+                          noecho();       \
                         }
 /* Return a pointer to a char array precisely as large as the argument. */
 #define bigas(string) (char *)malloc(strlen(string) * sizeof(char))
@@ -53,7 +57,12 @@
 
 /* Returns 0 (FALSE) if the buffer is blank, i.e., consists of a newline only */
 #define NOT_BLANK(buffer) buffer[0] != '\0' ? 1 : 0;
+
+/* The main input buffer is allocated on the heap */ 
+static char BUFFER[MAX_PHRASE_LEN];
 /******************************************************************************
+ * OVERVIEW -- How psh decomposes user input 
+ *
  * There are two components to a given input string, each represented by its
  * own datatype. The larger is the PHRASE structure, which is a node in a
  * linked list of PHRASEs. A PHRASE contains a given terminator-delimited 
@@ -91,10 +100,10 @@
  * The WORD structure is a simple node in a linked list of WORDs, which holds
  * a null-terminated string in 'word', (the word) and an integer 'l',
  * initialized to the length of the string at 'word'.
- *****************************************************************************/
+ ******************************************************************************/
 typedef struct word_node {
         char *word;
-        int l;
+        int len;
         struct list_node node;
 } WORD;
 /******************************************************************************
@@ -120,7 +129,7 @@ typedef struct phrase_node {
         char *phrase;
         int tp; /* terminal punctuation mark */
         int n;  /* number of words in phrase string */
-        int l;  /* length of phrase string, including whitespace */
+        int len;  /* length of phrase string, including whitespace */
         WORD *w; /* the currently active word */
         struct list_head *wordlist;
         struct list_node node;
@@ -144,13 +153,14 @@ typedef struct phrase_node {
  ******************************************************************************/
 typedef struct string_node {
         int n;
-        int l;
+        int len;
         PHRASE *p;
         struct list_head *phraselist;
         int (*nextphrase)(const void *self);
         int (*prevphrase)(const void *self);
         int (*unspool)(const void *self);
 } STRING;
+
 /******************************************************************************
  * This is the function which will be pointed to by the method 'nextword' in
  * a PHRASE structure. It accepts the phrase structure as its argument, through
@@ -232,7 +242,7 @@ int prev_phrase(const void *string)
  *            this method. Otherwise, your list will have a wormhole to 
  *            the wild side where this node used to be!
  ******************************************************************************/
-void unspool_string(const void *string)
+int unspool_string(const void *string)
 {
         /* Cast the void pointer */
         STRING *str = (STRING *)string;
@@ -260,6 +270,7 @@ void unspool_string(const void *string)
                 free(str->phraselist);
         if (str != NULL)
                 free(str);
+        return 1;
 }
 /******************************************************************************
  * Accepts an input string and initializes a new PHRASE structure to house
@@ -270,12 +281,13 @@ PHRASE *new_phrase(char *input)
         PHRASE *ph = malloc(sizeof(PHRASE));
 
         ph->n = 0;
-        ph->l = strlen(input);
-        ph->phrase = malloc(ph->l * sizeof(char));
+        ph->len = strlen(input);
+        ph->phrase = malloc(ph->len * sizeof(char));
         strcpy(ph->phrase, input);
         ph->w = NULL;
-        ph->tp = input[ph->l-1]; /* note the terminal (ending) punctuation */
+        ph->tp = input[ph->len-1]; /* note the terminal (ending) punctuation */
 
+        /* Allocate and initialize wordlist head */
         LIST_HEAD_NEW(ph->wordlist);
 
         /* Attach the methods to the function pointers in PHRASE. */
@@ -292,8 +304,8 @@ PHRASE *new_phrase(char *input)
              word = strtok_r(NULL, " ", &save))
         {
                 WORD *new = malloc(sizeof(WORD));
-                            new->l = strlen(word);
-                            new->word = malloc(new->l * sizeof(char));
+                            new->len = strlen(word);
+                            new->word = malloc(new->len * sizeof(char));
                             strcpy(new->word, word);
                 ADD_WORD(new, ph);
                 ph->n =+ 1; /* Increment the number of words in the PHRASE */
@@ -308,12 +320,11 @@ STRING *new_string(void)
         STRING *str = malloc(sizeof(STRING));
 
         str->n = 0;
-        str->l = 0;
+        str->len = 0;
         str->p = NULL;
 
-        /* Initialize phraselist head */
-        str->phraselist = malloc(sizeof(struct list_head));
-        list_head_init(str->phraselist);
+        /* Allocate and initialize phraselist head */
+        LIST_HEAD_NEW(str->phraselist);
 
         /* Assign methods */
         str->nextphrase = &next_phrase;
@@ -323,4 +334,77 @@ STRING *new_string(void)
         return str;
 }
 
+/******************************************************************************
+ * Opens a command prompt to receive user input, optionally sending it to
+ * a callback function to be processed. Each loop first gathers a "peek"
+ * character to determine whether the user is entering a command or simply
+ * typing, and takes some appropriate action. When a full line is entered,
+ * a new PHRASE node is initialized for that line of text, and this node is
+ * added to the STRING linked list.
+ ******************************************************************************/
+int wlisten(WINDOW *win, void (*callback)(void *input))
+{
+        short peek;
+        STRING *str = new_string();
 
+        PROMPT_ON(win);
+        PROMPT(win);
+        while ((peek = wgetch(win)) != '`') {
+                if ((peek == KEY_UP)) {
+                       /* As long as the user keeps pressing KEY_UP,
+                        * don't call ungetch(), but cycle backwards
+                        * through the phraselist and print each phrase
+                        * on the prompt. */
+                        do {    REPROMPT(win);
+                                if (str->nextphrase(str))
+                                        wprintw(win, "%s ", str->p->phrase);
+                        } while ((peek = wgetch(win)) == KEY_UP);
+                       /* Since the last peek was the one which broke the
+                        * do loop, it follows that it's probably actual
+                        * input that belongs in the input stream, so that's
+                        * where we send it. */
+                        ungetch(peek);
+                       /* Next, we feed the phrase we've selected back into
+                        * the input stream as well. This is an important
+                        * point -- although we printed this phrase in the
+                        * do loop above, the line buffer cannot see it. The
+                        * line buffer consists entirely of characters from
+                        * an input stream opened during a call to wgetch()
+                        * or wgetstr(), et al.
+                        *
+                        * The function ungetch() places its argument in the 
+                        * input stream, and there it sits until another 
+                        * function like wgetch() opens the input stream and 
+                        * captures it, along with any other chars that have 
+                        * accumulated, as though the user had typed them in 
+                        * almost instantaneously. */
+                        if (str->p != NULL) {
+                                int i = (str->p->len);
+                                while (i--) ungetch(str->p->phrase[i]);
+                        }
+                       /* Now we can proceed normally. */
+                }
+                else ungetch(peek);
+                REPROMPT(win);
+               /* Open the input string and receive a string of length
+                * MAX_PHRASE_LEN in the buffer. Because the function
+                * wants to get a *string*, it will loiter at the input
+                * stream until it receives a newline. */
+                wgetnstr(win, BUFFER, MAX_PHRASE_LEN);
+               /* As long as the buffer (the line) wasn't empty, create
+                * a new PHRASE node for it and send the node to the
+                * processing function. Once the processing function returns
+                * successfully, go ahead and add the node to the phraselist. */
+                if (BUFFER[0] != '\0') {
+                        PHRASE *ph = new_phrase(BUFFER);
+                        callback(ph);
+                        ADD_PHRASE(ph, str);
+                }
+               /* Erase the prompt and loop. */
+                REPROMPT(win);
+        }
+        PROMPT_OFF(win);
+       /* Unspool the STRING we've been working with. */
+        str->unspool(str);
+        return 1;
+}

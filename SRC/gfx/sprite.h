@@ -7,5 +7,6 @@ extern cchar_t MTN[3];
 extern cchar_t OCEAN[4];
 extern cchar_t BLANK;
 extern cchar_t BORDER;
+extern cchar_t WARNBG, WARNSH, WARNPIP;
 
 void init_gfx_colors(void);
