@@ -52,9 +52,8 @@ enum ids { __bg__ = 0,
            __fg__ = 1,
            __an__ = 2,
            __hi__ = 3,
-           __rw__ = 4
+           __rw__ = 4,
 };
-
 /* A structure that bundles all the window dimensions */
 typedef struct dimension_t {
         int h;  /* window height */
@@ -74,23 +73,37 @@ typedef struct environment_t {
         sem_t  *sem;
 } ENV;
 
-/* A node in the windowset */
 typedef struct win_wad {
         int id;
-        int z;
         WINDOW *window;
-        WINDOW *rw;
         struct list_node node; 
 } WNODE;
 
-/* A node in the graphics wad */
-typedef struct gfx_wad {
+typedef struct graphics_node {
         int id;
-        PANEL *pan;
         DIMS   dim;
+        PANEL *pan;
+        WNODE *W;
         struct list_head *wins;
         struct list_node node;
+        int (*nextw)(const void *self);
+        int (*prevw)(const void *self);
+        int (*step)(const void *self);
 } GNODE;
+
+typedef struct map_plate {
+        sem_t *sem;
+        int id;
+        int h;
+        int w;
+        GNODE *G;
+        GNODE *BG;
+        struct list_head *gfx; /* Terrain graphics */
+        struct list_node node;
+        int (*nextg)(const void *self);
+        int (*prevg)(const void *self);
+        int (*stepf)(const void *self);
+} PLATE;
 
 /* A mobile data type containing some object */
 typedef struct mob_t {
@@ -105,22 +118,16 @@ void gfx_init(void);
 void scr_refresh(void);
 void vrt_refresh(void);
 
-ENV *new_ocean_env(void);
-ENV *new_blank_env(void);
-void step_all_env(ENV *env);
+PLATE *new_plate(int type);
 
-GNODE *new_gfx(int id, int h, int w, int y0, int x0, int n);
+GNODE *new_gnode(int id, int h, int w, int y0, int x0, int n);
 void   add_gfx(GNODE *node, struct list_head *wad);
-GNODE *find_gnode(struct list_head *head, int id);
-GNODE *next_gnode(ENV *env);
 
-WNODE *find_wnode(GNODE *gfx, int id);
-WNODE *next_wnode(GNODE *gfx);
-
-MOB *new_mob(void *ptr, ENV *env, int h, int w, int y0, int x0);
+MOB *new_mob(void *ptr, PLATE *pl, int h, int w, int y0, int x0);
 void move_mob(MOB *mob, int dir);
 
-int hit_test(ENV *env, int y, int x);
+int hit_test(PLATE *pl, int y, int x);
+cchar_t *bg_tile(int type);
 
 
 

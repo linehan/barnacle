@@ -271,13 +271,13 @@ void nominate_boat(MOB *mob)
         _BOAT = mob;
 }
 /* Initialize and create a new boat MOB */
-MOB *new_boat(ENV *env)
+MOB *new_boat(PLATE *pl)
 {
         BOAT *boat = MALLOC(BOAT);
         if (boat == NULL) 
                 perror ("BOAT was not allocated properly!");
 
-        MOB *mob = new_mob(boat, env, 2, 4, 0, 0);
+        MOB *mob = new_mob(boat, pl, 2, 4, 0, 0);
 
         WINDOW *win = panel_window(mob->pan);
         wbkgrnd(win, &OCEAN[0]);

@@ -1,3 +1,3 @@
 void checkterm(void);
 
-void terminal_init(void);
+int terminal_check(void);

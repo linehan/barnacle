@@ -15,6 +15,10 @@
 #include "gfx.h"
 #include "palette.h"
 /******************************************************************************/
+enum tiletype { __blank__ = 0,
+                __ocean__ = 1
+              };
+
 const wchar_t HERO_GFX = L'ж';
 const wchar_t gfxOCEAN[] = L"◟◝◞◜";
 /*const wchar_t WAVE_FLOW_GFX = L'◞';*/
@@ -41,6 +45,7 @@ cchar_t MTN[3];
 cchar_t BLANK;
 cchar_t BORDER;
 cchar_t WARNBG, WARNSH, WARNPIP;
+cchar_t PLAIN;
 /******************************************************************************/
 void init_gfx_colors(void)
 {
@@ -55,6 +60,7 @@ void init_gfx_colors(void)
         setcchar(&SHORE, &SHORE_GFX,      0, SEA_SHORE, NULL);
 
         setcchar(&BLANK, &gfxBLANK, 0, MENU, NULL);
+        setcchar(&PLAIN, &gfxBLANK, 0, COLOR_PAIR(WHITE), NULL);
 
         setcchar(&BORDER, &gfxBORDER, 0, MENU, NULL);
 
@@ -72,4 +78,15 @@ void init_gfx_colors(void)
         for (i=0; i<3; i++) {
                 setcchar(&MTN[i], &gfxMTN[i], 0, LAND, NULL);
         }
+}
+cchar_t *bg_tile(int type)
+{
+        switch (type) {
+        case __blank__:
+                break;
+        case __ocean__:
+                return &OCEAN[0];
+                break;
+        }
+        return NULL;
 }

@@ -11,18 +11,25 @@
 #define PASS wprintw(SYSWIN, "[PASS]\n")
 #define FAIL wprintw(SYSWIN, "[FAIL]\n")
 
-static char * const XTERMS[] = {"xterm-256color","xterm-new","xterm-utf8","xtermc"};
+static char const *XTERM_MODE = "xterm-256color";
+static char const *RXVT_MODE = "rxvt-unicode-256color";
 
-void terminal_init(void)
+int terminal_check(void)
 {
         signed int *status = malloc(sizeof(signed int));
         int i = 0;
         char *tname = termname();
         if ((strcmp(tname, "xterm") == 0)) {
-                do { setupterm(XTERMS[i++], 1, status);
-                } while ((status==0) || (i>=4));
+                speak_error_mono("\n\tHey! We don't serve their kind here!\n\n"
+                                 "\tWhat?\n\n"
+                                 "\tYour pathetic terminal modes! They'll have"
+                                 " to wait until the devs catch up to"
+                                 " rxvt-unicode!");
+                return 0;
+                /*do { setupterm(XTERMS[i++], 1, status);*/
+                /*} while ((status==0) || (i>=4));*/
         }
-        else initscr();
+        return 1;
 }
 
 void checkterm(void)
@@ -31,9 +38,10 @@ void checkterm(void)
         char *lname = longname();
         int baud = baudrate();
 
+        wprintw(SYSWIN, "%s\n\n", lname);
         wprintw(SYSWIN, "%s\n", tname);
         wprintw(SYSWIN, "%d baud\n\n", baud);
-        wprintw(SYSWIN, "%s\n\n", lname);
+
 
         wprintw(SYSWIN, "Can INS and DEL chars?\t");
         if (has_ic()) PASS;

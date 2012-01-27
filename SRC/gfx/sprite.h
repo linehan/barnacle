@@ -8,5 +8,11 @@ extern cchar_t OCEAN[4];
 extern cchar_t BLANK;
 extern cchar_t BORDER;
 extern cchar_t WARNBG, WARNSH, WARNPIP;
+extern cchar_t PLAIN;
+
+enum tiletype { __blank__ = 0,
+                __ocean__ = 1
+              };
 
 void init_gfx_colors(void);
+cchar_t *bg_tile(int type);

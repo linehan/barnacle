@@ -107,7 +107,7 @@ void menus_init(void)
         ADD_TO_HASHTABLE(CMD, "roll", NULL, &diceroll_cb);
         ADD_TO_HASHTABLE(CMD, "perlin", NULL, &perlin_cb );
         ADD_TO_HASHTABLE(CMD, "clear", DIAGNOSTIC_WIN, &clear_cb);
-        ADD_TO_HASHTABLE(CMD, "checkterm", NULL, &checkterm);
+        ADD_TO_HASHTABLE(CMD, "term", NULL, &checkterm);
         ADD_TO_HASHTABLE(CMD, "syspan", NULL, &toggle_syspan);
 }
 /******************************************************************************

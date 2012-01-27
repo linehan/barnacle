@@ -79,3 +79,16 @@ void speak_error(const char *error)
         hide_panel(ERROR_PAN);
         werase(ERROR_WIN);
 }
+
+void speak_error_mono(const char *error)
+{
+        wcolor_set(ERROR_WIN, COLOR_BLACK, NULL);
+        wbkgrnd(ERROR_WIN, &PLAIN);
+        mvwprintw(ERROR_WIN, 1, 2, "%s\n", error);
+        /*show_panel(ERRSH_PAN);*/
+        show_panel(ERROR_PAN);
+        while (wgetch(ERROR_WIN) != '\n');
+        /*hide_panel(ERRSH_PAN);*/
+        hide_panel(ERROR_PAN);
+        werase(ERROR_WIN);
+}

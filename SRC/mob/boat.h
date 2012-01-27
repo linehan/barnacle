@@ -2,7 +2,7 @@ int boat_init(void);
 
 void nominate_boat(MOB *mob);
 
-MOB *new_boat(ENV *env);
+MOB *new_boat(PLATE *pl);
 
 void sync_boat(void);
 

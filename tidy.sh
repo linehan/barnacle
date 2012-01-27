@@ -18,7 +18,7 @@ msg=0
 if [ -e ./SRC/cucumber.o ]; then
         msg=1
         echo -e "${LRED}T${LCYAN}I${LGREEN}G${LBLUE}T${YELLOW}E${LMAGENTA}N${LRED}'${WHITE}UP${DEFAULT}"
-        make clean
+        make distclean
 fi
 
 # If the build directory is not clean

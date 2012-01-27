@@ -69,9 +69,9 @@ void tumbler(EV_P_ ev_timer *w, int revents)
 void do_animate(EV_P_ ev_timer *w, int revents)
 {
         OO_time *bun = container_of(w, OO_time, w);
-        ENV *myenv = (ENV *)bun->data;
+        PLATE *mypl = (PLATE *)bun->data;
 
-        step_all_env(myenv);
+        mypl->stepf(mypl);
 
         if ((sem_trywait(bun->sem) == -1))
                 ev_timer_again(EV_DEFAULT, w);
@@ -87,12 +87,14 @@ int main()
 
         /* ncurses */
         initscr();
-        terminal_init();
         start_color();
+
         cbreak();			  
         noecho();
         keypad(stdscr, TRUE);
         curs_set(0); /* hide cursor */
+
+
 
         /* my inits */
         init_palette(0);
@@ -106,15 +108,16 @@ int main()
         menus_init();
         simplex_init();
 
+        terminal_check();
 
         /* Graphics */
-        ENV *myenv = new_ocean_env();
-        highlights_init(myenv);
-        gen_terrain(myenv, 'm', LINES-40, 20, 15, COLS-30); 
-        gen_terrain(myenv, 'm', 10, 20, LINES-13, 30); 
-        gen_terrain(myenv, 'm', 13, 10, LINES-35, 3); 
+        PLATE *mypl = new_plate(__ocean__);
+        highlights_init(mypl);
+        gen_terrain(mypl, 'm', LINES-40, 20, 15, COLS-30); 
+        gen_terrain(mypl, 'm', 10, 20, LINES-13, 30); 
+        gen_terrain(mypl, 'm', 13, 10, LINES-35, 3); 
 
-        MOB *boat = new_boat(myenv);
+        MOB *boat = new_boat(mypl);
         nominate_boat(boat);
 
         /* master off switch */
@@ -142,7 +145,7 @@ int main()
         OO_time compass;
         ev_init(&(compass.w), &tumbler);
         compass.w.repeat = .1;
-        compass.data = myenv;
+        compass.data = mypl;
         ev_timer_again(mainloop, &(compass.w));
         compass.sem = &master_off;
 
@@ -150,7 +153,7 @@ int main()
         OO_time animate_waves;
         ev_init(&(animate_waves.w), &do_animate);
         animate_waves.w.repeat = 2.5;
-        animate_waves.data = myenv;
+        animate_waves.data = mypl;
         ev_timer_again(mainloop, &(animate_waves.w));
         animate_waves.sem = &master_off;
 
