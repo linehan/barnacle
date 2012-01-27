@@ -20,43 +20,34 @@
 /******************************************************************************/
 #define MAX_PHRASE_LEN 500
 #define MAX_PHRASE_NUM 10
-
-#define IFMATCH(str1, str2) if ((memcmp(str1, str2, strlen(str2)) == 0))
-#define ELMATCH(str1, str2) else if ((memcmp(str1, str2, strlen(str2)) == 0))
-
-/* Print the prompt character on the desired window */
-#define PROMPT(win) mvwprintw(win, 1, 0, " > ")
-/* Erase WINDOW win and re-print the prompt string */
-#define REPROMPT(win) { werase(win); \
-                        PROMPT(win); \
-                      }
 /* Prepare the ncurses window for text entry */
-#define PROMPT_ON(win) { keypad(win, 1); \
-                         echo();         \
-                       }
+#define PROMPT_ON(win)  \
+        keypad(win, 1); \
+        echo();         \
+/* Print the prompt character on the desired window */
+#define PROMPT(win) \
+        mvwprintw(win, 1, 0, " > ")
+/* Erase WINDOW win and re-print the prompt string */
+#define REPROMPT(win) \
+        werase(win);  \
+        PROMPT(win)
 /* Return the ncurses window to its previous state. */
-#define PROMPT_OFF(win) { REPROMPT(win);  \
-                          keypad(win, 0); \
-                          noecho();       \
-                        }
-/* Return a pointer to a char array precisely as large as the argument. */
-#define bigas(string) (char *)malloc(strlen(string) * sizeof(char))
-/* Initialize an existing pointer to an array of char to the size of the
- * argument string. */
-#define fit(dest, source) dest = bigas(source);
-/* Allocate memory for and copy string 'source' to the (uninitialized)
- * char pointer 'dest' */
-#define dup(dest, source) { fit(dest, source); strcpy(dest, source); }
-
-#define ADD_PHRASE(ph, str) list_add(str->phraselist, &(ph->node))
-#define ADD_WORD(w, ph) list_add(ph->wordlist, &(w->node))
-
+#define PROMPT_OFF(win) \
+        REPROMPT(win);  \
+        keypad(win, 0); \
+        noecho()
+/* Add a PHRASENODE or a WORDNODE to their respective lists heads */
+#define ADD_PHRASE(ph, str) \
+        list_add(str->phraselist, &(ph->node))
+#define ADD_WORD(w, ph) \
+        list_add(ph->wordlist, &(w->node))
 /* Allocate, check, and initialize a struct list_head pointer */
-#define LIST_HEAD_NEW(head) head = (struct list_head *)malloc(sizeof(struct list_head)); \
-                            list_head_init(head) \
-
+#define LIST_HEAD_NEW(head)                                          \
+        head = (struct list_head *)malloc(sizeof(struct list_head)); \
+        list_head_init(head)                                         \
 /* Returns 0 (FALSE) if the buffer is blank, i.e., consists of a newline only */
-#define NOT_BLANK(buffer) buffer[0] != '\0' ? 1 : 0;
+#define NOT_BLANK(buffer) \
+        buffer[0] != '\0' ? 1 : 0
 
 /* The main input buffer is allocated on the heap */ 
 static char BUFFER[MAX_PHRASE_LEN];

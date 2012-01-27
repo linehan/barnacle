@@ -24,6 +24,9 @@ WINDOW *ERRSH_WIN;
 PANEL *ERROR_PAN;
 PANEL *ERRSH_PAN;
 
+WINDOW *SYSWIN;
+PANEL  *SYSPAN;
+
 static int counter = 0;
 /******************************************************************************/
 /* Create the diagnostic window */
@@ -31,6 +34,9 @@ void test_init(void)
 {
 	DIAGNOSTIC_WIN = newwin((LINES-30), (COLS/3), 15, 0);
         DIAGNOSTIC_PAN = new_panel(DIAGNOSTIC_WIN);
+
+	SYSWIN = newwin(30, COLS-(COLS/2), ((LINES/2)-15), (COLS/2)/2);
+        SYSPAN = new_panel(SYSWIN);
 
 	ERROR_WIN = newwin(10, COLS-(COLS/2), ((LINES/2)-5), (COLS/2)/2);
 	/*ERRSH_WIN = newwin(10, COLS-(COLS/2), ((LINES/2)-5)+1, ((COLS/2)/2)+1);*/
@@ -41,6 +47,7 @@ void test_init(void)
 
         hide_panel(DIAGNOSTIC_PAN);
         hide_panel(ERROR_PAN);
+        hide_panel(SYSPAN);
         /*hide_panel(ERRSH_PAN);*/
 }
 /* Toggle the diagnostic panel's visibility */
@@ -50,6 +57,14 @@ void toggle_dpanel(void)
                 show_panel(DIAGNOSTIC_PAN);
         else 
                 hide_panel(DIAGNOSTIC_PAN);
+}
+
+void toggle_syspan(void)
+{
+        if ((panel_hidden(SYSPAN)))                 
+                show_panel(SYSPAN);
+        else 
+                hide_panel(SYSPAN);
 }
 
 void speak_error(const char *error)

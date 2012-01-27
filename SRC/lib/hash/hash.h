@@ -134,6 +134,7 @@ typedef struct hash_node {
         char *string;
         uint32_t key;
         int nargs;
+        void *data;
         void (*cb)(const void *);
         struct list_node node;
 } HASHNODE;
@@ -165,18 +166,20 @@ static inline void init_new_hashtable(HASHTABLE *new)
  * Initialize and append a new HASHNODE entry in the specified HASHTABLE 
  * structure.
  ******************************************************************************/
-#define ADD_TO_HASHTABLE(H, string, cb) \
-        hashtable_add(H, string, cb)
-static inline void hashtable_add(HASHTABLE *H, const char *string, void *cb)
+#define ADD_TO_HASHTABLE(H, str, data, cb) \
+        hashtable_add(H, str, data, cb)
+static inline void hashtable_add(HASHTABLE *H, const char *str, void *data, void *cb)
 {
         HASHNODE *new = (HASHNODE *)malloc(sizeof(HASHNODE));
 
         /* Copy the reference string to the hash node. */
-            int len = strlen(string);
+            int len = strlen(str);
         new->string = malloc(len * sizeof(char));
-        strncpy(new->string, string, len);
+        strncpy(new->string, str, len);
 
-        new->key = H->hash(string, len); /* Record the hash value */
+
+        new->key = H->hash(str, len); /* Record the hash value */
+        new->data = data;
         new->cb = cb;
 
         /* Add the new node to the HASHTABLE provided. */

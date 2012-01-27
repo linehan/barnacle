@@ -48,7 +48,7 @@ enum extra_colors {
         SHADOW     = 54,
         PALE_BLUE  = 58,
         OFF_WHITE  = 59,
-        DARK_RED   = 60
+        DARK_RED   = 82
 };
 /* FG_BG color pairs; odd ones are swaps of even ones. */
 enum ramp_pairs {

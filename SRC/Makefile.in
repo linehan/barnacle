@@ -49,9 +49,9 @@ am_arawak_OBJECTS = arawak.$(OBJEXT) cmd/control.$(OBJEXT) \
 	gen/dice.$(OBJEXT) gen/mtwist.$(OBJEXT) gen/perlin.$(OBJEXT) \
 	geo/weather.$(OBJEXT) geo/terrain.$(OBJEXT) \
 	gfx/palette.$(OBJEXT) gfx/sprite.$(OBJEXT) gfx/gfx.$(OBJEXT) \
-	mob/boat.$(OBJEXT) pan/instruments.$(OBJEXT) \
-	pan/menus.$(OBJEXT) pan/test.$(OBJEXT) txt/rk.$(OBJEXT) \
-	txt/psh.$(OBJEXT)
+	gfx/term.$(OBJEXT) mob/boat.$(OBJEXT) \
+	pan/instruments.$(OBJEXT) pan/menus.$(OBJEXT) \
+	pan/test.$(OBJEXT) txt/rk.$(OBJEXT) txt/psh.$(OBJEXT)
 arawak_OBJECTS = $(am_arawak_OBJECTS)
 arawak_LDADD = $(LDADD)
 DEFAULT_INCLUDES = -I.@am__isrc@
@@ -169,6 +169,7 @@ arawak_SOURCES = arawak.c \
                    gfx/palette.c \
                    gfx/sprite.c \
                    gfx/gfx.c \
+                   gfx/term.c \
                    mob/boat.c \
                    pan/instruments.c \
                    pan/menus.c \
@@ -287,6 +288,7 @@ gfx/palette.$(OBJEXT): gfx/$(am__dirstamp) \
 gfx/sprite.$(OBJEXT): gfx/$(am__dirstamp) \
 	gfx/$(DEPDIR)/$(am__dirstamp)
 gfx/gfx.$(OBJEXT): gfx/$(am__dirstamp) gfx/$(DEPDIR)/$(am__dirstamp)
+gfx/term.$(OBJEXT): gfx/$(am__dirstamp) gfx/$(DEPDIR)/$(am__dirstamp)
 mob/$(am__dirstamp):
 	@$(MKDIR_P) mob
 	@: > mob/$(am__dirstamp)
@@ -327,6 +329,7 @@ mostlyclean-compile:
 	-rm -f gfx/gfx.$(OBJEXT)
 	-rm -f gfx/palette.$(OBJEXT)
 	-rm -f gfx/sprite.$(OBJEXT)
+	-rm -f gfx/term.$(OBJEXT)
 	-rm -f mob/boat.$(OBJEXT)
 	-rm -f pan/instruments.$(OBJEXT)
 	-rm -f pan/menus.$(OBJEXT)
@@ -347,6 +350,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@gfx/$(DEPDIR)/gfx.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@gfx/$(DEPDIR)/palette.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@gfx/$(DEPDIR)/sprite.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@gfx/$(DEPDIR)/term.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@mob/$(DEPDIR)/boat.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@pan/$(DEPDIR)/instruments.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@pan/$(DEPDIR)/menus.Po@am__quote@

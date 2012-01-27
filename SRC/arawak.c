@@ -86,7 +86,8 @@ int main()
         setlocale(LC_ALL,"");
 
         /* ncurses */
-        initscr();		
+        initscr();
+        terminal_init();
         start_color();
         cbreak();			  
         noecho();

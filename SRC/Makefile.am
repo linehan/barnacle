@@ -23,6 +23,7 @@ arawak_SOURCES = arawak.c \
                    gfx/palette.c \
                    gfx/sprite.c \
                    gfx/gfx.c \
+                   gfx/term.c \
                    mob/boat.c \
                    pan/instruments.c \
                    pan/menus.c \
