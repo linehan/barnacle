@@ -13,6 +13,7 @@
 #include <panel.h>
 #include <math.h>
 
+#include "perlin.h"
 #include "../pan/test.h"
 #include "dice.h"
 /******************************************************************************/
@@ -79,6 +80,11 @@
  * |_\/__\/__\/__\/__\/_| 
  *
  ******************************************************************************/
+
+
+/* Check if initialized */
+static int PERLIN_READY = 0;
+
 static signed int GRADIENT3[12][3] = { {1,1,0},{-1,1,0},{1,-1,0},{-1,-1,0},
                                        {1,0,1},{-1,0,1},{1,0,-1},{-1,0,-1},
                                        {0,1,1},{0,-1,1},{0,1,-1},{0,-1,-1}  };
@@ -122,7 +128,7 @@ void simplex_init(void)
         for(i=0; i<256; i++) {
                 PERM_ORDERED[i] = i;
         }
-
+        PERLIN_READY = 1;
 }
 
 /* Shuffle the permutation array and re-apply the permutation mask */
@@ -227,6 +233,35 @@ double simplex_noise(double xin, double yin)
         /* Add contributions from each corner to get the final noise value */
         /* The result is then scaled to return values in the interval [-1,1] */
         return (70.0 * (n0 + n1 + n2));
+}
+
+PERLIN *get_perlin_map(int h, int w)
+{
+        if ((PERLIN_READY))
+                perm_shuffle();
+        else
+                return 0;
+
+        PERLIN *noise = (PERLIN *)malloc(sizeof(PERLIN));
+        
+        noise->h = h;
+        noise->w = w;
+
+        int i, j;
+
+        noise->box = malloc(w * sizeof(double *));
+        for (i=0; i<w; i++) {
+                noise->box[i] = malloc(h * sizeof(double));
+        }
+
+        /* Fill the array with the noise values generated */
+        for (i=0; i<w; i++) {
+                for (j=0; j<h; j++) {
+                        noise->box[i][j] = simplex_noise(i, j); 
+                }
+        }
+        wprintw(BIGWIN, "h = %d\n w = %d\n len = %d\n\n", noise->h, noise->w, noise->len);
+        return noise;
 }
         
 void test_simplex_noise(double sea_level)

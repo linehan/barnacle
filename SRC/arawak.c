@@ -18,12 +18,13 @@
 #include "lib/llist/list.h"
 #include "lib/memmacro.h"
 
+#include "pan/menus.h"
 #include "typedefs.h"
 #include "txt/psh.h"
 #include "cmd/control.h"
 #include "gen/dice.h"
-#include "gen/perlin.h"
 #include "gfx/gfx.h"
+#include "gen/perlin.h"
 #include "gfx/palette.h"
 #include "gfx/sprite.h"
 #include "geo/terrain.h"
@@ -31,7 +32,7 @@
 #include "mob/boat.h"
 #include "pan/instruments.h"
 #include "pan/test.h"
-#include "pan/menus.h"
+
 /******************************************************************************/
 /* The callback function for the sailing event watcher. Manages the wind
  * and the sailboat's response to it. Checks a semaphore which is also
@@ -46,10 +47,8 @@ void blow_wind(EV_P_ ev_timer *w, int revents)
         /*int strength = get_wind_str();*/
         /*w->repeat = (float)(strength*0.10);*/
 
-        if ((sem_trywait(bun->sem) == -1))
-                ev_timer_again(EV_DEFAULT, w);
-        else
-                ev_break(EV_A_ EVBREAK_ALL);
+        if ((sem_trywait(bun->sem) == -1)) ev_timer_again(EV_DEFAULT, w);
+        else                               ev_break(EV_A_ EVBREAK_ALL);
 }
 void tumbler(EV_P_ ev_timer *w, int revents)
 {
@@ -61,10 +60,8 @@ void tumbler(EV_P_ ev_timer *w, int revents)
         draw_compass();
         shift_highlights();
 
-        if ((sem_trywait(bun->sem) == -1))
-                ev_timer_again(EV_DEFAULT, w);
-        else
-                ev_break(EV_A_ EVBREAK_ALL);
+        if ((sem_trywait(bun->sem) == -1)) ev_timer_again(EV_DEFAULT, w);
+        else                               ev_break(EV_A_ EVBREAK_ALL);
 }
 void do_animate(EV_P_ ev_timer *w, int revents)
 {
@@ -73,10 +70,8 @@ void do_animate(EV_P_ ev_timer *w, int revents)
 
         mypl->stepf(mypl);
 
-        if ((sem_trywait(bun->sem) == -1))
-                ev_timer_again(EV_DEFAULT, w);
-        else
-                ev_break(EV_A_ EVBREAK_ALL);
+        if ((sem_trywait(bun->sem) == -1)) ev_timer_again(EV_DEFAULT, w);
+        else                               ev_break(EV_A_ EVBREAK_ALL);
 }
 
 /* Day-toh-nah */
@@ -93,8 +88,6 @@ int main()
         noecho();
         keypad(stdscr, TRUE);
         curs_set(0); /* hide cursor */
-
-
 
         /* my inits */
         init_palette(0);
@@ -116,6 +109,8 @@ int main()
         gen_terrain(mypl, 'm', LINES-40, 20, 15, COLS-30); 
         gen_terrain(mypl, 'm', 10, 20, LINES-13, 30); 
         gen_terrain(mypl, 'm', 13, 10, LINES-35, 3); 
+
+        new_gen_terrain(mypl, 'o');
 
         MOB *boat = new_boat(mypl);
         nominate_boat(boat);

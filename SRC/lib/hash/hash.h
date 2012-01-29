@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdint.h>
+#include <string.h>
 #include "dep/list.h"
 /******************************************************************************
  * Paul Hsieh's blazing fast hash function.                             
@@ -158,7 +159,6 @@ static inline void init_new_hashtable(HASHTABLE *new)
 {
         new->size = 0;
         new->hash = &fasthash;
-
         new->tbl = (struct list_head *)malloc(sizeof(struct list_head));
         list_head_init(new->tbl);
 }

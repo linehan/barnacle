@@ -17,10 +17,10 @@
 #include "../lib/hash/hash.h"
 #include "../gfx/palette.h"
 #include "../gfx/sprite.h"
-#include "../gen/perlin.h"
 #include "../txt/psh.h"
 #include "../gen/dice.h"
 #include "../gfx/term.h"
+#include "../gen/perlin.h"
 #include "test.h"
 #include "menus.h"
 
@@ -109,6 +109,7 @@ void menus_init(void)
         ADD_TO_HASHTABLE(CMD, "clear", DIAGNOSTIC_WIN, &clear_cb);
         ADD_TO_HASHTABLE(CMD, "term", NULL, &checkterm);
         ADD_TO_HASHTABLE(CMD, "syspan", NULL, &toggle_syspan);
+        ADD_TO_HASHTABLE(CMD, "workbox", NULL, &toggle_dpanel);
 }
 /******************************************************************************
  * This function parses each phrase in the context of the basic psh "shell",

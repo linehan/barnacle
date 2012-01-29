@@ -101,7 +101,7 @@ void *iolisten(EV_P_ ev_io *w, int revents)
                         order_boat('r', 0);
                         break;
                 case 'd':
-                        toggle_dpanel(0);
+                        toggle_bigpan();
                         break;
                 case '`':
                         toggle_mm();
