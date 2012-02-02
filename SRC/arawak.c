@@ -32,7 +32,6 @@
 #include "mob/boat.h"
 #include "pan/instruments.h"
 #include "pan/test.h"
-
 /******************************************************************************/
 /* The callback function for the sailing event watcher. Manages the wind
  * and the sailboat's response to it. Checks a semaphore which is also
@@ -58,7 +57,7 @@ void tumbler(EV_P_ ev_timer *w, int revents)
         seek_heading();
         seek_prevailing();
         draw_compass();
-        shift_highlights();
+        /*shift_highlights();*/
 
         if ((sem_trywait(bun->sem) == -1)) ev_timer_again(EV_DEFAULT, w);
         else                               ev_break(EV_A_ EVBREAK_ALL);
@@ -105,12 +104,15 @@ int main()
 
         /* Graphics */
         PLATE *mypl = new_plate(__ocean__);
-        highlights_init(mypl);
-        gen_terrain(mypl, 'm', LINES-40, 20, 15, COLS-30); 
-        gen_terrain(mypl, 'm', 10, 20, LINES-13, 30); 
-        gen_terrain(mypl, 'm', 13, 10, LINES-35, 3); 
+        /*highlights_init(mypl);*/
+        /*gen_terrain(mypl, 'm', LINES-40, 20, 15, COLS-30);*/
+        /*gen_terrain(mypl, 'm', 10, 20, LINES-13, 30);*/
+        /*gen_terrain(mypl, 'm', 13, 10, LINES-35, 3);*/
 
-        new_gen_terrain(mypl, 'o');
+        /*new_gen_terrain(mypl, 'o');*/
+
+        /*connected_components(mypl, 0);*/
+        simpledraw(mypl);
 
         MOB *boat = new_boat(mypl);
         nominate_boat(boat);

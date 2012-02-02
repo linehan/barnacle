@@ -219,6 +219,8 @@ PLATE *new_plate(int type)
         new->h  = LINES;
         new->w  = COLS;
 
+        cchar_t *tile = bg_tile(type);
+
         /* Populate the PERLIN package */
         new->noise = get_perlin_map(LINES, COLS);
 
@@ -235,18 +237,25 @@ PLATE *new_plate(int type)
         new->sem = (sem_t *)malloc(sizeof(sem_t));
         sem_init(new->sem, 0, 1);
 
+        GNODE *trimg = new_gnode(__an__, LINES, COLS, 0, 0, 2);
+                       wbkgrnd(trimg->W->window, tile);
+                       trimg->nextw(trimg);
+                       wbkgrnd(trimg->W->window, tile);
+                       bottom_panel(trimg->pan);
        /* Create a new background GNODE, set its background cchar_t, and
         * place it at the bottom of the panel stack. */
         GNODE *bg = new_gnode(__bg__, LINES, COLS, 0, 0, 1);
-                    cchar_t *tile = bg_tile(type);
-                    if ((tile != NULL))
-                            wbkgrnd(bg->W->window, tile);
+                    wbkgrnd(bg->W->window, tile);
                     bottom_panel(bg->pan);
 
        /* Add the background GNODE to the GNODE ring, and reference it
         * at *BG, for quick access. */
+        list_add(new->gfx, &trimg->node);
+        new->trim = trimg;
+
         list_add(new->gfx, &bg->node);
         new->BG = bg;
+
 
         /* Advance the GNODE ring, so that *G points to something. */
         new->nextg(new);
@@ -286,7 +295,7 @@ int hit_test(PLATE *pl, int y, int x)
 
         sem_wait(pl->sem);
                 list_for_each(pl->gfx, tmp, node) {
-                        if ((tmp->id != __bg__)) {
+                        if ((tmp->id != __bg__)&&(tmp->id != __an__)) {
                                 if (((x >= tmp->dim.x0) && 
                                     (x <= (tmp->dim.x0 + tmp->dim.w)) &&
                                     (y >= tmp->dim.y0) &&

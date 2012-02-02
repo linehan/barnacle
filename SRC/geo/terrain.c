@@ -46,6 +46,12 @@ PLATE *hi; /* Temporary highlight environment list_head */
  * 'edge' panel being animated with two frames. This was an early attempt to do
  * something that might have been superceded by gen_terrain().
  ******************************************************************************/
+
+void draw_atw(WINDOW *win, int x, int y, char tile)
+{
+        mvwadd_wch(win, x, y, get_tile(tile));
+}
+
 void new_terrain(struct list_head *head, char type, int h, int w, int y0, int x0)
 {
         /* Apply landscape style */
@@ -67,107 +73,6 @@ void new_terrain(struct list_head *head, char type, int h, int w, int y0, int x0
                 list_add(head, &mant->node);
                 list_add(head, &core->node);
         }
-}
-/******************************************************************************
- * Generates a GNODE containing a pseudo-random terrane, and adds it to the
- * supplied PLATE. 
- *
- * The supplied dimensions of height and width define the bounding box which
- * contains the terrane, not the actual dimensions of the terrane itself, as
- * seen on the screen. In particular, when there is a transition between
- * the terrane and the background, such as a coast, or a z-level, the terrane
- * will measure at most (width-2) and (height-2). The composition of the
- * bounded area is up to the "random" aspect, and the same bounding box will
- * produce many different-looking shapes, of course.
- *
- * The option 'type' defines the tileset to be used.
- ******************************************************************************/
-void gen_terrain(PLATE *pl, char type, int h, int w, int y0, int x0)
-{
-        GNODE *gen   = new_gnode(__an__, h, w, y0, x0, 2);
-        WNODE *genw1 = gen->W;
-        gen->nextw(gen);
-        WNODE *genw2 = gen->W;
-
-        cchar_t *tile[2], *anim[2], *bg; /* Terrain graphics */
-
-        switch (type) {
-        case 'm':
-                tile[0] = &MTN[1];
-                tile[1] = &MTN[2];
-                anim[0] = &OCEAN[2];
-                anim[1] = &OCEAN[3];
-                bg = &OCEAN[0];
-        }
-        int i, j, wid[h], ofs[h];
-        int rnoise = 8; /* Determines the width */
-        int lnoise = 4; /* Determins the left offset */
-        int vnoise = 1; /* How "blocky" is the terrain. */
-        /* Supply a background */
-        wbkgrnd(genw1->window, bg);
-        wbkgrnd(genw2->window, bg);
-        vrt_refresh();
-        /* Generate offset array. To prevent an unconvincing appearance, it is
-         * necessary that any increase in the offset be maintained for at least
-         * one additional unit of height. */
-        for (i=0; i<h; i++) {
-                wid[i] = (i==0)        ? w-rnoise          : ((w-roll_fair(rnoise)));
-                ofs[i] = (lnoise != 0) ? roll_fair(lnoise) : lnoise;    
-                /* Here there is a complicated-looking check to duplicate a line's
-                 * width and offset if either its width (with offset factored in) is
-                 * less than the previous line, or its offset is greater. This is to
-                 * prevent the landform from drawing in a way that strains the illusion
-                 * of perspective. Tweak the test a little and you'll see what I mean.
-                 *
-                 * Note that the array pointer is moved along as well, so that at
-                 * the end of the while loop, the for loop continues from the end
-                 * of the "chunk". */
-                if (((wid[i]-ofs[i-1] <= wid[i-1]+ofs[i]))||(ofs[i]>ofs[i-1])) {
-                        j = vnoise;
-                        while (j-->0) {
-                                wid[i+1] = wid[i];
-                                ofs[i+1] = ofs[i];
-                                i++;
-                        }
-                }
-        }
-        int wSUB2 = w-2;
-        int hSUB2 = h-2;
-
-        /* These must be set every loop */
-        int iADD1, iSUB1, iADD2; 
-        int ofsADD1, widSUB1, widADDofs;
-
-        for (i=0; i<(h-2); i++) {
-                /* Ensure that the maximum extent of the land is at most
-                 * one less than the total window width, so that a shore
-                 * graphic can be drawn to its right. */
-                wid[i] = (wid[i] > (wSUB2-ofs[i])) ? (wSUB2-ofs[i]) : wid[i];
-                /* Pre-compute repeated values to trim 
-                 * some arithmetic in the loop. (19 ops -> 5 ops) */
-                iADD1 = i+1;
-                iADD2 = i+2;
-                ofsADD1 = ofs[i]+1;
-                widSUB1 = wid[i]-1;
-                widADDofs = wid[i]+ofs[i];
-                /* Draw the "top" of the land */
-                mvwhline_set(genw1->window, i, ofsADD1, tile[0], widSUB1);
-                mvwhline_set(genw2->window, i, ofsADD1, tile[0], widSUB1);
-                /* Draw the "drop" of the land */
-                mvwhline_set(genw1->window, iADD1, ofsADD1, tile[1], widSUB1);
-                mvwhline_set(genw2->window, iADD1, ofsADD1, tile[1], widSUB1);
-                /* Draw the seashore to the left of the "drop" */
-                mvwadd_wch(genw1->window, iADD1, ofs[i], anim[0]);
-                mvwadd_wch(genw2->window, iADD1, ofs[i], anim[1]);
-                /* Draw the seashore to the right of the "drop" */
-                mvwadd_wch(genw1->window, iADD1, widADDofs, anim[0]);
-                mvwadd_wch(genw2->window, iADD1, widADDofs, anim[1]);
-                /* Draw the seashore across the bottom of the "drop" */
-                mvwhline_set(genw1->window, iADD2, ofs[i], anim[0], wid[i]);
-                mvwhline_set(genw2->window, iADD2, ofs[i], anim[1], wid[i]);
-                vrt_refresh();
-        }
-        list_add(pl->gfx, &gen->node);
 }
 /* Allocate a new environment to store the terrain highlights */
 void highlights_init(PLATE *pl)
@@ -247,176 +152,98 @@ void shift_highlights(void)
         }
         scr_refresh();
 }
-        
-        
-typedef struct blob_t { 
-        int parent; 
-        int n; /* the number of members in the blob */
-        int y0;
-        int x0;
-        int y;
-        int x;
-        struct list_node node;
-} BLOB;
 
-/*{{{1*/
-/*int merge_sets(BLOB *a, BLOB *b)*/
-/*{*/
-        /*[> Whichever has the least members rides bitch <]*/
-        /*BLOB *dom = (a->n   >  b->n) ? a : b;*/
-        /*BLOB *sub = (dom->n == b->n) ? a : b;*/
-
-        /*[> Add elements of sub to dom <]*/
-        /*dom->n += sub->n;*/
-        /*[> Adjust ymin, xmin, xmax (ymax is always progressing)<]*/
-        /*dom->y0 = (dom->y0 > sub->y0) ? sub->y0 : dom->y0;*/
-        /*dom->x0 = (dom->x0 > sub->x0) ? sub->x0 : dom->x0;*/
-        /*dom->x = (dom->x < sub->x) ? sub->x : dom->x;*/
-
-        /*[> free the subsumed data <]*/
-        /*free(sub);*/
-
-        /*[> Set the 'sub' set's pointer to the 'dom' set <]*/
-        /*sub = dom;*/
-
-        /*return dom->blob_id;*/
-/*}*/
-
-/*BLOB *new_blob(int x)*/
-/*{*/
-        /*BLOB *new = malloc(sizeof(BLOB));*/
-        /*new->parent = x;*/
-        /*new->rank = 0;*/
-
-        /*return new;*/
-/*}*/
-
-/*BLOB *look_up(int x)*/
-/*{*/
-        /*if (blob[x]->parent != x)*/
-                /*blob[x] = look_up(blob[x]->parent);*/
-        /*return blob[x];*/
-/*}*/
-
-
-
-/*void union_blob(BLOB *a, BLOB *b)*/
-/*{*/
-
-
-
- /*function Union(x, y)*/
-     /*xRoot := Find(x)*/
-     /*yRoot := Find(y)*/
-     /*if xRoot == yRoot*/
-         /*return*/
-
-     /*if xRoot.rank < yRoot.rank*/
-         /*xRoot.parent := yRoot*/
-     /*else if xRoot.rank > yRoot.rank*/
-         /*yRoot.parent := xRoot*/
-     /*else*/
-         /*yRoot.parent := xRoot*/
-         /*xRoot.rank := xRoot.rank + 1*/
-/*}}}1*/
-
-void merge_um(BLOB *a, BLOB *b)
+void draw_chunk(PLATE *pl, int y, int x, int side)
 {
-        /*a->n += b->n;*/
-        a->x0 = (a->x0 > b->x0) ? b->x0 : a->x0;
-        a->y0 = (a->y0 > b->y0) ? b->y0 : a->y0;
+        /* The new terrane gets its own GNODE that will be strung
+         * on to the GNODE ring of the PLATE. */
+        GNODE *gen   = new_gnode(__an__, side, side, y, x, 2);
+        WNODE *genw1 = gen->W;
+        gen->nextw(gen);
+        WNODE *genw2 = gen->W;
 
-        b = a;
+        /* The shore effects will be drawn on the 'trim' GNODE, ensuring
+         * that it always stays at a z-level below that of the new terrane. */
+        WNODE *se1 = pl->trim->W;
+        pl->trim->nextw(pl->trim);
+        WNODE *se2 = pl->trim->W;
+
+        /* Supply a background */
+        wbkgrnd(genw1->window, &OCEAN[0]);
+        wbkgrnd(genw2->window, &OCEAN[0]);
+        vrt_refresh();
+
+        int i, j;
+         for (j=0; j<side; j++) {
+
+                if (j != 0) {
+                        /* Shore effects on the left side of the terrane */
+                        mvwadd_wch(se1->window, y+j, x-1, &OCEAN[3]);
+                        mvwadd_wch(se2->window, y+j, x-1, &OCEAN[2]);
+                }
+
+                for (i=0; i<side; i++) {
+
+                        /* The body of the terrane */
+                        mvwadd_wch(genw1->window, j, i, &MTN[1]);
+                        mvwadd_wch(genw2->window, j, i, &MTN[1]);
+
+                        vrt_refresh();
+                } 
+
+                if (j != 0) {
+                        /* Shore effects on the right side of the terrane */
+                        mvwadd_wch(se1->window, y+j, x+i, &OCEAN[3]);
+                        mvwadd_wch(se2->window, y+j, x+i, &OCEAN[2]);
+                }
+                vrt_refresh();
+
+        }
+        /* The "drop" effect on the bottom of the terrane */
+        mvwhline_set(genw1->window, j-1, 0, &MTN[2], side);
+        mvwhline_set(genw2->window, j-1, 0, &MTN[2], side);
+
+        /* Shore effects on the bottom of the terrane */
+        mvwhline_set(se1->window, y+j, x-1, &OCEAN[3], side+2);
+        mvwhline_set(se2->window, y+j, x-1, &OCEAN[2], side+2);
+
+        vrt_refresh();
+
+        list_add(pl->gfx, &gen->node);
 }
 
 
-void new_gen_terrain(PLATE *pl, char type)
+void simpledraw(PLATE *pl)
 {
-
-        wprintw(BIGWIN, "LATER...\nh = %d\n w = %d\n len = %d\n\n", 
-                        pl->noise->h, pl->noise->w, pl->noise->len);
-
-        int x, y;
-        /* The width of one row of the plate */
-        int w = pl->noise->w;
+        int x, y, i, j;
         int h = pl->noise->h;
+        int w = pl->noise->w;
 
-        int tot = 0;
-        int lft = 0;
+        /* The PLATE's Perlin map */
+        double **pmap = pl->noise->box;
+        /* A seed cell scans the surrounding chunk^2 cells */
+        int chunk = 3; 
+        /* Bias of the flip when scanning a chunk */
+        double bias = 1.0;
+        /* Threshhold value for the Perlin map */
+        double seed = 0.93;
+        /* Initial jiggle factor */
+        signed int jiggle[2] = {chunk/2, chunk/-2};
 
-        int *buf = calloc(w, sizeof(int));
-
-        pl->noise->bound = -0.8;
-
-        LIST_HEAD(bhead);
-
-        /* A lookup table (array of pointers to BLOBS) */
-        /*BLOB *blob[w*h];*/
-
+        /* Scan the character array in row-major order */
         for (y=0; y<h; y++) {
-                lft = 0;
-                for (x=0; x<w; x++) {
+        for (x=0; x<w; x++) {
+                /* If the cell's noise value exceeds seed thresh. */
+                if (pmap[y][x] > seed) {
 
-                        /* If it's land */
-                        if (pl->noise->box[y][x] > pl->noise->bound) {
+                        /* Jiggle that chunk */
+                         chunk += jiggle[flip_biased(0.4)];
+                         chunk = (chunk <= 1) ? 2 : chunk;
 
-                                /* If we have no neighbors W or N, we are a new set */
-                                if ((lft == 0) && (buf[x] == 0)) {
-                                        tot += 1;
-
-                                        blob[tot] = malloc(sizeof(BLOB));
-                                        blob[tot] = &(BLOB){tot, 1, y, x, y, x};
-
-                                        buf[x] = tot;
-
-                                        lft = tot;
-                                } 
-                                /* Neither are zero but they're both different */
-                                else if ((lft!=0)&&(buf[x]!=0)&&(lft!=buf[x])) {
-
-                                        merge_um(blob[lft], blob[(buf[x])]);
-                                        
-                                        /*blob[lft]->n += 1;*/
-                                        blob[lft]->x = x;
-
-                                        buf[x] = lft;
-                                }
-
-                                /* If the one to the west is a set */                
-                                else if (lft != 0) {
-
-                                        /*blob[lft]->n += 1;*/
-                                        blob[lft]->x = x;
-
-                                        buf[x] = lft;
-
-                                }
-                                /* If the one on the north is a set */
-                                else if (buf[x] != 0) {
-
-                                        /*blob[buf[x]]->n += 1;*/
-                                        blob[buf[x]]->y += 1;
-
-                                        lft = buf[x];
-                                }
-                        }
-                        /* If it isn't land */
-                        else {
-                                lft = 0;                 
-                                buf[x] = 0;
-                         }
+                         draw_chunk(pl, y, x, chunk);
                 }
         }
-        wprintw(BIGWIN, "Height: %d\n"
-                        "Width:  %d\n"
-                        "%d blobs, after %d cells scanned.\n", 
-                        pl->noise->h, pl->noise->w, tot, w*h); 
+        }
 }
 
-
-
-
-        
-
-        
 

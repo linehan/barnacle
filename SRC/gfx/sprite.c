@@ -16,7 +16,9 @@
 #include "palette.h"
 /******************************************************************************/
 enum tiletype { __blank__ = 0,
-                __ocean__ = 1
+                __ocean__ = 1,
+                __sand__  = 2,
+                __mtn__   = 3
               };
 
 const wchar_t HERO_GFX = L'ж';
@@ -79,6 +81,24 @@ void init_gfx_colors(void)
                 setcchar(&MTN[i], &gfxMTN[i], 0, LAND, NULL);
         }
 }
+
+
+cchar_t *get_tile(int type)
+{
+        switch (type) {
+        case __ocean__:
+                return &OCEAN[0];
+                break;
+        case __mtn__:
+                return &MTN[1];
+                break;
+        case __sand__:
+                return &SAND;
+                break;
+        }
+        return NULL;
+}
+
 cchar_t *bg_tile(int type)
 {
         switch (type) {

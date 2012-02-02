@@ -21,6 +21,7 @@ enum roles { __bg__ = 0, /* the background */
  * of int values.
  ******************************************************************************/
 typedef struct dimension_t {
+        int id; /* if needed */
         int h;  /* height */
         int w;  /* width  */
         int y0; /* initial y position */
@@ -116,6 +117,7 @@ typedef struct map_plate {
         int w;
         GNODE *G;
         GNODE *BG;
+        GNODE *trim;
         PERLIN *noise;
         struct list_head *gfx; /* Terrain graphics */
         struct list_node node;

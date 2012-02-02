@@ -11,8 +11,11 @@ extern cchar_t WARNBG, WARNSH, WARNPIP;
 extern cchar_t PLAIN;
 
 enum tiletype { __blank__ = 0,
-                __ocean__ = 1
+                __ocean__ = 1,
+                __sand__  = 2,
+                __mtn__   = 3
               };
 
 void init_gfx_colors(void);
 cchar_t *bg_tile(int type);
+cchar_t *get_tile(int type);

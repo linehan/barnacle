@@ -246,21 +246,23 @@ PERLIN *get_perlin_map(int h, int w)
         
         noise->h = h;
         noise->w = w;
+        noise->len = w*h;
+        noise->bound = 0.0;
 
-        int i, j;
+        int x, y;
 
-        noise->box = malloc(w * sizeof(double *));
-        for (i=0; i<w; i++) {
-                noise->box[i] = malloc(h * sizeof(double));
+        noise->box = malloc(h * sizeof(double *));
+        for (y=0; y<h; y++) {
+                noise->box[y] = malloc(w * sizeof(double));
         }
 
         /* Fill the array with the noise values generated */
-        for (i=0; i<w; i++) {
-                for (j=0; j<h; j++) {
-                        noise->box[i][j] = simplex_noise(i, j); 
+        for (y=0; y<h; y++) {
+                for (x=0; x<w; x++) {
+                        noise->box[y][x] = simplex_noise(x, y); 
                 }
         }
-        wprintw(BIGWIN, "h = %d\n w = %d\n len = %d\n\n", noise->h, noise->w, noise->len);
+        /*wprintw(BIGWIN, "h = %d\n w = %d\n len = %d\n\n", noise->h, noise->w, noise->len);*/
         return noise;
 }
         

@@ -30,6 +30,3 @@ arawak_SOURCES = arawak.c \
                    pan/test.c \
                    txt/rk.c \
                    txt/psh.c
-
-
-

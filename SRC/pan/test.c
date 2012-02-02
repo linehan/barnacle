@@ -38,7 +38,7 @@ void test_init(void)
 	DIAGNOSTIC_WIN = newwin((LINES-30), (COLS/3), 15, 0);
         DIAGNOSTIC_PAN = new_panel(DIAGNOSTIC_WIN);
 
-        BIGWIN = newwin((LINES-6), (COLS-6), 3, 3);
+        BIGWIN = newwin(LINES, COLS, 0, 0);
         BIGPAN = new_panel(BIGWIN);
 
 	SYSWIN = newwin(30, COLS-(COLS/2), ((LINES/2)-15), (COLS/2)/2);
