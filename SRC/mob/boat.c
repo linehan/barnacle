@@ -277,7 +277,7 @@ MOB *new_boat(PLATE *pl)
         if (boat == NULL) 
                 perror ("BOAT was not allocated properly!");
 
-        MOB *mob = new_mob(boat, pl, 2, 4, 0, 0);
+        MOB *mob = new_mob(boat, pl, 2, 4, 3, 3);
 
         WINDOW *win = panel_window(mob->pan);
         wbkgrnd(win, &OCEAN[0]);

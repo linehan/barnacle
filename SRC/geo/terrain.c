@@ -82,9 +82,6 @@ void highlights_init(PLATE *pl)
         xnoise = 50;
         ynoise = 80;
 
-        hi = new_plate(__blank__);
-
-        cchar_t *windowtile = bg_tile(__ocean__);
         for (i=0; i<5; i++) {
 
                  w = roll_fair(wnoise);
@@ -93,24 +90,22 @@ void highlights_init(PLATE *pl)
 
                 GNODE *new = new_gnode(__hi__, 1, w, y0, x0, 1);
 
-                wbkgrnd(new->W->window, windowtile);
-                bottom_panel(new->pan);
-                list_add(hi->gfx, &new->node);
+                wbkgrnd(new->W->window, &OCEAN[2]);
+                list_add(pl->hi, &new->node);
                 vrt_refresh();
         }
-        /*bottom_panel(env->bgp);*/
 }
 /* Move terrain highlights in a direction determined by the current wind
  * direction. */
-void shift_highlights(void)
+void shift_highlights(PLATE *pl)
 {
         int wind = get_wind(__dir__);
 
         GNODE *tmp;
-        list_for_each(hi->gfx, tmp, node) {
-                if ((((tmp->dim.x0)+(tmp->dim.w)) > COLS)) 
+        list_for_each(pl->hi, tmp, node) {
+                if ((((tmp->dim.x0)+(tmp->dim.w)) > COLS))
                         tmp->dim.x0 = 0;
-                if (((tmp->dim.x0) < 0)) 
+                if (((tmp->dim.x0) < 0))
                         tmp->dim.x0 = COLS-(tmp->dim.w);
                 if ((((tmp->dim.y0)+(tmp->dim.h)) > LINES))
                         tmp->dim.y0 = 0;
@@ -121,7 +116,7 @@ void shift_highlights(void)
                 case NORTH:
                         tmp->dim.y0 = (tmp->dim.y0+1);
                         break;
-                case NE: 
+                case NE:
                         tmp->dim.y0 = (tmp->dim.y0+1);
                         tmp->dim.x0 = (tmp->dim.x0-1);
                         break;
@@ -153,14 +148,14 @@ void shift_highlights(void)
         scr_refresh();
 }
 
-void draw_chunk(PLATE *pl, int y, int x, int side)
+void draw_chunk(PLATE *pl, DIMS *d)
 {
         /* The new terrane gets its own GNODE that will be strung
          * on to the GNODE ring of the PLATE. */
-        GNODE *gen   = new_gnode(__an__, side, side, y, x, 2);
-        WNODE *genw1 = gen->W;
-        gen->nextw(gen);
-        WNODE *genw2 = gen->W;
+        GNODE *top  = new_gnode(__top__, d->w, d->w, d->y0, d->x0, 1);
+        GNODE *drp  = new_gnode(__drp__, 1,    d->w, d->y,  d->x0, 1);
+        WNODE *topw = top->W;
+        WNODE *drpw = drp->W;
 
         /* The shore effects will be drawn on the 'trim' GNODE, ensuring
          * that it always stays at a z-level below that of the new terrane. */
@@ -169,81 +164,90 @@ void draw_chunk(PLATE *pl, int y, int x, int side)
         WNODE *se2 = pl->trim->W;
 
         /* Supply a background */
-        wbkgrnd(genw1->window, &OCEAN[0]);
-        wbkgrnd(genw2->window, &OCEAN[0]);
+        wbkgrnd(topw->window, &OCEAN[0]);
+        wbkgrnd(drpw->window, &MTN[2]);
         vrt_refresh();
 
-        int i, j;
-         for (j=0; j<side; j++) {
+        int shoreWEST = d->x0 - 1;
+        int shoreBOTW = d->w + 2;
+        int shoreEAST = d->x;
 
-                if (j != 0) {
-                        /* Shore effects on the left side of the terrane */
-                        mvwadd_wch(se1->window, y+j, x-1, &OCEAN[3]);
-                        mvwadd_wch(se2->window, y+j, x-1, &OCEAN[2]);
-                }
+        int i, j, yPLUSj;
 
-                for (i=0; i<side; i++) {
-
+        for (j=0; j<(d->w); j++) {
+                /* Shore effects on the left side of the terrane */
+                yPLUSj = (d->y0+j+1);
+                mvwadd_wch(se1->window, yPLUSj, shoreWEST, &OCEAN[3]);
+                mvwadd_wch(se2->window, yPLUSj, shoreWEST, &OCEAN[2]);
+                /* Shore effects on the left side of the terrane */
+                mvwadd_wch(se1->window, yPLUSj, shoreEAST, &OCEAN[3]);
+                mvwadd_wch(se2->window, yPLUSj, shoreEAST, &OCEAN[2]);
+                vrt_refresh();
+                for (i=0; i<(d->w); i++) {
                         /* The body of the terrane */
-                        mvwadd_wch(genw1->window, j, i, &MTN[1]);
-                        mvwadd_wch(genw2->window, j, i, &MTN[1]);
-
+                        mvwadd_wch(topw->window, j, i, &MTN[1]);
                         vrt_refresh();
                 } 
-
-                if (j != 0) {
-                        /* Shore effects on the right side of the terrane */
-                        mvwadd_wch(se1->window, y+j, x+i, &OCEAN[3]);
-                        mvwadd_wch(se2->window, y+j, x+i, &OCEAN[2]);
-                }
-                vrt_refresh();
-
         }
-        /* The "drop" effect on the bottom of the terrane */
-        mvwhline_set(genw1->window, j-1, 0, &MTN[2], side);
-        mvwhline_set(genw2->window, j-1, 0, &MTN[2], side);
-
         /* Shore effects on the bottom of the terrane */
-        mvwhline_set(se1->window, y+j, x-1, &OCEAN[3], side+2);
-        mvwhline_set(se2->window, y+j, x-1, &OCEAN[2], side+2);
-
+        mvwhline_set(se1->window, yPLUSj+1, d->x0-1, &OCEAN[3], d->w+2);
+        mvwhline_set(se2->window, yPLUSj+1, d->x0-1, &OCEAN[2], d->w+2);
         vrt_refresh();
 
-        list_add(pl->gfx, &gen->node);
+        list_add(pl->gfx, &top->node);
+        list_add(pl->gfx, &drp->node);
 }
 
 
+void unfuck_perspective(PLATE *pl)
+{
+        GNODE *tmp;
+        list_for_each(pl->gfx, tmp, node) {
+                if (tmp->id == __top__)
+                        top_panel(tmp->pan);
+        }
+}
+                
 void simpledraw(PLATE *pl)
 {
         int x, y, i, j;
         int h = pl->noise->h;
         int w = pl->noise->w;
+        pl->setme = 1;
 
         /* The PLATE's Perlin map */
         double **pmap = pl->noise->box;
         /* A seed cell scans the surrounding chunk^2 cells */
-        int chunk = 3; 
-        /* Bias of the flip when scanning a chunk */
-        double bias = 1.0;
+        int chunk = 6; 
         /* Threshhold value for the Perlin map */
-        double seed = 0.93;
-        /* Initial jiggle factor */
-        signed int jiggle[2] = {chunk/2, chunk/-2};
+        double seed = 0.95;
+
+        DIMS *d = malloc(sizeof(DIMS));
 
         /* Scan the character array in row-major order */
         for (y=0; y<h; y++) {
         for (x=0; x<w; x++) {
+
                 /* If the cell's noise value exceeds seed thresh. */
                 if (pmap[y][x] > seed) {
 
-                        /* Jiggle that chunk */
-                         chunk += jiggle[flip_biased(0.4)];
-                         chunk = (chunk <= 1) ? 2 : chunk;
+                        d->y0 = y;
+                        d->x0 = x;
 
-                         draw_chunk(pl, y, x, chunk);
+                        /* Jiggle that chunk */
+                        if (flip_biased(0.56))   chunk += chunk/3;
+                        else                     chunk -= chunk/3;
+
+                        if ((chunk < 1)) continue;
+
+                        d->w = chunk;
+                        d->h = chunk;
+                        d->x = d->x0 + d->w;
+                        d->y = d->y0 + d->w;
+                        
+                        draw_chunk(pl, d);
                 }
         }
         }
+        unfuck_perspective(pl);
 }
-
-

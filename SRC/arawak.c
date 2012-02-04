@@ -57,7 +57,7 @@ void tumbler(EV_P_ ev_timer *w, int revents)
         seek_heading();
         seek_prevailing();
         draw_compass();
-        /*shift_highlights();*/
+        shift_highlights(GLOBE->P);
 
         if ((sem_trywait(bun->sem) == -1)) ev_timer_again(EV_DEFAULT, w);
         else                               ev_break(EV_A_ EVBREAK_ALL);
@@ -65,9 +65,8 @@ void tumbler(EV_P_ ev_timer *w, int revents)
 void do_animate(EV_P_ ev_timer *w, int revents)
 {
         OO_time *bun = container_of(w, OO_time, w);
-        PLATE *mypl = (PLATE *)bun->data;
 
-        mypl->stepf(mypl);
+        GLOBE->P->stepf(GLOBE->P);
 
         if ((sem_trywait(bun->sem) == -1)) ev_timer_again(EV_DEFAULT, w);
         else                               ev_break(EV_A_ EVBREAK_ALL);
@@ -103,18 +102,10 @@ int main()
         terminal_check();
 
         /* Graphics */
-        PLATE *mypl = new_plate(__ocean__);
-        /*highlights_init(mypl);*/
-        /*gen_terrain(mypl, 'm', LINES-40, 20, 15, COLS-30);*/
-        /*gen_terrain(mypl, 'm', 10, 20, LINES-13, 30);*/
-        /*gen_terrain(mypl, 'm', 13, 10, LINES-35, 3);*/
+        WORLD *map = new_world(__ocean__, 3, 3);
+        simpledraw(map->P);
 
-        /*new_gen_terrain(mypl, 'o');*/
-
-        /*connected_components(mypl, 0);*/
-        simpledraw(mypl);
-
-        MOB *boat = new_boat(mypl);
+        MOB *boat = new_boat(map->P);
         nominate_boat(boat);
 
         /* master off switch */
@@ -142,7 +133,6 @@ int main()
         OO_time compass;
         ev_init(&(compass.w), &tumbler);
         compass.w.repeat = .1;
-        compass.data = mypl;
         ev_timer_again(mainloop, &(compass.w));
         compass.sem = &master_off;
 
@@ -150,7 +140,6 @@ int main()
         OO_time animate_waves;
         ev_init(&(animate_waves.w), &do_animate);
         animate_waves.w.repeat = 2.5;
-        animate_waves.data = mypl;
         ev_timer_again(mainloop, &(animate_waves.w));
         animate_waves.sem = &master_off;
 
