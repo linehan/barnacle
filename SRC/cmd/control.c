@@ -23,6 +23,7 @@ Bindings and actions for the user's keyboard input.
 #include "../gfx/gfx.h"
 #include "../gfx/palette.h"
 #include "../geo/weather.h"
+#include "../mob/mob.h"
 #include "../mob/boat.h"
 #include "../pan/menus.h"
 /******************************************************************************/

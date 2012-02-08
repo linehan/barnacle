@@ -1,8 +1,8 @@
-int boat_init(void);
+int init_boat(void);
 
 void nominate_boat(MOB *mob);
 
-MOB *new_boat(PLATE *pl);
+MOB *new_boat();
 
 void sync_boat(void);
 

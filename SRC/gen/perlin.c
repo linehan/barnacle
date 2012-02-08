@@ -11,11 +11,13 @@
 
 #include <ncurses.h>
 #include <panel.h>
-#include <math.h>
+#include <wchar.h>
+#include <locale.h>
+#include <string.h>
 
-#include "perlin.h"
 #include "../pan/test.h"
 #include "dice.h"
+#include "../lib/constants.h"
 /******************************************************************************/
 /* Perlin Noise
  * The basic idea behind Perlin noise is best explained in two dimensions.
@@ -122,7 +124,7 @@ void fy_shuffle(int *source, int *shuffle, int n)
 }
 
 /* Initialize the ordered permutation array. */
-void simplex_init(void)
+void init_simplex(void)
 {
         int i;
         for(i=0; i<256; i++) {
@@ -235,37 +237,28 @@ double simplex_noise(double xin, double yin)
         return (70.0 * (n0 + n1 + n2));
 }
 
-PERLIN *get_perlin_map(int h, int w)
+double **gen_perlin_map(int h, int w)
 {
-        if ((PERLIN_READY))
-                perm_shuffle();
-        else
-                return 0;
+        if ((PERLIN_READY))     perm_shuffle();
+        else                    return 0;
 
-        PERLIN *noise = (PERLIN *)malloc(sizeof(PERLIN));
-        
-        noise->h = h;
-        noise->w = w;
-        noise->len = w*h;
-        noise->bound = 0.0;
+        int row, col;
 
-        int x, y;
-
-        noise->box = malloc(h * sizeof(double *));
-        for (y=0; y<h; y++) {
-                noise->box[y] = malloc(w * sizeof(double));
+        double **pmap = malloc(h * sizeof(double *));
+        for (row=0; row<h; row++) {
+                pmap[row] = malloc(w * sizeof(double));
         }
 
         /* Fill the array with the noise values generated */
-        for (y=0; y<h; y++) {
-                for (x=0; x<w; x++) {
-                        noise->box[y][x] = simplex_noise(x, y); 
+        for (row=0; row<h; row++) {
+                for (col=0; col<w; col++) {
+                        pmap[row][col] = simplex_noise(col, row); 
                 }
         }
         /*wprintw(BIGWIN, "h = %d\n w = %d\n len = %d\n\n", noise->h, noise->w, noise->len);*/
-        return noise;
+        return pmap;
 }
-        
+
 void test_simplex_noise(double sea_level)
 {
         perm_shuffle();

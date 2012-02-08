@@ -16,13 +16,17 @@ display and navigation of a BOAT.
 #include <string.h>
 #include <math.h>
 
+
+
 #include "../lib/llist/list.h"
 #include "../lib/memmacro.h"
 
 #include "../pan/test.h"
 
-#include "../cmd/control.h"
 #include "../gfx/gfx.h"
+#include "mob.h"
+#include "../cmd/control.h"
+
 #include "../gfx/sprite.h"
 #include "../gfx/palette.h"
 #include "../geo/terrain.h"
@@ -127,7 +131,7 @@ static int TWO = 2;
 /******************************************************************************/
 /* Initialize the standing orders global variable and the semaphores used for 
  * locking boat objects. */
-void boat_init(void)
+void init_boat(void)
 {
         int i, j;
         for (i=0; i<2; i++) {
@@ -271,13 +275,13 @@ void nominate_boat(MOB *mob)
         _BOAT = mob;
 }
 /* Initialize and create a new boat MOB */
-MOB *new_boat(PLATE *pl)
+MOB *new_boat()
 {
         BOAT *boat = MALLOC(BOAT);
         if (boat == NULL) 
                 perror ("BOAT was not allocated properly!");
 
-        MOB *mob = new_mob(boat, pl, 2, 4, 3, 3);
+        MOB *mob = new_mob(boat, 2, 4, 3, 3);
 
         WINDOW *win = panel_window(mob->pan);
         wbkgrnd(win, &OCEAN[0]);

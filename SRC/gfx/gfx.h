@@ -1,7 +1,29 @@
+#ifndef __GFX_TYPES
+#define __GFX_TYPES
 #include <pthread.h>
 #include <semaphore.h>
 #include "../lib/llist/list.h"
-#include "../gen/perlin.h"
+
+/******************************************************************************
+ * Housekeeping macros 
+ ******************************************************************************/
+/* Refresh the virtual screen */
+#define vrt_refresh() update_panels()
+/* Refresh the actual screen */
+#define scr_refresh() vrt_refresh(); doupdate()
+/* Wipe the screen (force re-draw) */
+#define WIPE TOGPAN(WIPEPAN); \
+             TOGPAN(WIPEPAN)
+/* Add a node to a ring (circular linked list) and increment dim.n */
+#define LINCREMENT(parent, headname, node) \
+        list_add(parent->headname, node);  \
+        parent->dim.n++
+/* Move through a ring, and leave tmp pointing at the first matching node */
+#define MATCH_FIELD(head, tmp, field, value)    \
+        list_for_each(head, tmp, node) {        \
+                if (tmp->field == value) break; \
+        }
+
 /******************************************************************************
  * These values are used to code/check the 'role' of a GNODE, that is, the 
  * particular, unambiguous purpose it serves in the PLATE, and which might
@@ -9,12 +31,15 @@
  * animated, or whether it is a background, and so should always remain on 
  * the bottom of the PANEL stack, etc.
  ******************************************************************************/
-enum roles {  __bg__ = 0, /* the background */
-              __fg__ = 1, /* not the background (default) */
-              __an__ = 2, /* can be animated (contains more than one WNODE) */
-              __hi__ = 3,  /* is a highlight */
-             __top__ = 4,
-             __drp__ = 5 
+#define STACK_LAYERS 8
+
+enum stack {  __bgr__ = 0, /* the background */
+              __hig__ = 1, /* background highlights */
+              __drp__ = 2, /* the "drop" of a terrane */
+              __top__ = 3, /* the "top" of a terrane */
+              __sec__ = 4, /* secondary features on a terrane */
+              __mob__ = 5, /* mobile graphical elements */
+              __wea__ = 6  /* weather and atmospheric effects */
 };
 /******************************************************************************
  * Using the DIMS structure is all about laziness, plain and simple. Anything
@@ -23,16 +48,18 @@ enum roles {  __bg__ = 0, /* the background */
  * of int values.
  ******************************************************************************/
 typedef struct dimension_t {
-        int id; /* if needed */
-        int h;  /* height */
-        int w;  /* width  */
-        int y0; /* initial y position */
-        int x0; /* initial x position */
-        int y;
-        int x;
-        int dy; /* current y position */
-        int dx; /* current x position */
-        int n;  /* number of...things */
+        int id;    /* A unique incremented identifier */
+        int kind;  /* Some type of class identifier */
+        int layer; /* The layer on the stack it should be drawn at */
+        int h;     /* height */
+        int w;     /* width  */
+        int y0;    /* initial y position */
+        int x0;    /* initial x position */
+        int ymax;  /* maximum y position */
+        int xmax;  /* maximum x position */
+        int yco;   /* current y position */
+        int xco;   /* current x position */
+        int n;     /* number of subjects in ring */
 } DIMS;
 /******************************************************************************
  * The WNODE data type is used to store a WINDOW and some related state
@@ -90,16 +117,13 @@ typedef struct win_wad {
  * new current_wnode->window.
  ******************************************************************************/
 typedef struct graphics_node {
-        int id;
-        DIMS   dim;
+        DIMS  dim;
         PANEL *pan;
         WNODE *W;
         struct list_head *wins;
         struct list_node node;
-        int (*nextw)(const void *self);
-        int (*prevw)(const void *self);
-        int (*stepf)(const void *self);
-        int (*stepb)(const void *self);
+        void (*next)(const void *self);
+        void (*step)(const void *self);
 } GNODE;
 /******************************************************************************
  * The world map is divided into "plates", which can be thought of as
@@ -115,25 +139,15 @@ typedef struct graphics_node {
  * prevg.
  ******************************************************************************/
 typedef struct map_plate {
-        sem_t *sem;
-        int setme;
-        int id;
-        int h;
-        int w;
-        int xco;
-        int yco;
+        DIMS  dim;
         GNODE *G;
-        GNODE *BG;
-        GNODE *trim;
-        PERLIN *noise;
+        double **pmap;
         struct list_head *gfx; /* Terrain graphics */
-        struct list_head *hi; /* terrain highlights */
         struct list_node node;
-        int (*nextg)(const void *self);
-        int (*prevg)(const void *self);
-        int (*stepf)(const void *self);
-        int (*hideall)(const void *self);
-        int (*showall)(const void *self);
+        void (*next)(const void *self);
+        void (*step)(const void *self);
+        void (*hideall)(const void *self);
+        void (*showall)(const void *self);
 } PLATE;
 /******************************************************************************
  * The PLATE_ROW structure is a node in a linked list of rows which comprise
@@ -142,8 +156,7 @@ typedef struct map_plate {
  * which make up the row.
  ******************************************************************************/
 typedef struct map_row {
-        int w;
-        int yco;
+        DIMS dim;
         struct list_head *plate;
         struct list_node node;
 } PLATEROW;
@@ -162,47 +175,29 @@ typedef struct map_row {
  * the new coordinate value.
  ******************************************************************************/
 typedef struct world_map {
-        int h;
-        int w;
-        int xco;
-        int yco;
-        PERLIN *pmap;
+        DIMS dim;
+        double **pmap;
         PLATE *P;
         PLATEROW *R;
         struct list_head *row;
-        int (*prevr)(const void *self);
-        int (*nextr)(const void *self);
-        int (*prevp)(const void *self);
-        int (*nextp)(const void *self);
+        void (*prevr)(const void *self);
+        void (*nextr)(const void *self);
+        void (*prevp)(const void *self);
+        void (*nextp)(const void *self);
 } WORLD;
 
-/* A mobile data type containing some object */
-typedef struct mob_t {
-        PANEL *pan;
-        DIMS   dim;
-        PLATE   *plate;
-        sem_t *sem;
-        void  *obj;
-} MOB;
-/******************************************************************************
- * Function prototypes
- ******************************************************************************/
-void gfx_init(void);
-void scr_refresh(void);
-void vrt_refresh(void);
-
-PLATE *new_plate(int type, int yco, int xco);
-GNODE *new_gnode(int id, int h, int w, int y0, int x0, int n);
-WNODE *new_wnode(int id, int h, int w, int y0, int x0);
-
-MOB *new_mob(void *ptr, PLATE *pl, int h, int w, int y0, int x0);
-void move_mob(MOB *mob, int dir);
-int hit_test(PLATE *pl, int y, int x);
-
-WORLD *new_world(int type, int h, int w);
-
-PLATE *current_plate(void);
-
+#endif
+/******************************************************************************/
 extern WORLD *GLOBE;
 
+void init_geojug(void);
+void swab_screen(void);
+void restack(PLATE *pl);
 
+WNODE *new_wnode(int id, int h, int w, int y0, int x0);
+GNODE *new_gnode(int layer, int h, int w, int y0, int x0, int n);
+GNODE *get_gnode(PLATE *pl, int layer);
+PLATE *new_plate(int type, int yco, int xco);
+WORLD *new_world(int type, int h, int w);
+
+int hit_test(PLATE *pl, int y, int x);

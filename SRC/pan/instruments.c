@@ -24,6 +24,7 @@
 #include "../gfx/gfx.h"
 #include "../gfx/palette.h"
 #include "../gfx/sprite.h"
+#include "../mob/mob.h"
 #include "../mob/boat.h"
 
 /******************************************************************************/
@@ -62,7 +63,7 @@ static int offsdn; /* the heading mark offset */
 static int offsgh; /* lets the heading mark reel back in */
 static int offsup; /* the wind mark offset */
 /******************************************************************************/
-void instrument_init(void)
+void init_instruments(void)
 {
         int i;
         cmpbox_win = newwin(3, box_wid, 0, ((COLS/2)-(box_hlf)));

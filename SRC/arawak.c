@@ -29,6 +29,7 @@
 #include "gfx/sprite.h"
 #include "geo/terrain.h"
 #include "geo/weather.h"
+#include "mob/mob.h"
 #include "mob/boat.h"
 #include "pan/instruments.h"
 #include "pan/test.h"
@@ -49,6 +50,7 @@ void blow_wind(EV_P_ ev_timer *w, int revents)
         if ((sem_trywait(bun->sem) == -1)) ev_timer_again(EV_DEFAULT, w);
         else                               ev_break(EV_A_ EVBREAK_ALL);
 }
+/******************************************************************************/
 void tumbler(EV_P_ ev_timer *w, int revents)
 {
         OO_time *bun = container_of(w, OO_time, w);
@@ -62,15 +64,17 @@ void tumbler(EV_P_ ev_timer *w, int revents)
         if ((sem_trywait(bun->sem) == -1)) ev_timer_again(EV_DEFAULT, w);
         else                               ev_break(EV_A_ EVBREAK_ALL);
 }
+/******************************************************************************/
 void do_animate(EV_P_ ev_timer *w, int revents)
 {
         OO_time *bun = container_of(w, OO_time, w);
 
-        GLOBE->P->stepf(GLOBE->P);
+        GLOBE->P->step(GLOBE->P);
 
         if ((sem_trywait(bun->sem) == -1)) ev_timer_again(EV_DEFAULT, w);
         else                               ev_break(EV_A_ EVBREAK_ALL);
 }
+/******************************************************************************/
 
 /* Day-toh-nah */
 int main() 
@@ -78,34 +82,28 @@ int main()
         /* UTF-8 */
         setlocale(LC_ALL,"");
 
-        /* ncurses */
-        initscr();
-        start_color();
+        initscr();              /* Start ncurses */
+        start_color();          /* Initialize color palette */
+        cbreak();	        /* Disable line buffering */		  
+        noecho();               /* Do not echo input */
+        keypad(stdscr, TRUE);   /* Enable special keys */
+        curs_set(0);            /* hide cursor */
 
-        cbreak();			  
-        noecho();
-        keypad(stdscr, TRUE);
-        curs_set(0); /* hide cursor */
-
-        /* my inits */
-        init_palette(0);
-        init_gfx_colors();
-        init_random();
-        gfx_init();
-        weather_init();
-        boat_init();
-        test_init();
-        instrument_init();
-        menus_init();
-        simplex_init();
+        init_random();          /* Initialize the Mersenne twister */
+        init_geojug();          /* Start the geojug graphics engine */
+        init_boat();            /* Initialize boat MOBs */
+        init_test();            /* Start test structures */
+        init_instruments();     /* Various meters such as the compass */
+        init_menus();           /* The psh menu and commands */
+        init_simplex();         /* The perlin simplex generator */
 
         terminal_check();
 
         /* Graphics */
-        WORLD *map = new_world(__ocean__, 3, 3);
+        WORLD *map = new_world(__sea__, 3, 3);
         simpledraw(map->P);
 
-        MOB *boat = new_boat(map->P);
+        MOB *boat = new_boat();
         nominate_boat(boat);
 
         /* master off switch */
@@ -113,6 +111,8 @@ int main()
         sem_init(&master_off, 0, 1);
 
         set_wind(__pre__, 4);
+
+        swab_screen();
 
         /* Main event loop */
         struct ev_loop *mainloop = EV_DEFAULT;

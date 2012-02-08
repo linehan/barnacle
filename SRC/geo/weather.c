@@ -22,6 +22,7 @@
 #include "../gfx/gfx.h"
 #include "../gfx/palette.h"
 #include "../gfx/sprite.h"
+#include "../mob/mob.h"
 #include "../mob/boat.h"
 #include "../pan/test.h"
 /******************************************************************************/
@@ -39,7 +40,7 @@ static struct windpackage g_windstate; /* the global wind state */
 static sem_t *wind_IO;
 /******************************************************************************/
 /* Initialize weather globals */
-void weather_init(void)
+void init_weather(void)
 {
         wind_IO = MALLOC(sem_t);
         sem_init(wind_IO, 0, 1);
@@ -85,26 +86,3 @@ void set_wind(int a, int val)
                 }
         sem_post(wind_IO);
 }
-
-/* Figure out what the wind will do */
-/*int wind_roll(void)*/
-/*{*/
-        /*int d = get_wind("dir");*/
-        /*int p = get_wind("pre");*/
-        /*int h = get_boat("now", "hdg");*/
-
-        /*if (p == d)*/
-                /*return 0;*/
-
-        /*int x = ((15+(p-d))%16);*/
-        /*[> Proceed CW toward the prevailing direction <]*/
-        /*if (x > HALFDIR) {*/
-                /*set_wind("dir", ((16+(d-1))%DIRS)); */
-                /*tumble_compass(2);*/
-        /*[> Proceed CCW toward the prevailing direction <]*/
-        /*} else if (x < HALFDIR) {*/
-                /*set_wind("dir", ((d+1)%DIRS)); */
-                /*tumble_compass(1);*/
-        /*}*/
-        /*return 0;*/
-/*}*/

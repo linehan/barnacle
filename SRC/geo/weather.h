@@ -3,7 +3,7 @@ enum wind_options{
         __str__ = 1, 
         __pre__ = 2 
 };
-void weather_init(void);
+void init_weather(void);
 
 int get_wind(int a);
 

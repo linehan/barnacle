@@ -112,13 +112,15 @@ enum ramp_pairs {
         CMP_SHADOW    = 61,
         BOAT_WHITE    = 62,
         BOAT_WOOD     = 63,
-        TREES         = 64,
         MONO          = 65,
         LAND          = 66,
         MENU          = 67,
         MENU_HINT     = 68,
         WARNING       = 69,
-        WARNSHADOW    = 70
+        WARNSHADOW    = 70,
+        TREETOP       = 71,
+        TREETRUNK     = 72
+                
 
 };
 /******************************************************************************/
@@ -181,4 +183,6 @@ void init_palette(int set)
         init_pair(MENU_HINT, OFF_WHITE, WHITE);
         init_pair(WARNING, OFF_WHITE, RED);
         init_pair(WARNSHADOW, RED, DARK_RED);
+        init_pair(TREETOP, LGREEN, GREEN);
+        init_pair(TREETRUNK, BEIGE, BROWN);
 }

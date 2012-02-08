@@ -94,7 +94,7 @@ void clear_cb(void *win)
 }
 
 /* Initialize */
-void menus_init(void)
+void init_menus(void)
 {
         TALKW = newwin(3, COLS, LINES-3, 0);
         TALKP = new_panel(TALKW);
