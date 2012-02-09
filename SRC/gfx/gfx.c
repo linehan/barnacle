@@ -19,7 +19,6 @@
 #include "gfx.h"
 #include "../gen/dice.h"
 #include "../lib/llist/list.h"
-#include "../lib/utilitybelt.h"
 #include "../gen/perlin.h"
 #include "palette.h"
 #include "sprite.h"

@@ -11,6 +11,10 @@
 #define vrt_refresh() update_panels()
 /* Refresh the actual screen */
 #define scr_refresh() vrt_refresh(); doupdate()
+/* Toggle a panel */
+#define TOGPAN(pan) \
+        if (panel_hidden(pan))  show_panel(pan); \
+        else                    hide_panel(pan)  
 /* Wipe the screen (force re-draw) */
 #define WIPE TOGPAN(WIPEPAN); \
              TOGPAN(WIPEPAN)

@@ -23,6 +23,7 @@ Bindings and actions for the user's keyboard input.
 #include "../gfx/gfx.h"
 #include "../gfx/palette.h"
 #include "../geo/weather.h"
+#include "../pan/instruments.h"
 #include "../mob/mob.h"
 #include "../mob/boat.h"
 #include "../pan/menus.h"
@@ -91,6 +92,9 @@ void *iolisten(EV_P_ ev_io *w, int revents)
                         break;
                 case ' ':
                         order_boat('x', 0);
+                        break;
+                case 'i':
+                        toggle_instrument_panel();
                         break;
                 /*case 'k':*/
                         /*order_boat('h', NORTH);*/

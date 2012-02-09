@@ -10,12 +10,18 @@ extern cchar_t BORDER;
 extern cchar_t WARNBG, WARNSH, WARNPIP;
 extern cchar_t PLAIN;
 extern cchar_t DIRT[2];
+extern cchar_t GRASS[5];
+extern cchar_t INST;
 
 enum tiletype { 
         __non__ = 0,
         __sea__ = 1,
         __san__ = 2,
-        __mtn__ = 3
+        __mtn__ = 3,
+        __gra__ = 4,
+        __Gra__ = 5,
+        __GRA__ = 6,
+        __drt__ = 7 
 };
 
 void init_gfx_colors(void);

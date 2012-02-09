@@ -7,3 +7,5 @@ void connected_components(PLATE *pl, int type);
 void simpledraw(PLATE *pl);
 
 void unfuck_perspective(PLATE *pl);
+
+void testworld(int size_factor);

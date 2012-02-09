@@ -19,6 +19,7 @@
 
 #include "test.h"
 
+#include "instruments.h"
 #include "../gen/dice.h"
 #include "../geo/weather.h"
 #include "../gfx/gfx.h"
@@ -35,6 +36,7 @@ struct compass_char {
 };
 
 enum gfxtags { DN=0,UP=1,GH=2,VR=0,HZ=1,TL=2,TR=3,BL=4,BR=5 };
+enum bordertags { LSIDE=0,RSIDE=1,BOTL=2,BOTR=3,BOT=4 };
 enum compass_window_dims { 
         box_wid = 15, /* compass box width */
         box_hlf = 8,  /* compass box half width */
@@ -45,14 +47,23 @@ enum compass_window_dims {
         cmp_hlf = 8   /* half the number of compass elements */
 };
 
+ /*▐▂▂▂▌*/
+/*▌▐▙▟*/
+static wchar_t gfxCBOR[] = L"▌▐▙▟▄";
 static wchar_t gfxCBOX[] = L"┃─┎┒┖┚";
 static wchar_t gfxMRK[] = L"▾▴";
 static wchar_t gfxCMP[] = L"N⋅∙⋅E⋅∙⋅S⋅∙⋅W⋅∙⋅";
+static wchar_t gfxCMPBG = L' ';
 
+static cchar_t CMPBG;
+static cchar_t CBOR[6]; /* One extra b/c the top is a different color */
 static cchar_t CBOX[6];
 static cchar_t CMRK[3];
 
 static LIST_HEAD(CMP);
+
+static WINDOW *inst_win;   /* the instrument window */
+static PANEL  *inst_pan;   /* the instrument panel */
 
 static WINDOW *cmpbox_win; /* the compass box window */
 static WINDOW *cmprib_win; /* the compass ribbon window */
@@ -63,29 +74,54 @@ static int offsdn; /* the heading mark offset */
 static int offsgh; /* lets the heading mark reel back in */
 static int offsup; /* the wind mark offset */
 /******************************************************************************/
+void toggle_instrument_panel(void)
+{
+        TOGPAN(cmpbox_pan); 
+        vrt_refresh();
+        TOGPAN(cmprib_pan);
+        vrt_refresh();
+        /*TOGPAN(inst_pan);*/
+}
+
 void init_instruments(void)
 {
         int i;
-        cmpbox_win = newwin(3, box_wid, 0, ((COLS/2)-(box_hlf)));
-        cmprib_win = newwin(1, 13, 1, ((COLS/2)-(rib_hlf)));
-        wbkgrnd(cmpbox_win, &OCEAN[0]);
-        wbkgrnd(cmprib_win, &OCEAN[0]);
+
+        /* Init graphics and color palette */
+        setcchar(&CMPBG,      &(gfxCMPBG),   0, CMP_SHADOW, NULL);
+        setcchar(&(CMRK[DN]), &(gfxMRK[DN]), 0, CMP_GREEN, NULL);
+        setcchar(&(CMRK[GH]), &(gfxMRK[DN]), 0, CMP_SHADOW, NULL);
+        setcchar(&(CMRK[UP]), &(gfxMRK[UP]), 0, CMP_YELLOW, NULL);
+
+        inst_win = newwin(1, COLS, 0, 0);
+
+        inst_pan = new_panel(inst_win);
+
+        cmpbox_win = newwin(5, box_wid, 0, ((COLS/2)-(box_hlf)));
+        cmprib_win = newwin(1, 13, 2, ((COLS/2)-(rib_hlf)));
+
+        wbkgrnd(cmpbox_win, &CMPBG);
+        wbkgrnd(cmprib_win, &CMPBG);
         cmpbox_pan = new_panel(cmpbox_win);
         cmprib_pan = new_panel(cmprib_win);
+
+        overlay(cmpbox_win, inst_win);
+        overlay(cmprib_win, inst_win);
 
         offsup = 1;
         offsdn = 1;
         offsgh = 1;
 
-        /* Paint the marks */
-        setcchar(&(CMRK[DN]), &(gfxMRK[DN]), 0, CMP_GREEN, NULL);
-        setcchar(&(CMRK[GH]), &(gfxMRK[DN]), 0, CMP_SHADOW, NULL);
-        setcchar(&(CMRK[UP]), &(gfxMRK[UP]), 0, CMP_YELLOW, NULL);
-
+        for (i=0; i<5; i++) {
+                setcchar(&(CBOR[i]), &(gfxCBOR[i]), 0, CMP_ORANGE, NULL);
+        }
+        setcchar(&(CBOR[5]), &(gfxCBOR[BOT]), 0, CMP_PINK, NULL);
+        wbkgrnd(inst_win, &CBOR[5]);
         /* Paint the compass box elements */
-        for (i=0; i<6; i++) {
+        for (i=0; i<5; i++) {
                 setcchar(&(CBOX[i]), &(gfxCBOX[i]), 0, CMP_ORANGE, NULL);
         }
+
         /* Paint the compass ribbon elements */
         for (i=0; i<16; i++) {
                struct compass_char *new = MALLOC(struct compass_char);
@@ -106,6 +142,7 @@ void init_instruments(void)
                new->dir = i;
                list_add_tail(&CMP, &(new->node));
         }
+        toggle_instrument_panel();
 }
 /* Moves the heading marker (top arrow) on the compass, to indicate what the
  * player's orders might be, were he to commit them. Allows the "selection"
@@ -234,34 +271,44 @@ void draw_compass(void)
 
         struct compass_char *tmp;
 
+        if (!(panel_hidden(cmpbox_pan))) {
         /* Make sure panels are on top */
         top_panel(cmpbox_pan);
         top_panel(cmprib_pan);
+        top_panel(inst_pan);
+        }
 
         /* Erase windows */
         werase(cmpbox_win);
         werase(cmprib_win);
-        vrt_refresh();
 
         /* LINE 0 */
-        mvwadd_wch(cmpbox_win, 0, offsgh, &(CMRK[GH]));
-        mvwadd_wch(cmpbox_win, 0, offsdn, &(CMRK[DN]));
-        mvwadd_wch(cmpbox_win, 0, 0, &(CBOX[TL]));
-        mvwadd_wch(cmpbox_win, 0, (box_wid-1), &(CBOX[TR]));
-        vrt_refresh();
+        mvwhline_set(cmpbox_win, 0, 0, &CBOR[5], box_wid);
+        mvwadd_wch(cmpbox_win, 1, offsgh, &(CMRK[GH]));
+        mvwadd_wch(cmpbox_win, 1, offsdn, &(CMRK[DN]));
+        /*mvwadd_wch(cmpbox_win, 0, 0, &(CBOX[TL]));*/
+        mvwadd_wch(cmpbox_win, 1, 0, &(CBOR[LSIDE]));
+        /*mvwadd_wch(cmpbox_win, 0, (box_wid-1), &(CBOX[TR]));*/
+        mvwadd_wch(cmpbox_win, 1, (box_wid-1), &(CBOR[RSIDE]));
 
         /* LINE 1 */
-        mvwadd_wch(cmpbox_win, 1, 0, &(CBOX[VR]));
+        /*mvwadd_wch(cmpbox_win, 1, 0, &(CBOX[VR]));*/
+        mvwadd_wch(cmpbox_win, 2, 0, &(CBOR[LSIDE]));
         list_for_each(&CMP, tmp, node) {
                 mvwadd_wch(cmprib_win, 0, i++, &(tmp->cch));
         }
-        mvwadd_wch(cmpbox_win, 1, (box_wid-1), &(CBOX[VR]));
-        vrt_refresh();
+        /*mvwadd_wch(cmpbox_win, 1, (box_wid-1), &(CBOX[VR]));*/
+        mvwadd_wch(cmpbox_win, 2, (box_wid-1), &(CBOR[RSIDE]));
 
         /* LINE 2 */
-        mvwadd_wch(cmpbox_win, 2, (offsup), &(CMRK[UP]));
-        mvwadd_wch(cmpbox_win, 2, 0, &(CBOX[BL]));
-        mvwadd_wch(cmpbox_win, 2, (box_wid-1), &(CBOX[BR]));
+        mvwadd_wch(cmpbox_win, 3, (offsup), &(CMRK[UP]));
+        mvwadd_wch(cmpbox_win, 3, 0, &(CBOR[LSIDE]));
+        mvwadd_wch(cmpbox_win, 3, (box_wid-1), &(CBOR[RSIDE]));
+        /*mvwadd_wch(cmpbox_win, 2, 0, &(CBOX[BL]));*/
+        mvwadd_wch(cmpbox_win, 4, 0, &(CBOR[BOTL]));
+        mvwhline_set(cmpbox_win, 4, 1, &CBOR[BOT], box_wid-2);
+        /*mvwadd_wch(cmpbox_win, 2, (box_wid-1), &(CBOX[BR]));*/
+        mvwadd_wch(cmpbox_win, 4, (box_wid-1), &(CBOR[BOTR]));
         vrt_refresh();
 
         scr_refresh();

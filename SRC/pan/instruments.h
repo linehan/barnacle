@@ -6,3 +6,5 @@ void init_instruments(void);
 void mark_hdg(int x);
 void mark_wind(void);
 int seek_prevailing(void);
+void toggle_instrument_panel(void);
+

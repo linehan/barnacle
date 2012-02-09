@@ -100,6 +100,13 @@ enum ramp_pairs {
         WARNING       = 69,
         WARNSHADOW    = 70,
         TREETOP       = 71,
-        TREETRUNK     = 72
+        TREETRUNK     = 72,
+        GRASSY        = 73,
+        SOILGRASS     = 74,
+        GRASSSOIL     = 75,
+        LIGHTGRASS    = 76,
+        DARKGRASS     = 77,
+        YELLOWGRASS   = 78,
+        DARKMATTE     = 79
 };
 int init_palette(int);

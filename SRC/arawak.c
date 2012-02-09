@@ -100,6 +100,7 @@ int main()
         terminal_check();
 
         /* Graphics */
+        testworld(3);
         WORLD *map = new_world(__sea__, 3, 3);
         simpledraw(map->P);
 

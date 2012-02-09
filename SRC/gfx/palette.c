@@ -119,9 +119,14 @@ enum ramp_pairs {
         WARNING       = 69,
         WARNSHADOW    = 70,
         TREETOP       = 71,
-        TREETRUNK     = 72
-                
-
+        TREETRUNK     = 72,
+        GRASSY        = 73,
+        SOILGRASS     = 74,
+        GRASSSOIL     = 75,
+        LIGHTGRASS    = 76,
+        DARKGRASS     = 77,
+        YELLOWGRASS   = 78,
+        DARKMATTE     = 79
 };
 /******************************************************************************/
 /* Initialize the color palette with R,G,B values from 0-1000 and the color
@@ -155,22 +160,30 @@ void init_palette(int set)
         init_color(LWOOD,      851,  647,  443);
         init_color(WOOD,       769,  545,  321);
         init_color(WHITE,      902,  894,  835);
-        /*init_color(SHADOW,   372,  349,  376);*/
-        init_color(SHADOW,     400,  372,  412);
+        init_color(SHADOW,   372,  349,  376);
+        /*init_color(SHADOW,     400,  372,  412);*/
         init_color(OFF_WHITE,  831,  827,  780);
         init_color(DARK_RED,   416,  141,  176);
 
         /* Color pair inits */
         init_pair(BOAT_WHITE, WHITE, SEAGREEN);
         init_pair(BOAT_WOOD, LWOOD, SEAGREEN);
-        init_pair(CMP_BEIGE, BEIGE, SEAGREEN);
-        init_pair(CMP_RED, RED, SEAGREEN);
-        init_pair(CMP_WHITE, WHITE, SEAGREEN);
-        init_pair(CMP_ORANGE, ORANGE, SEAGREEN);
-        init_pair(CMP_GREEN, LGREEN, SEAGREEN);
-        init_pair(CMP_PINK, PINK, SEAGREEN);
-        init_pair(CMP_YELLOW, YELLOW, SEAGREEN);
-        init_pair(CMP_SHADOW, SHADOW, SEAGREEN);
+        /*init_pair(CMP_BEIGE, BEIGE, SEAGREEN);*/
+        /*init_pair(CMP_RED, RED, SEAGREEN);*/
+        /*init_pair(CMP_WHITE, WHITE, SEAGREEN);*/
+        /*init_pair(CMP_ORANGE, ORANGE, SEAGREEN);*/
+        /*init_pair(CMP_GREEN, LGREEN, SEAGREEN);*/
+        /*init_pair(CMP_PINK, PINK, SEAGREEN);*/
+        /*init_pair(CMP_YELLOW, YELLOW, SEAGREEN);*/
+        /*init_pair(CMP_SHADOW, SHADOW, SEAGREEN);*/
+        init_pair(CMP_BEIGE, BEIGE, ORANGE);
+        init_pair(CMP_RED, RED, ORANGE);
+        init_pair(CMP_WHITE, WHITE, ORANGE);
+        init_pair(CMP_ORANGE, BEIGE, ORANGE);
+        init_pair(CMP_GREEN, LGREEN, ORANGE);
+        init_pair(CMP_PINK, BEIGE, BEIGE);
+        init_pair(CMP_YELLOW, YELLOW, ORANGE);
+        init_pair(CMP_SHADOW, DGREY, ORANGE);
         init_pair(SEA_DARK, GREEN, SEAGREEN);
         init_pair(SEA_MED, SEAFOAM, SEAGREEN);
         init_pair(SEA_LIGHT, PALE_BLUE, SEAGREEN);
@@ -184,5 +197,14 @@ void init_palette(int set)
         init_pair(WARNING, OFF_WHITE, RED);
         init_pair(WARNSHADOW, RED, DARK_RED);
         init_pair(TREETOP, LGREEN, GREEN);
-        init_pair(TREETRUNK, BEIGE, BROWN);
+        init_pair(TREETRUNK, WOOD, DGREY);
+
+        init_pair(GRASSY, LGREEN, GREEN);
+        init_pair(SOILGRASS, LGREEN, BROWN);
+        init_pair(GRASSSOIL, BROWN, LGREEN);
+
+        init_pair(LIGHTGRASS, YELLOW, LGREEN);
+        init_pair(DARKGRASS, LGREEN, DGREEN);
+        init_pair(YELLOWGRASS, GREEN, YELLOW);
+        init_pair(DARKMATTE, BEIGE, LGREY);
 }

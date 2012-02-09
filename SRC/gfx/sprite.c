@@ -29,11 +29,12 @@ const wchar_t gfxFOREST[] = L"▁▓▒⤋⟱";
 const wchar_t gfxMTN[] = L"▕▒▓";
 const wchar_t gfxBORDER = L'▔';
 
-const wchar_t gfxSHADOW = L'░';
+const wchar_t gfxSHADE[3] = L"░▒▓";
 const wchar_t gfxWARNPIP = L'⋇';
 
 const wchar_t gfxTREE[] = L"╹⬢";
 
+cchar_t INST;
 cchar_t HERO;
 cchar_t OCEAN[4];
 cchar_t SURF0, SURF1, SURF2;
@@ -46,6 +47,7 @@ cchar_t BORDER;
 cchar_t WARNBG, WARNSH, WARNPIP;
 cchar_t PLAIN;
 cchar_t TREE[2];
+cchar_t GRASS[5];
 /******************************************************************************/
 void init_gfx_colors(void)
 {
@@ -71,7 +73,13 @@ void init_gfx_colors(void)
         setcchar(&TREE[0], &gfxTREE[0], 0, TREETRUNK, NULL);
         setcchar(&TREE[1], &gfxTREE[1], 0, TREETOP, NULL);
 
+        setcchar(&GRASS[0], &gfxSHADE[0], 0, GRASSY, NULL);
+        setcchar(&GRASS[1], &gfxSHADE[1], 0, GRASSY, NULL);
+        setcchar(&GRASS[2], &gfxSHADE[2], 0, GRASSY, NULL);
+
         setcchar(&DIRT[0], &gfxBLANK, 0, LAND, NULL);
+
+        setcchar(&INST, &gfxSHADE[1], 0, DARKMATTE, NULL);
 
         int i;
         for (i=0; i<8; i++) {
@@ -80,6 +88,7 @@ void init_gfx_colors(void)
         for (i=0; i<3; i++) {
                 setcchar(&MTN[i], &gfxMTN[i], 0, LAND, NULL);
         }
+                setcchar(&MTN[2], &gfxSHADE[2], 0, LAND, NULL);
 }
 
 cchar_t *get_tile(int type)
@@ -89,6 +98,10 @@ cchar_t *get_tile(int type)
         case __sea__:   return &OCEAN[0];
         case __mtn__:   return &MTN[1];
         case __san__:   return &SAND;
+        case __gra__:   return &GRASS[0];
+        case __Gra__:   return &GRASS[1];
+        case __GRA__:   return &GRASS[2];
+        case __drt__:   return &MTN[2];
         }
         return NULL;
 }
