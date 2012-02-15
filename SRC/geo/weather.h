@@ -26,5 +26,9 @@ void set_wind(int a, int val);
 void wind_gfx(void);
 //void *tumble_compass(int a);
 
+void movecloud(int dir);
+
 extern WINDOW *DIAGNOSTIC_WIN;
 extern PANEL *DIAGNOSTIC_PAN;
+extern int cloudfresh;
+void render_clouds(PLATE *pl);

@@ -84,120 +84,179 @@ void shift_highlights(PLATE *pl)
         }
         scr_refresh();
 }
+
+
 void draw_trees(PLATE *pl, DIMS *d)
 {
-        if (d->w < 3) return;
+        int i, j;
+        int tx0, ty0, th, tw, imax, jmax;
 
-        GNODE *tree = new_gnode(__sec__, d->w, d->w-2, d->y0-1, d->x0+1, 1);
-        WNODE *treew = tree->W;
+        static signed int xoffset = 1;
+        static signed int yoffset = -1;
+        static signed int htrim = -1;
+        static signed int wtrim = -2;
 
-        wbkgrnd(treew->window, &TREE[1]);
+        if (d->w < 4) return;
 
-        mvwhline_set(treew->window, d->w-1, 0, &TREE[0], d->w-2);
-        LINCREMENT(pl, gfx, &tree->node);
+        /* The width of the trees should be at least two less than the
+         * width of the land they stand on, i.e., leaving at least one
+         * char of padding on each side. */
+        tx0 = d->x0+xoffset;
+        ty0 = d->y0+yoffset;
+        th = d->h+htrim;
+        tw = d->w+wtrim;
+        imax = ty0+th;
+        jmax = tx0+tw;
+
+        for (i=ty0; i<imax; i++) {
+        for (j=tx0; j<jmax; j++) {
+                mvwadd_wch(pl->env[__trt__]->W->window, i, j, &TREE[1]);
+                SET_BIT(pl->env[__trt__]->bb, i, j);
+        }
+        }
+        SET_BITLINE(pl->env[__trd__]->bb, imax, tx0, tw);
+        mvwhline_set(pl->env[__trd__]->W->window, imax, tx0, &TREE[0], tw);
 }
-        
 
 void draw_chunk(PLATE *pl, DIMS *d, int terrain)
 {
-        cchar_t *bgtop = get_tile(terrain);
-        /*cchar_t *bgdrp = get_tile(terrain);*/
+        int i, j, imax, jmax;
+        GNODE *top, *drp;
 
-        /* The new terrane gets its own GNODE that will be strung
-         * on to the GNODE ring of the PLATE. */
-        GNODE *top  = new_gnode(__top__, d->w, d->w, d->y0,   d->x0, 1);
-        GNODE *drp  = new_gnode(__drp__, 1,    d->w, d->ymax,  d->x0, 1);
-        WNODE *topw = top->W;
-        WNODE *drpw = drp->W;
+        cchar_t *bgtop = get_tile(terrain); /* Get background tiles */
 
-        /* The shore effects will be drawn on the 'bgr' GNODE, ensuring
-         * that it always stays at a z-level below that of the new terrane. */
-        GNODE *bgr; 
-        MATCH_FIELD(pl->gfx, bgr, dim.layer, __bgr__);
-        WNODE *se1 = bgr->W;
-        bgr->next(bgr);
-        WNODE *se2 = bgr->W;
+        top = pl->env[__grt__];
+        drp = pl->env[__drd__];
+        imax = d->y0+d->h;
+        jmax = d->x0+d->w;
+        /* Draw the top of terrane */
+        for (i=d->y0; i<imax; i++) {
+        for (j=d->x0; j<jmax; j++) {
+                mvwadd_wch(top->W->window, i, j, bgtop);
+                SET_BIT(top->bb, i, j);
+        } 
+        } /* Draw the drop */
+        SET_BITLINE(drp->bb, imax, d->x0, d->w);
+        mvwhline_set(drp->W->window, imax, d->x0, &MTN[2], d->w);
 
-        /* Supply a background */
-        wbkgrnd(topw->window, &OCEAN[0]);
-        wbkgrnd(drpw->window, &MTN[2]);
-
-        int shoreWEST = d->x0-1;
-        int shoreBOTW = d->w+2;
-        int shoreEAST = d->xmax;
-
-        int i, j, yPLUSj;
-
-        for (j=0; j<(d->w); j++) {
-                /* Shore effects on the left side of the terrane */
-                yPLUSj = (d->y0+j+1);
-                mvwadd_wch(se1->window, yPLUSj, shoreWEST, &OCEAN[3]);
-                mvwadd_wch(se2->window, yPLUSj, shoreWEST, &OCEAN[2]);
-                /* Shore effects on the left side of the terrane */
-                mvwadd_wch(se1->window, yPLUSj, shoreEAST, &OCEAN[3]);
-                mvwadd_wch(se2->window, yPLUSj, shoreEAST, &OCEAN[2]);
-                for (i=0; i<(d->w); i++) {
-                        /* The body of the terrane */
-                        mvwadd_wch(topw->window, j, i, bgtop);
-                } 
-        }
-        /* Shore effects on the bottom of the terrane */
-        mvwhline_set(se1->window, yPLUSj+1, d->x0-1, &OCEAN[3], d->w+2);
-        mvwhline_set(se2->window, yPLUSj+1, d->x0-1, &OCEAN[2], d->w+2);
-
-        list_add(pl->gfx, &top->node);
-        list_add(pl->gfx, &drp->node);
-
-        if (flip_biased(0.5)) {
+        if (flip_biased(0.5))
                 draw_trees(pl, d);
-                /*wbkgrnd(topw->window, &TREE[2]);*/
-        }
 }
 
 void simpledraw(PLATE *pl)
 {
-        int x, y, i, j;
-        int h = pl->dim.h;
-        int w = pl->dim.w;
+        int i, j, imax, jmax; /* Loop coordinate variables */
+        int chunk, chunkmin;  /* Chunk!! CHUNK! */
+        double **pmap, seed;  /* Perlin map stuff */
 
-        /* The PLATE's Perlin map */
-        double **pmap = pl->pmap;
-        /* A seed cell scans the surrounding chunk^2 cells */
-        int chunk = 6; 
-        /* Threshhold value for the Perlin map */
-        double seed = 0.95;
+        pmap = pl->pmap; /* The PLATE's Perlin map */
+        seed = 0.95;     /* Threshhold value for the Perlin map */
+        chunk = 6;
+        chunkmin = 3;
+        imax = LINES-chunkmin;
+        jmax = COLS-chunkmin;
 
-        DIMS *d = malloc(sizeof(DIMS));
+        DIMS d;
 
-        /* Scan the character array in row-major order */
-        for (y=0; y<h; y++) {
-        for (x=0; x<w; x++) {
+        /* Uses the starting coordinates as the increment values to save
+         * assignment time and space. */
+        for (d.y0=0; d.y0<imax; d.y0++) {
+        for (d.x0=0; d.x0<jmax; d.x0++) {
 
-                /* If the cell's noise value exceeds seed thresh. */
-                if (pmap[y][x] > seed) {
-
-                        d->y0 = y;
-                        d->x0 = x;
+                if (pmap[d.y0][d.x0] > seed) {
 
                         /* Jiggle that chunk */
                         if (flip_biased(0.56))   chunk += chunk/3;
                         else                     chunk -= chunk/3;
 
-                        if ((chunk < 1)) continue;
+                        if ((chunk < 2)) continue; /* this tall to ride */
 
-                        d->w = chunk;
-                        d->h = chunk;
-                        d->xmax = d->x0 + d->w;
-                        d->ymax = d->y0 + d->w;
-                        
-                        draw_chunk(pl, d, __Gra__);
+                        d.w = chunk;
+                        d.h = chunk;
+                        d.ymax = d.y0+d.h;
+                        d.xmax = d.x0+d.w;
+                        /* Trim edges */
+                        if (d.xmax > COLS) d.w = d.xmax-COLS;
+                        if (d.ymax > LINES) d.h = d.ymax-LINES;
+
+                        draw_chunk(pl, &d, __Gra__);
                 }
         }
         }
-        restack(pl);
 }
 
-void testworld(int size_factor)
+/*
+ *     111     100   011
+ *     111 XOR 100 = 011 
+ *     111     100   011
+ */
+void draw_water_rim(PLATE *pl)
+{
+        int i, j, n;
+        int pad, padl, padr, padu, padd;
+
+        pad = 1;
+        n = 5;
+
+        GNODE *top, *drp;
+        top = pl->env[__grt__];
+        drp = pl->env[__drd__];
+
+        WINDOW *rimwin1, *rimwin2;
+        rimwin1 = pl->env[__rim__]->W->window;
+                  pl->env[__rim__]->next(pl->env[__rim__]);
+        rimwin2 = pl->env[__rim__]->W->window;
+
+        for (i=1; i<LINES; i++) {
+                padu = i-1;
+                padd = i+1;
+        for (j=1; j<COLS-1; j++) {
+                padl=j-1;
+                padr=j+1;
+                        /* If I am part of layer 'top' or layer 'drp', loop */
+                        if (BIT_SET(top->bb, (i), (j))) continue;
+                        if (BIT_SET(drp->bb, (i), (j))) continue;
+
+                        n = 1;
+                        do {
+                                switch (n) {
+                                case 0:
+                                if (BIT_SET(top->bb, (i), (padl))) break;
+                                if (BIT_SET(top->bb, (padu), (padr))) break;
+                                if (BIT_SET(top->bb, (padu), (padl))) break;
+                                if (BIT_SET(drp->bb, (padu), (j))) break;
+                                if (BIT_SET(drp->bb, (i), (padr))) break;
+                                if (BIT_SET(drp->bb, (i), (padl))) break;
+                                n = 2;
+                                case 1:
+                                mvwadd_wch(rimwin1, i, j, &OCEAN[3]);
+                                mvwadd_wch(rimwin2, i, j, &OCEAN[2]);
+                                break;
+                        
+                        /*}*/
+                        /*[> If the bit in the row above me is set <]*/
+                        /*if (BIT_SET(drp->bb, (i-1), (j))) {*/
+                                /*mvwadd_wch(rimwin1, i, j, &OCEAN[3]);*/
+                                /*mvwadd_wch(rimwin2, i, j, &OCEAN[2]);*/
+                                /*continue;*/
+                        /*}*/
+                        /*[> If the bit in the row above me is set <]*/
+                        /*if (BIT_SET(drp->bb, (i-1), (j))) {*/
+                                /*mvwadd_wch(rimwin1, i, j, &OCEAN[3]);*/
+                                /*mvwadd_wch(rimwin2, i, j, &OCEAN[2]);*/
+                                /*continue;*/
+                        /*}*/
+                        /*[> If the bit in the row above me is set <]*/
+                        /*if (BIT_SET(drp->bb, (i-1), (j))) {*/
+                                /*mvwadd_wch(rimwin1, i, j, &OCEAN[3]);*/
+                                /*mvwadd_wch(rimwin2, i, j, &OCEAN[2]);*/
+                                /*continue;*/
+                        /*}*/
+        }
+        }
+}
+
+void testworld(int size_factor, int testtype)
 {
         /* DejaVu Mono, the font this program is designed to use, has an
          * aspect ratio of 0.55, with an x-width of 0.54, at 100pt.
@@ -310,42 +369,51 @@ void testworld(int size_factor)
                         }
                 }
         }
-        /*for (lat=0; lat<h; lat++) {*/
-                /*wprintw(BIGWIN, "\n");*/
-                /*for (lon=0; lon<w; lon++) {*/
-                        /*wprintw(BIGWIN, "%02d", row[lat][lon].lat);*/
-                /*}*/
-        /*}*/
-        wprintw(BIGWIN, "\n\n\n");
-        for (lat=0; lat<h; lat++) {
-                wprintw(BIGWIN, "\n");
-                for (lon=0; lon<w; lon++) {
-                        wprintw(BIGWIN, "%02d", row[lat][lon].temp);
+        switch(testtype) {
+        case 0: /* Print latitude */
+                wprintw(DIAGNOSTIC_WIN, "\n%dhx%dw world latitude\n", h, w);
+                for (lat=0; lat<h; lat++) {
+                        wprintw(DIAGNOSTIC_WIN, "\n");
+                        for (lon=0; lon<w; lon++) {
+                                wprintw(DIAGNOSTIC_WIN, "%02d", row[lat][lon].lat);
+                        }
                 }
-        }
-        wprintw(BIGWIN, "\n\n\n");
-        for (lat=0; lat<h; lat++) {
-                wprintw(BIGWIN, "\n");
-                for (lon=0; lon<w; lon++) {
-                        wprintw(BIGWIN, "%02d", row[lat][lon].wind);
+                break;
+        case 1: /* Print temperature */
+                wprintw(DIAGNOSTIC_WIN, "\n%dhx%dw world temperature\n", h, w);
+                for (lat=0; lat<h; lat++) {
+                        wprintw(DIAGNOSTIC_WIN, "\n");
+                        for (lon=0; lon<w; lon++) {
+                                wprintw(DIAGNOSTIC_WIN, "%02d", row[lat][lon].temp);
+                        }
                 }
-        }
-        wprintw(BIGWIN, "\n\n\n");
-        for (lat=0; lat<h; lat++) {
-                wprintw(BIGWIN, "\n");
-                for (lon=0; lon<w; lon++) {
-                        wprintw(BIGWIN, "%c", row[lat][lon].celltype);
+                break;
+        case 2: /* Print wind direction */
+                wprintw(DIAGNOSTIC_WIN, "\n%dhx%dw world wind direction\n", h, w);
+                for (lat=0; lat<h; lat++) {
+                        wprintw(DIAGNOSTIC_WIN, "\n");
+                        for (lon=0; lon<w; lon++) {
+                                wprintw(DIAGNOSTIC_WIN, "%02d", row[lat][lon].wind);
+                        }
                 }
+                break;
+        case 3: /* Print convection cell species */
+                wprintw(DIAGNOSTIC_WIN, "\n%dhx%dw world convection cell species\n", h, w);
+                for (lat=0; lat<h; lat++) {
+                        wprintw(DIAGNOSTIC_WIN, "\n");
+                        for (lon=0; lon<w; lon++) {
+                                wprintw(DIAGNOSTIC_WIN, "%c", row[lat][lon].celltype);
+                        }
+                }
+                break;
+        case 4: /* Print convection cell gradients */
+                wprintw(DIAGNOSTIC_WIN, "\n%dhx%dw world convection cell gradients\n", h, w);
+                for (lat=0; lat<h; lat++) {
+                        wprintw(DIAGNOSTIC_WIN, "\n");
+                        for (lon=0; lon<w; lon++) {
+                                wprintw(DIAGNOSTIC_WIN, "%d", row[lat][lon].cellgrade);
+                        }
+                }
+                break;
         }
-        /*wprintw(BIGWIN, "\n\n\n");*/
-        /*for (lat=0; lat<h; lat++) {*/
-                /*wprintw(BIGWIN, "\n");*/
-                /*for (lon=0; lon<w; lon++) {*/
-                        /*wprintw(BIGWIN, "%d", row[lat][lon].cellgrade);*/
-                /*}*/
-        /*}*/
 }
-
-
-
-

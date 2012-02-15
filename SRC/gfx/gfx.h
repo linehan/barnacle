@@ -2,11 +2,104 @@
 #define __GFX_TYPES
 #include <pthread.h>
 #include <semaphore.h>
+#include <stdint.h>
 #include "../lib/llist/list.h"
 
-/******************************************************************************
- * Housekeeping macros 
- ******************************************************************************/
+
+/* BITBOARD DEFINITIONS
+*******************************************************************************/
+#define BITBOARD_BLOCK_TYPE  uint32_t /* <---- THIS IS ALL YOU SHOULD TOUCH */
+#define BITBOARD_BLOCK_SIZE  sizeof(BITBOARD_BLOCK_TYPE) /* In bytes */
+#define BITBOARD_BLOCK_WIDTH (BITBOARD_BLOCK_SIZE*8)     /* In bits  */
+
+
+/* Expands to the minimum number of blocks that can hold 'nbits' bits. There
+ * is always a +1, because the minimum number of blocks is 1, but the '/'
+ * operation will reduce to 0 if you let it. */
+#define BLOCKS_TO_HOLD(nbits) ((nbits/BITBOARD_BLOCK_WIDTH)+1)
+
+/* Here we do not add 1, because we want the index of the block which contains
+ * a particular bit, meaning 0 is a legitimate subscript. */
+#define BLOCK_CONTAINING(bit) (bit/BITBOARD_BLOCK_WIDTH)
+
+/* The bitboard type must consist at a minimum of a vector of type 
+ * BITBOARD_BLOCK_TYPE, and a value indicating the number of blocks that are
+ * in each row of the bitboard, so that the array offset can be computed. */
+typedef struct bb { BITBOARD_BLOCK_TYPE *bb; int blocks_per_row; } BITBOARD;
+
+
+/* Allocate memory for a new bitboard able to accomodate at least rowsxcols
+ * individual bit values. 
+ * NOTE: calloc() initializes all memory values to 0. */
+#define INIT_BITBOARD(bitboard, rows, cols) \
+        bitboard.bb = calloc((rows*(BLOCKS_TO_HOLD(cols))), BITBOARD_BLOCK_SIZE); \
+        bitboard.blocks_per_row = BLOCKS_TO_HOLD(cols); \
+
+
+/* BITBOARD INDEXING 
+*******************************************************************************/
+/* Pass a coordinate pair of *bit* values, NOT block values; expands to the 
+ * index of the *block* which contains the bit at (row,col), assuming the
+ * blocks are stored in a vector. */
+#define BIT_INDEX(bitboard, row, col) \
+        bitboard.bb[((row*(bitboard.blocks_per_row))+(BLOCK_CONTAINING(col)))]
+
+
+/* Given a column value, compute the bit of the containing block which will
+ * correspond to that column value. */
+#define BIT(col) (col%BITBOARD_BLOCK_WIDTH)
+
+
+/* BITBOARD OPERATIONS 
+*******************************************************************************/
+int looper;
+
+#define LOOPER(n) looper = n
+
+/* Expands to 1 if the bit at (row,col) in bitboard 'bitboard' is set, or 0
+ * if the bit is clear. */
+#define BIT_SET(bitboard, row, col) \
+        (((BIT_INDEX(bitboard, row, col))&(1<<(BIT(col)))) != 0) ? 1 : 0
+
+
+/* Set the bit at (row,col) on bitboard 'bitboard' to 1 */
+#define SET_BIT(bitboard, row, col) \
+        BIT_INDEX(bitboard, row, col) |= (1<<BIT(col))
+
+#define SET_BITLINE(bitboard, row, col, len) \
+        LOOPER((col+len)); \
+        do { SET_BIT(bitboard, row, col); } while (++col < looper); \
+        col -= len;
+
+
+/* Clear the bit at (row,col) on bitboard 'bitboard' to 1 */
+#define CLEAR_BIT(bitboard, row, col) \
+        BIT_INDEX(bitboard, row, col) &= ~(1<<BIT(col))
+
+
+/* Toggle the bit at (row,col) on bitboard 'bitboard' */
+#define TOGGLE_BIT(bitboard, row, col) \
+        BIT_INDEX(bitboard, row, col) ^= (1<<BIT(col))
+
+
+/* BITBOARD TESTS
+*******************************************************************************/
+static inline void test_bitboards(WINDOW *win)
+{
+        wprintw(win, "BITBOARD_BLOCK_WIDTH = %d\n"
+                     "BITBOARD_BLOCK_SIZE  = %d\n"
+                     "LINES                = %d\n"
+                     "COLS                 = %d\n"
+                     "BITBOARD_COLS        = %d\n",
+                     BITBOARD_BLOCK_WIDTH,
+                     BITBOARD_BLOCK_SIZE,
+                     LINES,
+                     COLS,
+                     BLOCKS_TO_HOLD(COLS));
+}
+
+
+
 /* Refresh the virtual screen */
 #define vrt_refresh() update_panels()
 /* Refresh the actual screen */
@@ -35,15 +128,22 @@
  * animated, or whether it is a background, and so should always remain on 
  * the bottom of the PANEL stack, etc.
  ******************************************************************************/
-#define STACK_LAYERS 8
+#define STACK_LAYERS 12 
+#define ENV_LAYERS 10 
 
-enum stack {  __bgr__ = 0, /* the background */
-              __hig__ = 1, /* background highlights */
-              __drp__ = 2, /* the "drop" of a terrane */
-              __top__ = 3, /* the "top" of a terrane */
-              __sec__ = 4, /* secondary features on a terrane */
-              __mob__ = 5, /* mobile graphical elements */
-              __wea__ = 6  /* weather and atmospheric effects */
+enum environment_stack {  __bgr__ = 0, /* the background */
+                          __rim__ = 1, /* the ocean edge effects */
+                          __hig__ = 2, /* background highlights */
+                          __drd__ = 3, /* dirt */
+                          __drt__ = 4, 
+                          __grd__ = 5, /* grass */
+                          __grt__ = 6, 
+                          __trd__ = 7, /* trees */
+                          __trt__ = 8, 
+                          __sec__ = 9, /* all secondary features on a terrane */
+
+                          __mob__ = 10, /* mobile graphical elements */
+                          __wea__ = 11  /* weather and atmospheric effects */
 };
 /******************************************************************************
  * Using the DIMS structure is all about laziness, plain and simple. Anything
@@ -121,6 +221,7 @@ typedef struct win_wad {
  * new current_wnode->window.
  ******************************************************************************/
 typedef struct graphics_node {
+        BITBOARD bb;
         DIMS  dim;
         PANEL *pan;
         WNODE *W;
@@ -144,6 +245,7 @@ typedef struct graphics_node {
  ******************************************************************************/
 typedef struct map_plate {
         DIMS  dim;
+        GNODE *env[ENV_LAYERS];
         GNODE *G;
         double **pmap;
         struct list_head *gfx; /* Terrain graphics */
@@ -205,3 +307,10 @@ PLATE *new_plate(int type, int yco, int xco);
 WORLD *new_world(int type, int h, int w);
 
 int hit_test(PLATE *pl, int y, int x);
+void merge_layer(PLATE *pl, int layer);
+void merge_all(PLATE *pl);
+void masktestprint(PLATE *pl, int layer);
+void bitboard_mark(GNODE *G, int h, int w, int y0, int x0);
+GNODE *gnode_below(PLATE *pl, int y, int x);
+
+void draw_water_rim(PLATE *pl);

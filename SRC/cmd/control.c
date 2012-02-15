@@ -6,6 +6,7 @@ Bindings and actions for the user's keyboard input.
 #define _XOPEN_SOURCE_EXTENDED = 1  /* extended character sets */
 #include <stdio.h>
 #include <stdlib.h>
+#include <ctype.h>
 #include <ncurses.h>
 #include <panel.h>
 #include <wchar.h>
@@ -53,10 +54,17 @@ void *iolisten(EV_P_ ev_io *w, int revents)
 {
         ev_io_stop (EV_A, w);
 
-        int ch, hdg;
+        int ch, hdg, layer;
 
         while((ch = getch())) { 
                 switch (ch) { 
+                case KEY_UP:
+                        ch = getch();
+                        if (isdigit(ch)) 
+                                layer = (ch - '0');
+                        if ((layer >= 0)&&(layer < STACK_LAYERS))
+                                masktestprint(GLOBE->P, layer);
+                        break;
                 case '0':
                         set_wind(__pre__, 0);
                         break;
@@ -105,11 +113,26 @@ void *iolisten(EV_P_ ev_io *w, int revents)
                 case 'g':
                         order_boat('r', 0);
                         break;
-                case 'd':
+                case 't':
                         toggle_bigpan();
+                        break;
+                case 'w':
+                        movecloud('u');
+                        break;
+                case 'a':
+                        movecloud('l');
+                        break;
+                case 's':
+                        movecloud('d');
+                        break;
+                case 'd':
+                        movecloud('r');
                         break;
                 case '`':
                         toggle_mm();
+                        break;
+                case '~':
+                        toggle_workbox();
                         break;
                 case 'q':
                         ev_break(EV_A_ EVBREAK_ALL);

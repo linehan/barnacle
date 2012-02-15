@@ -1,112 +1,180 @@
-enum palette {
-        C_BG       = 28,
-        C_FG       = 29,
-        BLACK      = 30,
-        DGREY      = 31,
-        GREY       = 32,
-        LGREY      = 33,
-        DBLUE      = 35,
-        BLUE       = 36,
-        LBLUE      = 37,
-        DGREEN     = 38,
-        GREEN      = 39,
-        LGREEN     = 40,
-        BROWN      = 41,
-        ORANGE     = 42,
-        YELLOW     = 43,
-        RED        = 44,
-        PINK       = 45,
-        BEIGE      = 46,
-        WHITE      = 47
+/* The system's colors go from 0-7 */
+enum arne_colors {
+        BLACK      = 17,
+        DGREY      = 18,
+        GREY       = 19,
+        LGREY      = 20,
+        DBLUE      = 21,
+        BLUE       = 22,
+        LBLUE      = 23,
+        DGREEN     = 24, 
+        GREEN      = 25,
+        LGREEN     = 26,
+        BROWN      = 27,
+        ORANGE     = 28,
+        YELLOW     = 29,
+        RED        = 30,
+        PINK       = 31,
+        BEIGE      = 32,
+        WHITE      = 33,
+        DSEA       = 34, 
+        SEA        = 35,
+        LSEA       = 36,
+        LWOOD      = 37,
+        WOOD       = 38,
+        SHADOW     = 39, 
+        DARK_RED   = 42 
 };
-enum extra_colors {
-        SEAFOAM    = 48,
-        SEAGREEN   = 49,
-        YELLOWSAND = 50, 
-        BROWNSAND  = 51,
-        LWOOD      = 52,
-        WOOD       = 53,
-        SHADOW     = 54,
-        PALE_BLUE  = 58,
-        OFF_WHITE  = 59,
-        DARK_RED   = 82 
+
+enum arne_shadow1 {
+        /*_BLACK  = 43, black is always black */
+        _DGREY  = 44,
+        _GREY   = 45,
+        _LGREY  = 46,
+        _DBLUE  = 47,
+        _BLUE   = 48,
+        _LBLUE  = 49,
+        _DGREEN = 50,
+        _GREEN  = 51,
+        _LGREEN = 52,
+        _BROWN  = 53,
+        _ORANGE = 54,
+        _YELLOW = 55,
+        _RED    = 56,
+        _PINK   = 57,
+        _BEIGE  = 58,
+        _WHITE  = 59,
+        _DSEA   = 60,
+        _SEA    = 61,
+        _LSEA   = 62,
+        _LWOOD  = 64,
+        _WOOD   = 65,
+        _SHADOW = 66,
+        _DARK_RED = 67
 };
+
+enum arne_shadow2 {
+        /*__BLACK  = 68, black is always black */
+        __DGREY  = 69,
+        __GREY   = 70,
+        __LGREY  = 71,
+        __DBLUE  = 72,
+        __BLUE   = 73,
+        __LBLUE  = 74,
+        __DGREEN = 75,
+        __GREEN  = 76,
+        __LGREEN = 77,
+        __BROWN  = 78,
+        __ORANGE = 79,
+        __YELLOW = 80,
+        __RED    = 81,
+        __PINK   = 82,
+        __BEIGE  = 83,
+        __WHITE  = 84,
+        __DSEA   = 85,
+        __SEA    = 86,
+        __LSEA   = 87,
+        __LWOOD  = 88,
+        __WOOD   = 89,
+        __SHADOW = 90,
+        __DARK_RED = 91 
+};
+
 /* FG_BG color pairs; odd ones are swaps of even ones. */
 enum ramp_pairs {
-        BLACK_DGREY   = 10,
-        DGREY_BLACK   = 11,
-        DGREY_GREY    = 12,
-        GREY_DGREY    = 13,
-        GREY_LGREY    = 14,
-        LGREY_GREY    = 15,
 
-        DGREY_DBLUE   = 16,
-        DBLUE_DGREY   = 17,
-        DBLUE_BLUE    = 18,
-        BLUE_DBLUE    = 19,
-        BLUE_LBLUE    = 20,
-        LBLUE_BLUE    = 21,
-        LBLUE_LGREY   = 22,
-        LGREY_LBLUE   = 23,
+        CMP_BEIGE     = 100,   /* These colors are for UI elements */
+        CMP_RED       = 101,
+        CMP_WHITE     = 102,
+        CMP_ORANGE    = 103,
+        CMP_GREEN     = 104,
+        CMP_PINK      = 105,
+        CMP_YELLOW    = 106,
+        CMP_SHADOW    = 107,
+        MENU          = 108,
+        WARNING       = 109,
+        WARNSHADOW    = 110,
 
-        DGREY_DGREEN  = 24,
-        DGREEN_DGREY  = 25,
-        DGREEN_GREEN  = 26,
-        GREEN_DGREEN  = 27,
-        GREEN_LGREEN  = 28,
-        LGREEN_GREEN  = 29,
-        LGREEN_YELLOW = 30,
-        YELLOW_LGREEN = 31,
-        YELLOW_LGREY  = 32,
-        LGREY_YELLOW  = 33,
+        SEA_DARK      = 17,     /* SHADE0 colors for environment */
+        SEA_MED       = 18,
+        BOAT_DEEP     = 19,
+        BOAT_WOOD     = 20, 
+        BOAT_WHITE    = 21,
+        SAIL_DEEP     = 22,
+        LAND          = 23,
+        TREETOP       = 24,
+        TREETRUNK     = 25,
+        GRASSY        = 26,
+        SOILGRASS     = 27,
+        SEA_LIG       = 28,
 
-        DGREY_BROWN   = 34,
-        BROWN_DGREY   = 35,
-        BROWN_ORANGE  = 36,
-        ORANGE_BROWN  = 37,
-        ORANGE_YELLOW = 38,
-        YELLOW_ORANGE = 39,
+        _SEA_DARK      = 29,    /* SHADE1 colors for environemnt */
+        _SEA_MED       = 30,
+        _BOAT_DEEP     = 31,
+        _BOAT_WOOD     = 32, 
+        _BOAT_WHITE    = 33,
+        _SAIL_DEEP     = 34,
+        _LAND          = 35,
+        _TREETOP       = 36,
+        _TREETRUNK     = 37,
+        _GRASSY        = 38,
+        _SOILGRASS     = 39,
+        _SEA_LIG       = 40, 
 
-        DGREY_RED     = 40,
-        RED_DGREY     = 41,
-        RED_PINK      = 42,
-        PINK_RED      = 43,
-        PINK_BEIGE    = 44,
-        BEIGE_PINK    = 45,
-        BEIGE_YELLOW  = 46,
-        YELLOW_BEIGE  = 47,
-
-        SEA_DARK      = 48,
-        SEA_MED       = 49,
-        SEA_LIGHT     = 50, 
-        SEA_SHORE     = 51,
-        BOAT_DEEP     = 52,
-        SAIL_DEEP     = 53,
-
-        CMP_BEIGE     = 54,
-        CMP_RED       = 55,
-        CMP_WHITE     = 56,
-        CMP_ORANGE    = 57,
-        CMP_GREEN     = 58,
-        CMP_PINK      = 59,
-        CMP_YELLOW    = 60,
-        CMP_SHADOW    = 61,
-        BOAT_WHITE    = 62,
-        BOAT_WOOD     = 63,
-        MONO          = 65,
-        LAND          = 66,
-        MENU          = 67,
-        MENU_HINT     = 68,
-        WARNING       = 69,
-        WARNSHADOW    = 70,
-        TREETOP       = 71,
-        TREETRUNK     = 72,
-        GRASSY        = 73,
-        SOILGRASS     = 74,
-        GRASSSOIL     = 75,
-        LIGHTGRASS    = 76,
-        DARKGRASS     = 77,
-        YELLOWGRASS   = 78,
-        DARKMATTE     = 79
+        __SEA_DARK      = 41,   /* SHADE2 colors for environment */
+        __SEA_MED       = 42,
+        __BOAT_DEEP     = 43,
+        __BOAT_WOOD     = 44, 
+        __BOAT_WHITE    = 45,
+        __SAIL_DEEP     = 46,
+        __LAND          = 47,
+        __TREETOP       = 48,
+        __TREETRUNK     = 49,
+        __GRASSY        = 50,
+        __SOILGRASS     = 51,
+        __SEA_LIG       = 52 
 };
+
+/* These are the first values of each shade level in the enum; they can be
+ * used for boundary-checking to determine which shade level we're in. */
+#define SHADE0 17 
+#define SHADE1 29 
+#define SHADE2 41 
+#define SHADE_MAX 52 /* UI colors should be >> this number, to keep them out */
+
+/* The "step" refers to the number of places each shade level is shifted from
+ * it's equivalent color pair in the shader level above or below it. Obviously,
+ * this step value should be the same for both transitions, but if it isn't,
+ * it will equal 0, meaning when we calculate the offset, with a bum step
+ * value, it will return the original value unchanged (since 0 is the additive 
+ * identity). */
+#define SHADE_STEP SHADE1-SHADE0
+
+/* Secondary macro to decide between SHADE1 or SHADE 2, once SHADE0 is 
+ * ruled out */
+#define SHADE1_OR_SHADE2(pair) \
+        ((pair < SHADE_MAX)&&(pair >= SHADE2)) ? 2 : 1
+
+/* Return the shade level of the provided pair */
+#define SHADE_LEVEL(pair) \
+        ((pair < SHADE1)&&(pair >= SHADE0)) ? 0 : SHADE1_OR_SHADE2(pair)
+
+static inline short to_shade(short pair, int lvl)
+{
+        int mylvl = SHADE_LEVEL(pair);
+        short newpair = pair;
+
+        do {
+                if (mylvl<lvl) {
+                        mylvl++;
+                        newpair += SHADE_STEP;
+                }
+                else if (mylvl>lvl) {
+                        mylvl--;
+                        newpair -= SHADE_STEP;
+                }
+        } while (mylvl != lvl);
+        return newpair;
+}
+
 int init_palette(int);

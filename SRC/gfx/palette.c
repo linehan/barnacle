@@ -17,125 +17,207 @@
 #define ARRAY_SIZE(a) (sizeof(a) / sizeof(a[0]))
 #define CTRLD 4
 /******************************************************************************/
+/* The system's colors go from 0-7 */
 enum arne_colors {
-        C_BG       = 28,
-        C_FG       = 29,
-        BLACK      = 30,
-        DGREY      = 31,
-        GREY       = 32,
-        LGREY      = 33,
-        DBLUE      = 35,
-        BLUE       = 36,
-        LBLUE      = 37,
-        DGREEN     = 38,
-        GREEN      = 39,
-        LGREEN     = 40,
-        BROWN      = 41,
-        ORANGE     = 42,
-        YELLOW     = 43,
-        RED        = 44,
-        PINK       = 45,
-        BEIGE      = 46,
-        WHITE      = 47
+        BLACK      = 17,
+        DGREY      = 18,
+        GREY       = 19,
+        LGREY      = 20,
+        DBLUE      = 21,
+        BLUE       = 22,
+        LBLUE      = 23,
+        DGREEN     = 24, 
+        GREEN      = 25,
+        LGREEN     = 26,
+        BROWN      = 27,
+        ORANGE     = 28,
+        YELLOW     = 29,
+        RED        = 30,
+        PINK       = 31,
+        BEIGE      = 32,
+        WHITE      = 33,
+        DSEA       = 34, 
+        SEA        = 35,
+        LSEA       = 36,
+        LWOOD      = 37,
+        WOOD       = 38,
+        SHADOW     = 39, 
+        DARK_RED   = 42 
 };
-enum extra_colors {
-        SEAFOAM    = 48,
-        SEAGREEN   = 49,
-        YELLOWSAND = 50, 
-        BROWNSAND  = 51,
-        LWOOD      = 52,
-        WOOD       = 53,
-        SHADOW     = 54,
-        PALE_BLUE  = 58,
-        OFF_WHITE  = 59,
-        DARK_RED   = 82
+
+
+
+enum arne_shadow1 {
+        /*_BLACK  = 43, black is always black */
+        _DGREY  = 44,
+        _GREY   = 45,
+        _LGREY  = 46,
+        _DBLUE  = 47,
+        _BLUE   = 48,
+        _LBLUE  = 49,
+        _DGREEN = 50,
+        _GREEN  = 51,
+        _LGREEN = 52,
+        _BROWN  = 53,
+        _ORANGE = 54,
+        _YELLOW = 55,
+        _RED    = 56,
+        _PINK   = 57,
+        _BEIGE  = 58,
+        _WHITE  = 59,
+        _DSEA   = 60,
+        _SEA    = 61,
+        _LSEA   = 62,
+        _LWOOD  = 64,
+        _WOOD   = 65,
+        _SHADOW = 66,
+        _DARK_RED = 67
 };
+
+enum arne_shadow2 {
+        /*__BLACK  = 68, black is always black */
+        __DGREY  = 69,
+        __GREY   = 70,
+        __LGREY  = 71,
+        __DBLUE  = 72,
+        __BLUE   = 73,
+        __LBLUE  = 74,
+        __DGREEN = 75,
+        __GREEN  = 76,
+        __LGREEN = 77,
+        __BROWN  = 78,
+        __ORANGE = 79,
+        __YELLOW = 80,
+        __RED    = 81,
+        __PINK   = 82,
+        __BEIGE  = 83,
+        __WHITE  = 84,
+        __DSEA   = 85,
+        __SEA    = 86,
+        __LSEA   = 87,
+        __LWOOD  = 88,
+        __WOOD   = 89,
+        __SHADOW = 90,
+        __DARK_RED = 91 
+};
+
+
 /* FG_BG color pairs; odd ones are swaps of even ones. */
 enum ramp_pairs {
-        BLACK_DGREY   = 10,
-        DGREY_BLACK   = 11,
-        DGREY_GREY    = 12,
-        GREY_DGREY    = 13,
-        GREY_LGREY    = 14,
-        LGREY_GREY    = 15,
 
-        DGREY_DBLUE   = 16,
-        DBLUE_DGREY   = 17,
-        DBLUE_BLUE    = 18,
-        BLUE_DBLUE    = 19,
-        BLUE_LBLUE    = 20,
-        LBLUE_BLUE    = 21,
-        LBLUE_LGREY   = 22,
-        LGREY_LBLUE   = 23,
+        CMP_BEIGE     = 100,   /* These colors are for UI elements */
+        CMP_RED       = 101,
+        CMP_WHITE     = 102,
+        CMP_ORANGE    = 103,
+        CMP_GREEN     = 104,
+        CMP_PINK      = 105,
+        CMP_YELLOW    = 106,
+        CMP_SHADOW    = 107,
+        MENU          = 108,
+        WARNING       = 109,
+        WARNSHADOW    = 110,
 
-        DGREY_DGREEN  = 24,
-        DGREEN_DGREY  = 25,
-        DGREEN_GREEN  = 26,
-        GREEN_DGREEN  = 27,
-        GREEN_LGREEN  = 28,
-        LGREEN_GREEN  = 29,
-        LGREEN_YELLOW = 30,
-        YELLOW_LGREEN = 31,
-        YELLOW_LGREY  = 32,
-        LGREY_YELLOW  = 33,
+        SEA_DARK      = 17,     /* SHADE0 colors for environment */
+        SEA_MED       = 18,
+        BOAT_DEEP     = 19,
+        BOAT_WOOD     = 20, 
+        BOAT_WHITE    = 21,
+        SAIL_DEEP     = 22,
+        LAND          = 23,
+        TREETOP       = 24,
+        TREETRUNK     = 25,
+        GRASSY        = 26,
+        SOILGRASS     = 27,
+        SEA_LIG       = 28,
 
-        DGREY_BROWN   = 34,
-        BROWN_DGREY   = 35,
-        BROWN_ORANGE  = 36,
-        ORANGE_BROWN  = 37,
-        ORANGE_YELLOW = 38,
-        YELLOW_ORANGE = 39,
+        _SEA_DARK      = 29,    /* SHADE1 colors for environemnt */
+        _SEA_MED       = 30,
+        _BOAT_DEEP     = 31,
+        _BOAT_WOOD     = 32, 
+        _BOAT_WHITE    = 33,
+        _SAIL_DEEP     = 34,
+        _LAND          = 35,
+        _TREETOP       = 36,
+        _TREETRUNK     = 37,
+        _GRASSY        = 38,
+        _SOILGRASS     = 39,
+        _SEA_LIG       = 40, 
 
-        DGREY_RED     = 40,
-        RED_DGREY     = 41,
-        RED_PINK      = 42,
-        PINK_RED      = 43,
-        PINK_BEIGE    = 44,
-        BEIGE_PINK    = 45,
-        BEIGE_YELLOW  = 46,
-        YELLOW_BEIGE  = 47,
-
-        SEA_DARK      = 48,
-        SEA_MED       = 49,
-        SEA_LIGHT     = 50, 
-        SEA_SHORE     = 51,
-        BOAT_DEEP     = 52,
-        SAIL_DEEP     = 53,
-
-        CMP_BEIGE     = 54,
-        CMP_RED       = 55,
-        CMP_WHITE     = 56,
-        CMP_ORANGE    = 57,
-        CMP_GREEN     = 58,
-        CMP_PINK      = 59,
-        CMP_YELLOW    = 60,
-        CMP_SHADOW    = 61,
-        BOAT_WHITE    = 62,
-        BOAT_WOOD     = 63,
-        MONO          = 65,
-        LAND          = 66,
-        MENU          = 67,
-        MENU_HINT     = 68,
-        WARNING       = 69,
-        WARNSHADOW    = 70,
-        TREETOP       = 71,
-        TREETRUNK     = 72,
-        GRASSY        = 73,
-        SOILGRASS     = 74,
-        GRASSSOIL     = 75,
-        LIGHTGRASS    = 76,
-        DARKGRASS     = 77,
-        YELLOWGRASS   = 78,
-        DARKMATTE     = 79
+        __SEA_DARK      = 41,   /* SHADE2 colors for environment */
+        __SEA_MED       = 42,
+        __BOAT_DEEP     = 43,
+        __BOAT_WOOD     = 44, 
+        __BOAT_WHITE    = 45,
+        __SAIL_DEEP     = 46,
+        __LAND          = 47,
+        __TREETOP       = 48,
+        __TREETRUNK     = 49,
+        __GRASSY        = 50,
+        __SOILGRASS     = 51,
+        __SEA_LIG       = 52 
 };
+
+
+
+/* The shaded color pairs are indexed by their lighter cousins */
+/*int shade[128];*/
+
+/*shade[SEA_DARK]    = _SEA_DARK;*/
+/*shade[SEA_MED]     = _SEA_MED;*/
+/*shade[SEA_LIG]     = _SEA_LIG;*/
+/*shade[BOAT_DEEP]   = _BOAT_DEEP;*/
+/*shade[BOAT_WOOD]   = _BOAT_WOOD;*/
+/*shade[BOAT_WHITE]  = _BOAT_WHITE;*/
+/*shade[BOAT_WOOD]   = _BOAT_WOOD;*/
+/*shade[SAIL_DEEP]   = _SAIL_DEEP;*/
+/*shade[LAND]        = _LAND;*/
+/*shade[TREETOP]     = _TREETOP;*/
+/*shade[TREETRUNK]   = _TREETRUNK;*/
+/*shade[GRASSY]      = _GRASSY;*/
+/*shade[SOILGRASS]   = _SOILGRASS;*/
+/*shade[_SEA_DARK]   = __SEA_DARK;*/
+/*shade[_SEA_MED]    = __SEA_MED;*/
+/*shade[_SEA_LIG]    = __SEA_LIG;*/
+/*shade[_BOAT_DEEP]  = __BOAT_DEEP;*/
+/*shade[_BOAT_WOOD]  = __BOAT_WOOD;*/
+/*shade[_BOAT_WHITE] = __BOAT_WHITE;*/
+/*shade[_BOAT_WOOD]  = __BOAT_WOOD;*/
+/*shade[_SAIL_DEEP]  = __SAIL_DEEP;*/
+/*shade[_LAND]       = __LAND;*/
+/*shade[_TREETOP]    = __TREETOP;*/
+/*shade[_TREETRUNK]  = __TREETRUNK;*/
+/*shade[_GRASSY]     = __GRASSY;*/
+/*shade[_SOILGRASS]  = __SOILGRASS;*/
+
 /******************************************************************************/
 /* Initialize the color palette with R,G,B values from 0-1000 and the color
  * pairs with the initialized colors. */
 void init_palette(int set)
 {
+/* Hexadecimal values for colors used
+
+                                SHADOW 1        SHADOW 2
+        DARK GREY (PURPLE)      2c272e          141214
+        GREY                    7d7d7d          636363
+        LIGHT GREY (WHITE)      d4d3cb          bababa
+        DARK BLUE               38408f          343a75
+        BLUE                    4088d6          427dbd  
+        LIGHT BLUE              89c8e0          83b4c7
+        DARK GREEN              154026          0f2618
+        GREEN (TEAL)            2c6351          244a3e
+        LIGHT GREEN             85ad49          759446
+        YELLOW                  edd14e          d4bd50
+        BROWN                   785223          5e4320
+        ORANGE                  bf733d          a6693d
+        RED                     91313d          782f38
+        PINK                    a86070          8f5965
+        BEIGE                   d1af86          b89e7f
+        OCEAN (DARK)            202b28          0e1211
+        OCEAN                   415c54          32423e
+        OCEAN (LIGHT)           5e7d7a          506362          */
+
+
         /* Color inits */
-        init_color(C_BG,       255,  255,  255);
-        init_color(C_FG,      1000, 1000, 1000);
         init_color(BLACK,        0,    0,    0);
         init_color(DGREY,      239,  204,  251);
         init_color(GREY,       564,  564,  564);
@@ -152,30 +234,64 @@ void init_palette(int set)
         init_color(RED,        643,  192,  247);
         init_color(PINK,       729,  384,  463);
         init_color(BEIGE,      886,  725,  529);
-        init_color(PALE_BLUE,  572,  678,  662);
-        init_color(SEAFOAM,    439,  565,  502);
-        init_color(SEAGREEN,   165,  235,  211);
-        init_color(YELLOWSAND, 882,  835,  659);
-        init_color(BROWNSAND,  729,  643,  341);
+        init_color(LSEA,       572,  678,  662);
+        init_color(SEA,        439,  565,  502);
+        init_color(DSEA,       165,  235,  211);
         init_color(LWOOD,      851,  647,  443);
         init_color(WOOD,       769,  545,  321);
         init_color(WHITE,      902,  894,  835);
-        init_color(SHADOW,   372,  349,  376);
-        /*init_color(SHADOW,     400,  372,  412);*/
-        init_color(OFF_WHITE,  831,  827,  780);
+        init_color(SHADOW,     372,  349,  376);
         init_color(DARK_RED,   416,  141,  176);
 
-        /* Color pair inits */
-        init_pair(BOAT_WHITE, WHITE, SEAGREEN);
-        init_pair(BOAT_WOOD, LWOOD, SEAGREEN);
-        /*init_pair(CMP_BEIGE, BEIGE, SEAGREEN);*/
-        /*init_pair(CMP_RED, RED, SEAGREEN);*/
-        /*init_pair(CMP_WHITE, WHITE, SEAGREEN);*/
-        /*init_pair(CMP_ORANGE, ORANGE, SEAGREEN);*/
-        /*init_pair(CMP_GREEN, LGREEN, SEAGREEN);*/
-        /*init_pair(CMP_PINK, PINK, SEAGREEN);*/
-        /*init_pair(CMP_YELLOW, YELLOW, SEAGREEN);*/
-        /*init_pair(CMP_SHADOW, SHADOW, SEAGREEN);*/
+        init_color(_DGREY,     172,  153,  180);
+        init_color(_GREY,      490,  490,  490);
+        init_color(_LGREY,     831,  827,  796);
+        init_color(_DBLUE,     220,  251,  561);
+        init_color(_BLUE,      251,  533,  839);
+        init_color(_LBLUE,     537,  784,  878);
+        init_color(_DGREEN,     82,  251,  149);
+        init_color(_GREEN,     172,  388,  318);
+        init_color(_LGREEN,    521,  678,  286);
+        init_color(_YELLOW,    929,  819,  306);
+        init_color(_BROWN,     470,  321,  137);
+        init_color(_ORANGE,    749,  451,  239);
+        init_color(_RED,       568,  192,  239);
+        init_color(_PINK,      659,  376,  439);
+        init_color(_BEIGE,     819,  686,  525);
+        /*init_color(_DSEA,       153,  212,  188);*/
+        /*init_color(_DSEA,       161,  220,  200);*/
+        /*init_color(_DSEA,      125,  169,  157);*/
+        /*init_color(_DSEA,      145,  200,  180);*/
+        init_color(_DSEA,       153,    220,    196);
+        /*!!*//*init_color(_DSEA,       153,    220,    196);*/
+        /*init_color(_DSEA,       169,    231,    208);*/
+        /*init_color(_SEA,       255,  361,  329);*/
+        /*init_color(_SEA,        286, 419,  384);*/
+        init_color(_SEA,        314, 427,  396);
+        init_color(_LSEA,      368,  490,  478);
+        init_color(_WOOD,       721,    521,    325);
+        init_color(_LWOOD,       721,    521,    325);
+
+        init_color(__DGREY,     78,   71,   78);
+        init_color(__GREY,     388,  388,  388);
+        init_color(__LGREY,    729,  729,  729);
+        init_color(__DBLUE,    204,  227,  459);
+        init_color(__BLUE,     259,  490,  741);
+        init_color(__LBLUE,    514,  706,  780);
+        init_color(__DGREEN,    59,  149,   94);
+        init_color(__GREEN,    141,  290,  243);
+        init_color(__LGREEN,   459,  580,  274);
+        init_color(__YELLOW,   831,  741,  314);
+        init_color(__BROWN,    368,  263,  125);
+        init_color(__ORANGE,   651,  412,  239);
+        init_color(__RED,      470,  184,  220);
+        init_color(__PINK,     561,  349,  396);
+        init_color(__BEIGE,    721,  619,  498);
+        init_color(__DSEA,      55,   71,   67);
+        init_color(__SEA,      196,  259,  243);
+        init_color(__LSEA,     314,  388,  384);
+
+        /* UI COLOR PAIRS */
         init_pair(CMP_BEIGE, BEIGE, ORANGE);
         init_pair(CMP_RED, RED, ORANGE);
         init_pair(CMP_WHITE, WHITE, ORANGE);
@@ -184,27 +300,38 @@ void init_palette(int set)
         init_pair(CMP_PINK, BEIGE, BEIGE);
         init_pair(CMP_YELLOW, YELLOW, ORANGE);
         init_pair(CMP_SHADOW, DGREY, ORANGE);
-        init_pair(SEA_DARK, GREEN, SEAGREEN);
-        init_pair(SEA_MED, SEAFOAM, SEAGREEN);
-        init_pair(SEA_LIGHT, PALE_BLUE, SEAGREEN);
-        init_pair(SEA_SHORE, BROWNSAND, YELLOWSAND);
-        init_pair(BOAT_DEEP, LWOOD, SEAGREEN);
-        init_pair(SAIL_DEEP, LGREY, SEAGREEN);
-        init_pair(LAND, BROWN, BEIGE);
-        init_pair(MONO, C_FG, C_BG);
-        init_pair(MENU, DGREY, OFF_WHITE);
-        init_pair(MENU_HINT, OFF_WHITE, WHITE);
-        init_pair(WARNING, OFF_WHITE, RED);
+        init_pair(MENU, DGREY, WHITE);
+        init_pair(WARNING, WHITE, RED);
         init_pair(WARNSHADOW, RED, DARK_RED);
+
+        /* IN-GAME COLOR PAIRS */
+        init_pair(BOAT_WHITE, WHITE, DSEA);
+        init_pair(BOAT_WOOD, LWOOD, DSEA);
+        init_pair(LAND, BROWN, BEIGE);
         init_pair(TREETOP, LGREEN, GREEN);
         init_pair(TREETRUNK, WOOD, DGREY);
-
         init_pair(GRASSY, LGREEN, GREEN);
-        init_pair(SOILGRASS, LGREEN, BROWN);
-        init_pair(GRASSSOIL, BROWN, LGREEN);
+        init_pair(SEA_DARK, GREEN, DSEA);
+        init_pair(SEA_MED, SEA, DSEA);
+        init_pair(SEA_LIG, LSEA, DSEA);
 
-        init_pair(LIGHTGRASS, YELLOW, LGREEN);
-        init_pair(DARKGRASS, LGREEN, DGREEN);
-        init_pair(YELLOWGRASS, GREEN, YELLOW);
-        init_pair(DARKMATTE, BEIGE, LGREY);
+        init_pair(_BOAT_WHITE, _WHITE,  _DSEA);
+        init_pair(_BOAT_WOOD,  _LWOOD,  _DSEA);
+        init_pair(_LAND,       _BROWN,  _BEIGE);
+        init_pair(_TREETOP,    _LGREEN, _GREEN);
+        init_pair(_TREETRUNK,  _WOOD,   _DGREY);
+        init_pair(_GRASSY,     _LGREEN, _GREEN);
+        init_pair(_SEA_DARK,   _GREEN,  _DSEA);
+        init_pair(_SEA_MED,    _SEA,    _DSEA);
+        init_pair(_SEA_LIG,    _LSEA,   _DSEA);
+
+        init_pair(__BOAT_WHITE, __WHITE,  __DSEA);
+        init_pair(__BOAT_WOOD,  __LWOOD,  __DSEA);
+        init_pair(__LAND,       __BROWN,  __BEIGE);
+        init_pair(__TREETOP,    __LGREEN, __GREEN);
+        init_pair(__TREETRUNK,  __WOOD,   __DGREY);
+        init_pair(__GRASSY,     __LGREEN, __GREEN);
+        init_pair(__SEA_DARK,   __GREEN,  __DSEA);
+        init_pair(__SEA_MED,    __SEA,    __DSEA);
+        init_pair(__SEA_LIG,    __LSEA,   __DSEA);
 }

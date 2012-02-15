@@ -10,13 +10,16 @@
 #define _XOPEN_SOURCE_EXTENDED = 1  /* extended character sets */
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdint.h>
 #include <ncurses.h>
 #include <panel.h>
 #include <pthread.h>
 #include <semaphore.h>
+#include <math.h>
 
 #include "../lib/constants.h"
 #include "gfx.h"
+#include "../pan/test.h"
 #include "../gen/dice.h"
 #include "../lib/llist/list.h"
 #include "../gen/perlin.h"
@@ -28,6 +31,11 @@
 WORLD *GLOBE;
 WINDOW *WIPEWIN;
 PANEL  *WIPEPAN;
+
+/* Returns 1 if (y,x) is in GNODE 'G', else returns 0. */
+#define IN_GNODE(G, y, x) \
+        ((x>=G->dim.x0)&&(x<=(G->dim.xmax))&&(y>=G->dim.y0)&&(y<=(G->dim.ymax))) ? 1 : 0
+
 /******************************************************************************/
 sem_t *REFRESH_LOCK;
 
@@ -67,18 +75,78 @@ void swab_screen(void)
         GLOBE->P->step(GLOBE->P);
         scr_refresh();
 }
+/* Mark a rectangular portion of a bitboard with sides y0+h and x0+w 
+*******************************************************************************/
+void bitboard_mark(GNODE *G, int h, int w, int y0, int x0)
+{
+        if ((x0 >= COLS)||(y0 >= LINES)) return; /* If out of range */
+        int i, j, xf, yf;
+        xf = (x0+w);
+        yf = (y0+h);
+        xf = (xf >= COLS) ? COLS : xf;
+        yf = (yf >= LINES) ? LINES : yf;
+
+        for (i=y0; i<yf; i++) {
+        for (j=x0; j<xf; j++) {
+                SET_BIT(G->bb, i, j);
+        }
+        }
+}
+                
+/* Print a test output from a bitboard 
+*******************************************************************************/
+void masktestprint(PLATE *pl, int layer)
+{
+        werase(BIGWIN);
+        int i, j;
+        for (i=0; i<LINES; i++) {
+        for (j=0; j<COLS; j++) {
+                if (BIT_SET(pl->env[layer]->bb, i, j))
+                        mvwprintw(BIGWIN, i, j, "1");
+        }
+        }
+}
 
 /* Traverse a ring of GNODES and arrange the PANELS in the appropriate stack
  * order. */
 void restack(PLATE *pl)
 {
         GNODE *tmp;
-        int i = STACK_LAYERS;
-        for (i=0; i<STACK_LAYERS; i++) {
-                list_for_each(pl->gfx, tmp, node) {
-                        if (tmp->dim.layer == i) top_panel(tmp->pan);
+        int i;
+        for (i=0; i<ENV_LAYERS; i++) {
+                top_panel(pl->env[i]->pan);
+        }
+        list_for_each(pl->gfx, tmp, node) {
+                if (tmp->dim.layer == i++) {
+                        top_panel(tmp->pan);
+                        vrt_refresh();
                 }
         }
+}
+GNODE *gnode_below(PLATE *pl, int y, int x)
+{
+        GNODE *tmp; 
+        int i;
+        for (i=ENV_LAYERS-1; i>=0; i--) {
+                if (IN_GNODE(pl->env[i], y, x) == 1) 
+                        return pl->env[i];
+        }
+        return NULL;
+}
+
+
+void combine(PLATE *pl)
+{
+        int i;
+        static int sw = 1;
+        for (i=__rim__; i<__mob__; i++) {
+                overlay(pl->env[i]->W->window, pl->env[__bgr__]->W->window);
+        }
+        if (sw) {
+                top_panel(pl->env[__bgr__]->pan);
+                sw = 0;
+        }
+        scr_refresh();
 }
 
 /******************************************************************************
@@ -107,6 +175,7 @@ void step_wnode_forward(const void *gnode)
 
         gfx->next(gfx);
         replace_panel(gfx->pan, gfx->W->window);
+        scr_refresh();
 }
 /*************************************************************************}}}1*/
 /******************************************************************************
@@ -129,8 +198,8 @@ GNODE *new_gnode(int layer, int h, int w, int y0, int x0, int n)
         gfx->dim.w     = w;
         gfx->dim.y0    = y0;
         gfx->dim.x0    = x0;
-        gfx->dim.ymax  = y0+h;  
-        gfx->dim.xmax  = x0+w;
+        gfx->dim.ymax  = y0+h-1; 
+        gfx->dim.xmax  = x0+w-1;
         gfx->dim.yco   = y0;    /* Current coords = starting coords */
         gfx->dim.xco   = x0;
         gfx->dim.n     = n;
@@ -138,6 +207,8 @@ GNODE *new_gnode(int layer, int h, int w, int y0, int x0, int n)
         /* Method callbacks */
         gfx->next = &next_wnode;
         gfx->step = &step_wnode_forward;
+
+        INIT_BITBOARD(gfx->bb, LINES, COLS);
 
         __RING(gfx->wins);
 
@@ -172,8 +243,10 @@ void show_all_gnodes(const void *plate)
         GNODE *tmp;
         list_for_each(pl->gfx, tmp, node) {
                 show_panel(tmp->pan);
+                vrt_refresh();
         }
         restack(pl);
+        scr_refresh();
 }
 void hide_all_gnodes(const void *plate)
 {
@@ -213,15 +286,25 @@ PLATE *new_plate(int kind, int yco, int xco)
         new->pmap = gen_perlin_map(LINES, COLS);
         cchar_t *tile = get_tile(kind);
 
+        new->env[__bgr__] = new_gnode(__bgr__, LINES, COLS, 0, 0, 1);
+        new->env[__rim__] = new_gnode(__rim__, LINES, COLS, 0, 0, 2);
+        new->env[__hig__] = new_gnode(__hig__, LINES, COLS, 0, 0, 1);
+        new->env[__drt__] = new_gnode(__drt__, LINES, COLS, 0, 0, 1);
+        new->env[__drd__] = new_gnode(__drd__, LINES, COLS, 0, 0, 1);
+        new->env[__grt__] = new_gnode(__grt__, LINES, COLS, 0, 0, 1);
+        new->env[__grd__] = new_gnode(__grd__, LINES, COLS, 0, 0, 1);
+        new->env[__trt__] = new_gnode(__trt__, LINES, COLS, 0, 0, 1);
+        new->env[__trd__] = new_gnode(__trd__, LINES, COLS, 0, 0, 1);
+        new->env[__sec__] = new_gnode(__sec__, LINES, COLS, 0, 0, 1);
+
         /* Background layer */
-        GNODE *bgr = new_gnode(__bgr__, LINES, COLS, 0, 0, 2);
-        wbkgrnd(bgr->W->window, tile);
-        bgr->next(bgr);
-        wbkgrnd(bgr->W->window, tile);
-        LINCREMENT(new, gfx, &bgr->node);
+        int i, j;
+        for (i=0; i<LINES; i++) {
+                mvwhline_set(new->env[__bgr__]->W->window, i, 0, &OCEAN[0], COLS);
+        }
 
         /* Highlight layer */
-        int i, wid, x0, y0;
+        int wid, x0, y0;
         for (i=0; i<5; i++) {
                 wid = roll_fair(50);
                 x0  = roll_fair(80);
@@ -229,6 +312,13 @@ PLATE *new_plate(int kind, int yco, int xco)
                 GNODE *newhi = new_gnode(__hig__, 1, wid, y0, x0, 1);
                 wbkgrnd(newhi->W->window, &OCEAN[2]);
                 LINCREMENT(new, gfx, &newhi->node);
+        }
+        for (i=0; i<5; i++) {
+                wid = roll_fair(20)+1;
+                x0  = roll_fair(80)+1;
+                y0  = roll_fair(50)+1;
+                GNODE *newwea = new_gnode(__wea__, 5, wid, y0, x0, 1);
+                LINCREMENT(new, gfx, &newwea->node);
         }
         restack(new); /* Make sure everything is in order */
         return new;
@@ -354,13 +444,15 @@ PLATE *current_plate(void)
  * DESPAIR, THE ROOST OF WRETCHED FUNCS DEPORTED TO THIS PENULT BARE
  * OF DOCUMENTS OR COMMENTS, YEA, OF HOPE, TO WASTE, UNTIL REPAIR'D.
  ******************************************************************************/
+
+
 int hit_test(PLATE *pl, int y, int x)
 {
         GNODE *tmp;
         int i = 0;
 
         list_for_each(pl->gfx, tmp, node) {
-                if ((tmp->dim.layer == __top__)||(tmp->dim.layer == __drp__)) {
+                if ((tmp->dim.layer == __grt__)||(tmp->dim.layer == __drd__)) {
                         if (((x >= tmp->dim.x0)                  && 
                              (x <= (tmp->dim.x0 + tmp->dim.w))   &&
                              (y >= tmp->dim.y0)                  &&

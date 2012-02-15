@@ -44,9 +44,6 @@ void blow_wind(EV_P_ ev_timer *w, int revents)
         
         sail_boat(NULL);
 
-        /*int strength = get_wind_str();*/
-        /*w->repeat = (float)(strength*0.10);*/
-
         if ((sem_trywait(bun->sem) == -1)) ev_timer_again(EV_DEFAULT, w);
         else                               ev_break(EV_A_ EVBREAK_ALL);
 }
@@ -59,6 +56,7 @@ void tumbler(EV_P_ ev_timer *w, int revents)
         seek_heading();
         seek_prevailing();
         draw_compass();
+        render_clouds(GLOBE->P);
         shift_highlights(GLOBE->P);
 
         if ((sem_trywait(bun->sem) == -1)) ev_timer_again(EV_DEFAULT, w);
@@ -69,7 +67,9 @@ void do_animate(EV_P_ ev_timer *w, int revents)
 {
         OO_time *bun = container_of(w, OO_time, w);
 
-        GLOBE->P->step(GLOBE->P);
+        GLOBE->P->env[__rim__]->step(GLOBE->P->env[__rim__]);
+        combine(GLOBE->P);
+
 
         if ((sem_trywait(bun->sem) == -1)) ev_timer_again(EV_DEFAULT, w);
         else                               ev_break(EV_A_ EVBREAK_ALL);
@@ -99,10 +99,14 @@ int main()
 
         terminal_check();
 
+
         /* Graphics */
-        testworld(3);
         WORLD *map = new_world(__sea__, 3, 3);
         simpledraw(map->P);
+
+        draw_water_rim(map->P);
+        combine(map->P);
+        test_bitboards(DIAGNOSTIC_WIN);
 
         MOB *boat = new_boat();
         nominate_boat(boat);

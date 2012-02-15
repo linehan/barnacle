@@ -21,8 +21,8 @@
 
 #include "instruments.h"
 #include "../gen/dice.h"
-#include "../geo/weather.h"
 #include "../gfx/gfx.h"
+#include "../geo/weather.h"
 #include "../gfx/palette.h"
 #include "../gfx/sprite.h"
 #include "../mob/mob.h"
@@ -93,12 +93,11 @@ void init_instruments(void)
         setcchar(&(CMRK[GH]), &(gfxMRK[DN]), 0, CMP_SHADOW, NULL);
         setcchar(&(CMRK[UP]), &(gfxMRK[UP]), 0, CMP_YELLOW, NULL);
 
-        inst_win = newwin(1, COLS, 0, 0);
+        /*inst_win = newwin(1, COLS, 0, 0);*/
+        /*inst_pan = new_panel(inst_win);*/
 
-        inst_pan = new_panel(inst_win);
-
-        cmpbox_win = newwin(5, box_wid, 0, ((COLS/2)-(box_hlf)));
-        cmprib_win = newwin(1, 13, 2, ((COLS/2)-(rib_hlf)));
+        cmpbox_win = newwin(3, box_wid, 0, ((COLS/2)-(box_hlf)));
+        cmprib_win = newwin(1, 13, 1, ((COLS/2)-(rib_hlf)));
 
         wbkgrnd(cmpbox_win, &CMPBG);
         wbkgrnd(cmprib_win, &CMPBG);
@@ -271,44 +270,42 @@ void draw_compass(void)
 
         struct compass_char *tmp;
 
-        if (!(panel_hidden(cmpbox_pan))) {
+        if (panel_hidden(cmpbox_pan)) return;
         /* Make sure panels are on top */
         top_panel(cmpbox_pan);
         top_panel(cmprib_pan);
-        top_panel(inst_pan);
-        }
 
         /* Erase windows */
         werase(cmpbox_win);
         werase(cmprib_win);
 
         /* LINE 0 */
-        mvwhline_set(cmpbox_win, 0, 0, &CBOR[5], box_wid);
-        mvwadd_wch(cmpbox_win, 1, offsgh, &(CMRK[GH]));
-        mvwadd_wch(cmpbox_win, 1, offsdn, &(CMRK[DN]));
+        /*mvwhline_set(cmpbox_win, 0, 0, &CBOR[BOT], box_wid);*/
+        mvwadd_wch(cmpbox_win, 0, offsgh, &(CMRK[GH]));
+        mvwadd_wch(cmpbox_win, 0, offsdn, &(CMRK[DN]));
         /*mvwadd_wch(cmpbox_win, 0, 0, &(CBOX[TL]));*/
-        mvwadd_wch(cmpbox_win, 1, 0, &(CBOR[LSIDE]));
+        mvwadd_wch(cmpbox_win, 0, 0, &(CBOR[LSIDE]));
         /*mvwadd_wch(cmpbox_win, 0, (box_wid-1), &(CBOX[TR]));*/
-        mvwadd_wch(cmpbox_win, 1, (box_wid-1), &(CBOR[RSIDE]));
+        mvwadd_wch(cmpbox_win, 0, (box_wid-1), &(CBOR[RSIDE]));
 
         /* LINE 1 */
         /*mvwadd_wch(cmpbox_win, 1, 0, &(CBOX[VR]));*/
-        mvwadd_wch(cmpbox_win, 2, 0, &(CBOR[LSIDE]));
+        mvwadd_wch(cmpbox_win, 1, 0, &(CBOR[LSIDE]));
         list_for_each(&CMP, tmp, node) {
                 mvwadd_wch(cmprib_win, 0, i++, &(tmp->cch));
         }
         /*mvwadd_wch(cmpbox_win, 1, (box_wid-1), &(CBOX[VR]));*/
-        mvwadd_wch(cmpbox_win, 2, (box_wid-1), &(CBOR[RSIDE]));
+        mvwadd_wch(cmpbox_win, 1, (box_wid-1), &(CBOR[RSIDE]));
 
         /* LINE 2 */
-        mvwadd_wch(cmpbox_win, 3, (offsup), &(CMRK[UP]));
-        mvwadd_wch(cmpbox_win, 3, 0, &(CBOR[LSIDE]));
-        mvwadd_wch(cmpbox_win, 3, (box_wid-1), &(CBOR[RSIDE]));
+        mvwadd_wch(cmpbox_win, 2, (offsup), &(CMRK[UP]));
+        mvwadd_wch(cmpbox_win, 2, 0, &(CBOR[LSIDE]));
+        mvwadd_wch(cmpbox_win, 2, (box_wid-1), &(CBOR[RSIDE]));
         /*mvwadd_wch(cmpbox_win, 2, 0, &(CBOX[BL]));*/
-        mvwadd_wch(cmpbox_win, 4, 0, &(CBOR[BOTL]));
-        mvwhline_set(cmpbox_win, 4, 1, &CBOR[BOT], box_wid-2);
+        /*mvwadd_wch(cmpbox_win, 4, 0, &(CBOR[BOTL]));*/
+        /*mvwhline_set(cmpbox_win, 4, 1, &CBOR[BOT], box_wid-2);*/
         /*mvwadd_wch(cmpbox_win, 2, (box_wid-1), &(CBOX[BR]));*/
-        mvwadd_wch(cmpbox_win, 4, (box_wid-1), &(CBOR[BOTR]));
+        /*mvwadd_wch(cmpbox_win, 4, (box_wid-1), &(CBOR[BOTR]));*/
         vrt_refresh();
 
         scr_refresh();

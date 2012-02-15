@@ -15,6 +15,7 @@
 
 #include "../lib/llist/list.h"
 #include "../lib/hash/hash.h"
+#include "../gfx/gfx.h"
 #include "../gfx/palette.h"
 #include "../gfx/sprite.h"
 #include "../txt/psh.h"
@@ -74,6 +75,21 @@ void diceroll_cb(void *word)
         wprintw(DIAGNOSTIC_WIN, "!\n");
 }
 /******************************************************************************
+ * Print a 18h x 54w map with the designated test data
+ ******************************************************************************/
+void mapgen_cb(void *test)
+{
+        const char *w = (const char *)test;
+        int arg2;
+        if      ((strcmp(w, "latitude")==0)||(strcmp(w, "lat")==0))     arg2 = 0;
+        else if ((strcmp(w, "temperature")==0)||(strcmp(w, "temp")==0)) arg2 = 1;
+        else if ((strcmp(w, "wind")==0))                                arg2 = 2;
+        else if ((strcmp(w, "cell")==0))                                arg2 = 3;
+        else if ((strcmp(w, "gradient")==0)||(strcmp(w, "grad")==0))    arg2 = 4;
+        else return;
+        testworld(3, arg2);
+}
+/******************************************************************************
  * Print the terminal's long name, short name, and associated attributes.
  ******************************************************************************/
 void terminfo_cb(void *win)
@@ -106,6 +122,7 @@ void init_menus(void)
         HASHTABLE_INIT(CMD);
         ADD_TO_HASHTABLE(CMD, "roll", NULL, &diceroll_cb);
         ADD_TO_HASHTABLE(CMD, "perlin", NULL, &perlin_cb );
+        ADD_TO_HASHTABLE(CMD, "mapgen", NULL, &mapgen_cb );
         ADD_TO_HASHTABLE(CMD, "clear", DIAGNOSTIC_WIN, &clear_cb);
         ADD_TO_HASHTABLE(CMD, "term", NULL, &checkterm);
         ADD_TO_HASHTABLE(CMD, "syspan", NULL, &toggle_syspan);
@@ -140,14 +157,11 @@ void psh_context(void *phrase)
 /* Show/hide the main menu prompt */
 void toggle_mm(void)
 {
-        if ((panel_hidden(TALKP))) {
-                show_panel(TALKP);
-                doupdate();
-                wlisten(TALKW, &psh_context);
-                hide_panel(TALKP);
-                doupdate();
-        }
-        else 
-                hide_panel(TALKP);
-                doupdate();
+        TOGPAN(TALKP);
+        wlisten(TALKW, &psh_context);
+        TOGPAN(TALKP);
+}
+void toggle_workbox(void)
+{
+        TOGPAN(DIAGNOSTIC_PAN);
 }
