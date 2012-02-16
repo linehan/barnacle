@@ -88,7 +88,7 @@ void bitboard_mark(GNODE *G, int h, int w, int y0, int x0)
 
         for (i=y0; i<yf; i++) {
         for (j=x0; j<xf; j++) {
-                SET_BIT(G->bb, i, j);
+                set_bit(&G->bb, i, j);
         }
         }
 }
@@ -101,7 +101,19 @@ void masktestprint(PLATE *pl, int layer)
         int i, j;
         for (i=0; i<LINES; i++) {
         for (j=0; j<COLS; j++) {
-                if (BIT_SET(pl->env[layer]->bb, i, j))
+                if (bit_set(&pl->env[layer]->bb, i, j))
+                        mvwprintw(BIGWIN, i, j, "1");
+        }
+        }
+}
+void mortprint(PLATE *pl, int layer)
+{
+        werase(BIGWIN);
+        unsigned int i, j, z;
+        for (i=0; i<LINES; i++) {
+        for (j=0; j<COLS; j++) {
+                mort(i, j, &z);
+                if (_IS_SET(pl->env[layer]->M[z]))
                         mvwprintw(BIGWIN, i, j, "1");
         }
         }
@@ -209,6 +221,12 @@ GNODE *new_gnode(int layer, int h, int w, int y0, int x0, int n)
         gfx->step = &step_wnode_forward;
 
         INIT_BITBOARD(gfx->bb, LINES, COLS);
+
+        unsigned int x, y, z;
+        y = LINES;
+        x = COLS;
+        mort(y, x, &z);
+        gfx->M = NEWMORT(z);
 
         __RING(gfx->wins);
 

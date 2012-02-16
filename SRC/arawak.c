@@ -70,7 +70,6 @@ void do_animate(EV_P_ ev_timer *w, int revents)
         GLOBE->P->env[__rim__]->step(GLOBE->P->env[__rim__]);
         combine(GLOBE->P);
 
-
         if ((sem_trywait(bun->sem) == -1)) ev_timer_again(EV_DEFAULT, w);
         else                               ev_break(EV_A_ EVBREAK_ALL);
 }
@@ -106,7 +105,36 @@ int main()
 
         draw_water_rim(map->P);
         combine(map->P);
-        test_bitboards(DIAGNOSTIC_WIN);
+
+        int i;
+        for (i=0; i<BLOCK_TOTAL; i++) {
+                if (i & 1) set_block(&map->P->env[2]->bb, i);
+        }
+        /*masktestprint(map->P, 2);*/
+
+
+
+
+        unsigned int *m, x, y, z;
+        const char *c;
+
+        x = COLS;
+        y = LINES;
+        mort(y, x, &z);
+
+        m = NEWMORT(z);
+
+        x = 32;
+        y = 13;
+        mort(y, x, &z);
+
+        SET_TILE(m[z], WEA, FOG);
+        
+        c = gettag(m[z], WEA);
+        wprintw(DIAGNOSTIC_WIN, "WEA: %s\n", c);
+
+
+
 
         MOB *boat = new_boat();
         nominate_boat(boat);

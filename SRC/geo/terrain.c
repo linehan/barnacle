@@ -111,10 +111,12 @@ void draw_trees(PLATE *pl, DIMS *d)
         for (i=ty0; i<imax; i++) {
         for (j=tx0; j<jmax; j++) {
                 mvwadd_wch(pl->env[__trt__]->W->window, i, j, &TREE[1]);
-                SET_BIT(pl->env[__trt__]->bb, i, j);
+                set_bit(&pl->env[__trt__]->bb, i, j);
         }
         }
-        SET_BITLINE(pl->env[__trd__]->bb, imax, tx0, tw);
+        for (i=tx0; i<tw; i++) {
+                set_bit(&pl->env[__trd__]->bb, imax, i);
+        }
         mvwhline_set(pl->env[__trd__]->W->window, imax, tx0, &TREE[0], tw);
 }
 
@@ -133,10 +135,12 @@ void draw_chunk(PLATE *pl, DIMS *d, int terrain)
         for (i=d->y0; i<imax; i++) {
         for (j=d->x0; j<jmax; j++) {
                 mvwadd_wch(top->W->window, i, j, bgtop);
-                SET_BIT(top->bb, i, j);
+                set_bit(&top->bb, i, j);
         } 
         } /* Draw the drop */
-        SET_BITLINE(drp->bb, imax, d->x0, d->w);
+        for (i=d->x0; i<d->w; i++) {
+                set_bit(&drp->bb, imax, i);
+        }
         mvwhline_set(drp->W->window, imax, d->x0, &MTN[2], d->w);
 
         if (flip_biased(0.5))
@@ -208,30 +212,28 @@ void draw_water_rim(PLATE *pl)
         rimwin2 = pl->env[__rim__]->W->window;
 
         for (i=1; i<LINES; i++) {
-                padu = i-1;
-                padd = i+1;
         for (j=1; j<COLS-1; j++) {
-                padl=j-1;
-                padr=j+1;
-                        /* If I am part of layer 'top' or layer 'drp', loop */
-                        if (BIT_SET(top->bb, (i), (j))) continue;
-                        if (BIT_SET(drp->bb, (i), (j))) continue;
 
-                        n = 1;
-                        do {
-                                switch (n) {
-                                case 0:
-                                if (BIT_SET(top->bb, (i), (padl))) break;
-                                if (BIT_SET(top->bb, (padu), (padr))) break;
-                                if (BIT_SET(top->bb, (padu), (padl))) break;
-                                if (BIT_SET(drp->bb, (padu), (j))) break;
-                                if (BIT_SET(drp->bb, (i), (padr))) break;
-                                if (BIT_SET(drp->bb, (i), (padl))) break;
-                                n = 2;
-                                case 1:
-                                mvwadd_wch(rimwin1, i, j, &OCEAN[3]);
-                                mvwadd_wch(rimwin2, i, j, &OCEAN[2]);
-                                break;
+                
+                        /*[> If I am part of layer 'top' or layer 'drp', loop <]*/
+                        /*if (BIT_SET(top->bb, (i), (j))) continue;*/
+                        /*if (BIT_SET(drp->bb, (i), (j))) continue;*/
+
+                        /*n = 1;*/
+                        /*do {*/
+                                /*switch (n) {*/
+                                /*case 0:*/
+                                /*if (BIT_SET(top->bb, (i), (padl))) break;*/
+                                /*if (BIT_SET(top->bb, (padu), (padr))) break;*/
+                                /*if (BIT_SET(top->bb, (padu), (padl))) break;*/
+                                /*if (BIT_SET(drp->bb, (padu), (j))) break;*/
+                                /*if (BIT_SET(drp->bb, (i), (padr))) break;*/
+                                /*if (BIT_SET(drp->bb, (i), (padl))) break;*/
+                                /*n = 2;*/
+                                /*case 1:*/
+                                /*mvwadd_wch(rimwin1, i, j, &OCEAN[3]);*/
+                                /*mvwadd_wch(rimwin2, i, j, &OCEAN[2]);*/
+                                /*break;*/
                         
                         /*}*/
                         /*[> If the bit in the row above me is set <]*/

@@ -36,7 +36,7 @@ struct compass_char {
 };
 
 enum gfxtags { DN=0,UP=1,GH=2,VR=0,HZ=1,TL=2,TR=3,BL=4,BR=5 };
-enum bordertags { LSIDE=0,RSIDE=1,BOTL=2,BOTR=3,BOT=4 };
+enum bordertags { LSIDE=0,RSIDE=1,BOTL=2,BOTR=3,BOTT=4 };
 enum compass_window_dims { 
         box_wid = 15, /* compass box width */
         box_hlf = 8,  /* compass box half width */
@@ -114,7 +114,7 @@ void init_instruments(void)
         for (i=0; i<5; i++) {
                 setcchar(&(CBOR[i]), &(gfxCBOR[i]), 0, CMP_ORANGE, NULL);
         }
-        setcchar(&(CBOR[5]), &(gfxCBOR[BOT]), 0, CMP_PINK, NULL);
+        setcchar(&(CBOR[5]), &(gfxCBOR[BOTT]), 0, CMP_PINK, NULL);
         wbkgrnd(inst_win, &CBOR[5]);
         /* Paint the compass box elements */
         for (i=0; i<5; i++) {
@@ -280,7 +280,7 @@ void draw_compass(void)
         werase(cmprib_win);
 
         /* LINE 0 */
-        /*mvwhline_set(cmpbox_win, 0, 0, &CBOR[BOT], box_wid);*/
+        /*mvwhline_set(cmpbox_win, 0, 0, &CBOR[BOTT], box_wid);*/
         mvwadd_wch(cmpbox_win, 0, offsgh, &(CMRK[GH]));
         mvwadd_wch(cmpbox_win, 0, offsdn, &(CMRK[DN]));
         /*mvwadd_wch(cmpbox_win, 0, 0, &(CBOX[TL]));*/
@@ -303,7 +303,7 @@ void draw_compass(void)
         mvwadd_wch(cmpbox_win, 2, (box_wid-1), &(CBOR[RSIDE]));
         /*mvwadd_wch(cmpbox_win, 2, 0, &(CBOX[BL]));*/
         /*mvwadd_wch(cmpbox_win, 4, 0, &(CBOR[BOTL]));*/
-        /*mvwhline_set(cmpbox_win, 4, 1, &CBOR[BOT], box_wid-2);*/
+        /*mvwhline_set(cmpbox_win, 4, 1, &CBOR[BOTT], box_wid-2);*/
         /*mvwadd_wch(cmpbox_win, 2, (box_wid-1), &(CBOX[BR]));*/
         /*mvwadd_wch(cmpbox_win, 4, (box_wid-1), &(CBOR[BOTR]));*/
         vrt_refresh();
