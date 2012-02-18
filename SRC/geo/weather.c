@@ -60,95 +60,95 @@ void init_weather(void)
         g_windstate.pre = 0;
 
 }
-void movecloud(int dir)
-{
-        switch (dir) {
-        case 'l':
-                move_panel(CLOUDP, cloudy, --cloudx);
-                break;
-        case 'r':
-                move_panel(CLOUDP, cloudy, ++cloudx);
-                break;
-        case 'u':
-                move_panel(CLOUDP, --cloudy, cloudx);
-                break;
-        case 'd':
-                move_panel(CLOUDP, ++cloudy, cloudx);
-                break;
-        }
-        cloudfresh = 0;
-        vrt_refresh();
-}
+/*void movecloud(int dir)*/
+/*{*/
+        /*switch (dir) {*/
+        /*case 'l':*/
+                /*move_panel(CLOUDP, cloudy, --cloudx);*/
+                /*break;*/
+        /*case 'r':*/
+                /*move_panel(CLOUDP, cloudy, ++cloudx);*/
+                /*break;*/
+        /*case 'u':*/
+                /*move_panel(CLOUDP, --cloudy, cloudx);*/
+                /*break;*/
+        /*case 'd':*/
+                /*move_panel(CLOUDP, ++cloudy, cloudx);*/
+                /*break;*/
+        /*}*/
+        /*cloudfresh = 0;*/
+        /*vrt_refresh();*/
+/*}*/
 
-void render_clouds(PLATE *pl)
-{
-        if (cloudfresh == 1) return;
+/*void render_clouds(PLATE *pl)*/
+/*{*/
+        /*if (cloudfresh == 1) return;*/
 
-        GNODE *tmp, *under;
-        WINDOW *pwin;
+        /*GNODE *tmp, *under;*/
+        /*WINDOW *pwin;*/
 
-        int py, px;     /* coordinates in target window */
-        int wmax, hmax;
-        int x, y;
+        /*int py, px;     [> coordinates in target window <]*/
+        /*int wmax, hmax;*/
+        /*int x, y;*/
 
-        cchar_t cch;    /* cchar_t to be decomposed */
-        wchar_t wch;    /* wchar_t of extracted cchar */
-        short pair;     /* color pair of extracted cchar */
-        attr_t attr;    /* attributes of extracted cchar */
+        /*cchar_t cch;    [> cchar_t to be decomposed <]*/
+        /*wchar_t wch;    [> wchar_t of extracted cchar <]*/
+        /*short pair;     [> color pair of extracted cchar <]*/
+        /*attr_t attr;    [> attributes of extracted cchar <]*/
 
-        list_for_each(pl->gfx, tmp, node) {
-        if (tmp->dim.layer != __wea__) continue;
+        /*list_for_each(pl->gfx, tmp, node) {*/
+        /*if (tmp->dim.layer != __wea__) continue;*/
 
-        wmax = tmp->dim.xmax;  /* width of cloud window */
-        hmax = tmp->dim.ymax;  /* height of cloud window */
+        /*wmax = tmp->dim.xmax;  [> width of cloud window <]*/
+        /*hmax = tmp->dim.ymax;  [> height of cloud window <]*/
 
-        for (y=0; y<tmp->dim.h; y++) {
-                for (x=0; x<tmp->dim.w; x++) {
+        /*for (y=0; y<tmp->dim.h; y++) {*/
+                /*for (x=0; x<tmp->dim.w; x++) {*/
                         /* Get the address of the GNODE which contains the
                          * tile directly below the indicated coordinates.
                          * (respects the stack order specified in "gfx.h" so
                          * that hidden panels or empty spaces don't count) */
-                        under = gnode_below(GLOBE->P, tmp->dim.y0+y, tmp->dim.x0+x);
+                        /*under = gnode_below(GLOBE->P, tmp->dim.y0+y, tmp->dim.x0+x);*/
 
-                        if (under == NULL) continue;
+                        /*if (under == NULL) continue;*/
 
-                        pwin = under->W->window;
+                        /*pwin = under->W->window;*/
                         /* Map the cloud's coordinates to the coordinates of
                          * the underlying GNODE, so we can extract a character
                          * from it at the appropriate point. */
-                        py = (tmp->dim.y0-under->dim.y0)+y;
-                        px = (tmp->dim.x0-under->dim.x0)+x;
+                        /*py = (tmp->dim.y0-under->dim.y0)+y;*/
+                        /*px = (tmp->dim.x0-under->dim.x0)+x;*/
 
                         /* Position the cursor in the underlying window and 
                          * extract the char_t at that location, placing it in
                          * our variable 'cch'. */
-                        mvwin_wch(pwin, py, px, &cch);
-                        mvwadd_wch(pwin, py, px, &cch);
+                        /*mvwin_wch(pwin, py, px, &cch);*/
+                        /*mvwadd_wch(pwin, py, px, &cch);*/
 
                         /* Get the wchar_t and the color pair that make up the
                          * cchar_t we've designated. */
-                        getcchar(&cch, &wch, &attr, &pair, NULL);
+                        /*getcchar(&cch, &wch, &attr, &pair, NULL);*/
                         /* If the color pair isn't one of ours, then the char
                          * is probably invalid, or blank */
-                        /*if (pair <= 17) continue;*/
+                        /*[>if (pair <= 17) continue;<]*/
 
                         /* Modify our copy of the cchar_t to use the same
                          * wchar_t as the one underneath, but render it with
                          * a color pair from shade group 1. */
-                        setcchar(&cch, &wch, 0, to_shade(pair, 1), NULL);
+                        /*setcchar(&cch, &wch, 0, to_shade(pair, 1), NULL);*/
 
                         /* Position the cursor in our cloud window, and write
                          * the modified cchar_t at the specified location. */
-                        mvwadd_wch(tmp->W->window, y, x, &cch);
-                        wrefresh(tmp->W->window);
-                        vrt_refresh();
-                }
-                scr_refresh();
-        }
-        }
-        cloudfresh = 1;
-        /*restack(pl);*/
-}
+                        /*mvwadd_wch(tmp->W->window, y, x, &cch);*/
+                        /*wrefresh(tmp->W->window);*/
+                        /*vrt_refresh();*/
+                /*}*/
+                /*scr_refresh();*/
+        /*}*/
+        /*}*/
+        /*cloudfresh = 1;*/
+        /*[>restack(pl);<]*/
+/*}*/
         
 /* Access the global wind state */
 int get_wind(int a)

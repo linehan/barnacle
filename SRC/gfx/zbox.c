@@ -6,20 +6,8 @@
 #include <ncurses.h>
 #include <panel.h>
 #include "zbox.h"
+#include "../lib/quadtree.h"
 #include "../pan/test.h"
-
-
-// Bit twiddling macros starting with '_' work on the entire byte
-#define _SET(B)       B =~ 0 
-#define _IS_SET(B)    B &  1
-#define _TOGGLE(B)    B ^= 1
-#define _CLEAR(B)     B &  0
-
-// These macros operate on the n-th bit
-#define SET(B, n)     B |=  (1 << n) 
-#define IS_SET(B, n)  B &   (1 << n)
-#define TOGGLE(B, n)  B ^=  (1 << n)
-#define CLEAR(B, n)   B &= ~(1 << n)
 
 //##############################################################################
 //#  IN (B): A single tile from the Morton array.                              #
@@ -99,7 +87,7 @@ void _stat_nyb(uint32_t B)
                 C >>= offset[n];  // push our nibble to the end
 
                 wprintw(INSPECTORMSGWIN, "%3s: %3s | ", nyb_tags[n], tags[n][C]);
-                C = B; // return C to the value of B
+                C = B;
         }
 }
 //##############################################################################
@@ -107,8 +95,17 @@ void _stat_nyb(uint32_t B)
 //##############################################################################
 ZBOX *new_zbox(uint32_t rows, uint32_t cols)
 {
-        ZBOX *new = calloc(1, sizeof(ZBOX)); // allocate a new ZBOX
-        mort(rows, cols, &new->max); // compute the maximum z-code
-        new->box = calloc(new->max, sizeof(uint32_t)); // allocate that many
-        return (new->box != NULL) ? new : NULL;
+        uint32_t i, j;
+        ZBOX *new;
+
+        new = malloc(sizeof(ZBOX));
+        new->n = (rows*cols); // total cells
+
+        for (i=0; i<rows; i++) {
+                for (j=0; j<cols; j++) {
+                        mort(i, j, &(new->z));
+                        new->bst = bst_insert(new->bst, new->z);
+                }
+        }
+        return new;
 }

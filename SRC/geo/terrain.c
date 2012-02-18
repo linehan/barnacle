@@ -30,8 +30,8 @@
 
 #include "weather.h"
 /******************************************************************************/
-PLATE *hi; /* Temporary highlight environment list_head */
-/******************************************************************************/
+uint32_t padx = 0; 
+uint32_t pady = 0;
 /******************************************************************************
  *  +----------------+ 
  *  | +------------+ <---- edge       These are, essentially, a stacked
@@ -49,44 +49,42 @@ PLATE *hi; /* Temporary highlight environment list_head */
  ******************************************************************************/
 /* Move terrain highlights in a direction determined by the current wind
  * direction. */
-void shift_highlights(PLATE *pl)
-{
-        int wind = get_wind(__dir__);
+/*void shift_highlights(PLATE *pl)*/
+/*{*/
+        /*int wind = get_wind(__dir__);*/
 
-        GNODE *tmp;
-        list_for_each(pl->gfx, tmp, node) {
-                if (tmp->dim.layer != __hig__) continue;
-                switch(wind) {
-                case NORTH:     tmp->dim.yco++;
-                                break;
-                case NE:        tmp->dim.yco++;
-                                tmp->dim.xco--;
-                                break;
-                case EAST:      tmp->dim.xco--;
-                                break;
-                case SE:        tmp->dim.yco--;
-                                tmp->dim.xco--;
-                                break;
-                case SOUTH:     tmp->dim.yco--;
-                                break;
-                case SW:        tmp->dim.yco--;
-                                tmp->dim.xco++;
-                                break;
-                case WEST:      tmp->dim.xco++;
-                                break;
-                case NW:        tmp->dim.yco++;
-                                tmp->dim.xco++;
-                                break;
-                }
-                tmp->dim.xco %= (COLS-tmp->dim.w);
-                tmp->dim.xco =  (tmp->dim.xco<=0)?(COLS-tmp->dim.w):tmp->dim.xco;
-                tmp->dim.yco %= LINES;
-                move_panel(tmp->pan, tmp->dim.yco, tmp->dim.xco);
-        }
-        scr_refresh();
-}
-
-
+        /*GNODE *tmp;*/
+        /*list_for_each(pl->gfx, tmp, node) {*/
+                /*if (tmp->dim.layer != __hig__) continue;*/
+                /*switch(wind) {*/
+                /*case NORTH:     tmp->dim.yco++;*/
+                                /*break;*/
+                /*case NE:        tmp->dim.yco++;*/
+                                /*tmp->dim.xco--;*/
+                                /*break;*/
+                /*case EAST:      tmp->dim.xco--;*/
+                                /*break;*/
+                /*case SE:        tmp->dim.yco--;*/
+                                /*tmp->dim.xco--;*/
+                                /*break;*/
+                /*case SOUTH:     tmp->dim.yco--;*/
+                                /*break;*/
+                /*case SW:        tmp->dim.yco--;*/
+                                /*tmp->dim.xco++;*/
+                                /*break;*/
+                /*case WEST:      tmp->dim.xco++;*/
+                                /*break;*/
+                /*case NW:        tmp->dim.yco++;*/
+                                /*tmp->dim.xco++;*/
+                                /*break;*/
+                /*}*/
+                /*tmp->dim.xco %= (COLS-tmp->dim.w);*/
+                /*tmp->dim.xco =  (tmp->dim.xco<=0)?(COLS-tmp->dim.w):tmp->dim.xco;*/
+                /*tmp->dim.yco %= LINES;*/
+                /*move_panel(tmp->pan, tmp->dim.yco, tmp->dim.xco);*/
+        /*}*/
+        /*scr_refresh();*/
+/*}*/
 
 void draw_layers(MAP *map)
 {
@@ -130,9 +128,17 @@ void draw_layers(MAP *map)
                                         for (j=x0; j<jmax; j++) {
                                                 if (i == imax) {
                                                         mvwadd_wch(map->L[DRP], i, j, &MTN[2]);
+                                                        set_nyb(map->Z, imax, j, 3, 
+                                                                LAY, DRP, 
+                                                                SED, LIME, 
+                                                                SOI, MOLL);
                                                         continue;
                                                 }
                                                 mvwadd_wch(map->L[TOP], i, j, bgtop); // top
+                                                set_nyb(map->Z, i, j, 3, 
+                                                        LAY, TOP, 
+                                                        SED, LIME, 
+                                                        SOI, MOLL);
                                         }
                                 }
                                 // Draw the tree box
@@ -146,21 +152,29 @@ void draw_layers(MAP *map)
                                 for (i=ty0; i<=imax; i++) {
                                         for (j=tx0; j<jmax; j++) {
                                                 if (i == imax) {
-                                        /*set_nyb(&pl->Z, imax, j, 3, LAY, VEG, SED, LIME, SOI, MOLL);*/
+                                                        set_nyb(map->Z, imax, j, 3, 
+                                                                LAY, VEG, 
+                                                                SED, LIME, 
+                                                                SOI, MOLL);
                                                         mvwadd_wch(map->L[VEG], i, j, &TREE[0]);
                                                         continue;
                                                 }
                                                 mvwadd_wch(map->L[VEG], i, j, &TREE[1]);
-                                        /*set_nyb(&pl->Z, i, j, 3, LAY, VEG, SED, LIME, SOI, SPOD);*/
+                                                set_nyb(map->Z, i, j, 3, 
+                                                        LAY, VEG, 
+                                                        SED, LIME, 
+                                                        SOI, SPOD);
                                         }
                                 }
                         }
+                        mvwadd_wch(map->L[BGR], y0, x0, &OCEAN[0]);
                 }
         }
 }
 
-MAP *worldgen(int rows, int cols)
+MAP *worldgen(uint32_t rows, uint32_t cols)
 {
+
         int i;
 
         MAP *new;
@@ -170,52 +184,49 @@ MAP *worldgen(int rows, int cols)
 
         new->h    = rows;
         new->w    = cols;
-        new->pmap = gen_perlin_map(rows, cols);
+        new->pmap = gen_perlin_map(new->w, new->w);
         new->W    = newpad(new->h, new->w);
+        new->Z    = new_zbox(new->h, new->w);
 
         for (i=0; i<16; i++) {
                 new->L[i] = newpad(new->h, new->w);
         }
         draw_layers(new);
 
-        for (i=__rim__; i<__mob__; i++) {
+        for (i=0; i<16; i++) {
                 overlay(new->L[i], new->W);
         }
-        /*while (i > RIM) {*/
-                /*overlay(new->L[i], new->W);*/
-                /*i--;*/
-        /*}*/
         return new;
 }
 
-void draw_water_rim(PLATE *pl)
-{
-        uint32_t i, j, n;
+/*void draw_water_rim(PLATE *pl)*/
+/*{*/
+        /*uint32_t i, j, n;*/
 
-        WINDOW *rimwin1, *rimwin2;
-        rimwin1 = pl->L[RIM]->W->window;
-                  pl->L[RIM]->next(pl->L[RIM]);
-        rimwin2 = pl->L[RIM]->W->window;
+        /*WINDOW *rimwin1, *rimwin2;*/
+        /*rimwin1 = pl->L[RIM]->W->window;*/
+                  /*pl->L[RIM]->next(pl->L[RIM]);*/
+        /*rimwin2 = pl->L[RIM]->W->window;*/
 
-        for (i=1; i<LINES; i++) {
-                for (j=1; j<COLS-1; j++) {
-                        if ((is_nyb(pl, i, j, LAY, TOP))) continue;
-                        if ((is_nyb(pl, i, j, LAY, DRP))) continue;
+        /*for (i=1; i<LINES; i++) {*/
+                /*for (j=1; j<COLS-1; j++) {*/
+                        /*if ((is_nyb(pl, i, j, LAY, TOP))) continue;*/
+                        /*if ((is_nyb(pl, i, j, LAY, DRP))) continue;*/
 
-                        if ((is_nyb(pl, (i-1), j, LAY, TOP))        ||
-                            (is_nyb(pl, (i-1), j, LAY, DRP))        ||
-                            (is_nyb(pl, (i), (j+1), LAY, TOP))      ||
-                            (is_nyb(pl, (i), (j+1), LAY, DRP))      ||
-                            (is_nyb(pl, (i), (j-1), LAY, TOP))      ||
-                            (is_nyb(pl, (i), (j-1), LAY, DRP))) 
-                        {
-                                mvwadd_wch(rimwin1, i, j, &OCEAN[3]);
-                                mvwadd_wch(rimwin2, i, j, &OCEAN[2]);
-                                set_nyb(pl, i, j, LAY, RIM);
-                        } 
-                }
-        }
-}
+                        /*if ((is_nyb(pl, (i-1), j, LAY, TOP))        ||*/
+                            /*(is_nyb(pl, (i-1), j, LAY, DRP))        ||*/
+                            /*(is_nyb(pl, (i), (j+1), LAY, TOP))      ||*/
+                            /*(is_nyb(pl, (i), (j+1), LAY, DRP))      ||*/
+                            /*(is_nyb(pl, (i), (j-1), LAY, TOP))      ||*/
+                            /*(is_nyb(pl, (i), (j-1), LAY, DRP))) */
+                        /*{*/
+                                /*mvwadd_wch(rimwin1, i, j, &OCEAN[3]);*/
+                                /*mvwadd_wch(rimwin2, i, j, &OCEAN[2]);*/
+                                /*set_nyb(pl, i, j, LAY, RIM);*/
+                        /*} */
+                /*}*/
+        /*}*/
+/*}*/
 
 void testworld(int size_factor, int testtype)
 {
@@ -378,3 +389,29 @@ void testworld(int size_factor, int testtype)
                 break;
         }
 }
+
+void roll(MAP *map, int dir)
+{
+        switch (dir) {
+        case 'l':
+                if (padx == 0) padx = map->w;
+                else           padx--;
+                break;
+        case 'r':
+                if (padx == map->w) padx = 0;
+                else                padx++;
+                break;
+        case 'u':
+                if (pady == 0) pady = map->h;
+                else           pady--;
+                break;
+        case 'd':
+                if (pady == map->h) pady = 0;
+                else                pady++;
+                break;
+        }
+        prefresh(map->W, pady, padx, 1, 1, LINES-1, COLS-1);
+        vrt_refresh();
+        /*doupdate();*/
+}
+

@@ -51,36 +51,36 @@ void move_mob(MOB *mob, int dir)
         int y = mob->dim.yco;
         int x = mob->dim.xco;
 
-        switch (dir) {
-        case 'u':       if (((y>0)) && ((hit_test(GLOBE->P, --y, x) == 0)))
-                                mob->dim.yco--;
-                        break;
-        case 'd':       if ((y<LINES) && ((hit_test(GLOBE->P, ++y, x) == 0)))
-                                mob->dim.yco++;
-                        break;
-        case 'l':       if (((x>0)) && ((hit_test(GLOBE->P, y, --x) == 0)))
-                                mob->dim.xco--;
-                        break;
-        case 'r':       if (((x<COLS)) && ((hit_test(GLOBE->P, y, ++x) == 0)))
-                                mob->dim.xco++;
-                        break;
-        }
-        if ((mob->dim.yco == LINES)) {
-                screen_swap(SOUTH);
-                mob->dim.yco = 2;
-        } 
-        else if ((mob->dim.xco == 0)) {
-                screen_swap(WEST);
-                mob->dim.xco = COLS-2;
-        } 
-        else if ((mob->dim.yco == 0)) {
-                screen_swap(NORTH);
-                mob->dim.yco = LINES-2;
-        } 
-        else if ((mob->dim.xco == COLS)) {
-                screen_swap(EAST);
-                mob->dim.xco = 2;
-        }
+        /*switch (dir) {*/
+        /*case 'u':       if (((y>0)) && ((hit_test(GLOBE->P, --y, x) == 0)))*/
+                                /*mob->dim.yco--;*/
+                        /*break;*/
+        /*case 'd':       if ((y<LINES) && ((hit_test(GLOBE->P, ++y, x) == 0)))*/
+                                /*mob->dim.yco++;*/
+                        /*break;*/
+        /*case 'l':       if (((x>0)) && ((hit_test(GLOBE->P, y, --x) == 0)))*/
+                                /*mob->dim.xco--;*/
+                        /*break;*/
+        /*case 'r':       if (((x<COLS)) && ((hit_test(GLOBE->P, y, ++x) == 0)))*/
+                                /*mob->dim.xco++;*/
+                        /*break;*/
+        /*}*/
+        /*if ((mob->dim.yco == LINES)) {*/
+                /*screen_swap(SOUTH);*/
+                /*mob->dim.yco = 2;*/
+        /*} */
+        /*else if ((mob->dim.xco == 0)) {*/
+                /*screen_swap(WEST);*/
+                /*mob->dim.xco = COLS-2;*/
+        /*} */
+        /*else if ((mob->dim.yco == 0)) {*/
+                /*screen_swap(NORTH);*/
+                /*mob->dim.yco = LINES-2;*/
+        /*} */
+        /*else if ((mob->dim.xco == COLS)) {*/
+                /*screen_swap(EAST);*/
+                /*mob->dim.xco = 2;*/
+        /*}*/
         move_panel(mob->pan, mob->dim.yco, mob->dim.xco);
         top_panel(mob->pan);
         scr_refresh();

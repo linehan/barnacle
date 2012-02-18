@@ -16,17 +16,16 @@
 
 #include "../gfx/sprite.h"
 #include "../gfx/gfx.h"
+#include "../geo/terrain.h"
 /******************************************************************************/
 WINDOW *DIAGNOSTIC_WIN;
-PANEL *DIAGNOSTIC_PAN;
+PANEL  *DIAGNOSTIC_PAN;
 
 WINDOW *BIGWIN;
-PANEL *BIGPAN;
+PANEL  *BIGPAN;
 
 WINDOW *ERROR_WIN;
-WINDOW *ERRSH_WIN;
-PANEL *ERROR_PAN;
-PANEL *ERRSH_PAN;
+PANEL  *ERROR_PAN;
 
 WINDOW *SYSWIN;
 PANEL  *SYSPAN;
@@ -35,7 +34,6 @@ WINDOW *INSPECTORWIN;
 PANEL  *INSPECTORPAN;
 WINDOW *INSPECTORMSGWIN;
 PANEL  *INSPECTORMSGPAN;
-
 
 static int inspector_y = 0;
 static int inspector_x = 0;
@@ -63,11 +61,8 @@ void init_test(void)
         SYSPAN = new_panel(SYSWIN);
 
 	ERROR_WIN = newwin(10, COLS-(COLS/2), ((LINES/2)-5), (COLS/2)/2);
-	/*ERRSH_WIN = newwin(10, COLS-(COLS/2), ((LINES/2)-5)+1, ((COLS/2)/2)+1);*/
         ERROR_PAN = new_panel(ERROR_WIN);
-        /*ERRSH_PAN = new_panel(ERRSH_WIN);*/
         wbkgrnd(ERROR_WIN, &WARNBG);
-        /*wbkgrnd(ERRSH_WIN, &WARNSH);*/
 
         hide_panel(DIAGNOSTIC_PAN);
         hide_panel(ERROR_PAN);
@@ -75,7 +70,6 @@ void init_test(void)
         hide_panel(BIGPAN);
         hide_panel(INSPECTORPAN);
         hide_panel(INSPECTORMSGPAN);
-        /*hide_panel(ERRSH_PAN);*/
 }
 /* Toggle the diagnostic panel's visibility */
 void toggle_dpanel(void)
@@ -105,12 +99,10 @@ void toggle_bigpan(void)
 void speak_error(const char *error)
 {
         mvwprintw(ERROR_WIN, 1, 2, "%s\n", error);
-        /*show_panel(ERRSH_PAN);*/
         show_panel(ERROR_PAN);
         noecho();
         while (wgetch(ERROR_WIN) != '\n');
         echo();
-        /*hide_panel(ERRSH_PAN);*/
         hide_panel(ERROR_PAN);
         werase(ERROR_WIN);
 }
@@ -148,6 +140,6 @@ void move_inspector(int dir)
         top_panel(INSPECTORMSGPAN);
         move_panel(INSPECTORPAN, inspector_y, inspector_x);
         vrt_refresh();
-        stat_nyb(GLOBE->P, inspector_y, inspector_x);
+        stat_nyb(GLOBE->Z, inspector_y, inspector_x);
         scr_refresh();
 }

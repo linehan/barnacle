@@ -22,6 +22,7 @@ Bindings and actions for the user's keyboard input.
 #include "../typedefs.h"
 
 #include "../gfx/gfx.h"
+#include "../geo/terrain.h"
 #include "../gfx/palette.h"
 #include "../geo/weather.h"
 #include "../pan/instruments.h"
@@ -104,16 +105,16 @@ void *iolisten(EV_P_ ev_io *w, int revents)
                         move_inspector('r');
                         break;
                 case 'w':
-                        movecloud('u');
+                        roll(GLOBE, 'u');
                         break;
                 case 'a':
-                        movecloud('l');
+                        roll(GLOBE, 'l');
                         break;
                 case 's':
-                        movecloud('d');
+                        roll(GLOBE, 'd');
                         break;
                 case 'd':
-                        movecloud('r');
+                        roll(GLOBE, 'r');
                         break;
                 case '`':
                         toggle_mm();

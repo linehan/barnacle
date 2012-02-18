@@ -31,4 +31,4 @@ void movecloud(int dir);
 extern WINDOW *DIAGNOSTIC_WIN;
 extern PANEL *DIAGNOSTIC_PAN;
 extern int cloudfresh;
-void render_clouds(PLATE *pl);
+//void render_clouds(PLATE *pl);

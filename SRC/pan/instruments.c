@@ -27,116 +27,106 @@
 #include "../gfx/sprite.h"
 #include "../mob/mob.h"
 #include "../mob/boat.h"
+//##############################################################################
 
-/******************************************************************************/
+// Circularly linked list of compass characters
 struct compass_char {
-        cchar_t cch;
-        int dir;
+        cchar_t cch; // one character of the compass ribbon display
+        int dir;     // the direction that character represents
         struct list_node node;
 };
 
-enum gfxtags { DN=0,UP=1,GH=2,VR=0,HZ=1,TL=2,TR=3,BL=4,BR=5 };
-enum bordertags { LSIDE=0,RSIDE=1,BOTL=2,BOTR=3,BOTT=4 };
+enum gfxtags {DN=0,UP=1,GH=2,VR=0,HZ=1,TL=2,TR=3,BL=4,BR=5};
+enum bordertags {LSIDE=0,RSIDE=1,BOTL=2,BOTR=3,BOTT=4};
 enum compass_window_dims { 
-        box_wid = 15, /* compass box width */
-        box_hlf = 8,  /* compass box half width */
-        rib_wid = 13, /* compass ribbon width */
-        rib_hlf = 7,  /* compass ribbon half width */
-        rib_off = 1,  /* compass ribbon offset */
-        cmp_num = 16, /* number of compass elements */
-        cmp_hlf = 8   /* half the number of compass elements */
+        box_wid = 15, // width of entire compass window
+        box_hlf = 8,  // "half" of the width of the compass window
+        rib_wid = 13, // width of the compass ribbon (dial)
+        rib_hlf = 7,  // "half" of the ribbon width
+        rib_off = 1,  // offset of the ribbon from the box edge
+        cmp_num = 16, // number of ribbon elements
+        cmp_hlf = 8   // half the number of ribbon elements
 };
 
- /*▐▂▂▂▌*/
-/*▌▐▙▟*/
 static wchar_t gfxCBOR[] = L"▌▐▙▟▄";
 static wchar_t gfxCBOX[] = L"┃─┎┒┖┚";
 static wchar_t gfxMRK[] = L"▾▴";
 static wchar_t gfxCMP[] = L"N⋅∙⋅E⋅∙⋅S⋅∙⋅W⋅∙⋅";
 static wchar_t gfxCMPBG = L' ';
 
-static cchar_t CMPBG;
-static cchar_t CBOR[6]; /* One extra b/c the top is a different color */
-static cchar_t CBOX[6];
-static cchar_t CMRK[3];
+static cchar_t CMPBG;   // The background character
+static cchar_t CBOR[6]; // One extra b/c the top is a different color
+static cchar_t CBOX[6]; // Complex characters to draw the box
+static cchar_t CMRK[3]; // Comprex characters to draw the ribbon
 
-static LIST_HEAD(CMP);
+static LIST_HEAD(CMP);  // Head of the circularly linked list
 
-static WINDOW *inst_win;   /* the instrument window */
-static PANEL  *inst_pan;   /* the instrument panel */
+static WINDOW *inst_win;   
+static PANEL  *inst_pan;
 
-static WINDOW *cmpbox_win; /* the compass box window */
-static WINDOW *cmprib_win; /* the compass ribbon window */
-static PANEL  *cmpbox_pan; /* the compass box panel */
-static PANEL  *cmprib_pan; /* the compass ribbon panel */
+static WINDOW *cmpbox_win; // Where to draw the compass box
+static WINDOW *cmprib_win; // Where to draw the compass ribbon
+static PANEL  *cmpbox_pan;
+static PANEL  *cmprib_pan;
 
-static int offsdn; /* the heading mark offset */
-static int offsgh; /* lets the heading mark reel back in */
-static int offsup; /* the wind mark offset */
-/******************************************************************************/
+static int offsdn; // Offset of the heading marker
+static int offsgh; // Lets the heading marker "reel" in
+static int offsup; // Offset of the wind marker
+//##############################################################################
+
 void toggle_instrument_panel(void)
 {
         TOGPAN(cmpbox_pan); 
-        vrt_refresh();
         TOGPAN(cmprib_pan);
         vrt_refresh();
-        /*TOGPAN(inst_pan);*/
 }
 
 void init_instruments(void)
 {
         int i;
 
-        /* Init graphics and color palette */
+        // Init all graphics and complex characters
         setcchar(&CMPBG,      &(gfxCMPBG),   0, CMP_SHADOW, NULL);
-        setcchar(&(CMRK[DN]), &(gfxMRK[DN]), 0, CMP_GREEN, NULL);
+        setcchar(&(CMRK[DN]), &(gfxMRK[DN]), 0, CMP_GREEN,  NULL);
         setcchar(&(CMRK[GH]), &(gfxMRK[DN]), 0, CMP_SHADOW, NULL);
         setcchar(&(CMRK[UP]), &(gfxMRK[UP]), 0, CMP_YELLOW, NULL);
 
-        /*inst_win = newwin(1, COLS, 0, 0);*/
-        /*inst_pan = new_panel(inst_win);*/
-
         cmpbox_win = newwin(3, box_wid, 0, ((COLS/2)-(box_hlf)));
         cmprib_win = newwin(1, 13, 1, ((COLS/2)-(rib_hlf)));
+        cmpbox_pan = new_panel(cmpbox_win);
+        cmprib_pan = new_panel(cmprib_win);
 
         wbkgrnd(cmpbox_win, &CMPBG);
         wbkgrnd(cmprib_win, &CMPBG);
-        cmpbox_pan = new_panel(cmpbox_win);
-        cmprib_pan = new_panel(cmprib_win);
 
         overlay(cmpbox_win, inst_win);
         overlay(cmprib_win, inst_win);
 
-        offsup = 1;
-        offsdn = 1;
-        offsgh = 1;
+        offsdn = offsgh = offsup = 1; // offsets
 
-        for (i=0; i<5; i++) {
-                setcchar(&(CBOR[i]), &(gfxCBOR[i]), 0, CMP_ORANGE, NULL);
-        }
-        setcchar(&(CBOR[5]), &(gfxCBOR[BOTT]), 0, CMP_PINK, NULL);
-        wbkgrnd(inst_win, &CBOR[5]);
-        /* Paint the compass box elements */
+        // Box and border characters
         for (i=0; i<5; i++) {
                 setcchar(&(CBOX[i]), &(gfxCBOX[i]), 0, CMP_ORANGE, NULL);
+                setcchar(&(CBOR[i]), &(gfxCBOR[i]), 0, CMP_ORANGE, NULL);
         }
+        setcchar(&(CBOR[5]), &(gfxCBOR[BOTT]), 0, CMP_PINK, NULL); // extra
+        wbkgrnd(inst_win, &CBOR[5]);
 
-        /* Paint the compass ribbon elements */
+        // Paint the compass ribbon
         for (i=0; i<16; i++) {
-               struct compass_char *new = MALLOC(struct compass_char);
-               if (new == NULL) perror ("compass_char mis-allocated!");
+                struct compass_char *new = malloc(sizeof(struct compass_char));
                
-               switch (i%4) {
-               case 0: /* The cardinal directions */
-                       setcchar(&(new->cch), &gfxCMP[i], 0, CMP_WHITE, NULL);
-                       break;
-               case 1: /* The half winds (small dots) */
-               case 3:
-                       setcchar(&(new->cch), &gfxCMP[i], 0, CMP_BEIGE, NULL);
-                       break;
-               case 2: /* The ordinal directions */
-                       setcchar(&(new->cch), &gfxCMP[i], 0, CMP_ORANGE, NULL);
-                       break;
+                switch (i%4) {
+                case 0: // Cardinal directions
+                        setcchar(&(new->cch), &gfxCMP[i], 0, CMP_WHITE, NULL);
+                        break;
+                case 1: // Half winds (small dots)
+                case 3:
+                        setcchar(&(new->cch), &gfxCMP[i], 0, CMP_BEIGE, NULL);
+                        break;
+                case 2: // Ordinal directions (big dots)
+                        setcchar(&(new->cch), &gfxCMP[i], 0, CMP_ORANGE, NULL);
+                        break;
                }
                new->dir = i;
                list_add_tail(&CMP, &(new->node));
@@ -149,52 +139,41 @@ void init_instruments(void)
 void mark_hdg(int dir)
 {
         switch (dir) {
-        case 'L':
-                if (offsdn > 1)
-                        offsdn--;
-                break;
-        case 'R':
-                if (offsdn < rib_wid)
-                        offsdn++;
-                break;
-        case 'l':
-                if (offsgh > 1)
-                        offsgh--;
-                return;
-        case 'r':
-                if (offsgh < rib_wid)
-                        offsgh++;
-                return;
-        case 2:
-                break;
+        case 'L':       if (offsdn > 1) offsdn--;
+                        break;
+        case 'R':       if (offsdn < rib_wid) offsdn++;
+                        break;
+        case 'l':       if (offsgh > 1) offsgh--;
+                        return;
+        case 'r':       if (offsgh < rib_wid) offsgh++;
+                        return;
+        case 2:         break;
         }
         struct compass_char *tmp;
         tmp = list_top(&CMP, struct compass_char, node);
         int origin = tmp->dir;
         offsgh = offsdn;
         set_boat(_BOAT, __buf__, __hdg__, (origin+(offsdn-1))%16);
-
 }
 /* Calculate the offset of the wind arrow. This is not under the control of
  * the player; the mark will move to indicate the current wind direction on
  * the compass, and so requires no additional parameters */
 void mark_wind(void)
 {
-        /* The direction at the origin */
         struct compass_char *tmp;
-        tmp = list_top(&CMP, struct compass_char, node);
-        int origin = tmp->dir;
-        /* The current wind direction */
-        int cur = get_wind(__dir__);
-        /* The distance between the origin and the current wind direction */
-        int delta = (17+(cur-origin))%16;
+        int origin; // Wind direction at the origin of ribbon
+        int cur;    // Current wind direction
+        int delta;  // Distance between the origin and current wind direction
 
-        /* If the offset does not equal the delta, move the offset */
+        tmp    = list_top(&CMP, struct compass_char, node);
+        origin = tmp->dir;
+        cur    = get_wind(__dir__);
+        delta  = (17+(cur-origin))%16;
+
+        // If the offset doesn't equal the delta, increment the marker offset
         if (offsup != delta) {
-                if ((offsup > delta) && (offsup > 1))
-                        offsup--;
-                else if ((offsup < delta) && (offsup < rib_wid))
-                        offsup++;
+                if      ((offsup>delta) && (offsup>1))       offsup--;
+                else if ((offsup<delta) && (offsup<rib_wid)) offsup++;
         }
 }
 /* Tumble the compass ribbon left or right */
@@ -220,14 +199,13 @@ int seek_heading(void)
 {
         struct compass_char *tmp;
         int req = get_boat(_BOAT, __req__, __hdg__);
-        int origin;
+        int origin; // direction at origin
+        int mid;    // direction at midpoint
 
-        /* Get the value of the first printed direction */
         tmp = list_top(&CMP, struct compass_char, node);
-        origin = tmp->dir;
 
-        /* From that, calculate the direction at the mid point */
-        int mid = ((origin+6)%cmp_num);
+        origin = tmp->dir; // value of first printed direction
+        mid    = ((origin+6)%cmp_num); // compute direction @ midpoint
 
         /* Set the current heading to the midpoint */
         set_boat(_BOAT, __now__, __hdg__, mid); 
@@ -266,12 +244,11 @@ int seek_prevailing(void)
 /* Draw the compass panel */
 void draw_compass(void)
 {
-        int i = 0;
+        if (panel_hidden(cmpbox_pan)) return;
 
+        int i = 0;
         struct compass_char *tmp;
 
-        if (panel_hidden(cmpbox_pan)) return;
-        /* Make sure panels are on top */
         top_panel(cmpbox_pan);
         top_panel(cmprib_pan);
 
@@ -280,33 +257,23 @@ void draw_compass(void)
         werase(cmprib_win);
 
         /* LINE 0 */
-        /*mvwhline_set(cmpbox_win, 0, 0, &CBOR[BOTT], box_wid);*/
         mvwadd_wch(cmpbox_win, 0, offsgh, &(CMRK[GH]));
         mvwadd_wch(cmpbox_win, 0, offsdn, &(CMRK[DN]));
-        /*mvwadd_wch(cmpbox_win, 0, 0, &(CBOX[TL]));*/
         mvwadd_wch(cmpbox_win, 0, 0, &(CBOR[LSIDE]));
-        /*mvwadd_wch(cmpbox_win, 0, (box_wid-1), &(CBOX[TR]));*/
         mvwadd_wch(cmpbox_win, 0, (box_wid-1), &(CBOR[RSIDE]));
 
         /* LINE 1 */
-        /*mvwadd_wch(cmpbox_win, 1, 0, &(CBOX[VR]));*/
         mvwadd_wch(cmpbox_win, 1, 0, &(CBOR[LSIDE]));
         list_for_each(&CMP, tmp, node) {
                 mvwadd_wch(cmprib_win, 0, i++, &(tmp->cch));
         }
-        /*mvwadd_wch(cmpbox_win, 1, (box_wid-1), &(CBOX[VR]));*/
         mvwadd_wch(cmpbox_win, 1, (box_wid-1), &(CBOR[RSIDE]));
 
         /* LINE 2 */
         mvwadd_wch(cmpbox_win, 2, (offsup), &(CMRK[UP]));
         mvwadd_wch(cmpbox_win, 2, 0, &(CBOR[LSIDE]));
         mvwadd_wch(cmpbox_win, 2, (box_wid-1), &(CBOR[RSIDE]));
-        /*mvwadd_wch(cmpbox_win, 2, 0, &(CBOX[BL]));*/
-        /*mvwadd_wch(cmpbox_win, 4, 0, &(CBOR[BOTL]));*/
-        /*mvwhline_set(cmpbox_win, 4, 1, &CBOR[BOTT], box_wid-2);*/
-        /*mvwadd_wch(cmpbox_win, 2, (box_wid-1), &(CBOX[BR]));*/
-        /*mvwadd_wch(cmpbox_win, 4, (box_wid-1), &(CBOR[BOTR]));*/
-        vrt_refresh();
 
+        vrt_refresh();
         scr_refresh();
 }

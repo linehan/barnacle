@@ -2,7 +2,7 @@
 typedef struct mob_t {
         PANEL *pan;
         DIMS   dim;
-        PLATE *pl;
+        //PLATE *pl;
         sem_t *sem;
         void  *obj;
 } MOB;

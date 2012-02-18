@@ -4,27 +4,24 @@
 
 #include <pthread.h>
 #include <semaphore.h>
-#include <ncurses.h>
-#include <panel.h>
-#include <stdint.h>
 
 #include "../lib/llist/list.h"
+#include "../lib/quadtree.h"
 #include "../pan/test.h"
-#include "../lib/mergesort.h"
 #include "zbox.h"
-
 
 enum shitstain { __bgr__ = 0, __rim__ = 1, __hig__ = 2, __drt__ = 3,
                  __drd__ = 4, __grt__ = 5, __grd__ = 6, __trt__ = 7, 
                  __trd__ = 8, __sec__ = 9, __mob__ = 10, __wea__ = 11 };
 
+extern sem_t *REFRESH_LOCK; // keeps things from going crazy in the i/o thread
 
-extern sem_t *REFRESH_LOCK;
 /* Refresh the virtual screen */
 #define vrt_refresh()           \
         sem_wait(REFRESH_LOCK); \
         update_panels();        \
         sem_post(REFRESH_LOCK)
+
 /* Refresh the actual screen */
 #define scr_refresh()           \
         sem_wait(REFRESH_LOCK); \
@@ -36,29 +33,21 @@ extern sem_t *REFRESH_LOCK;
 #define TOGPAN(pan) \
         if (panel_hidden(pan))  show_panel(pan); \
         else                    hide_panel(pan)  
+
 /* Wipe the screen (force re-draw) */
 #define WIPE TOGPAN(WIPEPAN); \
              TOGPAN(WIPEPAN)
+
 /* Add a node to a ring (circular linked list) and increment dim.n */
 #define LINCREMENT(parent, headname, node) \
         list_add(parent->headname, node);  \
         parent->dim.n++
+
 /* Move through a ring, and leave tmp pointing at the first matching node */
 #define MATCH_FIELD(head, tmp, field, value)    \
         list_for_each(head, tmp, node) {        \
                 if (tmp->field == value) break; \
         }
-
-/******************************************************************************
- * These values are used to code/check the 'role' of a GNODE, that is, the 
- * particular, unambiguous purpose it serves in the PLATE, and which might
- * need to be identified, e.g., whether or not a GNODE can or should be 
- * animated, or whether it is a background, and so should always remain on 
- * the bottom of the PANEL stack, etc.
- ******************************************************************************/
-#define STACK_LAYERS 12 
-#define ENV_LAYERS 10 
-
 
 /******************************************************************************
  * Using the DIMS structure is all about laziness, plain and simple. Anything
@@ -110,155 +99,12 @@ typedef struct win_wad {
         WINDOW *window;
         struct list_node node; 
 } WNODE;
-/******************************************************************************
- * In a given plate/screen of the world map, the (more or less) atomic
- * element of graphics is the GNODE. A contiguous mass of terrain is likely
- * to be a GNODE, as is the background of the plate itself.
- *
- * Every GNODE contains a unique id and a class, which determines the types
- * of properties it can be counted on to have. For the full list of classes,
- * see the 'enum gclass' above. In addition, it contains a special DIMS data
- * type, outlined above, which is a structure containing various attributes 
- * of the GNODE and, more specifically, the PANEL pointed to by *pan, which
- * is the sole interface between the GNODE and the screen.
- *
- * Each GNODE contains one and only one PANEL, but also holds a ring of  
- * WNODEs, each of which can contain a different WINDOW that can be connected
- * to *pan as desired. A common example would be an animated element, in which 
- * each "frame" of the animation is stored in a WNODE. By cycling through the
- * WNODE list and calling panel_replace() on *pan (see panel(3X)) at some
- * desired interval, the PANEL on-screen will effectively be an animation.
- *
- * Convenient methods for traversing the WNODE ring are included, with the
- * currently active WNODE being referenced by *W. An additional method called 
- * 'step' is used to advance a sequential animation, i.e., it
- * performs a call analagous to 'nextw', then calls replace_panel() with the
- * new current_wnode->window.
- ******************************************************************************/
-typedef struct graphics_node {
-        DIMS  dim;
-        PANEL *pan;
-        WNODE *W;
-        int n;
-        struct list_head *wins;
-        struct list_node node;
-        void (*next)(const void *self);
-        void (*step)(const void *self);
-} GNODE;
-/******************************************************************************
- * The world map is divided into "plates", which can be thought of as
- * screens, in that the player transitions to the next plate when reaching
- * one of the four boundaries of the current plate. Thus, a given plate will
- * always fill the entire screen. The PLATE data structure represents these
- * elements.
- *
- * Each plate is composed of a unique coordinate id number, a height and width
- * value corresponding to the number of character rows and columns (which will
- * hopefully match the screen), a circularly linked list of GNODEs, and a
- * pointer *G to the active GNODE, which is set using the methods nextg and
- * prevg.
- ******************************************************************************/
-typedef struct map_plate {
-        GNODE *L[16];
-        DIMS  dim;
-        ZBOX *Z;
-        GNODE *G;
-        double **pmap;
-        struct list_head *gfx; /* Terrain graphics */
-        struct list_node node;
-        void (*next)(const void *self);
-        void (*step)(const void *self);
-        void (*hideall)(const void *self);
-        void (*showall)(const void *self);
-} PLATE;
-/******************************************************************************
- * The PLATE_ROW structure is a node in a linked list of rows which comprise
- * the entire collection of PLATEs that make up a world map. Each PLATE_ROW
- * itself contains the head of a linked list of PLATE nodes -- the PLATEs
- * which make up the row.
- ******************************************************************************/
-typedef struct map_row {
-        DIMS dim;
-        struct list_head *plate;
-        struct list_node node;
-} PLATEROW;
-/******************************************************************************
- * The world map is represented by the MAP data structure -- this is the
- * complete world generated by the program, the omnes mundus novus. 
- *
- * It consists of the total height and width of the world map, that is, the
- * number of vertical and horizontal plates, to be used as sentinel values 
- * when indexing the array of PLATES. The currently inhabited plate, that is,
- * presumably, the PLATE that is currently displayed on-screen, is referenced 
- * by the *P pointer, to avoid direct dereferencing of the full plate array.
- *
- * All access to the plate array is provided through a collection of methods
- * that will update the PLATE being referenced by *P, and return
- * the new coordinate value.
- ******************************************************************************/
-typedef struct world_map {
-        DIMS dim;
-        double **pmap;
-        PLATE *P;
-        PLATEROW *R;
-        struct list_head *row;
-        void (*prevr)(const void *self);
-        void (*nextr)(const void *self);
-        void (*prevp)(const void *self);
-        void (*nextp)(const void *self);
-} WORLD;
 
-
-#endif
-/******************************************************************************/
-extern WORLD *GLOBE;
-
-void init_geojug(void);
-void swab_screen(void);
-void restack(PLATE *pl);
+void geojug_start(void);
+void set_nyb(ZBOX *Z, int y, int x, int n, ...);
+void stat_nyb(ZBOX *Z, uint32_t y, uint32_t x);
 
 WNODE *new_wnode(int id, int h, int w, int y0, int x0);
-GNODE *new_gnode(int layer, int h, int w, int y0, int x0, int n);
-GNODE *get_gnode(PLATE *pl, int layer);
-PLATE *new_plate(int type, int yco, int xco);
-WORLD *new_world(int type, int h, int w);
+//void draw_water_rim(PLATE *pl);
 
-int hit_test(PLATE *pl, int y, int x);
-void merge_layer(PLATE *pl, int layer);
-void merge_all(PLATE *pl);
-void masktestprint(PLATE *pl, int layer);
-void bitboard_mark(GNODE *G, int h, int w, int y0, int x0);
-GNODE *gnode_below(PLATE *pl, int y, int x);
-
-void draw_water_rim(PLATE *pl);
-
-
-
-//##############################################################################
-//# These interface macros handle the dirty work of the ZBOX data type, so     #
-//# all you need to do is pass a PLATE pointer and a coordinate pair as usual. #
-//##############################################################################
-//#define set_nyb(P, y, x, n, s) \
-        //mort(y, x, &P->Z->z);   \
-        //_set_nyb(&(P->Z->box[(P->Z->z)]), n, s);
-
-static inline int is_nyb(PLATE *P, uint32_t y, uint32_t x, int n, int s)
-{
-        mort(y, x, &P->Z->z);
-        return _is_nyb(P->Z->box[P->Z->z], n, s);
-}
-
-
-void set_nyb(ZBOX *Z, int y, int x, int n, ...);
-
-
-#define get_nybtag(P, y, x, n)          \
-        mort(y, x, &P->Z->z);           \
-        _get_nybtag(P->Z->box[P->Z->z], n)
-
-
-#define stat_nyb(P, y, x)          \
-        mort(y, x, &P->Z->z);          \
-        werase(INSPECTORMSGWIN);   \
-        wprintw(INSPECTORMSGWIN, "Z-Code: %5u (%3u,%3u) | ", P->Z->z, y, x); \
-        _stat_nyb(P->Z->box[P->Z->z])
+#endif

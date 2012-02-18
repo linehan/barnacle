@@ -30,12 +30,18 @@
 //}}}1
 #ifndef __ZBOX
 #define __ZBOX
-
 #include <stdint.h>
 
 #define NNIBS    8  // number of nibbles in a MAP byte
 #define NSTATES 16  // number of states each nibble can take
 #define NBITS   32  // number of bits (total) in a MAP byte 
+
+typedef struct screen_matrix {
+        uint32_t  n;  // number of tiles in matrix
+        uint32_t  z;  // holds the most recent z-code
+        uint32_t *v;  // points to the tile being examined
+        struct bstree *bst; // binary search tree to store all matrix data
+} ZBOX;
 
 static const // Hexadecimal values of the 16 possible states of a MAP nibble
 uint32_t state[NSTATES] = {0x00000000, 0x00000001, 0x00000002, 0x00000003,
@@ -54,13 +60,9 @@ uint32_t gouge[NNIBS]   = {0xF0000000, 0x0F000000, 0x00F00000, 0x000F0000,
 static const // The offset, in bits, of each of the 8 nibbles in a MAP byte
 uint32_t offset[NNIBS] = {28, 24, 20, 16, 12, 8, 4, 0};
 
-
-
 static const // Enumerated labels for each of the 8 nibbles in a MAP byte
 char *nyb_tags[NNIBS] = {"LAY","ALT","BED","SED","SOI","MOI","TEM","HDG"};
            enum nibbles { LAY=0,ALT=1,BED=2,SED=3,SOI=4,MOI=5,TEM=6,HDG=7};
-
-
 
 //{{{1 LAY -- layer classification 
 //##############################################################################
@@ -257,25 +259,9 @@ char *HDG_tags[16] = {"NORTH", "NNE", "NE", "ENE", "EAST" , "ESE", "SE", "SSE",
                       "SOUTH", "SSW", "SW", "WSW", "WEST" , "WNW", "NW", "NNW"};
 //}}}1
 
-
 static const // Arrays of tag values for each of the 8 nibbles in a MAP byte
 char **tags[8] = { LAY_tags, ALT_tags, BED_tags, SED_tags, 
                    SOI_tags, MOI_tags, TEM_tags, HDG_tags };
-
-
-
-//##############################################################################
-//# The ZBOX data type contains an array of uint32_t's, whose length is the    #
-//# number of individual tiles that can be represented on-screen as a pair     #
-//# of coordinates (y,x), according to their Morton number, or z-code.         #
-//##############################################################################
-typedef struct screen_matrix {
-        uint32_t *box;
-        uint32_t max;
-        uint32_t z;
-} ZBOX;
-
-
 
 //##############################################################################
 // Compute the Morton number of (y,x), and store it in z
@@ -297,7 +283,6 @@ inline static void mort(uint32_t y, uint32_t x, uint32_t *z)
 
         *z = x | (y << 1);
 }
-
 #endif
 //##############################################################################
 // PROTOTYPES

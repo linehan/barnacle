@@ -3,7 +3,6 @@
   FILENAME:  dork.c
   This is the main program. 
 *******************************************************************************/
-
 #define _XOPEN_SOURCE_EXTENDED = 1  /* extended character sets */
 #include <stdio.h>
 #include <stdlib.h>
@@ -58,7 +57,7 @@ void tumbler(EV_P_ ev_timer *w, int revents)
         seek_prevailing();
         draw_compass();
         /*render_clouds(GLOBE->P);*/
-        shift_highlights(GLOBE->P);
+        /*shift_highlights(GLOBE->P);*/
 
         if ((sem_trywait(bun->sem) == -1)) ev_timer_again(EV_DEFAULT, w);
         else                               ev_break(EV_A_ EVBREAK_ALL);
@@ -68,8 +67,8 @@ void do_animate(EV_P_ ev_timer *w, int revents)
 {
         OO_time *bun = container_of(w, OO_time, w);
 
-        GLOBE->P->L[RIM]->step(GLOBE->P->L[RIM]);
-        combine(GLOBE->P);
+        /*GLOBE->P->L[RIM]->step(GLOBE->P->L[RIM]);*/
+        /*combine(GLOBE->P);*/
 
         if ((sem_trywait(bun->sem) == -1)) ev_timer_again(EV_DEFAULT, w);
         else                               ev_break(EV_A_ EVBREAK_ALL);
@@ -79,46 +78,25 @@ void do_animate(EV_P_ ev_timer *w, int revents)
 /* Day-toh-nah */
 int main() 
 {
-        /* UTF-8 */
-        setlocale(LC_ALL,"");
+        setlocale(LC_ALL,""); // UTF-8
 
-        initscr();              /* Start ncurses */
-        start_color();          /* Initialize color palette */
-        cbreak();	        /* Disable line buffering */		  
-        noecho();               /* Do not echo input */
-        keypad(stdscr, TRUE);   /* Enable special keys */
-        curs_set(0);            /* hide cursor */
+        initscr();            // Start ncurses
+        start_color();        // Initialize color palette
+        cbreak();	      // Disable line buffering
+        noecho();             // Do not echo input
+        keypad(stdscr, TRUE); // Enable special keys
+        curs_set(0);          // hide cursor
 
-        init_random();          /* Initialize the Mersenne twister */
-        init_geojug();          /* Start the geojug graphics engine */
-        init_boat();            /* Initialize boat MOBs */
-        init_test();            /* Start test structures */
-        init_instruments();     /* Various meters such as the compass */
-        init_menus();           /* The psh menu and commands */
-        init_simplex();         /* The perlin simplex generator */
+        geojug_start();       // Start the graphics engine
+        terminal_check();     // No xterm allowed
 
-        terminal_check();
-
-
-        /*WINDOW *pad = newpad(LINES*3, COLS*3);*/
-        /*PANEL *padp = new_panel(pad);*/
         MAP *pad = worldgen((LINES*3), (COLS*3));
-        prefresh(pad->W, 0, 0, 1, 1, LINES-1, COLS-1);
-        doupdate();
-        /*top_panel(padp);*/
-        /*doupdate();*/
+        prefresh(GLOBE->W, 0, 0, 1, 1, (LINES-1), (COLS-1));
+        GLOBE = pad;
 
-        /*padsimpledraw(pad, padpl);*/
+        wprintw(DIAGNOSTIC_WIN, "%u", (LINES*COLS)*3);
 
-
-        napms(2000000);
-
-        /* Graphics */
-        WORLD *map = new_world(__sea__, 3, 3);
-        /*simpledraw(map->P);*/
-
-        draw_water_rim(map->P);
-        combine(map->P);
+        /*draw_water_rim(map->P);*/
 
         MOB *boat = new_boat();
         nominate_boat(boat);
@@ -129,7 +107,7 @@ int main()
 
         set_wind(__pre__, 4);
 
-        swab_screen();
+        /*swab_screen();*/
 
         /* Main event loop */
         struct ev_loop *mainloop = EV_DEFAULT;
