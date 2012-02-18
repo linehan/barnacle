@@ -11,6 +11,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
+#include <stdarg.h>
 #include <ncurses.h>
 #include <panel.h>
 #include <pthread.h>
@@ -19,6 +20,7 @@
 
 #include "../lib/constants.h"
 #include "gfx.h"
+#include "zbox.h"
 #include "../pan/test.h"
 #include "../gen/dice.h"
 #include "../lib/llist/list.h"
@@ -75,50 +77,7 @@ void swab_screen(void)
         GLOBE->P->step(GLOBE->P);
         scr_refresh();
 }
-/* Mark a rectangular portion of a bitboard with sides y0+h and x0+w 
-*******************************************************************************/
-void bitboard_mark(GNODE *G, int h, int w, int y0, int x0)
-{
-        if ((x0 >= COLS)||(y0 >= LINES)) return; /* If out of range */
-        int i, j, xf, yf;
-        xf = (x0+w);
-        yf = (y0+h);
-        xf = (xf >= COLS) ? COLS : xf;
-        yf = (yf >= LINES) ? LINES : yf;
-
-        for (i=y0; i<yf; i++) {
-        for (j=x0; j<xf; j++) {
-                set_bit(&G->bb, i, j);
-        }
-        }
-}
                 
-/* Print a test output from a bitboard 
-*******************************************************************************/
-void masktestprint(PLATE *pl, int layer)
-{
-        werase(BIGWIN);
-        int i, j;
-        for (i=0; i<LINES; i++) {
-        for (j=0; j<COLS; j++) {
-                if (bit_set(&pl->env[layer]->bb, i, j))
-                        mvwprintw(BIGWIN, i, j, "1");
-        }
-        }
-}
-void mortprint(PLATE *pl, int layer)
-{
-        werase(BIGWIN);
-        unsigned int i, j, z;
-        for (i=0; i<LINES; i++) {
-        for (j=0; j<COLS; j++) {
-                mort(i, j, &z);
-                if (_IS_SET(pl->env[layer]->M[z]))
-                        mvwprintw(BIGWIN, i, j, "1");
-        }
-        }
-}
-
 /* Traverse a ring of GNODES and arrange the PANELS in the appropriate stack
  * order. */
 void restack(PLATE *pl)
@@ -126,7 +85,7 @@ void restack(PLATE *pl)
         GNODE *tmp;
         int i;
         for (i=0; i<ENV_LAYERS; i++) {
-                top_panel(pl->env[i]->pan);
+                top_panel(pl->L[i]->pan);
         }
         list_for_each(pl->gfx, tmp, node) {
                 if (tmp->dim.layer == i++) {
@@ -140,8 +99,8 @@ GNODE *gnode_below(PLATE *pl, int y, int x)
         GNODE *tmp; 
         int i;
         for (i=ENV_LAYERS-1; i>=0; i--) {
-                if (IN_GNODE(pl->env[i], y, x) == 1) 
-                        return pl->env[i];
+                if (IN_GNODE(pl->L[i], y, x) == 1) 
+                        return pl->L[i];
         }
         return NULL;
 }
@@ -152,10 +111,10 @@ void combine(PLATE *pl)
         int i;
         static int sw = 1;
         for (i=__rim__; i<__mob__; i++) {
-                overlay(pl->env[i]->W->window, pl->env[__bgr__]->W->window);
+                overlay(pl->L[i]->W->window, pl->L[BGR]->W->window);
         }
         if (sw) {
-                top_panel(pl->env[__bgr__]->pan);
+                top_panel(pl->L[BGR]->pan);
                 sw = 0;
         }
         scr_refresh();
@@ -220,14 +179,6 @@ GNODE *new_gnode(int layer, int h, int w, int y0, int x0, int n)
         gfx->next = &next_wnode;
         gfx->step = &step_wnode_forward;
 
-        INIT_BITBOARD(gfx->bb, LINES, COLS);
-
-        unsigned int x, y, z;
-        y = LINES;
-        x = COLS;
-        mort(y, x, &z);
-        gfx->M = NEWMORT(z);
-
         __RING(gfx->wins);
 
         /* Initialize n WNODEs */
@@ -263,7 +214,7 @@ void show_all_gnodes(const void *plate)
                 show_panel(tmp->pan);
                 vrt_refresh();
         }
-        restack(pl);
+        /*restack(pl);*/
         scr_refresh();
 }
 void hide_all_gnodes(const void *plate)
@@ -304,41 +255,40 @@ PLATE *new_plate(int kind, int yco, int xco)
         new->pmap = gen_perlin_map(LINES, COLS);
         cchar_t *tile = get_tile(kind);
 
-        new->env[__bgr__] = new_gnode(__bgr__, LINES, COLS, 0, 0, 1);
-        new->env[__rim__] = new_gnode(__rim__, LINES, COLS, 0, 0, 2);
-        new->env[__hig__] = new_gnode(__hig__, LINES, COLS, 0, 0, 1);
-        new->env[__drt__] = new_gnode(__drt__, LINES, COLS, 0, 0, 1);
-        new->env[__drd__] = new_gnode(__drd__, LINES, COLS, 0, 0, 1);
-        new->env[__grt__] = new_gnode(__grt__, LINES, COLS, 0, 0, 1);
-        new->env[__grd__] = new_gnode(__grd__, LINES, COLS, 0, 0, 1);
-        new->env[__trt__] = new_gnode(__trt__, LINES, COLS, 0, 0, 1);
-        new->env[__trd__] = new_gnode(__trd__, LINES, COLS, 0, 0, 1);
-        new->env[__sec__] = new_gnode(__sec__, LINES, COLS, 0, 0, 1);
+        new->Z = new_zbox(LINES, COLS);
+
+        /*new->env[__sec__] = new_gnode(__sec__, LINES, COLS, 0, 0, 1);*/
+
+        int i, j, n;
+        for (i=0; i<16; i++) {
+                n = (i == RIM) ? 2 : 1;
+                new->L[i] = new_gnode(i, LINES, COLS, 0, 0, n);
+        }
 
         /* Background layer */
-        int i, j;
         for (i=0; i<LINES; i++) {
-                mvwhline_set(new->env[__bgr__]->W->window, i, 0, &OCEAN[0], COLS);
+                mvwhline_set(new->L[BGR]->W->window, i, 0, &OCEAN[0], COLS);
+                /*mvwhline_set(new->env[__bgr__]->W->window, i, 0, &OCEAN[0], COLS);*/
         }
 
         /* Highlight layer */
-        int wid, x0, y0;
-        for (i=0; i<5; i++) {
-                wid = roll_fair(50);
-                x0  = roll_fair(80);
-                y0  = roll_fair(50);
-                GNODE *newhi = new_gnode(__hig__, 1, wid, y0, x0, 1);
-                wbkgrnd(newhi->W->window, &OCEAN[2]);
-                LINCREMENT(new, gfx, &newhi->node);
-        }
-        for (i=0; i<5; i++) {
-                wid = roll_fair(20)+1;
-                x0  = roll_fair(80)+1;
-                y0  = roll_fair(50)+1;
-                GNODE *newwea = new_gnode(__wea__, 5, wid, y0, x0, 1);
-                LINCREMENT(new, gfx, &newwea->node);
-        }
-        restack(new); /* Make sure everything is in order */
+        /*int wid, x0, y0;*/
+        /*for (i=0; i<5; i++) {*/
+                /*wid = roll_fair(50);*/
+                /*x0  = roll_fair(80);*/
+                /*y0  = roll_fair(50);*/
+                /*GNODE *newhi = new_gnode(__hig__, 1, wid, y0, x0, 1);*/
+                /*wbkgrnd(newhi->W->window, &OCEAN[2]);*/
+                /*LINCREMENT(new, gfx, &newhi->node);*/
+        /*}*/
+        /*for (i=0; i<5; i++) {*/
+                /*wid = roll_fair(20)+1;*/
+                /*x0  = roll_fair(80)+1;*/
+                /*y0  = roll_fair(50)+1;*/
+                /*GNODE *newwea = new_gnode(__wea__, 5, wid, y0, x0, 1);*/
+                /*LINCREMENT(new, gfx, &newwea->node);*/
+        /*}*/
+        /*restack(new); [> Make sure everything is in order <]*/
         return new;
 }
 /******************************************************************************/
@@ -416,9 +366,6 @@ void prev_row(const void *world)
         map->dim.xco = saved_xco;
 }
 /*************************************************************************}}}1*/
-/******************************************************************************
- * Make a new world map
- ******************************************************************************/
 WORLD *new_world(int type, int h, int w)
 {
         WORLD *new = malloc(sizeof(WORLD));      
@@ -462,8 +409,6 @@ PLATE *current_plate(void)
  * DESPAIR, THE ROOST OF WRETCHED FUNCS DEPORTED TO THIS PENULT BARE
  * OF DOCUMENTS OR COMMENTS, YEA, OF HOPE, TO WASTE, UNTIL REPAIR'D.
  ******************************************************************************/
-
-
 int hit_test(PLATE *pl, int y, int x)
 {
         GNODE *tmp;
@@ -501,8 +446,26 @@ void screen_swap(int dir)
         }
         clear();
 
-        if (GLOBE->P->dim.n <= 6)       simpledraw(GLOBE->P);
-        else                            GLOBE->P->showall(GLOBE->P);
+        /*if (GLOBE->P->dim.n <= 6)       simpledraw(GLOBE->P);*/
+        /*else                            GLOBE->P->showall(GLOBE->P);*/
         restack(GLOBE->P);
         swab_screen();
+}
+
+void set_nyb(ZBOX *Z, int y, int x, int n, ...)
+{
+        if (n == 0) return;
+        va_list ap; // accepts a variable number of nibble-state pairs
+        int nyb, set; // will hold the next nibble-state pair
+
+        va_start (ap, n); // initialize argument list
+
+        mort(y, x, &Z->z); // prime the pump by converting (y,x) to zcode
+
+        while (n--) {
+                nyb = va_arg(ap, int);
+                set = va_arg(ap, int);
+                _set_nyb(&(Z->box[(Z->z)]), nyb, set);
+        }
+        va_end(ap); // tidy up
 }

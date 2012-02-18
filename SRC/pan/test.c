@@ -15,6 +15,7 @@
 #include <string.h>
 
 #include "../gfx/sprite.h"
+#include "../gfx/gfx.h"
 /******************************************************************************/
 WINDOW *DIAGNOSTIC_WIN;
 PANEL *DIAGNOSTIC_PAN;
@@ -30,6 +31,15 @@ PANEL *ERRSH_PAN;
 WINDOW *SYSWIN;
 PANEL  *SYSPAN;
 
+WINDOW *INSPECTORWIN;
+PANEL  *INSPECTORPAN;
+WINDOW *INSPECTORMSGWIN;
+PANEL  *INSPECTORMSGPAN;
+
+
+static int inspector_y = 0;
+static int inspector_x = 0;
+
 static int counter = 0;
 /******************************************************************************/
 /* Create the diagnostic window */
@@ -40,6 +50,14 @@ void init_test(void)
 
         BIGWIN = newwin(LINES, COLS, 0, 0);
         BIGPAN = new_panel(BIGWIN);
+
+        INSPECTORWIN = newwin(1, 1, 0, 0);
+        INSPECTORPAN = new_panel(INSPECTORWIN);
+        wbkgrnd(INSPECTORWIN, &PLAIN);
+
+        INSPECTORMSGWIN = newwin(1, COLS, LINES-1, 0);
+        INSPECTORMSGPAN = new_panel(INSPECTORMSGWIN);
+        wbkgrnd(INSPECTORMSGWIN, &WARNBG);
 
 	SYSWIN = newwin(30, COLS-(COLS/2), ((LINES/2)-15), (COLS/2)/2);
         SYSPAN = new_panel(SYSWIN);
@@ -55,6 +73,8 @@ void init_test(void)
         hide_panel(ERROR_PAN);
         hide_panel(SYSPAN);
         hide_panel(BIGPAN);
+        hide_panel(INSPECTORPAN);
+        hide_panel(INSPECTORMSGPAN);
         /*hide_panel(ERRSH_PAN);*/
 }
 /* Toggle the diagnostic panel's visibility */
@@ -106,4 +126,28 @@ void speak_error_mono(const char *error)
         /*hide_panel(ERRSH_PAN);*/
         hide_panel(ERROR_PAN);
         werase(ERROR_WIN);
+}
+
+void move_inspector(int dir)
+{
+        switch (dir) {
+        case 'l':
+                inspector_x -= (inspector_x > 0) ? 1 : 0;
+                break;
+        case 'r':
+                inspector_x += 1;
+                break;
+        case 'u':
+                inspector_y -= (inspector_y > 0) ? 1: 0;
+                break;
+        case 'd':
+                inspector_y += 1;
+                break;
+        }
+        top_panel(INSPECTORPAN);
+        top_panel(INSPECTORMSGPAN);
+        move_panel(INSPECTORPAN, inspector_y, inspector_x);
+        vrt_refresh();
+        stat_nyb(GLOBE->P, inspector_y, inspector_x);
+        scr_refresh();
 }

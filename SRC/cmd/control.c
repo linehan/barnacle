@@ -40,13 +40,6 @@ void *iolisten(EV_P_ ev_io *w, int revents)
 
         while((ch = getch())) { 
                 switch (ch) { 
-                case KEY_UP:
-                        ch = getch();
-                        if (isdigit(ch)) 
-                                layer = (ch - '0');
-                        if ((layer >= 0)&&(layer < STACK_LAYERS))
-                                masktestprint(GLOBE->P, layer);
-                        break;
                 case '0':
                         set_wind(__pre__, 0);
                         break;
@@ -97,6 +90,18 @@ void *iolisten(EV_P_ ev_io *w, int revents)
                         break;
                 case 't':
                         toggle_bigpan();
+                        break;
+                case KEY_UP:
+                        move_inspector('u');
+                        break;
+                case KEY_DOWN:
+                        move_inspector('d');
+                        break;
+                case KEY_LEFT:
+                        move_inspector('l');
+                        break;
+                case KEY_RIGHT:
+                        move_inspector('r');
                         break;
                 case 'w':
                         movecloud('u');

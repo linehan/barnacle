@@ -3,6 +3,7 @@
   FILENAME:  dork.c
   This is the main program. 
 *******************************************************************************/
+
 #define _XOPEN_SOURCE_EXTENDED = 1  /* extended character sets */
 #include <stdio.h>
 #include <stdlib.h>
@@ -56,7 +57,7 @@ void tumbler(EV_P_ ev_timer *w, int revents)
         seek_heading();
         seek_prevailing();
         draw_compass();
-        render_clouds(GLOBE->P);
+        /*render_clouds(GLOBE->P);*/
         shift_highlights(GLOBE->P);
 
         if ((sem_trywait(bun->sem) == -1)) ev_timer_again(EV_DEFAULT, w);
@@ -67,7 +68,7 @@ void do_animate(EV_P_ ev_timer *w, int revents)
 {
         OO_time *bun = container_of(w, OO_time, w);
 
-        GLOBE->P->env[__rim__]->step(GLOBE->P->env[__rim__]);
+        GLOBE->P->L[RIM]->step(GLOBE->P->L[RIM]);
         combine(GLOBE->P);
 
         if ((sem_trywait(bun->sem) == -1)) ev_timer_again(EV_DEFAULT, w);
@@ -99,42 +100,25 @@ int main()
         terminal_check();
 
 
+        /*WINDOW *pad = newpad(LINES*3, COLS*3);*/
+        /*PANEL *padp = new_panel(pad);*/
+        MAP *pad = worldgen((LINES*3), (COLS*3));
+        prefresh(pad->W, 0, 0, 1, 1, LINES-1, COLS-1);
+        doupdate();
+        /*top_panel(padp);*/
+        /*doupdate();*/
+
+        /*padsimpledraw(pad, padpl);*/
+
+
+        napms(2000000);
+
         /* Graphics */
         WORLD *map = new_world(__sea__, 3, 3);
-        simpledraw(map->P);
+        /*simpledraw(map->P);*/
 
         draw_water_rim(map->P);
         combine(map->P);
-
-        int i;
-        for (i=0; i<BLOCK_TOTAL; i++) {
-                if (i & 1) set_block(&map->P->env[2]->bb, i);
-        }
-        /*masktestprint(map->P, 2);*/
-
-
-
-
-        unsigned int *m, x, y, z;
-        const char *c;
-
-        x = COLS;
-        y = LINES;
-        mort(y, x, &z);
-
-        m = NEWMORT(z);
-
-        x = 32;
-        y = 13;
-        mort(y, x, &z);
-
-        SET_TILE(m[z], WEA, FOG);
-        
-        c = gettag(m[z], WEA);
-        wprintw(DIAGNOSTIC_WIN, "WEA: %s\n", c);
-
-
-
 
         MOB *boat = new_boat();
         nominate_boat(boat);

@@ -18,6 +18,7 @@
 #include "../lib/memmacro.h"
 #include "../lib/hash/hash.h"
 
+#include "terrain.h"
 #include "../cmd/control.h"
 #include "../gen/dice.h"
 
@@ -86,175 +87,133 @@ void shift_highlights(PLATE *pl)
 }
 
 
-void draw_trees(PLATE *pl, DIMS *d)
+
+void draw_layers(MAP *map)
 {
         int i, j;
-        int tx0, ty0, th, tw, imax, jmax;
+        int imax, jmax;       // loop boundaries for ground box
+        int ymax, xmax;       // window boundaries
+        int x0, y0, tx0, ty0; // initial position of ground and tree boxes
+        int w, h, tw, th;     // width and height of ground and tree boxes
+        int chunk, chunkmin;  // unit of land to draw at a time
+        double seed;          // perlin noise (elevation) values
 
-        static signed int xoffset = 1;
-        static signed int yoffset = -1;
-        static signed int htrim = -1;
-        static signed int wtrim = -2;
-
-        if (d->w < 4) return;
-
-        /* The width of the trees should be at least two less than the
-         * width of the land they stand on, i.e., leaving at least one
-         * char of padding on each side. */
-        tx0 = d->x0+xoffset;
-        ty0 = d->y0+yoffset;
-        th = d->h+htrim;
-        tw = d->w+wtrim;
-        imax = ty0+th;
-        jmax = tx0+tw;
-
-        for (i=ty0; i<imax; i++) {
-        for (j=tx0; j<jmax; j++) {
-                mvwadd_wch(pl->env[__trt__]->W->window, i, j, &TREE[1]);
-                set_bit(&pl->env[__trt__]->bb, i, j);
-        }
-        }
-        for (i=tx0; i<tw; i++) {
-                set_bit(&pl->env[__trd__]->bb, imax, i);
-        }
-        mvwhline_set(pl->env[__trd__]->W->window, imax, tx0, &TREE[0], tw);
-}
-
-void draw_chunk(PLATE *pl, DIMS *d, int terrain)
-{
-        int i, j, imax, jmax;
-        GNODE *top, *drp;
-
-        cchar_t *bgtop = get_tile(terrain); /* Get background tiles */
-
-        top = pl->env[__grt__];
-        drp = pl->env[__drd__];
-        imax = d->y0+d->h;
-        jmax = d->x0+d->w;
-        /* Draw the top of terrane */
-        for (i=d->y0; i<imax; i++) {
-        for (j=d->x0; j<jmax; j++) {
-                mvwadd_wch(top->W->window, i, j, bgtop);
-                set_bit(&top->bb, i, j);
-        } 
-        } /* Draw the drop */
-        for (i=d->x0; i<d->w; i++) {
-                set_bit(&drp->bb, imax, i);
-        }
-        mvwhline_set(drp->W->window, imax, d->x0, &MTN[2], d->w);
-
-        if (flip_biased(0.5))
-                draw_trees(pl, d);
-}
-
-void simpledraw(PLATE *pl)
-{
-        int i, j, imax, jmax; /* Loop coordinate variables */
-        int chunk, chunkmin;  /* Chunk!! CHUNK! */
-        double **pmap, seed;  /* Perlin map stuff */
-
-        pmap = pl->pmap; /* The PLATE's Perlin map */
-        seed = 0.95;     /* Threshhold value for the Perlin map */
-        chunk = 6;
+        seed     = 0.95;      // threshold value to determine whether to draw
+        chunk    = 6;
         chunkmin = 3;
-        imax = LINES-chunkmin;
-        jmax = COLS-chunkmin;
+        ymax     = (map->h)-chunkmin;
+        xmax     = (map->w)-chunkmin;
 
-        DIMS d;
+        cchar_t *bgtop;            // background sprite
 
-        /* Uses the starting coordinates as the increment values to save
-         * assignment time and space. */
-        for (d.y0=0; d.y0<imax; d.y0++) {
-        for (d.x0=0; d.x0<jmax; d.x0++) {
+        bgtop = get_tile(__Gra__);
 
-                if (pmap[d.y0][d.x0] > seed) {
+        for (y0=0; y0<ymax; y0++) {
+                for (x0=0; x0<xmax; x0++) {
 
-                        /* Jiggle that chunk */
-                        if (flip_biased(0.56))   chunk += chunk/3;
-                        else                     chunk -= chunk/3;
+                        if (map->pmap[y0][x0] > seed) {
+                                if (flip_biased(0.56))   
+                                        chunk += chunk/3;
+                                else    
+                                        chunk -= chunk/3;
 
-                        if ((chunk < 2)) continue; /* this tall to ride */
+                                if ((chunk < 2)) continue;
 
-                        d.w = chunk;
-                        d.h = chunk;
-                        d.ymax = d.y0+d.h;
-                        d.xmax = d.x0+d.w;
-                        /* Trim edges */
-                        if (d.xmax > COLS) d.w = d.xmax-COLS;
-                        if (d.ymax > LINES) d.h = d.ymax-LINES;
+                                h = w = chunk; // square
+                                imax = y0+h;
+                                jmax = x0+w;
+                                if (imax > map->h) h = imax-map->h;
+                                if (jmax > map->w) w = jmax-map->w;
 
-                        draw_chunk(pl, &d, __Gra__);
+                                // Draw the ground box
+                                for (i=y0; i<=imax; i++) {
+                                        for (j=x0; j<jmax; j++) {
+                                                if (i == imax) {
+                                                        mvwadd_wch(map->L[DRP], i, j, &MTN[2]);
+                                                        continue;
+                                                }
+                                                mvwadd_wch(map->L[TOP], i, j, bgtop); // top
+                                        }
+                                }
+                                // Draw the tree box
+                                if ((flip_biased(0.5))||(w < 4)) continue;
+                                tx0  = x0+1;
+                                ty0  = y0-1;
+                                th   = h-1;
+                                tw   = w-2;
+                                imax = ty0+th; // recalculation
+                                jmax = tx0+tw; // recalculation
+                                for (i=ty0; i<=imax; i++) {
+                                        for (j=tx0; j<jmax; j++) {
+                                                if (i == imax) {
+                                        /*set_nyb(&pl->Z, imax, j, 3, LAY, VEG, SED, LIME, SOI, MOLL);*/
+                                                        mvwadd_wch(map->L[VEG], i, j, &TREE[0]);
+                                                        continue;
+                                                }
+                                                mvwadd_wch(map->L[VEG], i, j, &TREE[1]);
+                                        /*set_nyb(&pl->Z, i, j, 3, LAY, VEG, SED, LIME, SOI, SPOD);*/
+                                        }
+                                }
+                        }
                 }
         }
-        }
 }
 
-/*
- *     111     100   011
- *     111 XOR 100 = 011 
- *     111     100   011
- */
+MAP *worldgen(int rows, int cols)
+{
+        int i;
+
+        MAP *new;
+        /*if ((new = calloc(1, sizeof(MAP))) == NULL) return NULL;*/
+
+        new = malloc(sizeof(MAP));
+
+        new->h    = rows;
+        new->w    = cols;
+        new->pmap = gen_perlin_map(rows, cols);
+        new->W    = newpad(new->h, new->w);
+
+        for (i=0; i<16; i++) {
+                new->L[i] = newpad(new->h, new->w);
+        }
+        draw_layers(new);
+
+        for (i=__rim__; i<__mob__; i++) {
+                overlay(new->L[i], new->W);
+        }
+        /*while (i > RIM) {*/
+                /*overlay(new->L[i], new->W);*/
+                /*i--;*/
+        /*}*/
+        return new;
+}
+
 void draw_water_rim(PLATE *pl)
 {
-        int i, j, n;
-        int pad, padl, padr, padu, padd;
-
-        pad = 1;
-        n = 5;
-
-        GNODE *top, *drp;
-        top = pl->env[__grt__];
-        drp = pl->env[__drd__];
+        uint32_t i, j, n;
 
         WINDOW *rimwin1, *rimwin2;
-        rimwin1 = pl->env[__rim__]->W->window;
-                  pl->env[__rim__]->next(pl->env[__rim__]);
-        rimwin2 = pl->env[__rim__]->W->window;
+        rimwin1 = pl->L[RIM]->W->window;
+                  pl->L[RIM]->next(pl->L[RIM]);
+        rimwin2 = pl->L[RIM]->W->window;
 
         for (i=1; i<LINES; i++) {
-        for (j=1; j<COLS-1; j++) {
+                for (j=1; j<COLS-1; j++) {
+                        if ((is_nyb(pl, i, j, LAY, TOP))) continue;
+                        if ((is_nyb(pl, i, j, LAY, DRP))) continue;
 
-                
-                        /*[> If I am part of layer 'top' or layer 'drp', loop <]*/
-                        /*if (BIT_SET(top->bb, (i), (j))) continue;*/
-                        /*if (BIT_SET(drp->bb, (i), (j))) continue;*/
-
-                        /*n = 1;*/
-                        /*do {*/
-                                /*switch (n) {*/
-                                /*case 0:*/
-                                /*if (BIT_SET(top->bb, (i), (padl))) break;*/
-                                /*if (BIT_SET(top->bb, (padu), (padr))) break;*/
-                                /*if (BIT_SET(top->bb, (padu), (padl))) break;*/
-                                /*if (BIT_SET(drp->bb, (padu), (j))) break;*/
-                                /*if (BIT_SET(drp->bb, (i), (padr))) break;*/
-                                /*if (BIT_SET(drp->bb, (i), (padl))) break;*/
-                                /*n = 2;*/
-                                /*case 1:*/
-                                /*mvwadd_wch(rimwin1, i, j, &OCEAN[3]);*/
-                                /*mvwadd_wch(rimwin2, i, j, &OCEAN[2]);*/
-                                /*break;*/
-                        
-                        /*}*/
-                        /*[> If the bit in the row above me is set <]*/
-                        /*if (BIT_SET(drp->bb, (i-1), (j))) {*/
-                                /*mvwadd_wch(rimwin1, i, j, &OCEAN[3]);*/
-                                /*mvwadd_wch(rimwin2, i, j, &OCEAN[2]);*/
-                                /*continue;*/
-                        /*}*/
-                        /*[> If the bit in the row above me is set <]*/
-                        /*if (BIT_SET(drp->bb, (i-1), (j))) {*/
-                                /*mvwadd_wch(rimwin1, i, j, &OCEAN[3]);*/
-                                /*mvwadd_wch(rimwin2, i, j, &OCEAN[2]);*/
-                                /*continue;*/
-                        /*}*/
-                        /*[> If the bit in the row above me is set <]*/
-                        /*if (BIT_SET(drp->bb, (i-1), (j))) {*/
-                                /*mvwadd_wch(rimwin1, i, j, &OCEAN[3]);*/
-                                /*mvwadd_wch(rimwin2, i, j, &OCEAN[2]);*/
-                                /*continue;*/
-                        /*}*/
-        }
+                        if ((is_nyb(pl, (i-1), j, LAY, TOP))        ||
+                            (is_nyb(pl, (i-1), j, LAY, DRP))        ||
+                            (is_nyb(pl, (i), (j+1), LAY, TOP))      ||
+                            (is_nyb(pl, (i), (j+1), LAY, DRP))      ||
+                            (is_nyb(pl, (i), (j-1), LAY, TOP))      ||
+                            (is_nyb(pl, (i), (j-1), LAY, DRP))) 
+                        {
+                                mvwadd_wch(rimwin1, i, j, &OCEAN[3]);
+                                mvwadd_wch(rimwin2, i, j, &OCEAN[2]);
+                                set_nyb(pl, i, j, LAY, RIM);
+                        } 
+                }
         }
 }
 

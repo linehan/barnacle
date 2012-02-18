@@ -19,6 +19,7 @@ arawak_SOURCES = arawak.c \
                    gen/mtwist.c \
                    geo/weather.c \
                    geo/terrain.c \
+                   gfx/zbox.c    \
                    gfx/palette.c \
                    gfx/sprite.c \
                    gfx/gfx.c \

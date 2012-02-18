@@ -47,7 +47,7 @@ PROGRAMS = $(bin_PROGRAMS)
 am__dirstamp = $(am__leading_dot)dirstamp
 am_arawak_OBJECTS = arawak.$(OBJEXT) cmd/control.$(OBJEXT) \
 	gen/dice.$(OBJEXT) gen/mtwist.$(OBJEXT) geo/weather.$(OBJEXT) \
-	geo/terrain.$(OBJEXT) gfx/palette.$(OBJEXT) \
+	geo/terrain.$(OBJEXT) gfx/zbox.$(OBJEXT) gfx/palette.$(OBJEXT) \
 	gfx/sprite.$(OBJEXT) gfx/gfx.$(OBJEXT) gen/perlin.$(OBJEXT) \
 	gfx/term.$(OBJEXT) mob/mob.$(OBJEXT) mob/boat.$(OBJEXT) \
 	pan/instruments.$(OBJEXT) pan/menus.$(OBJEXT) \
@@ -165,6 +165,7 @@ arawak_SOURCES = arawak.c \
                    gen/mtwist.c \
                    geo/weather.c \
                    geo/terrain.c \
+                   gfx/zbox.c    \
                    gfx/palette.c \
                    gfx/sprite.c \
                    gfx/gfx.c \
@@ -282,6 +283,7 @@ gfx/$(am__dirstamp):
 gfx/$(DEPDIR)/$(am__dirstamp):
 	@$(MKDIR_P) gfx/$(DEPDIR)
 	@: > gfx/$(DEPDIR)/$(am__dirstamp)
+gfx/zbox.$(OBJEXT): gfx/$(am__dirstamp) gfx/$(DEPDIR)/$(am__dirstamp)
 gfx/palette.$(OBJEXT): gfx/$(am__dirstamp) \
 	gfx/$(DEPDIR)/$(am__dirstamp)
 gfx/sprite.$(OBJEXT): gfx/$(am__dirstamp) \
@@ -332,6 +334,7 @@ mostlyclean-compile:
 	-rm -f gfx/palette.$(OBJEXT)
 	-rm -f gfx/sprite.$(OBJEXT)
 	-rm -f gfx/term.$(OBJEXT)
+	-rm -f gfx/zbox.$(OBJEXT)
 	-rm -f mob/boat.$(OBJEXT)
 	-rm -f mob/mob.$(OBJEXT)
 	-rm -f pan/instruments.$(OBJEXT)
@@ -354,6 +357,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@gfx/$(DEPDIR)/palette.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@gfx/$(DEPDIR)/sprite.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@gfx/$(DEPDIR)/term.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@gfx/$(DEPDIR)/zbox.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@mob/$(DEPDIR)/boat.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@mob/$(DEPDIR)/mob.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@pan/$(DEPDIR)/instruments.Po@am__quote@
