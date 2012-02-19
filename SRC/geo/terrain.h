@@ -1,12 +1,16 @@
 #include "../gfx/zbox.h"
 
 typedef struct the_whole_world {
-        uint32_t h;
+        uint32_t padx;
+        uint32_t pady;
         uint32_t w;
+        uint32_t h;
+        struct ufo_t *ufo;
         uint32_t n;
         double **pmap;
         WINDOW *L[16];
         WINDOW *W;
+        PANEL *P;
         ZBOX *Z;
 } MAP;
 

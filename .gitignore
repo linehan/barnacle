@@ -3,6 +3,9 @@
 *.log
 *.cache
 *.m4
+*.swp
+*.out
+*.o
 depcomp
 install-sh
 missing

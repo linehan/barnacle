@@ -83,6 +83,7 @@
  *
  ******************************************************************************/
 
+#define PERM_LIMIT 512 // random permutations availible before re-shuffle needed
 
 /* Check if initialized */
 static int PERLIN_READY = 0;
@@ -239,20 +240,30 @@ double simplex_noise(double xin, double yin)
 
 double **gen_perlin_map(int h, int w)
 {
-        if ((PERLIN_READY))     perm_shuffle();
-        else                    return 0;
+        int shuffled;  // counts down the number of permutations left
+        int row, col;  // the row and column number to be iterated over
+        double **pmap; // the perlin map to be returned
+        
+        if (!(PERLIN_READY)) return NULL;    
 
-        int row, col;
+        shuffled = PERM_LIMIT; // the maximum number of permutations
 
-        double **pmap = malloc(h * sizeof(double *));
+        pmap = malloc(h * sizeof(double *));
         for (row=0; row<h; row++) {
                 pmap[row] = malloc(w * sizeof(double));
         }
 
-        /* Fill the array with the noise values generated */
+        perm_shuffle(); // shuffle the permutations
+
         for (row=0; row<h; row++) {
                 for (col=0; col<w; col++) {
-                        pmap[row][col] = simplex_noise(col, row); 
+                        pmap[row][col] = simplex_noise(col, row); // noise
+                        if (shuffled)
+                                shuffled--;
+                        else {
+                                perm_shuffle();
+                                shuffled = PERM_LIMIT;
+                        }
                 }
         }
         /*wprintw(BIGWIN, "h = %d\n w = %d\n len = %d\n\n", noise->h, noise->w, noise->len);*/

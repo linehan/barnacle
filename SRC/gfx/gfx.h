@@ -1,7 +1,6 @@
 // vim:fdm=marker
 #ifndef __GFX_TYPES
 #define __GFX_TYPES
-
 #include <pthread.h>
 #include <semaphore.h>
 
@@ -10,44 +9,32 @@
 #include "../pan/test.h"
 #include "zbox.h"
 
-enum shitstain { __bgr__ = 0, __rim__ = 1, __hig__ = 2, __drt__ = 3,
-                 __drd__ = 4, __grt__ = 5, __grd__ = 6, __trt__ = 7, 
-                 __trd__ = 8, __sec__ = 9, __mob__ = 10, __wea__ = 11 };
-
 extern sem_t *REFRESH_LOCK; // keeps things from going crazy in the i/o thread
 
-/* Refresh the virtual screen */
+//##############################################################################
+//# Locks the REFRESH_LOCK semaphore before refreshing vertical or actual      #
+//# screen. Prevents things from going haywire if something called from the    #
+//# control thread tries to refresh the screen at the same time as the main    #
+//# thread.                                                                    #
+//##############################################################################
 #define vrt_refresh()           \
         sem_wait(REFRESH_LOCK); \
         update_panels();        \
         sem_post(REFRESH_LOCK)
 
-/* Refresh the actual screen */
 #define scr_refresh()           \
         sem_wait(REFRESH_LOCK); \
         update_panels();        \
         doupdate();             \
         sem_post(REFRESH_LOCK)
-
-/* Toggle a panel */
-#define TOGPAN(pan) \
-        if (panel_hidden(pan))  show_panel(pan); \
-        else                    hide_panel(pan)  
-
-/* Wipe the screen (force re-draw) */
-#define WIPE TOGPAN(WIPEPAN); \
-             TOGPAN(WIPEPAN)
-
-/* Add a node to a ring (circular linked list) and increment dim.n */
-#define LINCREMENT(parent, headname, node) \
-        list_add(parent->headname, node);  \
-        parent->dim.n++
-
-/* Move through a ring, and leave tmp pointing at the first matching node */
-#define MATCH_FIELD(head, tmp, field, value)    \
-        list_for_each(head, tmp, node) {        \
-                if (tmp->field == value) break; \
-        }
+//##############################################################################
+//# Toggles a PANEL, hiding it if it is not hidden, and showing it if it is.   #
+//##############################################################################
+#define TOGPAN(pan)              \
+        if (panel_hidden(pan))   \
+                show_panel(pan); \
+        else                     \
+                hide_panel(pan)  
 
 /******************************************************************************
  * Using the DIMS structure is all about laziness, plain and simple. Anything
@@ -101,8 +88,9 @@ typedef struct win_wad {
 } WNODE;
 
 void geojug_start(void);
-void set_nyb(ZBOX *Z, int y, int x, int n, ...);
-void stat_nyb(ZBOX *Z, uint32_t y, uint32_t x);
+void set_cell(ZBOX *Z, int y, int x, int n, ...);
+void stat_cell(ZBOX *Z, uint32_t y, uint32_t x);
+inline int is_cell(ZBOX *Z, uint32_t y, uint32_t x, int n, int s);
 
 WNODE *new_wnode(int id, int h, int w, int y0, int x0);
 //void draw_water_rim(PLATE *pl);

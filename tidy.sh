@@ -15,10 +15,11 @@ msg=0
 
 # If the SRC directory is not clean, run 'make clean' to get rid of the object 
 # files in ./SRC
-if [ -e ./SRC/cucumber.o ]; then
+if [ -e ./SRC/arawak ]; then
         msg=1
         echo -e "${LRED}T${LCYAN}I${LGREEN}G${LBLUE}T${YELLOW}E${LMAGENTA}N${LRED}'${WHITE}UP${DEFAULT}"
         make distclean
+        rm -r ./SRC/.deps
 fi
 
 # If the build directory is not clean

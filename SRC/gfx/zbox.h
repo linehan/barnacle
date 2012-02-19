@@ -31,6 +31,7 @@
 #ifndef __ZBOX
 #define __ZBOX
 #include <stdint.h>
+#include "../lib/quadtree.h"
 
 #define NNIBS    8  // number of nibbles in a MAP byte
 #define NSTATES 16  // number of states each nibble can take

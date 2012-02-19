@@ -33,6 +33,7 @@
 #include "mob/boat.h"
 #include "pan/instruments.h"
 #include "pan/test.h"
+#include "lib/ufo.h"
 /******************************************************************************/
 /* The callback function for the sailing event watcher. Manages the wind
  * and the sailboat's response to it. Checks a semaphore which is also
@@ -91,7 +92,6 @@ int main()
         terminal_check();     // No xterm allowed
 
         MAP *pad = worldgen((LINES*3), (COLS*3));
-        prefresh(GLOBE->W, 0, 0, 1, 1, (LINES-1), (COLS-1));
         GLOBE = pad;
 
         wprintw(DIAGNOSTIC_WIN, "%u", (LINES*COLS)*3);

@@ -90,7 +90,7 @@ void *iolisten(EV_P_ ev_io *w, int revents)
                         order_boat('r', 0);
                         break;
                 case 't':
-                        toggle_bigpan();
+                        TOGPAN(BIGPAN);
                         break;
                 case KEY_UP:
                         move_inspector('u');

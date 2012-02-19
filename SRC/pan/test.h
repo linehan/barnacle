@@ -1,11 +1,15 @@
 extern WINDOW *SYSWIN;
 extern PANEL  *SYSPAN;
+
 extern WINDOW *DIAGNOSTIC_WIN;
-extern PANEL *DIAGNOSTIC_PAN;
+extern PANEL  *DIAGNOSTIC_PAN;
+
 extern WINDOW *BIGWIN;
-extern PANEL *BIGPAN;
+extern PANEL  *BIGPAN;
+
 extern WINDOW *INSPECTORMSGWIN;
 extern PANEL  *INSPECTORMSGPAN;
+
 void init_test(void);
 void toggle_dpanel(void);
 void speak_error(const char *error);

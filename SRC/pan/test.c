@@ -112,10 +112,8 @@ void speak_error_mono(const char *error)
         wcolor_set(ERROR_WIN, COLOR_BLACK, NULL);
         wbkgrnd(ERROR_WIN, &PLAIN);
         mvwprintw(ERROR_WIN, 1, 2, "%s\n", error);
-        /*show_panel(ERRSH_PAN);*/
         show_panel(ERROR_PAN);
         while (wgetch(ERROR_WIN) != '\n');
-        /*hide_panel(ERRSH_PAN);*/
         hide_panel(ERROR_PAN);
         werase(ERROR_WIN);
 }
@@ -140,6 +138,6 @@ void move_inspector(int dir)
         top_panel(INSPECTORMSGPAN);
         move_panel(INSPECTORPAN, inspector_y, inspector_x);
         vrt_refresh();
-        stat_nyb(GLOBE->Z, inspector_y, inspector_x);
+        stat_cell(GLOBE->Z, inspector_y, inspector_x);
         scr_refresh();
 }

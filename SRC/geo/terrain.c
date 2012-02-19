@@ -19,34 +19,17 @@
 #include "../lib/hash/hash.h"
 
 #include "terrain.h"
-#include "../cmd/control.h"
-#include "../gen/dice.h"
+#include "weather.h"
 
 #include "../gfx/gfx.h"
 #include "../gfx/palette.h"
 #include "../gfx/sprite.h"
-#include "../pan/test.h"
 #include "../gen/perlin.h"
-
-#include "weather.h"
-/******************************************************************************/
-uint32_t padx = 0; 
-uint32_t pady = 0;
-/******************************************************************************
- *  +----------------+ 
- *  | +------------+ <---- edge       These are, essentially, a stacked
- *  | | +--------+ | |                set of panels.
- *  | | |        | <------ mantle
- *  | | |        | | |
- *  | | |        <-------- core
- *  | | +--------+ | |
- *  | +------------+ |
- *  +----------------+
- *
- * Generate terrain body; conforms to a three-tier pattern, typically with the 
- * 'edge' panel being animated with two frames. This was an early attempt to do
- * something that might have been superceded by gen_terrain().
- ******************************************************************************/
+#include "../gen/dice.h"
+#include "../cmd/control.h"
+#include "../pan/test.h"
+#include "../lib/ufo.h"
+//##############################################################################
 /* Move terrain highlights in a direction determined by the current wind
  * direction. */
 /*void shift_highlights(PLATE *pl)*/
@@ -85,7 +68,10 @@ uint32_t pady = 0;
         /*}*/
         /*scr_refresh();*/
 /*}*/
-
+//##############################################################################
+//# Where the magic happens - draw the graphics layers based on generated
+//# Perlin simplex noise and some coin flips. 
+//##############################################################################
 void draw_layers(MAP *map)
 {
         int i, j;
@@ -99,11 +85,10 @@ void draw_layers(MAP *map)
         seed     = 0.95;      // threshold value to determine whether to draw
         chunk    = 6;
         chunkmin = 3;
-        ymax     = (map->h)-chunkmin;
-        xmax     = (map->w)-chunkmin;
+        ymax     = ((map->h)-1)-chunkmin; // beware the fencepost error
+        xmax     = ((map->w)-1)-chunkmin;
 
         cchar_t *bgtop;            // background sprite
-
         bgtop = get_tile(__Gra__);
 
         for (y0=0; y0<ymax; y0++) {
@@ -128,14 +113,14 @@ void draw_layers(MAP *map)
                                         for (j=x0; j<jmax; j++) {
                                                 if (i == imax) {
                                                         mvwadd_wch(map->L[DRP], i, j, &MTN[2]);
-                                                        set_nyb(map->Z, imax, j, 3, 
+                                                        set_cell(map->Z, imax, j, 3, 
                                                                 LAY, DRP, 
                                                                 SED, LIME, 
                                                                 SOI, MOLL);
                                                         continue;
                                                 }
                                                 mvwadd_wch(map->L[TOP], i, j, bgtop); // top
-                                                set_nyb(map->Z, i, j, 3, 
+                                                set_cell(map->Z, i, j, 3, 
                                                         LAY, TOP, 
                                                         SED, LIME, 
                                                         SOI, MOLL);
@@ -152,7 +137,7 @@ void draw_layers(MAP *map)
                                 for (i=ty0; i<=imax; i++) {
                                         for (j=tx0; j<jmax; j++) {
                                                 if (i == imax) {
-                                                        set_nyb(map->Z, imax, j, 3, 
+                                                        set_cell(map->Z, imax, j, 3, 
                                                                 LAY, VEG, 
                                                                 SED, LIME, 
                                                                 SOI, MOLL);
@@ -160,7 +145,7 @@ void draw_layers(MAP *map)
                                                         continue;
                                                 }
                                                 mvwadd_wch(map->L[VEG], i, j, &TREE[1]);
-                                                set_nyb(map->Z, i, j, 3, 
+                                                set_cell(map->Z, i, j, 3, 
                                                         LAY, VEG, 
                                                         SED, LIME, 
                                                         SOI, SPOD);
@@ -182,10 +167,18 @@ MAP *worldgen(uint32_t rows, uint32_t cols)
 
         new = malloc(sizeof(MAP));
 
-        new->h    = rows;
-        new->w    = cols;
-        new->pmap = gen_perlin_map(new->w, new->w);
+        new->ufo = new_ufo(rows, cols, 0, 0, 0, 0);
+        new->h       = rows;
+        new->w       = cols;
+        new->padx    = 1;
+        new->pady    = 1;
+        /*new->xminscr = 0;*/
+        /*new->yminscr = 0;*/
+        /*new->xmaxscr = ((new->h)-1);*/
+        /*new->ymaxscr = ((new->w)-1);*/
+        new->pmap = gen_perlin_map(new->h, new->w);
         new->W    = newpad(new->h, new->w);
+        new->P    = new_panel(new->W);
         new->Z    = new_zbox(new->h, new->w);
 
         for (i=0; i<16; i++) {
@@ -393,25 +386,21 @@ void testworld(int size_factor, int testtype)
 void roll(MAP *map, int dir)
 {
         switch (dir) {
-        case 'l':
-                if (padx == 0) padx = map->w;
-                else           padx--;
+        case 'l': 
+                ufo_l(map->ufo);
                 break;
-        case 'r':
-                if (padx == map->w) padx = 0;
-                else                padx++;
+        case 'r': 
+                ufo_r(map->ufo);
                 break;
-        case 'u':
-                if (pady == 0) pady = map->h;
-                else           pady--;
+        case 'u': 
+                ufo_u(map->ufo);
                 break;
-        case 'd':
-                if (pady == map->h) pady = 0;
-                else                pady++;
+        case 'd': 
+                ufo_d(map->ufo);
                 break;
         }
-        prefresh(map->W, pady, padx, 1, 1, LINES-1, COLS-1);
-        vrt_refresh();
-        /*doupdate();*/
+        top_panel(map->P);
+        pnoutrefresh(map->W, ufo_y(map->ufo), ufo_x(map->ufo), 0, 0, LINES-1, COLS-1);
+        scr_refresh();
 }
 

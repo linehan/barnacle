@@ -100,6 +100,8 @@ ZBOX *new_zbox(uint32_t rows, uint32_t cols)
 
         new = malloc(sizeof(ZBOX));
         new->n = (rows*cols); // total cells
+        new->v = malloc(sizeof(uint32_t));
+        new->bst = NULL;
 
         for (i=0; i<rows; i++) {
                 for (j=0; j<cols; j++) {

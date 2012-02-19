@@ -1,4 +1,6 @@
 // vim:fdm=marker
+#ifndef __BINARY_SEARCH_TREES
+#define __BINARY_SEARCH_TREES
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
@@ -51,18 +53,14 @@ static uint32_t *bst_get(struct bstree* node, uint32_t match) {
         }
 }
 
-
-  
 static struct bstree *new_bsnode(uint32_t key) {
         struct bstree* node = malloc(sizeof(struct bstree)); 
         node->key   = key;
-        node->data  = 0;
         node->left  = NULL;
         node->right = NULL;
         return(node);
 }
  
-
 static struct bstree *bst_insert(struct bstree *node, uint32_t key) {
         // 1. If the tree is empty, return a new, single node
         if (node == NULL) {
@@ -78,3 +76,5 @@ static struct bstree *bst_insert(struct bstree *node, uint32_t key) {
                 return(node); // return the (unchanged) node pointer
         }
 } 
+
+#endif

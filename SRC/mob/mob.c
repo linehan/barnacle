@@ -46,10 +46,10 @@ MOB *new_mob(void *ptr, int h, int w, int y0, int x0)
 
 void move_mob(MOB *mob, int dir)
 {
-        sem_wait(mob->sem);
+        /*sem_wait(mob->sem);*/
 
-        int y = mob->dim.yco;
-        int x = mob->dim.xco;
+        /*int y = mob->dim.yco;*/
+        /*int x = mob->dim.xco;*/
 
         /*switch (dir) {*/
         /*case 'u':       if (((y>0)) && ((hit_test(GLOBE->P, --y, x) == 0)))*/
@@ -65,25 +65,25 @@ void move_mob(MOB *mob, int dir)
                                 /*mob->dim.xco++;*/
                         /*break;*/
         /*}*/
-        /*if ((mob->dim.yco == LINES)) {*/
-                /*screen_swap(SOUTH);*/
-                /*mob->dim.yco = 2;*/
-        /*} */
-        /*else if ((mob->dim.xco == 0)) {*/
-                /*screen_swap(WEST);*/
-                /*mob->dim.xco = COLS-2;*/
-        /*} */
-        /*else if ((mob->dim.yco == 0)) {*/
-                /*screen_swap(NORTH);*/
-                /*mob->dim.yco = LINES-2;*/
-        /*} */
-        /*else if ((mob->dim.xco == COLS)) {*/
-                /*screen_swap(EAST);*/
-                /*mob->dim.xco = 2;*/
-        /*}*/
-        move_panel(mob->pan, mob->dim.yco, mob->dim.xco);
-        top_panel(mob->pan);
-        scr_refresh();
+        /*[>if ((mob->dim.yco == LINES)) {<]*/
+                /*[>screen_swap(SOUTH);<]*/
+                /*[>mob->dim.yco = 2;<]*/
+        /*[>} <]*/
+        /*[>else if ((mob->dim.xco == 0)) {<]*/
+                /*[>screen_swap(WEST);<]*/
+                /*[>mob->dim.xco = COLS-2;<]*/
+        /*[>} <]*/
+        /*[>else if ((mob->dim.yco == 0)) {<]*/
+                /*[>screen_swap(NORTH);<]*/
+                /*[>mob->dim.yco = LINES-2;<]*/
+        /*[>} <]*/
+        /*[>else if ((mob->dim.xco == COLS)) {<]*/
+                /*[>screen_swap(EAST);<]*/
+                /*[>mob->dim.xco = 2;<]*/
+        /*[>}<]*/
+        /*move_panel(mob->pan, mob->dim.yco, mob->dim.xco);*/
+        /*top_panel(mob->pan);*/
+        /*scr_refresh();*/
 
-        sem_post(mob->sem);
+        /*sem_post(mob->sem);*/
 }
