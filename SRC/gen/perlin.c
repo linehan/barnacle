@@ -1,10 +1,10 @@
 // vim:fdm=marker
-/*******************************************************************************
+/*
  FILENAME:  perlin.c
  Implement a Perlin simplex noise algorithm to generate 2-dimensional noise.
  The algorithm is a bit complicated, so either treat it like a black box, or
  pay attention to the documentation here.
-*******************************************************************************/
+*/
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
@@ -18,8 +18,8 @@
 #include "../pan/test.h"
 #include "dice.h"
 #include "../lib/constants.h"
-/******************************************************************************/
-/* Perlin Noise
+/* Perlin Noise                                                             {{{1
+ *
  * The basic idea behind Perlin noise is best explained in two dimensions.
  * Imagine an integer coordinate grid. At each grid point (x,y), a prandom 
  * 2D gradient is chosen. For an arbitrary point P on the surface of this
@@ -81,7 +81,7 @@
  * |\  /\  /\  /\  /\  /|   
  * |_\/__\/__\/__\/__\/_| 
  *
- ******************************************************************************/
+ *************************************************************************}}}1*/
 
 #define PERM_LIMIT 512 // random permutations availible before re-shuffle needed
 
