@@ -77,7 +77,7 @@
 #include "../pan/test.h"
 #include "dice.h"
 
-#define PERM_LIMIT 512 // random permutations availible before re-shuffle needed
+#define PERM_LIMIT 512 // random permutations availible before re-shuffle
 
 /* Check if initialized */
 static int PERLIN_READY = 0;
@@ -140,95 +140,123 @@ void perm_shuffle(void)
 }
 
 /* Generate a simplex noise value for coordinates xin, yin */
-double simplex_noise(double xin, double yin)
+double simplex_noise(double yin, double xin)
 {
-        /* Noise contributions from the three corners */
-        double n0, n1, n2;
-        /* The generalized skew and unskew equations are
-         *
-         *
-         *   Skew:  ((sqrt(n+1)-1)/n)
-         * Unskew:  ((n+1)-(sqrt(n+1)))/(n*(n+1))   
-         *
-         */
-        /* Skew the input space (x,y) to the simplex space (i,j) */
-        double skew = 0.5*(sqrt(3.0)-1.0);
-        /* Skew the simplex space (i,j) to the input space (x,y) */
-        double unskew = (3.0-sqrt(3.0))/6.0;
+        double skew; // Input space (x,y) skewed to simplex space (i,j)
+        double unskew; // Simplex space (i,j) skewed to input space (x,y)
+        double skew_factor; // Transforms (x,y) to (i,j)
+        double unskew_factor; // Transforms (i,j) to (x,y)
+        double X0, Y0; // Simplex cell origin in (x,y)
+        double x0, y0; // Distance of xin/yin from cell origin in (x,y)
+        double x1, y1; // Offsets of second corner in (x,y)
+        double x2, y2; // Offsets of third corner in (x,y)
 
-        double skew_factor = (xin+yin)*skew;
-        /* The skewed equivalents of the input space (x,y) are (i,j). */
-        signed int i = fastfloor(xin+skew_factor);
-        signed int j = fastfloor(yin+skew_factor);
-        /* Unskew the cell origin back to (x,y) space */
-        double unskew_factor = (i+j)*unskew;
-        double X0 = i-unskew_factor; 
-        double Y0 = j-unskew_factor;
-        /* Calculate the (x,y) distances from the cell origin */
-        double x0 = xin-X0;
-        double y0 = yin-Y0;
+        signed int i, j; // Simplex space coordinates
+        signed int i1, j1; // Offsets for second corner of simplex.
+        /* 
+          Unit simplex has 3 corners with offsets (0,0), (1,0), or (1,1).
+          The second corner can be either (1,0) or (0,1), depending on
+          which simplex contains (xin,yin), so we need to compute which
+          ordered pair to use, and store it, in order to calculate the
+          appropriate equivalent offsets in (x,y) that will be stored in
+          x1 and y1.
 
-        /* For the 2D case, the simplex shape is an equilateral triangle.
-         * Determine which simplex we are in. It should be apparent that
-         * if x>y, we are in the lower triangle, and if y>x, we are in the
-         * upper triangle:     ___
-         *                    |  /|   (Imagine it 's a square, ok?)
-         *                   y| / |
-         *                    |/__|
-         *                      x
-         */
-        /* Offsets for second (middle) corner of simplex in (i,j) coordinates */
-        signed int i1, j1; 
-        
-        if (x0>y0) {  /* lower triangle, XY order: (0,0)->(1,0)->(1,1) */
+          To determine whether to use (0,1) or (1,0) for the offset of
+          the second corner, we need to determine which of the two simplices 
+          contains (xin,yin). 
+          
+          We can see that if x0>y0, we are in the "lower" triangle, and if 
+          y0>x0, we are in the "upper" triangle: 
+               ___
+              |  /|   (Imagine a square)
+             y| / |
+              |/__|
+                x
+        */
+        signed int ii, jj; // Gradient index variables
+        signed int gi0, gi1, gi2; // Hashed gradient indices
+
+        double t0, t1, t2; // Gradient contribution from each corner
+        double n0, n1, n2; // Noise contribution from each corners
+
+        /*
+          Compute skew and unskew constants for 2D
+        */
+        skew   = 0.5*(sqrt(3.0)-1.0); // ((sqrt(n+1)-1)/n)
+        unskew = (3.0-sqrt(3.0))/6.0; // ((n+1)-(sqrt(n+1)))/(n*(n+1))
+        /*
+          Transform (xin,yin) to simplex space (i,j)
+        */
+        skew_factor = (xin+yin)*skew;
+        i = fastfloor(xin+skew_factor);
+        j = fastfloor(yin+skew_factor);
+        /*
+          Transform origin of simplex cell containing (i,j) to (x,y)
+        */
+        unskew_factor = (i+j)*unskew;
+        X0 = i-unskew_factor; 
+        Y0 = j-unskew_factor;
+        /*
+          Compute distance between xin/yin and the cell origin
+        */
+        x0 = xin-X0;
+        y0 = yin-Y0;
+        /*
+          Determine which simplex and thus which ordered pairs to use
+        */
+        if (x0>y0) {  // lower triangle, XY order: (0,0)->(1,0)->(1,1)
                 i1=1; 
                 j1=0; 
-        } else {      /* upper triangle, YX order: (0,0)->(0,1)->(1,1) */
+        } else {      // upper triangle, YX order: (0,0)->(0,1)->(1,1)
                 i1=0;                 
                 j1=1;
         }
-
-        /* A step of (1,0) in (i,j) means a step of (1-c,-c) in (x,y), and
-           a step of (0,1) in (i,j) means a step of (-c,1-c) in (x,y), where
-           c = (3-sqrt(3))/6 */
-        
-        /* Offsets for middle corner in (x,y) unskewed */
-        double x1 = x0 - i1 + unskew;
-        double y1 = y0 - j1 + unskew;
-        /* Offsets for last corner in (x,y) unskewed */
-        double x2 = x0 - 1.0 + 2.0 * unskew; 
-        double y2 = y0 - 1.0 + 2.0 * unskew;
-
-        /* Work out the hashed gradient indices of the three simplex corners */
-        signed int ii = i & 255;
-        signed int jj = j & 255;
-        signed int gi0 = PERM[ii+PERM[jj]] % 12;
-        signed int gi1 = PERM[ii+i1+PERM[jj+j1]] % 12;
-        signed int gi2 = PERM[ii+1+PERM[jj+1]] % 12;
-
-        /* Calculate the contribution from the three corners */
-        double t0 = 0.5 - x0*x0-y0*y0;
-        if (t0<0) n0 = 0.0;
+        /*
+          Compute offsets of second corner in (x,y)
+        */
+        x1 = x0 - i1 + unskew;
+        y1 = y0 - j1 + unskew;
+        /*
+          Compute offsets of third corner in (x,y)
+        */
+        x2 = x0 - 1.0 + 2.0 * unskew; 
+        y2 = y0 - 1.0 + 2.0 * unskew;
+        /* 
+          Compute hashed gradient indices for the three corners
+        */
+        ii = i & 255;
+        jj = j & 255;
+        gi0 = PERM[ii+PERM[jj]] % 12;
+        gi1 = PERM[ii+i1+PERM[jj+j1]] % 12;
+        gi2 = PERM[ii+1+PERM[jj+1]] % 12;
+        /* 
+          Compute gradient contribution from each corner
+        */
+        t0 = (0.5 - ((x0*x0)-(y0*y0)));
+        if (t0<0) 
+                n0 = 0.0;
         else {
                 t0 *= t0;
                 n0 = t0 * t0 * dot(GRADIENT3[gi0], x0, y0);
         }
-
-        double t1 = 0.5 - x1*x1-y1*y1;
-        if (t1<0) n1 = 0.0;
+        t1 = (0.5 - ((x1*x1)-(y1*y1)));
+        if (t1<0) 
+                n1 = 0.0;
         else {
                 t1 *= t1;
                 n1 = t1 * t1 * dot(GRADIENT3[gi1], x1, y1);
         }
-
-        double t2 = 0.5 - x2*x2-y2*y2;
-        if (t2<0) n2 = 0.0;
+        t2 = (0.5 - ((x2*x2)-(y2*y2)));
+        if (t2<0) 
+                n2 = 0.0;
         else {
                 t2 *= t2;
                 n2 = t2 * t2 * dot(GRADIENT3[gi2], x2, y2);
         }
-        /* Add contributions from each corner to get the final noise value */
-        /* The result is then scaled to return values in the interval [-1,1] */
+        /* 
+          Sum contributions to arrive at final noise value, scale to
+          interval [-1,1], and return.
+        */
         return (70.0 * (n0 + n1 + n2));
 }
 
