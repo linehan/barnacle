@@ -1,13 +1,33 @@
-# Autotools' messy mess #
-#########################
-*.log
-*.cache
-*.m4
-*.swp
-*.out
-*.o
-depcomp
-install-sh
-missing
-configure
-config.status
+# Junk left behind by...
+# autotools
+        *.log
+        *.cache
+        *.m4
+        *.o
+        depcomp
+        install-sh
+        missing
+        configure
+        config.status
+
+# gprof
+        *.out
+
+# vim
+        *.swp
+
+# Big files that shouldn't be accidentally committed
+        *.pdf
+        *.djvu
+        *.jpg
+        *.jpeg
+        *.Jpg
+        *.Jpeg
+        *.JPG
+        *.JPEG
+        *.gif
+        *.Gif
+        *.GIF
+        *.png
+        *.Png
+        *.PNG
