@@ -1,11 +1,4 @@
 // vim:fdm=marker
-#ifndef __MAP_TYPES
-#define __MAP_TYPES
-#include <stdlib.h>
-#include <stdint.h>
-#include "../lib/redblack/rb.h"
-
-
 //{{{1 README
 //##############################################################################
 //#
@@ -35,30 +28,61 @@
 //#
 //##############################################################################
 //}}}1
+#ifndef __MAP_TYPES
+#define __MAP_TYPES
+
+#include <stdint.h>
+#include "../lib/redblack/rb.h"
+
+#define NNIBS    8  // Number of nibbles in a MAP byte.
+#define NSTATES 16  // Number of states each nibble can take.
+#define NBITS   32  // Number of bits (total) in a MAP byte.
+#define NLAYERS 16  // Number of layers on the world map.
 
 
-#define NNIBS    8  // number of nibbles in a MAP byte
-#define NSTATES 16  // number of states each nibble can take
-#define NBITS   32  // number of bits (total) in a MAP byte 
+/*
+  The datatype for holding a world map.
+*/
+struct map_t {
+        struct ring_t *L[NLAYERS];
+        struct ring_t *W;
+        WINDOW *win;
+        PANEL  *pan;
+        struct rb_tree *tree;
+        struct ufo_t *ufo;
+        int w;
+        int h;
+        int a;
+        int padx;
+        int pady;
+};
 
-static const // Hexadecimal values of the 16 possible states of a MAP nibble
+extern struct map_t *GLOBE; // Global map.
+
+
+// The 16 possible states of a cell nibble.
+static const
 uint32_t state[NSTATES] = {0x00000000, 0x00000001, 0x00000002, 0x00000003,
                            0x00000004, 0x00000005, 0x00000006, 0x00000007,
                            0x00000008, 0x00000009, 0x0000000A, 0x0000000B,
                            0x0000000C, 0x0000000D, 0x0000000E, 0x0000000F};
 
-static const // Mask values for each of the 8 nibbles in a MAP byte
+// Mask values for each of the 8 nibbles in a cell.
+static const
 uint32_t scrub[NNIBS]   = {0x0FFFFFFF, 0xF0FFFFFF, 0xFF0FFFFF, 0xFFF0FFFF,
                            0xFFFF0FFF, 0xFFFFF0FF, 0xFFFFFF0F, 0xFFFFFFF0};
 
-static const // Inverted mask values for each of the 8 nibbles in a MAP byte
+// Inverted mask values for each of the 8 nibbles in a cell.
+static const
 uint32_t gouge[NNIBS]   = {0xF0000000, 0x0F000000, 0x00F00000, 0x000F0000,
                            0x0000F000, 0x00000F00, 0x000000F0, 0x0000000F};
 
-static const // The offset, in bits, of each of the 8 nibbles in a MAP byte
+// The offset, in bits, of each of the 8 nibbles in a cell.
+static const
 uint32_t offset[NNIBS] = {28, 24, 20, 16, 12, 8, 4, 0};
 
-static const // Enumerated labels for each of the 8 nibbles in a MAP byte
+// Enumerated labels for each of the 8 nibbles in a cell.
+static const
 char *nyb_tags[NNIBS] = {"LAY","ALT","BED","SED","SOI","MOI","TEM","HDG"};
            enum nibbles { LAY=0,ALT=1,BED=2,SED=3,SOI=4,MOI=5,TEM=6,HDG=7};
 
@@ -257,41 +281,22 @@ char *HDG_tags[16] = {"NORTH", "NNE", "NE", "ENE", "EAST" , "ESE", "SE", "SSE",
                       "SOUTH", "SSW", "SW", "WSW", "WEST" , "WNW", "NW", "NNW"};
 //}}}1
 
-static const // Arrays of tag values for each of the 8 nibbles in a MAP byte
+// Arrays of tag values for each of the 8 nibbles in a cell.
+static const
 char **tags[8] = { LAY_tags, ALT_tags, BED_tags, SED_tags, 
                    SOI_tags, MOI_tags, TEM_tags, HDG_tags };
 
 
+/*
+  Function prototypes
+*/
+struct map_t *new_map(int rows, int cols);
+void          gen_map(struct map_t *map);
+void         roll_map(struct map_t *map, int dir);
 
-//##############################################################################
-// PROTOTYPES
-//##############################################################################
+void           set_cell(struct rb_tree *tree, uint32_t z, int n, int s);
+int             is_cell(struct rb_tree *tree, uint32_t z, int n, int s);
+const char *get_celltag(struct rb_tree *tree, uint32_t z, int n);
+void          stat_cell(struct rb_tree *tree, uint32_t z);
 
-
-#define NLAYERS 16
-
-typedef struct the_whole_world {
-        WINDOW *L[NLAYERS];
-        WINDOW *W;
-        WINDOW *win;
-        PANEL  *P;
-        struct rb_tree *tree;
-        struct ufo_t *ufo;
-        int w;
-        int h;
-        int a;
-        int padx;
-        int pady;
-} MAP;
-
-extern MAP *GLOBE;
-
-MAP *new_map(int rows, int cols);
-void gen_map(MAP *map);
-void roll(MAP *map, int dir);
-
-void set_nyb(struct rb_tree *tree, uint32_t z, int n, int s);
-int is_nyb(uint32_t B, int n, int s);
-const char *get_nybtag(uint32_t B, int n);
-void stat_nyb(struct rb_tree *tree, uint32_t z);
 #endif

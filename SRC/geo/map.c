@@ -1,63 +1,95 @@
 // vim:fdm=marker
-/*******************************************************************************
- FILENAME:  map.c
-*******************************************************************************/
-#define _XOPEN_SOURCE_EXTENDED = 1  /* extended character sets */
-#include <stdio.h>
+//##############################################################################
+//# FILENAME: map.c                                                            #
+//# -------------------------------------------------------------------------- #
+//# Data structures and functions for a procedural world map.                  #
+//#                                                                            #
+//# GRAPHICAL DATA                                                             #
+//#                                                                            #
+//#     WINDOW *L[16];                                                         #
+//#             Array of 16 pads, one for each graphics layer. Each layer is   #
+//#             drawn on individually during terrain generation. When done,    #
+//#             the array is flattened using the overlay(); routine.           #
+//#                                                                            #
+//#     WINDOW *W;                                                             #
+//#             The destination of the overlay(); call following terrain       #
+//#             generation. Holds the aggregate of the 16 layer pads, in       #
+//#             proper order. Should serve as the sole "world map window".     #
+//#                                                                            #
+//#     WINDOW *win;                                                           #
+//#             The effective "viewport" for the pad *W. Pads cannot be        #
+//#             displayed all at once, nor can they be attached to PANELs      #
+//#             without causing trouble. By using *win and the copywin();      #
+//#             routine, we can minimize this shortcoming.                     #
+//#                                                                            #
+//#     PANEL *pan;                                                            #
+//#             The PANEL to which *win is attached.                           #
+//#                                                                            #
+//# CELLULAR DATA                                                              #
+//#                                                                            #
+//#     struct rb_tree *tree;                                                  #
+//#             Stores data about each cell (character box) of the world map.  #
+//#             *tree is a red-black tree, a kind of self-balancing binary     #
+//#             search tree. The lookup key for a particular cell is the       #
+//#             Morton code, or z-code, of that cell's y and x coordinates.    #
+//#             See "morton.h".                                                #
+//#                                                                            #
+//#     struct ufo_t *ufo;                                                     #
+//#             Used to simplify movement of object within a specified range.  #
+//#             See "ufo.h".                                                   #
+//#                                                                            #
+//##############################################################################
 #include <stdlib.h>
 #include <ncurses.h>
 #include <panel.h>
-#include <wchar.h>
-#include <locale.h>
 #include <pthread.h>
 #include <semaphore.h>
-#include <math.h>
-
-#include "map.h"
-#include "terrain.h"
-#include "weather.h"
 
 #include "../gfx/gfx.h"
-#include "../gfx/palette.h"
-#include "../gfx/sprite.h"
 #include "../gen/perlin.h"
-#include "../gen/dice.h"
 #include "../pan/test.h"
 #include "../lib/ufo.h"
 
 #include "../lib/redblack/rb.h"
-#include "../lib/sort/mergesort.h"
 #include "../lib/sort/quicksort.h"
 #include "../lib/morton.h"
 
+#include "map.h"
+#include "terrain.h"
+//##############################################################################
 
+/*
+  Initialize and construct the red-black tree structure. Generates the 
+  Morton code keys and inserts them into the tree in sorted order.
+*/
 void build_rb_tree(struct rb_tree *tree, int rows, int cols, int total)
 {
         uint32_t i, j; // Iterators
-        int n = 0;     // Total number of nodes
         uint32_t *m;   // Morton code for each node
         uint32_t z;    // Stores computed Morton code
-        uint32_t *tmp; // Will be used to initialize data in tree
+        int n;         // Total number of nodes
 
         m = malloc(total * sizeof(uint32_t));
-        // Collect each coordinate's Morton code in m[]
+        n = 0;
+
         for (i=0; i<rows; i++) {
                 for (j=0; j<cols; j++) {
-                        mort(i, j, &z);
-                        m[n++] = z;
+                        MORT(i, j, &z);
+                        m[n++] = z; // Collect each coordinate's Morton code
                 }
         }
-        // Sort them
-        quicksort(m, n);
-        // Insert them into the red-black tree
+        quicksort(m, n); // Sort them
         while (n-->0) {
-                rb_insert(tree, m[n]);
+                rb_insert(tree, m[n]); // Insert them into the rb-tree
         }
 }
 
-MAP *new_map(int rows, int cols)
+/*
+  Allocate memory for a new struct map_t, and initialize some of its members.
+*/
+struct map_t *new_map(int rows, int cols)
 {
-        MAP *new = malloc(sizeof *new);
+        struct map_t *new = malloc(sizeof *new);
 
         new->h    = rows;
         new->w    = cols;
@@ -66,42 +98,42 @@ MAP *new_map(int rows, int cols)
         new->pady = 1;
         new->ufo  = new_ufo(rows, cols, 0, 0, 0, 0);
         new->W    = malloc(sizeof new->W);
-        new->P    = malloc(sizeof new->P);
+        new->pan  = malloc(sizeof new->pan);
+        new->win  = malloc(sizeof new->win);
         new->tree = malloc(sizeof(struct rb_tree));
         new->tree->root = NULL;
         build_rb_tree(new->tree, new->h, new->w, new->a);
 
         return (new);
 }
-
-void gen_map(MAP *map)
+/*
+  Generates terrain using a Perlin simplex noise map, which is passed to
+  draw_layers();. Once draw_layers(); returns, the layers in *L[16] are
+  flattened into *W.
+*/
+void gen_map(struct map_t *map)
 {
         int i;
         double **pmap = gen_perlin_map(map->h, map->w); // 2D Perlin map
 
-        map->W   = newpad(map->h, map->w); // Create new primary pad
-        map->win = newwin(LINES, COLS, 0, 0);
-        map->P   = new_panel(map->win);      // Attach to window
+        map->win = newwin(LINES, COLS, 0, 0); // Fullscreen
+        map->pan = new_panel(map->win);
 
         for (i=0; i<16; i++) {
-                map->L[i] = newpad(map->h, map->w);
+                if (i == RIM) map->L[i] = new_winring(map->h, map->w, 0, 0, 2);
+                else          map->L[i] = new_winring(map->h, map->w, 0, 0, 1);
         }
+
+        map->W = new_winring(map->h, map->w, 0, 0, 2);
 
         draw_layers(map, pmap);
-
-        for (i=0; i<16; i++) {
-                overlay(map->L[i], map->W);
-        }
-
-        return map;
+        draw_water_rim(map);
+        restack_map(map);
 }
 
-//##############################################################################
-//#  IN (B): A single tile from the Morton array.                              #
-//#  IN (n): An enum value indicating which nibble of the tile.                #
-//#  IN (s): An enum value indicating which state to set.                      #
-//#  OUTPUT: Side effects -- sets nibble n of B to state s.                    #
-//##############################################################################
+/*
+  Retreive a cell with key 'z', and set its 'n'th nibble to state 's'.
+*/
 //{{{1 Detailed explanation
 //##############################################################################
 //#                                                                            #
@@ -129,66 +161,98 @@ void gen_map(MAP *map)
 //#                                                                            #
 //##############################################################################
 //}}}1
-void set_nyb(struct rb_tree *tree, uint32_t z, int n, int s)
+void set_cell(struct rb_tree *tree, uint32_t z, int n, int s)
 {
         struct rb_node *p; // Pointer to the data bucket to be operated on
-        uint32_t C;        // Copy of B
 
         p = rb_retreive(tree->root, z);
         if (p == NULL) return;
 
         p->data &= scrub[n];
         p->data |= (state[s]<<offset[n]);
-
-        /*rb_store(map->tree, z, C);*/
 }
-//##############################################################################
-//#  IN (B): A single tile from the Morton array.                              #
-//#  IN (n): An enum value indicating a nibble of the tile.                    #
-//#  IN (s): An enum value indicating a nibble state.                          #
-//#  OUTPUT: Returns 1 if the state of nibble n of B is s, else returns 0.     #
-//##############################################################################
-int is_nyb(uint32_t B, int n, int s)
+/*
+  Tests nibble 'n' of cell with key 'z'. If nibble has state 's', is_cell() 
+  returns 1, else it returns 0.
+*/
+int is_cell(struct rb_tree *tree, uint32_t z, int n, int s)
 {
-        wprintw(DIAGNOSTIC_WIN, "\ns: %u\nB: %u\nstate[s]: %u\n", s, B, state[s]);
-        B &= ~(scrub[n]); // wipe all but the nibble we want
-        B >>= offset[n];  // push our nibble to the end
-        wprintw(DIAGNOSTIC_WIN, "\ns: %u\nB: %u\nstate[s]: %u\n", s, B, state[s]);
-
-        return (B == state[s]) ? 1 : 0;
-}
-//##############################################################################
-//#  IN (B): A single tile from the Morton array.                              #
-//#  IN (n): An enum value indicating which nibble of the tile.                #
-//#  OUTPUT: A string, the enum label of the nibble's state.                   #
-//##############################################################################
-const char *get_nybtag(uint32_t B, int n)
-{
-        B &= ~(scrub[n]); // wipe all but the nibble we want
-        B >>= offset[n];  // push our nibble to the end
-
-        return tags[n][B];
-}
-//##############################################################################
-//#  IN (B): A single tile from the Morton array.                              #
-//#  OUTPUT: Side effects -- prints each nibble label and it's state label.    #
-//##############################################################################
-void stat_nyb(struct rb_tree *tree, uint32_t z)
-{
-        struct rb_node *p;
-        uint32_t C;
-        int n = NNIBS;
+        struct rb_node *p; // Pointer to the data bucket to be operated on
+        uint32_t C;        // Copy of the cell's data
 
         p = rb_retreive(tree->root, z);
         if (p == NULL) return;
 
-        C = p->data; // Make a copy
+        C = p->data;      // Make a copy of the data
+        C &= ~(scrub[n]); // Wipe all but the nibble we want
+        C >>= offset[n];  // Push our nibble to the end
 
-        while (n--) {
-                C &= ~(scrub[n]); // wipe all but the nibble we want
-                C >>= offset[n];  // push our nibble to the end
+        return (C == state[s]) ? 1 : 0;
+}
+/*
+  Returns a pointer to a string, which represents the enum tag corresponding
+  to the state of nibble 'n' of cell with key 'z'.
+*/
+const char *get_celltag(struct rb_tree *tree, uint32_t z, int n)
+{
+        struct rb_node *p; // Pointer to the data bucket to be operated on
+        uint32_t C;        // Copy of the cell's data
 
+        p = rb_retreive(tree->root, z);
+        if (p == NULL) return;
+
+        C = p->data;      // Make a copy of the data
+        C &= ~(scrub[n]); // wipe all but the nibble we want
+        C >>= offset[n];  // push our nibble to the end
+
+        return tags[n][C];
+}
+/*
+  Prints a formatted string consisting of the enum tags for every nibble and
+  state of cell with key 'z'.
+*/
+void stat_cell(struct rb_tree *tree, uint32_t z)
+{
+        struct rb_node *p; // Pointer to the data bucket to be operated on
+        uint32_t C;        // Copy of the cell's data.
+        int n = NNIBS-1;   // Number of nibbles in a cell (-1 for fencepost)
+
+        p = rb_retreive(tree->root, z);
+        if (p == NULL) return;
+
+        do {
+                C = p->data;      // Make a copy
+                C &= ~(scrub[n]); // Wipe all but the nibble we want
+                C >>= offset[n];  // Push our nibble to the end
                 wprintw(INSPECTORMSGWIN, "%3s: %3s | ", nyb_tags[n], tags[n][C]);
-                C = p->data; // Make another copy
+        } while (n-->0);
+}
+
+void restack_map(struct map_t *map)
+{
+        int i;
+        for (i=0; i<16; i++) {
+                overlay(PEEK(map->L[i]), PEEK(map->W));
         }
+}
+
+void roll_map(struct map_t *map, int dir)
+{
+        switch (dir) {
+        case 'l': 
+                ufo_l(map->ufo);
+                break;
+        case 'r': 
+                ufo_r(map->ufo);
+                break;
+        case 'u': 
+                ufo_u(map->ufo);
+                break;
+        case 'd': 
+                ufo_d(map->ufo);
+                break;
+        case 0:
+                break;
+        }
+        map_refresh(map);
 }

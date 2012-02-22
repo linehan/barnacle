@@ -104,16 +104,16 @@ void *iolisten(EV_P_ ev_io *w, int revents)
                         move_inspector('r');
                         break;
                 case 'w':
-                        roll(GLOBE, 'u');
+                        roll_map(GLOBE, 'u');
                         break;
                 case 'a':
-                        roll(GLOBE, 'l');
+                        roll_map(GLOBE, 'l');
                         break;
                 case 's':
-                        roll(GLOBE, 'd');
+                        roll_map(GLOBE, 'd');
                         break;
                 case 'd':
-                        roll(GLOBE, 'r');
+                        roll_map(GLOBE, 'r');
                         break;
                 case '`':
                         toggle_mm();

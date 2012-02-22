@@ -69,8 +69,9 @@ void do_animate(EV_P_ ev_timer *w, int revents)
 {
         OO_time *bun = container_of(w, OO_time, w);
 
-        /*GLOBE->P->L[RIM]->step(GLOBE->P->L[RIM]);*/
-        /*combine(GLOBE->P);*/
+        NEXT(GLOBE->L[RIM]);
+        restack_map(GLOBE);
+        map_refresh(GLOBE);
 
         if ((sem_trywait(bun->sem) == -1)) ev_timer_again(EV_DEFAULT, w);
         else                               ev_break(EV_A_ EVBREAK_ALL);
@@ -93,11 +94,11 @@ int main()
         terminal_check();     // No xterm allowed
 
 
-        MAP *pad = new_map((LINES*3), (COLS*3));
+        struct map_t *pad = new_map((LINES*3), (COLS*3));
         gen_map(pad);
         GLOBE = pad;
-        roll(pad, 0);
-        roll(pad, 0);
+        roll_map(pad, 0);
+        roll_map(pad, 0);
 
         wprintw(DIAGNOSTIC_WIN, "%u\n", (LINES*COLS)*3);
 

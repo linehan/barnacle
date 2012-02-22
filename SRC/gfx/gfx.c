@@ -34,7 +34,7 @@
         ((x>=G->dim.x0)&&(x<=(G->dim.xmax))&&(y>=G->dim.y0)&&(y<=(G->dim.ymax))) ? 1 : 0
 
 sem_t  *REFRESH_LOCK;
-MAP    *GLOBE;
+struct map_t *GLOBE;
 
 //##############################################################################
 //# Start the GeoJug engine                                                    #
@@ -57,27 +57,41 @@ void geojug_start(void)
         init_menus();       // psh menu and commands
         init_test();        // Start test structures
 
-        GLOBE = malloc(sizeof(MAP)); // initialize the global map
+        GLOBE = malloc(sizeof(struct map_t)); // initialize the global map
 }
 /******************************************************************************
  * Allocate memory for a new WNODE, and initialize it with the arguments
  * supplied. This function is almost always called from inside new_gnode(), 
  * for (pretty good) reasons, as described in that function's description.
  ******************************************************************************/
-WNODE *new_wnode(int id, int h, int w, int y0, int x0)
+struct wnode_t *new_wnode(int id, int h, int w, int y0, int x0)
 {
-        WNODE *new = (WNODE *)malloc(sizeof(WNODE));
-        new->window = newwin(h, w, y0, x0);
-        new->id = id;
+        struct wnode_t *new = (struct wnode_t *)malloc(sizeof *new);
+
+        // Detect if WINDOW should be a pad.
+        if (h > LINES || w > COLS) new->window = newpad(h, w);
+        else                       new->window = newwin(h, w, y0, x0);
 
         return new;
 }
 
-/*void next_wnode(const void *gnode)*/
-/*{*/
-        /*GNODE *gfx = (GNODE *)gnode;*/
-        /*CYCLE(gfx->wins, gfx->W, WNODE);*/
-/*}*/
+struct ring_t *new_winring(int h, int w, int y0, int x0, int nwindows)
+{
+        struct ring_t *new = (struct ring_t *)malloc(sizeof *new);
+
+        MAKE_RING(new->ring); // Initialize the list head
+        new->n = nwindows;
+
+        while (nwindows-->0) {
+                struct wnode_t *wnode = new_wnode(nwindows, h, w, y0, x0);
+                list_add(new->ring, &wnode->node);
+        }
+        NEXT(new); // Make sure *peek points to something.
+        return (new);
+}
+
+
+
 /*void step_wnode_forward(const void *gnode)*/
 /*{*/
         /*GNODE *gfx = (GNODE *)gnode;*/

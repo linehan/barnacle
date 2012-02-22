@@ -6,17 +6,26 @@
 #include "deps/container_of.h"
 #include "deps/check_type.h"
 
+
+
 /* Allocates memory for and then initializes a new ring head */
-#define __RING(head) \
+#define MAKE_RING(head) \
         head = (struct list_head *)malloc(sizeof(struct list_head)); \
         list_head_init(head)
 
 /* Cycles the node pointed to by tmp, so that tmp points to the next item
    in the ring. */
-#define CYCLE(head, tmp, type)                 \
+#define CYCLEF(head, tmp, type)                \
         tmp = list_top(head, type, node);      \
               list_del_from(head, &tmp->node); \
               list_add_tail(head, &tmp->node)
+
+/* Cycles the node pointed to by tmp, so that tmp points to the previous item
+   in the ring. */
+#define CYCLEB(head, tmp, type)                \
+        tmp = list_tail(head, type, node);     \
+              list_del_from(head, &tmp->node); \
+              list_add(head, &tmp->node)
 
 /**
  * struct list_node - an entry in a doubly-linked list

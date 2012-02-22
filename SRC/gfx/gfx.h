@@ -10,6 +10,10 @@
 
 extern sem_t *REFRESH_LOCK; // keeps things from going crazy in the i/o thread
 
+#define PEEK(winring) (winring)->peek->window
+#define NEXT(winring) CYCLEF(winring->ring, winring->peek, struct wnode_t);
+#define PREV(winring) CYCLEB(winring->ring, winring->peek, struct wnode_t);
+
 //##############################################################################
 //# Locks the REFRESH_LOCK semaphore before refreshing vertical or actual      #
 //# screen. Prevents things from going haywire if something called from the    #
@@ -26,6 +30,10 @@ extern sem_t *REFRESH_LOCK; // keeps things from going crazy in the i/o thread
         update_panels();        \
         doupdate();             \
         sem_post(REFRESH_LOCK)
+
+#define map_refresh(map) \
+        copywin(PEEK(map->W), map->win, ufo_y(map->ufo), ufo_x(map->ufo), 0, 0, LINES-1, COLS-1, 0); \
+        scr_refresh()
 //##############################################################################
 //# Toggles a PANEL, hiding it if it is not hidden, and showing it if it is.   #
 //##############################################################################
@@ -34,6 +42,7 @@ extern sem_t *REFRESH_LOCK; // keeps things from going crazy in the i/o thread
                 show_panel(pan); \
         else                     \
                 hide_panel(pan)  
+
 
 /******************************************************************************
  * Using the DIMS structure is all about laziness, plain and simple. Anything
@@ -80,15 +89,23 @@ typedef struct dimension_t {
  * in memory, but contributes nothing to the screen until it is loaded into
  * the projector. A ring of WNODEs is, naturally, a reel.
  ******************************************************************************/
-typedef struct win_wad {
+struct wnode_t {
         int id;
         WINDOW *window;
         struct list_node node; 
-} WNODE;
+};
+
+/* Generalized ring type */
+struct ring_t {
+        int n;
+        struct wnode_t *peek;
+        struct list_head *ring;
+};
 
 void geojug_start(void);
 
-WNODE *new_wnode(int id, int h, int w, int y0, int x0);
+struct wnode_t *new_wnode(int id, int h, int w, int y0, int x0);
+struct ring_t *new_winring(int h, int w, int y0, int x0, int nwindows);
 //void draw_water_rim(PLATE *pl);
 
 #endif
