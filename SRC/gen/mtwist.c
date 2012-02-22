@@ -18,11 +18,11 @@ int mt_index;
 unsigned long mt[MT_LEN]; /* stores the state of the generator */
 
 void mt_init() {
-  int i;
-
-  for (i = 0; i < MT_LEN; i++)
-     mt[i] = rand();
-     mt_index = 0;
+        int i;
+        for (i = 0; i < MT_LEN; i++) {
+                mt[i] = rand();
+        }
+        mt_index = 0;
 }
 
 #define MT_IA           397
@@ -32,6 +32,7 @@ void mt_init() {
 #define MATRIX_A        0x9908B0DF
 #define TWIST(b,i,j)    ((b)[i] & UPPER_MASK) | ((b)[j] & LOWER_MASK)
 #define MAGIC(s)        (((s)&1)*MATRIX_A)
+
 
 unsigned long mt_random() {
    unsigned long * b = mt;

@@ -19,6 +19,7 @@
 #include "../lib/hash/hash.h"
 
 #include "terrain.h"
+#include "map.h"
 #include "weather.h"
 
 #include "../gfx/gfx.h"
@@ -72,7 +73,7 @@
 //# Where the magic happens - draw the graphics layers based on generated
 //# Perlin simplex noise and some coin flips. 
 //##############################################################################
-void draw_layers(MAP *map)
+void draw_layers(MAP *map, double **pmap)
 {
         int i, j;
         int imax, jmax;       // loop boundaries for ground box
@@ -80,9 +81,10 @@ void draw_layers(MAP *map)
         int x0, y0, tx0, ty0; // initial position of ground and tree boxes
         int w, h, tw, th;     // width and height of ground and tree boxes
         int chunk, chunkmin;  // unit of land to draw at a time
-        double seed;          // perlin noise (elevation) values
+        int lastchunk;        // value of the previous chunk
+        double seed;               // perlin noise (elevation) values
 
-        seed     = 0.95;      // threshold value to determine whether to draw
+        seed     = 0.95; // threshold value to determine whether to draw
         chunk    = 6;
         chunkmin = 3;
         ymax     = ((map->h)-1)-chunkmin; // beware the fencepost error
@@ -94,13 +96,16 @@ void draw_layers(MAP *map)
         for (y0=0; y0<ymax; y0++) {
                 for (x0=0; x0<xmax; x0++) {
 
-                        if (map->pmap[y0][x0] > seed) {
-                                if (flip_biased(0.56))   
-                                        chunk += chunk/3;
-                                else    
-                                        chunk -= chunk/3;
+                        if (pmap[y0][x0] > seed) {
 
-                                if ((chunk < 2)) continue;
+                                lastchunk = chunk;
+
+                                if (flip_biased(0.57))   
+                                        chunk += 1;
+                                else    
+                                        chunk -= 1;
+
+                                chunk = (chunk < chunkmin) ? lastchunk : chunk;
 
                                 h = w = chunk; // square
                                 imax = y0+h;
@@ -113,17 +118,15 @@ void draw_layers(MAP *map)
                                         for (j=x0; j<jmax; j++) {
                                                 if (i == imax) {
                                                         mvwadd_wch(map->L[DRP], i, j, &MTN[2]);
-                                                        set_cell(map->Z, imax, j, 3, 
-                                                                LAY, DRP, 
-                                                                SED, LIME, 
-                                                                SOI, MOLL);
+                                                        /*set_nyb(&(map->scr[imax][j]), LAY, DRP);*/
+                                                        /*set_nyb(&(map->scr[imax][j]), SED, LIME);*/
+                                                        /*set_nyb(&(map->scr[imax][j]), SOI, MOLL);*/
                                                         continue;
                                                 }
                                                 mvwadd_wch(map->L[TOP], i, j, bgtop); // top
-                                                set_cell(map->Z, i, j, 3, 
-                                                        LAY, TOP, 
-                                                        SED, LIME, 
-                                                        SOI, MOLL);
+                                                /*set_nyb(&(map->scr[i][j]), LAY, TOP); */
+                                                /*set_nyb(&(map->scr[i][j]), SED, LIME); */
+                                                /*set_nyb(&(map->scr[i][j]), SOI, MOLL); */
                                         }
                                 }
                                 // Draw the tree box
@@ -137,60 +140,26 @@ void draw_layers(MAP *map)
                                 for (i=ty0; i<=imax; i++) {
                                         for (j=tx0; j<jmax; j++) {
                                                 if (i == imax) {
-                                                        set_cell(map->Z, imax, j, 3, 
-                                                                LAY, VEG, 
-                                                                SED, LIME, 
-                                                                SOI, MOLL);
+                                                        /*set_nyb(&(map->scr[imax][j]), LAY, VEG);*/
+                                                        /*set_nyb(&(map->scr[imax][j]), SED, LIME);*/
+                                                        /*set_nyb(&(map->scr[imax][j]), SOI, MOLL);*/
                                                         mvwadd_wch(map->L[VEG], i, j, &TREE[0]);
                                                         continue;
                                                 }
                                                 mvwadd_wch(map->L[VEG], i, j, &TREE[1]);
-                                                set_cell(map->Z, i, j, 3, 
-                                                        LAY, VEG, 
-                                                        SED, LIME, 
-                                                        SOI, SPOD);
+                                                /*set_nyb(&(map->scr[i][j]), LAY, VEG);*/
+                                                /*set_nyb(&(map->scr[i][j]), SED, LIME);*/
+                                                /*set_nyb(&(map->scr[i][j]), SOI, SPOD);*/
                                         }
                                 }
                         }
                         mvwadd_wch(map->L[BGR], y0, x0, &OCEAN[0]);
                 }
         }
+
 }
 
-MAP *worldgen(uint32_t rows, uint32_t cols)
-{
 
-        int i;
-
-        MAP *new;
-        /*if ((new = calloc(1, sizeof(MAP))) == NULL) return NULL;*/
-
-        new = malloc(sizeof(MAP));
-
-        new->ufo = new_ufo(rows, cols, 0, 0, 0, 0);
-        new->h       = rows;
-        new->w       = cols;
-        new->padx    = 1;
-        new->pady    = 1;
-        /*new->xminscr = 0;*/
-        /*new->yminscr = 0;*/
-        /*new->xmaxscr = ((new->h)-1);*/
-        /*new->ymaxscr = ((new->w)-1);*/
-        new->pmap = gen_perlin_map(new->h, new->w);
-        new->W    = newpad(new->h, new->w);
-        new->P    = new_panel(new->W);
-        new->Z    = new_zbox(new->h, new->w);
-
-        for (i=0; i<16; i++) {
-                new->L[i] = newpad(new->h, new->w);
-        }
-        draw_layers(new);
-
-        for (i=0; i<16; i++) {
-                overlay(new->L[i], new->W);
-        }
-        return new;
-}
 
 /*void draw_water_rim(PLATE *pl)*/
 /*{*/
@@ -397,6 +366,8 @@ void roll(MAP *map, int dir)
                 break;
         case 'd': 
                 ufo_d(map->ufo);
+                break;
+        case 0:
                 break;
         }
         top_panel(map->P);

@@ -15,11 +15,12 @@ msg=0
 
 # If the SRC directory is not clean, run 'make clean' to get rid of the object 
 # files in ./SRC
-if [ -e ./SRC/arawak ]; then
+if [ -e SRC/arawak ]; then
         msg=1
         echo -e "${LRED}T${LCYAN}I${LGREEN}G${LBLUE}T${YELLOW}E${LMAGENTA}N${LRED}'${WHITE}UP${DEFAULT}"
         make distclean
-        rm -r ./SRC/.deps
+        rm -r SRC/.deps
+        rm SRC/gmon.out
 fi
 
 # If the build directory is not clean
@@ -29,6 +30,11 @@ if [ -e depcomp ]; then
         if [ $msg -eq 0 ]; then
                 echo -e "${LRED}T${LCYAN}I${LGREEN}G${LBLUE}T${YELLOW}E${LMAGENTA}N${LRED}'${WHITE}UP${DEFAULT}"
         fi
+        rm depcomp
+        rm install-sh
+        rm missing
+        rm aclocal.m4
+        rm -r autom4te.cache
         # Remove any files or directories indicated in .gitignore
         git clean -X -d -f
 fi

@@ -73,8 +73,11 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
-
+#include <ncurses.h>
+#include <panel.h>
+#include <stdint.h>
 #include "../pan/test.h"
+
 #include "dice.h"
 
 #define PERM_LIMIT 512 // random permutations availible before re-shuffle
@@ -232,21 +235,21 @@ double simplex_noise(double yin, double xin)
         /* 
           Compute gradient contribution from each corner
         */
-        t0 = (0.5 - ((x0*x0)-(y0*y0)));
+        t0 = 0.5 - x0*x0-y0*y0;
         if (t0<0) 
                 n0 = 0.0;
         else {
                 t0 *= t0;
                 n0 = t0 * t0 * dot(GRADIENT3[gi0], x0, y0);
         }
-        t1 = (0.5 - ((x1*x1)-(y1*y1)));
+        t1 = 0.5 - x1*x1-y1*y1;
         if (t1<0) 
                 n1 = 0.0;
         else {
                 t1 *= t1;
                 n1 = t1 * t1 * dot(GRADIENT3[gi1], x1, y1);
         }
-        t2 = (0.5 - ((x2*x2)-(y2*y2)));
+        t2 = 0.5 - x2*x2-y2*y2;
         if (t2<0) 
                 n2 = 0.0;
         else {
@@ -260,10 +263,10 @@ double simplex_noise(double yin, double xin)
         return (70.0 * (n0 + n1 + n2));
 }
 
-double **gen_perlin_map(int h, int w)
+double **gen_perlin_map(uint32_t h, uint32_t w)
 {
         int shuffled;  // counts down the number of permutations left
-        int row, col;  // the row and column number to be iterated over
+        uint32_t row, col;  // the row and column number to be iterated over
         double **pmap; // the perlin map to be returned
         
         if (!(PERLIN_READY)) return NULL;    
@@ -279,10 +282,9 @@ double **gen_perlin_map(int h, int w)
 
         for (row=0; row<h; row++) {
                 for (col=0; col<w; col++) {
-                        pmap[row][col] = simplex_noise(col, row); // noise
-                        if (shuffled)
-                                shuffled--;
-                        else {
+                        pmap[row][col] = simplex_noise(row, col); // noise
+                        shuffled -= 1;
+                        if (shuffled == 0) {
                                 perm_shuffle();
                                 shuffled = PERM_LIMIT;
                         }
@@ -302,7 +304,7 @@ void test_simplex_noise(double sea_level)
         for (i=0;i<30;i++) {
                 wprintw(DIAGNOSTIC_WIN, "\n  ");
                 for (j=0;j<30;j++) {
-                       noise = simplex_noise(i, j); 
+                       noise = simplex_noise(i, j);
                        /*printf("%+g\n", noise);*/
                        if (noise>sea_level) wprintw(DIAGNOSTIC_WIN, "#");
                        else wprintw(DIAGNOSTIC_WIN, "~");

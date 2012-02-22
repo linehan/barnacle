@@ -5,9 +5,8 @@
 #include <semaphore.h>
 
 #include "../lib/llist/list.h"
-#include "../lib/quadtree.h"
 #include "../pan/test.h"
-#include "zbox.h"
+#include "../geo/map.h"
 
 extern sem_t *REFRESH_LOCK; // keeps things from going crazy in the i/o thread
 
@@ -88,9 +87,6 @@ typedef struct win_wad {
 } WNODE;
 
 void geojug_start(void);
-void set_cell(ZBOX *Z, int y, int x, int n, ...);
-void stat_cell(ZBOX *Z, uint32_t y, uint32_t x);
-inline int is_cell(ZBOX *Z, uint32_t y, uint32_t x, int n, int s);
 
 WNODE *new_wnode(int id, int h, int w, int y0, int x0);
 //void draw_water_rim(PLATE *pl);

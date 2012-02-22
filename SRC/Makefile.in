@@ -45,13 +45,14 @@ CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS)
 am__dirstamp = $(am__leading_dot)dirstamp
-am_arawak_OBJECTS = arawak.$(OBJEXT) cmd/control.$(OBJEXT) \
-	gen/dice.$(OBJEXT) gen/mtwist.$(OBJEXT) geo/weather.$(OBJEXT) \
-	geo/terrain.$(OBJEXT) gfx/zbox.$(OBJEXT) gfx/palette.$(OBJEXT) \
-	gfx/sprite.$(OBJEXT) gfx/gfx.$(OBJEXT) gen/perlin.$(OBJEXT) \
-	gfx/term.$(OBJEXT) mob/mob.$(OBJEXT) mob/boat.$(OBJEXT) \
-	pan/instruments.$(OBJEXT) pan/menus.$(OBJEXT) \
-	pan/test.$(OBJEXT) txt/rk.$(OBJEXT) txt/psh.$(OBJEXT)
+am_arawak_OBJECTS = arawak.$(OBJEXT) lib/redblack/rb.$(OBJEXT) \
+	cmd/control.$(OBJEXT) gen/dice.$(OBJEXT) gen/mtwist.$(OBJEXT) \
+	geo/weather.$(OBJEXT) geo/terrain.$(OBJEXT) geo/map.$(OBJEXT) \
+	gfx/zbox.$(OBJEXT) gfx/palette.$(OBJEXT) gfx/sprite.$(OBJEXT) \
+	gfx/gfx.$(OBJEXT) gen/perlin.$(OBJEXT) gfx/term.$(OBJEXT) \
+	mob/mob.$(OBJEXT) mob/boat.$(OBJEXT) pan/instruments.$(OBJEXT) \
+	pan/menus.$(OBJEXT) pan/test.$(OBJEXT) txt/rk.$(OBJEXT) \
+	txt/psh.$(OBJEXT)
 arawak_OBJECTS = $(am_arawak_OBJECTS)
 arawak_LDADD = $(LDADD)
 DEFAULT_INCLUDES = -I.@am__isrc@
@@ -160,23 +161,25 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 AUTOMAKE_OPTIONS = foreign subdir-objects
 arawak_SOURCES = arawak.c \
-                   cmd/control.c \
-                   gen/dice.c \
-                   gen/mtwist.c \
-                   geo/weather.c \
-                   geo/terrain.c \
-                   gfx/zbox.c    \
-                   gfx/palette.c \
-                   gfx/sprite.c \
-                   gfx/gfx.c \
-                   gen/perlin.c \
-                   gfx/term.c \
-                   mob/mob.c \
-                   mob/boat.c \
+                   lib/redblack/rb.c \
+                   cmd/control.c     \
+                   gen/dice.c        \
+                   gen/mtwist.c      \
+                   geo/weather.c     \
+                   geo/terrain.c     \
+                   geo/map.c         \
+                   gfx/zbox.c        \
+                   gfx/palette.c     \
+                   gfx/sprite.c      \
+                   gfx/gfx.c         \
+                   gen/perlin.c      \
+                   gfx/term.c        \
+                   mob/mob.c         \
+                   mob/boat.c        \
                    pan/instruments.c \
-                   pan/menus.c \
-                   pan/test.c \
-                   txt/rk.c \
+                   pan/menus.c       \
+                   pan/test.c        \
+                   txt/rk.c          \
                    txt/psh.c
 
 all: all-am
@@ -250,6 +253,14 @@ uninstall-binPROGRAMS:
 
 clean-binPROGRAMS:
 	-test -z "$(bin_PROGRAMS)" || rm -f $(bin_PROGRAMS)
+lib/redblack/$(am__dirstamp):
+	@$(MKDIR_P) lib/redblack
+	@: > lib/redblack/$(am__dirstamp)
+lib/redblack/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) lib/redblack/$(DEPDIR)
+	@: > lib/redblack/$(DEPDIR)/$(am__dirstamp)
+lib/redblack/rb.$(OBJEXT): lib/redblack/$(am__dirstamp) \
+	lib/redblack/$(DEPDIR)/$(am__dirstamp)
 cmd/$(am__dirstamp):
 	@$(MKDIR_P) cmd
 	@: > cmd/$(am__dirstamp)
@@ -277,6 +288,7 @@ geo/weather.$(OBJEXT): geo/$(am__dirstamp) \
 	geo/$(DEPDIR)/$(am__dirstamp)
 geo/terrain.$(OBJEXT): geo/$(am__dirstamp) \
 	geo/$(DEPDIR)/$(am__dirstamp)
+geo/map.$(OBJEXT): geo/$(am__dirstamp) geo/$(DEPDIR)/$(am__dirstamp)
 gfx/$(am__dirstamp):
 	@$(MKDIR_P) gfx
 	@: > gfx/$(am__dirstamp)
@@ -328,6 +340,7 @@ mostlyclean-compile:
 	-rm -f gen/dice.$(OBJEXT)
 	-rm -f gen/mtwist.$(OBJEXT)
 	-rm -f gen/perlin.$(OBJEXT)
+	-rm -f geo/map.$(OBJEXT)
 	-rm -f geo/terrain.$(OBJEXT)
 	-rm -f geo/weather.$(OBJEXT)
 	-rm -f gfx/gfx.$(OBJEXT)
@@ -335,6 +348,7 @@ mostlyclean-compile:
 	-rm -f gfx/sprite.$(OBJEXT)
 	-rm -f gfx/term.$(OBJEXT)
 	-rm -f gfx/zbox.$(OBJEXT)
+	-rm -f lib/redblack/rb.$(OBJEXT)
 	-rm -f mob/boat.$(OBJEXT)
 	-rm -f mob/mob.$(OBJEXT)
 	-rm -f pan/instruments.$(OBJEXT)
@@ -351,6 +365,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@gen/$(DEPDIR)/dice.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@gen/$(DEPDIR)/mtwist.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@gen/$(DEPDIR)/perlin.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@geo/$(DEPDIR)/map.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@geo/$(DEPDIR)/terrain.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@geo/$(DEPDIR)/weather.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@gfx/$(DEPDIR)/gfx.Po@am__quote@
@@ -358,6 +373,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@gfx/$(DEPDIR)/sprite.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@gfx/$(DEPDIR)/term.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@gfx/$(DEPDIR)/zbox.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@lib/redblack/$(DEPDIR)/rb.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@mob/$(DEPDIR)/boat.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@mob/$(DEPDIR)/mob.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@pan/$(DEPDIR)/instruments.Po@am__quote@
@@ -505,6 +521,8 @@ distclean-generic:
 	-rm -f geo/$(am__dirstamp)
 	-rm -f gfx/$(DEPDIR)/$(am__dirstamp)
 	-rm -f gfx/$(am__dirstamp)
+	-rm -f lib/redblack/$(DEPDIR)/$(am__dirstamp)
+	-rm -f lib/redblack/$(am__dirstamp)
 	-rm -f mob/$(DEPDIR)/$(am__dirstamp)
 	-rm -f mob/$(am__dirstamp)
 	-rm -f pan/$(DEPDIR)/$(am__dirstamp)
@@ -520,7 +538,7 @@ clean: clean-am
 clean-am: clean-binPROGRAMS clean-generic mostlyclean-am
 
 distclean: distclean-am
-	-rm -rf ./$(DEPDIR) cmd/$(DEPDIR) gen/$(DEPDIR) geo/$(DEPDIR) gfx/$(DEPDIR) mob/$(DEPDIR) pan/$(DEPDIR) txt/$(DEPDIR)
+	-rm -rf ./$(DEPDIR) cmd/$(DEPDIR) gen/$(DEPDIR) geo/$(DEPDIR) gfx/$(DEPDIR) lib/redblack/$(DEPDIR) mob/$(DEPDIR) pan/$(DEPDIR) txt/$(DEPDIR)
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
 	distclean-tags
@@ -566,7 +584,7 @@ install-ps-am:
 installcheck-am:
 
 maintainer-clean: maintainer-clean-am
-	-rm -rf ./$(DEPDIR) cmd/$(DEPDIR) gen/$(DEPDIR) geo/$(DEPDIR) gfx/$(DEPDIR) mob/$(DEPDIR) pan/$(DEPDIR) txt/$(DEPDIR)
+	-rm -rf ./$(DEPDIR) cmd/$(DEPDIR) gen/$(DEPDIR) geo/$(DEPDIR) gfx/$(DEPDIR) lib/redblack/$(DEPDIR) mob/$(DEPDIR) pan/$(DEPDIR) txt/$(DEPDIR)
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 

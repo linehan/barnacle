@@ -17,7 +17,7 @@ struct ufo_t {
 // Make a new ufo type
 static struct ufo_t *new_ufo(int h, int w, int y_min, int x_min, int y_now, int x_now)
 {
-        struct ufo_t *new = malloc(sizeof(struct ufo_t));
+        struct ufo_t *new = malloc(sizeof *new);
 
         new->h = (h-1);
         new->w = (w-1);
@@ -32,7 +32,7 @@ static struct ufo_t *new_ufo(int h, int w, int y_min, int x_min, int y_now, int 
 }
 
 // Move ufo right by 1 (positive x direction)
-static inline ufomvr(struct ufo_t *myufo)
+static inline void ufomvr(struct ufo_t *myufo)
 {
         if (myufo->x_now == myufo->x_max)
                 myufo->x_now = myufo->x_min;
@@ -40,7 +40,7 @@ static inline ufomvr(struct ufo_t *myufo)
                 myufo->x_now++;
 }
 // Move ufo left by 1 (negative x direction)
-static inline ufomvl(struct ufo_t *myufo)
+static inline void ufomvl(struct ufo_t *myufo)
 {
         if (myufo->x_now == myufo->x_min)
                 myufo->x_now = myufo->x_max;
@@ -48,7 +48,7 @@ static inline ufomvl(struct ufo_t *myufo)
                 myufo->x_now--;
 }
 // Move ufo up by 1 (negative y direction)
-static inline ufomvu(struct ufo_t *myufo)
+static inline void ufomvu(struct ufo_t *myufo)
 {
         if (myufo->y_now == myufo->y_min)
                 myufo->y_now = myufo->y_max;
@@ -56,7 +56,7 @@ static inline ufomvu(struct ufo_t *myufo)
                 myufo->y_now--;
 }
 // Move ufo down by 1 (positive y direction)
-static inline ufomvd(struct ufo_t *myufo)
+static inline void ufomvd(struct ufo_t *myufo)
 {
         if (myufo->y_now == myufo->y_max)
                 myufo->y_now = myufo->y_min;

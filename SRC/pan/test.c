@@ -120,6 +120,7 @@ void speak_error_mono(const char *error)
 
 void move_inspector(int dir)
 {
+        uint32_t z;
         switch (dir) {
         case 'l':
                 inspector_x -= (inspector_x > 0) ? 1 : 0;
@@ -138,6 +139,7 @@ void move_inspector(int dir)
         top_panel(INSPECTORMSGPAN);
         move_panel(INSPECTORPAN, inspector_y, inspector_x);
         vrt_refresh();
-        stat_cell(GLOBE->Z, inspector_y, inspector_x);
+        /*mort(inspector_y, inspector_x, &z);*/
+        /*stat_nyb(GLOBE->z);*/
         scr_refresh();
 }

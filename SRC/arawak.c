@@ -27,6 +27,7 @@
 #include "gen/perlin.h"
 #include "gfx/palette.h"
 #include "gfx/sprite.h"
+#include "geo/map.h"
 #include "geo/terrain.h"
 #include "geo/weather.h"
 #include "mob/mob.h"
@@ -34,6 +35,7 @@
 #include "pan/instruments.h"
 #include "pan/test.h"
 #include "lib/ufo.h"
+#include "lib/morton.h"
 /******************************************************************************/
 /* The callback function for the sailing event watcher. Manages the wind
  * and the sailboat's response to it. Checks a semaphore which is also
@@ -91,8 +93,11 @@ int main()
         geojug_start();       // Start the graphics engine
         terminal_check();     // No xterm allowed
 
-        MAP *pad = worldgen((LINES*3), (COLS*3));
+
+        MAP *pad = gen_map((LINES*3), (COLS*3));
         GLOBE = pad;
+        roll(pad, 0);
+        roll(pad, 0);
 
         wprintw(DIAGNOSTIC_WIN, "%u", (LINES*COLS)*3);
 

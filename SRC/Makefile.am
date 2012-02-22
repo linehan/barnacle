@@ -14,21 +14,23 @@ LDFLAGS=-lm -lpthread -lmenu -lpanel -lncursesw -lev
 
 bin_PROGRAMS = arawak
 arawak_SOURCES = arawak.c \
-                   cmd/control.c \
-                   gen/dice.c \
-                   gen/mtwist.c \
-                   geo/weather.c \
-                   geo/terrain.c \
-                   gfx/zbox.c    \
-                   gfx/palette.c \
-                   gfx/sprite.c \
-                   gfx/gfx.c \
-                   gen/perlin.c \
-                   gfx/term.c \
-                   mob/mob.c \
-                   mob/boat.c \
+                   lib/redblack/rb.c \
+                   cmd/control.c     \
+                   gen/dice.c        \
+                   gen/mtwist.c      \
+                   geo/weather.c     \
+                   geo/terrain.c     \
+                   geo/map.c         \
+                   gfx/zbox.c        \
+                   gfx/palette.c     \
+                   gfx/sprite.c      \
+                   gfx/gfx.c         \
+                   gen/perlin.c      \
+                   gfx/term.c        \
+                   mob/mob.c         \
+                   mob/boat.c        \
                    pan/instruments.c \
-                   pan/menus.c \
-                   pan/test.c \
-                   txt/rk.c \
+                   pan/menus.c       \
+                   pan/test.c        \
+                   txt/rk.c          \
                    txt/psh.c
