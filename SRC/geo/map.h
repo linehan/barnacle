@@ -3,6 +3,7 @@
 #define __MAP_TYPES
 #include <stdlib.h>
 #include <stdint.h>
+#include "../lib/redblack/rb.h"
 
 
 //{{{1 README
@@ -265,16 +266,14 @@ char **tags[8] = { LAY_tags, ALT_tags, BED_tags, SED_tags,
 //##############################################################################
 // PROTOTYPES
 //##############################################################################
-void set_nyb(uint32_t *B, int n, int s);
-int is_nyb(uint32_t B, int n, int s);
-const char *get_nybtag(uint32_t B, int n);
-void stat_nyb(uint32_t B);
+
 
 #define NLAYERS 16
 
 typedef struct the_whole_world {
         WINDOW *L[NLAYERS];
         WINDOW *W;
+        WINDOW *win;
         PANEL  *P;
         struct rb_tree *tree;
         struct ufo_t *ufo;
@@ -287,7 +286,12 @@ typedef struct the_whole_world {
 
 extern MAP *GLOBE;
 
-MAP *worldgen(int rows, int cols);
+MAP *new_map(int rows, int cols);
+void gen_map(MAP *map);
 void roll(MAP *map, int dir);
 
+void set_nyb(struct rb_tree *tree, uint32_t z, int n, int s);
+int is_nyb(uint32_t B, int n, int s);
+const char *get_nybtag(uint32_t B, int n);
+void stat_nyb(struct rb_tree *tree, uint32_t z);
 #endif

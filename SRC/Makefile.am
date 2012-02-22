@@ -11,17 +11,17 @@ LDFLAGS=-lm -lpthread -lmenu -lpanel -lncursesw -lev
 #          POSIX     (curses)  (curses)   ncurses with          libev   
 #          threads                        wide character   (event handler)
 #                                         support
-
 bin_PROGRAMS = arawak
 arawak_SOURCES = arawak.c \
                    lib/redblack/rb.c \
+                   lib/sort/mergesort.c \
+                   lib/sort/quicksort.c \
                    cmd/control.c     \
                    gen/dice.c        \
                    gen/mtwist.c      \
                    geo/weather.c     \
                    geo/terrain.c     \
                    geo/map.c         \
-                   gfx/zbox.c        \
                    gfx/palette.c     \
                    gfx/sprite.c      \
                    gfx/gfx.c         \

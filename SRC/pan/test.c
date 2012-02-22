@@ -17,6 +17,7 @@
 #include "../gfx/sprite.h"
 #include "../gfx/gfx.h"
 #include "../geo/terrain.h"
+#include "../lib/morton.h"
 /******************************************************************************/
 WINDOW *DIAGNOSTIC_WIN;
 PANEL  *DIAGNOSTIC_PAN;
@@ -135,11 +136,15 @@ void move_inspector(int dir)
                 inspector_y += 1;
                 break;
         }
+
+        mort(inspector_y, inspector_x, &z);
+        move_panel(INSPECTORPAN, inspector_y, inspector_x);
         top_panel(INSPECTORPAN);
         top_panel(INSPECTORMSGPAN);
-        move_panel(INSPECTORPAN, inspector_y, inspector_x);
         vrt_refresh();
-        /*mort(inspector_y, inspector_x, &z);*/
-        /*stat_nyb(GLOBE->z);*/
+
+        werase(INSPECTORMSGWIN);
+        wprintw(INSPECTORMSGWIN, "MORT:%5u Y: %2u X: %2u | ", z, inspector_y, inspector_x);
+        stat_nyb(GLOBE->tree, z);
         scr_refresh();
 }

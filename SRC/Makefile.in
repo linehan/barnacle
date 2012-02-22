@@ -46,11 +46,12 @@ am__installdirs = "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS)
 am__dirstamp = $(am__leading_dot)dirstamp
 am_arawak_OBJECTS = arawak.$(OBJEXT) lib/redblack/rb.$(OBJEXT) \
+	lib/sort/mergesort.$(OBJEXT) lib/sort/quicksort.$(OBJEXT) \
 	cmd/control.$(OBJEXT) gen/dice.$(OBJEXT) gen/mtwist.$(OBJEXT) \
 	geo/weather.$(OBJEXT) geo/terrain.$(OBJEXT) geo/map.$(OBJEXT) \
-	gfx/zbox.$(OBJEXT) gfx/palette.$(OBJEXT) gfx/sprite.$(OBJEXT) \
-	gfx/gfx.$(OBJEXT) gen/perlin.$(OBJEXT) gfx/term.$(OBJEXT) \
-	mob/mob.$(OBJEXT) mob/boat.$(OBJEXT) pan/instruments.$(OBJEXT) \
+	gfx/palette.$(OBJEXT) gfx/sprite.$(OBJEXT) gfx/gfx.$(OBJEXT) \
+	gen/perlin.$(OBJEXT) gfx/term.$(OBJEXT) mob/mob.$(OBJEXT) \
+	mob/boat.$(OBJEXT) pan/instruments.$(OBJEXT) \
 	pan/menus.$(OBJEXT) pan/test.$(OBJEXT) txt/rk.$(OBJEXT) \
 	txt/psh.$(OBJEXT)
 arawak_OBJECTS = $(am_arawak_OBJECTS)
@@ -162,13 +163,14 @@ top_srcdir = @top_srcdir@
 AUTOMAKE_OPTIONS = foreign subdir-objects
 arawak_SOURCES = arawak.c \
                    lib/redblack/rb.c \
+                   lib/sort/mergesort.c \
+                   lib/sort/quicksort.c \
                    cmd/control.c     \
                    gen/dice.c        \
                    gen/mtwist.c      \
                    geo/weather.c     \
                    geo/terrain.c     \
                    geo/map.c         \
-                   gfx/zbox.c        \
                    gfx/palette.c     \
                    gfx/sprite.c      \
                    gfx/gfx.c         \
@@ -261,6 +263,16 @@ lib/redblack/$(DEPDIR)/$(am__dirstamp):
 	@: > lib/redblack/$(DEPDIR)/$(am__dirstamp)
 lib/redblack/rb.$(OBJEXT): lib/redblack/$(am__dirstamp) \
 	lib/redblack/$(DEPDIR)/$(am__dirstamp)
+lib/sort/$(am__dirstamp):
+	@$(MKDIR_P) lib/sort
+	@: > lib/sort/$(am__dirstamp)
+lib/sort/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) lib/sort/$(DEPDIR)
+	@: > lib/sort/$(DEPDIR)/$(am__dirstamp)
+lib/sort/mergesort.$(OBJEXT): lib/sort/$(am__dirstamp) \
+	lib/sort/$(DEPDIR)/$(am__dirstamp)
+lib/sort/quicksort.$(OBJEXT): lib/sort/$(am__dirstamp) \
+	lib/sort/$(DEPDIR)/$(am__dirstamp)
 cmd/$(am__dirstamp):
 	@$(MKDIR_P) cmd
 	@: > cmd/$(am__dirstamp)
@@ -295,7 +307,6 @@ gfx/$(am__dirstamp):
 gfx/$(DEPDIR)/$(am__dirstamp):
 	@$(MKDIR_P) gfx/$(DEPDIR)
 	@: > gfx/$(DEPDIR)/$(am__dirstamp)
-gfx/zbox.$(OBJEXT): gfx/$(am__dirstamp) gfx/$(DEPDIR)/$(am__dirstamp)
 gfx/palette.$(OBJEXT): gfx/$(am__dirstamp) \
 	gfx/$(DEPDIR)/$(am__dirstamp)
 gfx/sprite.$(OBJEXT): gfx/$(am__dirstamp) \
@@ -347,8 +358,9 @@ mostlyclean-compile:
 	-rm -f gfx/palette.$(OBJEXT)
 	-rm -f gfx/sprite.$(OBJEXT)
 	-rm -f gfx/term.$(OBJEXT)
-	-rm -f gfx/zbox.$(OBJEXT)
 	-rm -f lib/redblack/rb.$(OBJEXT)
+	-rm -f lib/sort/mergesort.$(OBJEXT)
+	-rm -f lib/sort/quicksort.$(OBJEXT)
 	-rm -f mob/boat.$(OBJEXT)
 	-rm -f mob/mob.$(OBJEXT)
 	-rm -f pan/instruments.$(OBJEXT)
@@ -372,8 +384,9 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@gfx/$(DEPDIR)/palette.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@gfx/$(DEPDIR)/sprite.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@gfx/$(DEPDIR)/term.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@gfx/$(DEPDIR)/zbox.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@lib/redblack/$(DEPDIR)/rb.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@lib/sort/$(DEPDIR)/mergesort.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@lib/sort/$(DEPDIR)/quicksort.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@mob/$(DEPDIR)/boat.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@mob/$(DEPDIR)/mob.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@pan/$(DEPDIR)/instruments.Po@am__quote@
@@ -523,6 +536,8 @@ distclean-generic:
 	-rm -f gfx/$(am__dirstamp)
 	-rm -f lib/redblack/$(DEPDIR)/$(am__dirstamp)
 	-rm -f lib/redblack/$(am__dirstamp)
+	-rm -f lib/sort/$(DEPDIR)/$(am__dirstamp)
+	-rm -f lib/sort/$(am__dirstamp)
 	-rm -f mob/$(DEPDIR)/$(am__dirstamp)
 	-rm -f mob/$(am__dirstamp)
 	-rm -f pan/$(DEPDIR)/$(am__dirstamp)
@@ -538,7 +553,7 @@ clean: clean-am
 clean-am: clean-binPROGRAMS clean-generic mostlyclean-am
 
 distclean: distclean-am
-	-rm -rf ./$(DEPDIR) cmd/$(DEPDIR) gen/$(DEPDIR) geo/$(DEPDIR) gfx/$(DEPDIR) lib/redblack/$(DEPDIR) mob/$(DEPDIR) pan/$(DEPDIR) txt/$(DEPDIR)
+	-rm -rf ./$(DEPDIR) cmd/$(DEPDIR) gen/$(DEPDIR) geo/$(DEPDIR) gfx/$(DEPDIR) lib/redblack/$(DEPDIR) lib/sort/$(DEPDIR) mob/$(DEPDIR) pan/$(DEPDIR) txt/$(DEPDIR)
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
 	distclean-tags
@@ -584,7 +599,7 @@ install-ps-am:
 installcheck-am:
 
 maintainer-clean: maintainer-clean-am
-	-rm -rf ./$(DEPDIR) cmd/$(DEPDIR) gen/$(DEPDIR) geo/$(DEPDIR) gfx/$(DEPDIR) lib/redblack/$(DEPDIR) mob/$(DEPDIR) pan/$(DEPDIR) txt/$(DEPDIR)
+	-rm -rf ./$(DEPDIR) cmd/$(DEPDIR) gen/$(DEPDIR) geo/$(DEPDIR) gfx/$(DEPDIR) lib/redblack/$(DEPDIR) lib/sort/$(DEPDIR) mob/$(DEPDIR) pan/$(DEPDIR) txt/$(DEPDIR)
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 

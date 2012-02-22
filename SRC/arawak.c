@@ -93,12 +93,13 @@ int main()
         terminal_check();     // No xterm allowed
 
 
-        MAP *pad = gen_map((LINES*3), (COLS*3));
+        MAP *pad = new_map((LINES*3), (COLS*3));
+        gen_map(pad);
         GLOBE = pad;
         roll(pad, 0);
         roll(pad, 0);
 
-        wprintw(DIAGNOSTIC_WIN, "%u", (LINES*COLS)*3);
+        wprintw(DIAGNOSTIC_WIN, "%u\n", (LINES*COLS)*3);
 
         /*draw_water_rim(map->P);*/
 

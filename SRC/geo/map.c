@@ -22,15 +22,38 @@
 #include "../gfx/sprite.h"
 #include "../gen/perlin.h"
 #include "../gen/dice.h"
-#include "../cmd/control.h"
 #include "../pan/test.h"
 #include "../lib/ufo.h"
-#include "../gfx/zbox.h"
 
 #include "../lib/redblack/rb.h"
-#include "../lib/mergesort.h"
+#include "../lib/sort/mergesort.h"
+#include "../lib/sort/quicksort.h"
 #include "../lib/morton.h"
 
+
+void build_rb_tree(struct rb_tree *tree, int rows, int cols, int total)
+{
+        uint32_t i, j; // Iterators
+        int n = 0;     // Total number of nodes
+        uint32_t *m;   // Morton code for each node
+        uint32_t z;    // Stores computed Morton code
+        uint32_t *tmp; // Will be used to initialize data in tree
+
+        m = malloc(total * sizeof(uint32_t));
+        // Collect each coordinate's Morton code in m[]
+        for (i=0; i<rows; i++) {
+                for (j=0; j<cols; j++) {
+                        mort(i, j, &z);
+                        m[n++] = z;
+                }
+        }
+        // Sort them
+        quicksort(m, n);
+        // Insert them into the red-black tree
+        while (n-->0) {
+                rb_insert(tree, m[n]);
+        }
+}
 
 MAP *new_map(int rows, int cols)
 {
@@ -44,47 +67,22 @@ MAP *new_map(int rows, int cols)
         new->ufo  = new_ufo(rows, cols, 0, 0, 0, 0);
         new->W    = malloc(sizeof new->W);
         new->P    = malloc(sizeof new->P);
-        new->tree = malloc(sizeof new->tree);
+        new->tree = malloc(sizeof(struct rb_tree));
+        new->tree->root = NULL;
+        build_rb_tree(new->tree, new->h, new->w, new->a);
 
         return (new);
 }
 
-void build_rb_tree(struct rb_tree *tree, int rows, int cols, int total)
-{
-        uint32_t i, j;     // Iterators
-        int n = 0;         // Total number of nodes
-        uint32_t m[total]; // Morton code for each node
-        uint32_t z;        // Stores computed Morton code
-        void *data;        // Data bucket to be allocated in node
-
-        // Collect each coordinate's Morton code in m[]
-        for (i=0; i<rows; i++) {
-                for (j=0; j<cols; j++) {
-                        mort(i, j, &z);
-                        m[n++] = z;
-                }
-        }
-        // Sort them
-        merge_sort(m, n);
-        // Insert them into the red-black tree
-        while (n-->0) {
-                rb_insert(tree, m[n]);
-                data = rb_retreive(tree, m[n]);
-                data = calloc(1, sizeof(uint32_t)); // Initialize data field
-        }
-}
-
-MAP *gen_map(int rows, int cols)
+void gen_map(MAP *map)
 {
         int i;
-        double **pmap = gen_perlin_map(rows, cols); // 2D Perlin map
+        double **pmap = gen_perlin_map(map->h, map->w); // 2D Perlin map
 
-        MAP *map = new_map(rows, cols);
         map->W   = newpad(map->h, map->w); // Create new primary pad
-        map->P   = new_panel(map->W);      // Attach to window
+        map->win = newwin(LINES, COLS, 0, 0);
+        map->P   = new_panel(map->win);      // Attach to window
 
-        build_rb_tree(map->tree, map->h, map->w, map->a);
-        
         for (i=0; i<16; i++) {
                 map->L[i] = newpad(map->h, map->w);
         }
@@ -97,7 +95,6 @@ MAP *gen_map(int rows, int cols)
 
         return map;
 }
-
 
 //##############################################################################
 //#  IN (B): A single tile from the Morton array.                              #
@@ -132,10 +129,18 @@ MAP *gen_map(int rows, int cols)
 //#                                                                            #
 //##############################################################################
 //}}}1
-void set_nyb(uint32_t *B, int n, int s)
+void set_nyb(struct rb_tree *tree, uint32_t z, int n, int s)
 {
-        *(B) &= scrub[n];
-        *(B) |= (state[s]<<offset[n]);
+        struct rb_node *p; // Pointer to the data bucket to be operated on
+        uint32_t C;        // Copy of B
+
+        p = rb_retreive(tree->root, z);
+        if (p == NULL) return;
+
+        p->data &= scrub[n];
+        p->data |= (state[s]<<offset[n]);
+
+        /*rb_store(map->tree, z, C);*/
 }
 //##############################################################################
 //#  IN (B): A single tile from the Morton array.                              #
@@ -168,15 +173,22 @@ const char *get_nybtag(uint32_t B, int n)
 //#  IN (B): A single tile from the Morton array.                              #
 //#  OUTPUT: Side effects -- prints each nibble label and it's state label.    #
 //##############################################################################
-void stat_nyb(uint32_t B)
+void stat_nyb(struct rb_tree *tree, uint32_t z)
 {
-        uint32_t C = B; // a copy of B
+        struct rb_node *p;
+        uint32_t C;
         int n = NNIBS;
+
+        p = rb_retreive(tree->root, z);
+        if (p == NULL) return;
+
+        C = p->data; // Make a copy
+
         while (n--) {
                 C &= ~(scrub[n]); // wipe all but the nibble we want
                 C >>= offset[n];  // push our nibble to the end
 
                 wprintw(INSPECTORMSGWIN, "%3s: %3s | ", nyb_tags[n], tags[n][C]);
-                C = B;
+                C = p->data; // Make another copy
         }
 }

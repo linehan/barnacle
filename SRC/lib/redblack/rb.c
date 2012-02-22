@@ -23,6 +23,7 @@ struct rb_node *make_node(uint32_t key)
                 new->red = 1; // 1 is red, 0 is black
                 new->link[0] = NULL;
                 new->link[1] = NULL;
+                new->data = 0;
         }
         return (new);
 }
@@ -287,18 +288,25 @@ int rb_remove(struct rb_tree *tree, uint32_t key)
         return (1);
 }
 
-void *rb_retreive(struct rb_tree *tree, uint32_t key)
+struct rb_node *rb_retreive(struct rb_node *node, uint32_t key)
 {
-        if (tree->root == NULL) 
+        if (node == NULL) 
                 return (NULL);
 
-        struct rb_node *p = tree->root;
-
-        while (key != p->key) {
-                if (key < p->key)
-                        p = p->link[0]; // go left
-                else if (key > p->key)
-                        p = p->link[1]; // go right
+        if (key == node->key) 
+                return (node);
+        else {
+                if (key < node->key)
+                        rb_retreive(node->link[0], key); // go left
+                else if (key > node->key)
+                        rb_retreive(node->link[1], key); // go right
         }
-        return (p->data);
+}
+
+void rb_store(struct rb_tree *tree, uint32_t key, uint32_t data)
+{
+        struct rb_node *node;
+        node = rb_retreive(tree->root, key);
+
+        node->data = data;
 }
