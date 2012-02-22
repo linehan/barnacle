@@ -16,7 +16,6 @@
 #include <math.h>
 
 #include "lib/llist/list.h"
-#include "lib/memmacro.h"
 
 #include "pan/menus.h"
 #include "typedefs.h"

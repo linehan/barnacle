@@ -15,7 +15,6 @@
 #include <math.h>
 
 #include "../lib/llist/list.h"
-#include "../lib/memmacro.h"
 #include "../lib/hash/hash.h"
 
 #include "terrain.h"

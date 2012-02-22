@@ -16,11 +16,7 @@ display and navigation of a BOAT.
 #include <string.h>
 #include <math.h>
 
-
-
 #include "../lib/llist/list.h"
-#include "../lib/memmacro.h"
-
 #include "../pan/test.h"
 
 #include "../gfx/gfx.h"
@@ -277,7 +273,7 @@ void nominate_boat(MOB *mob)
 /* Initialize and create a new boat MOB */
 MOB *new_boat()
 {
-        BOAT *boat = MALLOC(BOAT);
+        BOAT *boat = malloc(sizeof *boat);
         if (boat == NULL) 
                 perror ("BOAT was not allocated properly!");
 

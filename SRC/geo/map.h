@@ -5,7 +5,6 @@
 #include <stdint.h>
 
 
-
 //{{{1 README
 //##############################################################################
 //#
@@ -270,7 +269,6 @@ void set_nyb(uint32_t *B, int n, int s);
 int is_nyb(uint32_t B, int n, int s);
 const char *get_nybtag(uint32_t B, int n);
 void stat_nyb(uint32_t B);
-#endif
 
 #define NLAYERS 16
 

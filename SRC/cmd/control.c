@@ -16,7 +16,6 @@ Bindings and actions for the user's keyboard input.
 #include <semaphore.h>
 
 #include "lib/llist/list.h"
-#include "../lib/memmacro.h"
 
 #include "../pan/test.h"
 #include "../typedefs.h"
