@@ -104,7 +104,7 @@ int main()
 
         /*draw_water_rim(map->P);*/
 
-        MOB *boat = new_boat();
+        MOB *boat = new_boat(pad);
         nominate_boat(boat);
 
         /* master off switch */
@@ -112,8 +112,6 @@ int main()
         sem_init(&master_off, 0, 1);
 
         set_wind(__pre__, 4);
-
-        /*swab_screen();*/
 
         /* Main event loop */
         struct ev_loop *mainloop = EV_DEFAULT;

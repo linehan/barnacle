@@ -96,7 +96,7 @@ struct map_t *new_map(int rows, int cols)
         new->a    = rows*cols;
         new->padx = 1;
         new->pady = 1;
-        new->ufo  = new_ufo(rows, cols, 0, 0, 0, 0);
+        new->ufo  = new_ufo(rows, cols, 0, 0, (2*rows), (2*cols), 0, 0);
         new->W    = malloc(sizeof new->W);
         new->pan  = malloc(sizeof new->pan);
         new->win  = malloc(sizeof new->win);

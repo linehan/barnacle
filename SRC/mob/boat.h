@@ -2,7 +2,7 @@ int init_boat(void);
 
 void nominate_boat(MOB *mob);
 
-MOB *new_boat();
+MOB *new_boat(struct map_t *map);
 
 void sync_boat(void);
 

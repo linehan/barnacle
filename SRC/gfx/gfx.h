@@ -106,6 +106,6 @@ void geojug_start(void);
 
 struct wnode_t *new_wnode(int id, int h, int w, int y0, int x0);
 struct ring_t *new_winring(int h, int w, int y0, int x0, int nwindows);
-//void draw_water_rim(PLATE *pl);
+int hit_test(struct map_t *map, int y, int x);
 
 #endif

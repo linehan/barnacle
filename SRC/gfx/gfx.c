@@ -105,21 +105,36 @@ struct ring_t *new_winring(int h, int w, int y0, int x0, int nwindows)
  * DESPAIR, THE ROOST OF WRETCHED FUNCS DEPORTED TO THIS PENULT BARE
  * OF DOCUMENTS OR COMMENTS, YEA, OF HOPE, TO WASTE, UNTIL REPAIR'D.
  ******************************************************************************/
-/*int hit_test(PLATE *pl, int y, int x)*/
-/*{*/
-        /*GNODE *tmp;*/
-        /*int i = 0;*/
+/*
+  Returns 0 (false) if collision detected, otherwise returns 1.
+*/
+int hit_test(struct map_t *map, int y, int x)
+{
+        int yu, yd, xl, xr;         // Offsets in each direction.
+        uint32_t z, zu, zd, zl, zr; // Cells in each direction.
 
-        /*list_for_each(pl->gfx, tmp, node) {*/
-                /*if ((tmp->dim.layer == __grt__)||(tmp->dim.layer == __drd__)) {*/
-                        /*if (((x >= tmp->dim.x0)                  &&*/
-                             /*(x <= (tmp->dim.x0 + tmp->dim.w))   &&*/
-                             /*(y >= tmp->dim.y0)                  &&*/
-                             /*(y <= (tmp->dim.y0 + tmp->dim.h))))*/
-                                /*i++;*/
-                /*}*/
-        /*}*/
-        /*return i;*/
-/*}*/
+        MORT(y, x, &z);
+
+        if (is_cell(map->tree, z, LAY, TOP) || is_cell(map->tree, z, LAY, DRP))
+                return (0);
+        else    
+                return (1);
+
+        /*MORT(yu, x, &zu);*/
+        /*MORT(yd, x, &zd);*/
+        /*MORT(y, xl, &zl);*/
+        /*MORT(y, xr, &zr);*/
+
+        /*if (  (is_cell(map->tree, zu, LAY, TOP))*/
+            /*||(is_cell(map->tree, zu, LAY, DRP))*/
+            /*||(is_cell(map->tree, zd, LAY, TOP))*/
+            /*||(is_cell(map->tree, zd, LAY, DRP))*/
+            /*||(is_cell(map->tree, zr, LAY, TOP))*/
+            /*||(is_cell(map->tree, zr, LAY, DRP))*/
+            /*||(is_cell(map->tree, zl, LAY, TOP))*/
+            /*||(is_cell(map->tree, zl, LAY, DRP)))*/
+        /*{*/
+
+}
 
 

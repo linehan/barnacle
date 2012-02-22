@@ -14,22 +14,30 @@ struct ufo_t {
         uint32_t h; // height
 };
 
-// Make a new ufo type
-static struct ufo_t *new_ufo(int h, int w, int y_min, int x_min, int y_now, int x_now)
+/*
+  Creates a new ufo type. The *_min and *_max values create a bounding box,
+  and do not represent the height and width of the ufo itself. Rather, the
+  bounding box takes into account the height and width when calculating the
+  effective boundaries (by subtracting the height and width of the ufo).
+*/
+static 
+struct ufo_t *new_ufo(int h, int w, int y_min, int x_min, int y_max, int x_max, int y_now, int x_now)
 {
         struct ufo_t *new = malloc(sizeof *new);
 
-        new->h = (h-1);
-        new->w = (w-1);
+        new->h = h;
+        new->w = w;
         new->y_min = y_min;
         new->x_min = x_min;
-        new->y_max = (y_min+h);
-        new->x_max = (x_min+w);
+        new->y_max = (y_max-h);
+        new->x_max = (x_max-w);
         new->y_now = y_now;
         new->x_now = x_now;
 
         return (new);
 }
+
+
 
 // Move ufo right by 1 (positive x direction)
 static inline void ufomvr(struct ufo_t *myufo)

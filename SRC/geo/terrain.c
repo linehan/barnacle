@@ -160,11 +160,12 @@ void draw_layers(struct map_t *map, double **pmap)
 
 void draw_water_rim(struct map_t *map)
 {
-        int i, j;
-        int iu, jl, jr;      // Incrementors for up, left, and right.
-        uint32_t z;          // For computing current Morton code
-        uint32_t zu, zl, zr; // Morton code for cells above, left, and right
-        WINDOW *rim1, *rim2; // Where to draw seashore animation.
+        int i, j;             // Incrementors
+        int iu, jl, jr;       // Incrementors for up, left, and right.
+        uint32_t z;           // For computing current Morton code
+        uint32_t zu, zl, zr;  // Morton code for cells above, left, and right
+        uint32_t zul, zur;    // Check if at top corners
+        WINDOW *rim1, *rim2;  // Where to draw seashore animation.
 
         rim1 = PEEK(map->L[RIM]);
                NEXT(map->L[RIM]);
@@ -175,23 +176,33 @@ void draw_water_rim(struct map_t *map)
 
                         MORT(i, j, &z);
 
+                        // Draw nothing is the cursor is on land.
                         if ((is_cell(map->tree, z, LAY, TOP))) continue;
                         if ((is_cell(map->tree, z, LAY, DRP))) continue;
 
-                        iu = i-1;
-                        jl = j-1;
-                        jr = j+1;
+                        iu = (i-1);
+                        jl = (j-1);
+                        jr = (j+1);
 
                         MORT(iu, j, &zu);
                         MORT(i, jr, &zr);
                         MORT(i, jl, &zl);
+                        MORT(iu, jl, &zul);
+                        MORT(iu, jr, &zur);
 
-                        if ((is_cell(map->tree, zu, LAY, TOP))      ||
-                            (is_cell(map->tree, zu, LAY, DRP))      ||
-                            (is_cell(map->tree, zr, LAY, TOP))      ||
-                            (is_cell(map->tree, zr, LAY, DRP))      ||
-                            (is_cell(map->tree, zl, LAY, TOP))      ||
-                            (is_cell(map->tree, zl, LAY, DRP)))
+                        // Draw nothing if the cursor is at a top corner.
+                        if (  (is_cell(map->tree, zul, LAY, XXX))
+                            &&(is_cell(map->tree, zl,  LAY, TOP))) continue;
+                        if (  (is_cell(map->tree, zur, LAY, XXX))
+                            &&(is_cell(map->tree, zr,  LAY, TOP))) continue;
+
+                        // Draw an edge if there is an edge in the directions.
+                        if (  (is_cell(map->tree, zu, LAY, TOP))
+                            ||(is_cell(map->tree, zu, LAY, DRP))
+                            ||(is_cell(map->tree, zr, LAY, TOP))
+                            ||(is_cell(map->tree, zr, LAY, DRP))
+                            ||(is_cell(map->tree, zl, LAY, TOP))
+                            ||(is_cell(map->tree, zl, LAY, DRP)))
                         {
                                 mvwadd_wch(rim1, i, j, &OCEAN[3]);
                                 mvwadd_wch(rim2, i, j, &OCEAN[2]);

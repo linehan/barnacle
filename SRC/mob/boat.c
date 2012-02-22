@@ -271,13 +271,13 @@ void nominate_boat(MOB *mob)
         _BOAT = mob;
 }
 /* Initialize and create a new boat MOB */
-MOB *new_boat()
+MOB *new_boat(struct map_t *map)
 {
         BOAT *boat = malloc(sizeof *boat);
         if (boat == NULL) 
                 perror ("BOAT was not allocated properly!");
 
-        MOB *mob = new_mob(boat, 2, 4, 3, 3);
+        MOB *mob = new_mob(map, boat, 2, 4, 3, 3);
 
         WINDOW *win = panel_window(mob->pan);
         wbkgrnd(win, &OCEAN[0]);
