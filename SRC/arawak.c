@@ -97,12 +97,11 @@ int main()
         struct map_t *pad = new_map((LINES*3), (COLS*3));
         gen_map(pad);
         GLOBE = pad;
+
         roll_map(pad, 0);
         roll_map(pad, 0);
 
         wprintw(DIAGNOSTIC_WIN, "%u\n", (LINES*COLS)*3);
-
-        /*draw_water_rim(map->P);*/
 
         MOB *boat = new_boat(pad);
         nominate_boat(boat);

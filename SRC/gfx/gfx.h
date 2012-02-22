@@ -32,8 +32,12 @@ extern sem_t *REFRESH_LOCK; // keeps things from going crazy in the i/o thread
         sem_post(REFRESH_LOCK)
 
 #define map_refresh(map) \
+        sem_wait(REFRESH_LOCK); \
         copywin(PEEK(map->W), map->win, ufo_y(map->ufo), ufo_x(map->ufo), 0, 0, LINES-1, COLS-1, 0); \
-        scr_refresh()
+        update_panels(); \
+        doupdate(); \
+        sem_post(REFRESH_LOCK)
+
 //##############################################################################
 //# Toggles a PANEL, hiding it if it is not hidden, and showing it if it is.   #
 //##############################################################################
@@ -104,8 +108,8 @@ struct ring_t {
 
 void geojug_start(void);
 
-struct wnode_t *new_wnode(int id, int h, int w, int y0, int x0);
-struct ring_t *new_winring(int h, int w, int y0, int x0, int nwindows);
-int hit_test(struct map_t *map, int y, int x);
+struct wnode_t   *new_wnode(int id, int h, int w, int y0, int x0);
+struct ring_t  *new_winring(int h, int w, int y0, int x0, int nwindows);
+int                hit_test(struct map_t *map, int y, int x);
 
 #endif

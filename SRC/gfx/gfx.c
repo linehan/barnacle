@@ -29,6 +29,7 @@
 #include "sprite.h"
 #include "../geo/terrain.h"
 #include "../lib/morton.h"
+#include "../lib/ufo.h"
 
 #define IN_GNODE(G, y, x) \
         ((x>=G->dim.x0)&&(x<=(G->dim.xmax))&&(y>=G->dim.y0)&&(y<=(G->dim.ymax))) ? 1 : 0
@@ -89,29 +90,12 @@ struct ring_t *new_winring(int h, int w, int y0, int x0, int nwindows)
         NEXT(new); // Make sure *peek points to something.
         return (new);
 }
-
-
-
-/*void step_wnode_forward(const void *gnode)*/
-/*{*/
-        /*GNODE *gfx = (GNODE *)gnode;*/
-        /*if (gfx->dim.n <= 1) return;*/
-
-        /*gfx->next(gfx);*/
-        /*replace_panel(gfx->pan, gfx->W->window);*/
-        /*scr_refresh();*/
-/*}*/
-/******************************************************************************
- * DESPAIR, THE ROOST OF WRETCHED FUNCS DEPORTED TO THIS PENULT BARE
- * OF DOCUMENTS OR COMMENTS, YEA, OF HOPE, TO WASTE, UNTIL REPAIR'D.
- ******************************************************************************/
 /*
   Returns 0 (false) if collision detected, otherwise returns 1.
 */
 int hit_test(struct map_t *map, int y, int x)
 {
-        int yu, yd, xl, xr;         // Offsets in each direction.
-        uint32_t z, zu, zd, zl, zr; // Cells in each direction.
+        uint32_t z; // Stores Morton code.
 
         MORT(y, x, &z);
 
@@ -137,4 +121,10 @@ int hit_test(struct map_t *map, int y, int x)
 
 }
 
+
+
+/******************************************************************************
+ * DESPAIR, THE ROOST OF WRETCHED FUNCS DEPORTED TO THIS PENULT BARE
+ * OF DOCUMENTS OR COMMENTS, YEA, OF HOPE, TO WASTE, UNTIL REPAIR'D.
+ ******************************************************************************/
 

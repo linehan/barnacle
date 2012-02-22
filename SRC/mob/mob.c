@@ -62,12 +62,12 @@ void move_mob(MOB *mob, int dir)
                         break;
         }
         // Scroll down at bottom boundary
-        if (ufo_y(mob->ufo) == LINES-6) {
+        if (ufo_y(mob->ufo) == LINES-10) {
                 roll_map(GLOBE, 'd');
                 ufo_u(mob->ufo);
         }
         // Scroll right at right boundary
-        if (ufo_x(mob->ufo) == COLS-6) {
+        if (ufo_x(mob->ufo) == COLS-10) {
                 roll_map(GLOBE, 'r');
                 ufo_l(mob->ufo);
         }

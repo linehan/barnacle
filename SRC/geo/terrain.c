@@ -15,14 +15,14 @@
 #include <math.h>
 
 #include "terrain.h"
-#include "../lib/morton.h"
-#include "map.h"
 #include "weather.h"
+#include "map.h"
 
 #include "../gfx/gfx.h"
 #include "../gfx/palette.h"
 #include "../gfx/sprite.h"
 #include "../gen/dice.h"
+#include "../lib/morton.h"
 #include "../pan/test.h"
 #include "../lib/ufo.h"
 //##############################################################################
@@ -180,10 +180,12 @@ void draw_water_rim(struct map_t *map)
                         if ((is_cell(map->tree, z, LAY, TOP))) continue;
                         if ((is_cell(map->tree, z, LAY, DRP))) continue;
 
+                        // Compute offsets
                         iu = (i-1);
                         jl = (j-1);
                         jr = (j+1);
 
+                        // Compute Morton codes
                         MORT(iu, j, &zu);
                         MORT(i, jr, &zr);
                         MORT(i, jl, &zl);

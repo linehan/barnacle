@@ -18,6 +18,7 @@
 #include "../gfx/gfx.h"
 #include "../geo/terrain.h"
 #include "../lib/morton.h"
+#include "../lib/ufo.h"
 /******************************************************************************/
 WINDOW *DIAGNOSTIC_WIN;
 PANEL  *DIAGNOSTIC_PAN;
@@ -38,6 +39,8 @@ PANEL  *INSPECTORMSGPAN;
 
 static int inspector_y = 0;
 static int inspector_x = 0;
+static int inspector_yy = 0;
+static int inspector_xx = 0;
 
 static int counter = 0;
 /******************************************************************************/
@@ -137,14 +140,17 @@ void move_inspector(int dir)
                 break;
         }
 
-        mort(inspector_y, inspector_x, &z);
+        inspector_yy = ufo_y(GLOBE->ufo)+(inspector_y);
+        inspector_xx = ufo_x(GLOBE->ufo)+(inspector_x);
+
+        mort(inspector_yy, inspector_xx, &z);
         move_panel(INSPECTORPAN, inspector_y, inspector_x);
         top_panel(INSPECTORPAN);
         top_panel(INSPECTORMSGPAN);
         vrt_refresh();
 
         werase(INSPECTORMSGWIN);
-        wprintw(INSPECTORMSGWIN, "MORT:%5u Y: %2u X: %2u | ", z, inspector_y, inspector_x);
+        wprintw(INSPECTORMSGWIN, "MORT:%5u Y: %2u X: %2u | ", z, inspector_yy, inspector_xx);
         stat_cell(GLOBE->tree, z);
         scr_refresh();
 }

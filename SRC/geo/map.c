@@ -255,4 +255,5 @@ void roll_map(struct map_t *map, int dir)
                 break;
         }
         map_refresh(map);
+        scr_refresh();
 }
