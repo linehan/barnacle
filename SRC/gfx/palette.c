@@ -116,6 +116,8 @@ enum ramp_pairs {
         MENU          = 108,
         WARNING       = 109,
         WARNSHADOW    = 110,
+        GUN_FLASH     = 111,
+        GUN_SMOKE     = 112,
 
         SEA_DARK      = 17,     /* SHADE0 colors for environment */
         SEA_MED       = 18,
@@ -154,7 +156,8 @@ enum ramp_pairs {
         __TREETRUNK     = 49,
         __GRASSY        = 50,
         __SOILGRASS     = 51,
-        __SEA_LIG       = 52 
+        __SEA_LIG       = 52,
+
 };
 
 
@@ -303,6 +306,9 @@ void init_palette(int set)
         init_pair(MENU, DGREY, WHITE);
         init_pair(WARNING, WHITE, RED);
         init_pair(WARNSHADOW, RED, DARK_RED);
+
+        init_pair(GUN_FLASH, WHITE, RED);
+        init_pair(GUN_SMOKE, WHITE, DSEA);
 
         /* IN-GAME COLOR PAIRS */
         init_pair(BOAT_WHITE, WHITE, DSEA);

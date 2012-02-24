@@ -24,23 +24,20 @@
 #include "../lib/ufo.h"
 #include "../geo/map.h"
 
-MOB *new_mob(struct map_t *map, void *ptr, int h, int w, int y0, int x0)
+struct mob_t *new_mob(struct map_t *map, int h, int w, int y0, int x0)
 {
-        MOB *mob = (MOB *)malloc(sizeof(MOB));
-        mob->obj = ptr;
+        struct mob_t *mob = (struct mob_t *)malloc(sizeof(struct mob_t));
 
         WINDOW *win = newwin(h, w, y0, x0);
         mob->pan = new_panel(win);
-
-        mob->ufo = new_ufo(h, w, y0, x0, map->h, map->w, 3, 3);
-
+        mob->ufo = new_ufo(h, w, y0, x0, map->h, map->w, 0, 0);
         mob->sem = malloc(sizeof(sem_t));
         sem_init(mob->sem, 0, 1);
 
         return mob;
 }
 
-void move_mob(MOB *mob, int dir)
+void move_mob(struct mob_t *mob, int dir)
 {
         sem_wait(mob->sem);
 

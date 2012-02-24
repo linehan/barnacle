@@ -1,9 +1,12 @@
 // vim:fdm=marker
 #ifndef __GFX_TYPES
 #define __GFX_TYPES
+#define _XOPEN_SOURCE_EXTENDED = 1  /* extended character sets */
+#include <stdlib.h>
+#include <wchar.h>
+#include <ncurses.h>
 #include <pthread.h>
 #include <semaphore.h>
-
 #include "../lib/llist/list.h"
 #include "../pan/test.h"
 #include "../geo/map.h"
@@ -105,6 +108,18 @@ struct ring_t {
         struct wnode_t *peek;
         struct list_head *ring;
 };
+
+
+struct gpkg {
+        cchar_t *cch;
+        unsigned int len;
+        unsigned int xofs;
+        unsigned int yofs;
+        unsigned int xrel; // Relative offsets
+        unsigned int yrel;
+};
+
+struct gpkg *new_gpkg(const wchar_t *wch, short pair, int yo, int xo, int yr, int xr);
 
 void geojug_start(void);
 

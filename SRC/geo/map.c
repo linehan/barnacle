@@ -39,8 +39,11 @@
 //#             See "ufo.h".                                                   #
 //#                                                                            #
 //##############################################################################
+#define _XOPEN_SOURCE_EXTENDED = 1  /* extended character sets */
 #include <stdlib.h>
+#include <string.h>
 #include <ncurses.h>
+#include <wchar.h>
 #include <panel.h>
 #include <pthread.h>
 #include <semaphore.h>
@@ -53,6 +56,7 @@
 #include "../lib/redblack/rb.h"
 #include "../lib/sort/quicksort.h"
 #include "../lib/morton.h"
+#include "../lib/switches/sw.h"
 
 #include "map.h"
 #include "terrain.h"
@@ -100,9 +104,9 @@ struct map_t *new_map(int rows, int cols)
         new->W    = malloc(sizeof new->W);
         new->pan  = malloc(sizeof new->pan);
         new->win  = malloc(sizeof new->win);
-        new->tree = malloc(sizeof(struct rb_tree));
-        new->tree->root = NULL;
-        build_rb_tree(new->tree, new->h, new->w, new->a);
+        new->sw   = new_sw(&map_nibs, &map_opts);
+        new->sw->tree = new_tree();
+        build_rb_tree(new->sw->tree, new->h, new->w, new->a);
 
         return (new);
 }
@@ -131,103 +135,6 @@ void gen_map(struct map_t *map)
         restack_map(map);
 }
 
-/*
-  Retreive a cell with key 'z', and set its 'n'th nibble to state 's'.
-*/
-//{{{1 Detailed explanation
-//##############################################################################
-//#                                                                            #
-//#   TILE   0010 0011 0100 1110 1111 \__                                      #
-//#  SCRUB   1111 0000 1111 1111 1111 /  \                                     #
-//#          |||| |||| |||| |||| ||||    AND                                   #
-//#  CLEAN   0010 0000 0100 1110 1111 \__                                      #
-//#  STATE   0000 1001 0000 0000 0000 /  \                                     #
-//#          |||| |||| |||| |||| ||||    OR                                    #
-//#  FINAL   0010 1001 0100 1110 1111                                          #
-//#                                                                            #
-//#                                                                            #
-//#  state[opt]    the hex bitmask indexed by opt, (an enum)                   #
-//#  offset[tag]   the offset in bits of 'tag', indexed by 'tag' (an enum)     #
-//#                                                                            #
-//#                                                                            #
-//#  (state[O]<<offset[tag])                                                   #
-//#     |     |    |                                                           #
-//#     |     |    +-----------------------------+                             #
-//#     +-----|------------+                     |                             #
-//#           |         ___|___           _______|________                     #
-//#           |   Shift state[O] right by offset[tag] bits.                    #
-//#           |   ``|``          ``|``                                         #
-//#           +-----+--------------+                                           #
-//#                                                                            #
-//##############################################################################
-//}}}1
-void set_cell(struct rb_tree *tree, uint32_t z, int n, int s)
-{
-        struct rb_node *p; // Pointer to the data bucket to be operated on
-
-        p = rb_retreive(tree->root, z);
-        if (p == NULL) return;
-
-        p->data &= scrub[n];
-        p->data |= (state[s]<<offset[n]);
-}
-/*
-  Tests nibble 'n' of cell with key 'z'. If nibble has state 's', is_cell() 
-  returns 1, else it returns 0.
-*/
-int is_cell(struct rb_tree *tree, uint32_t z, int n, int s)
-{
-        struct rb_node *p; // Pointer to the data bucket to be operated on
-        uint32_t C;        // Copy of the cell's data
-
-        p = rb_retreive(tree->root, z);
-        if (p == NULL) return;
-
-        C = p->data;      // Make a copy of the data
-        C &= ~(scrub[n]); // Wipe all but the nibble we want
-        C >>= offset[n];  // Push our nibble to the end
-
-        return (C == state[s]) ? 1 : 0;
-}
-/*
-  Returns a pointer to a string, which represents the enum tag corresponding
-  to the state of nibble 'n' of cell with key 'z'.
-*/
-const char *get_celltag(struct rb_tree *tree, uint32_t z, int n)
-{
-        struct rb_node *p; // Pointer to the data bucket to be operated on
-        uint32_t C;        // Copy of the cell's data
-
-        p = rb_retreive(tree->root, z);
-        if (p == NULL) return;
-
-        C = p->data;      // Make a copy of the data
-        C &= ~(scrub[n]); // wipe all but the nibble we want
-        C >>= offset[n];  // push our nibble to the end
-
-        return tags[n][C];
-}
-/*
-  Prints a formatted string consisting of the enum tags for every nibble and
-  state of cell with key 'z'.
-*/
-void stat_cell(struct rb_tree *tree, uint32_t z)
-{
-        struct rb_node *p; // Pointer to the data bucket to be operated on
-        uint32_t C;        // Copy of the cell's data.
-        int n = NNIBS-1;   // Number of nibbles in a cell (-1 for fencepost)
-
-        p = rb_retreive(tree->root, z);
-        if (p == NULL) return;
-
-        do {
-                C = p->data;      // Make a copy
-                C &= ~(scrub[n]); // Wipe all but the nibble we want
-                C >>= offset[n];  // Push our nibble to the end
-                wprintw(INSPECTORMSGWIN, "%3s: %3s | ", nyb_tags[n], tags[n][C]);
-        } while (n-->0);
-}
-
 void restack_map(struct map_t *map)
 {
         int i;
@@ -251,7 +158,7 @@ void roll_map(struct map_t *map, int dir)
         case 'd': 
                 ufo_d(map->ufo);
                 break;
-        case 0:
+        /*case 0:*/
                 break;
         }
         map_refresh(map);

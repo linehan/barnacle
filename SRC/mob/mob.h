@@ -1,10 +1,10 @@
 /* A mobile data type containing some object */
-typedef struct mob_t {
+struct mob_t {
         PANEL *pan;
-        sem_t *sem;
         struct ufo_t *ufo;
-        void  *obj;
-} MOB;
+        struct sw_t *sw;
+        sem_t *sem;
+};
 
-MOB *new_mob(struct map_t *map, void *ptr, int h, int w, int y0, int x0);
-void move_mob(MOB *mob, int dir);
+struct mob_t *new_mob(struct map_t *map, int h, int w, int y0, int x0);
+void move_mob(struct mob_t *mob, int dir);

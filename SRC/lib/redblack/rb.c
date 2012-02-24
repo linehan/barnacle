@@ -28,6 +28,14 @@ struct rb_node *make_node(uint32_t key)
         return (new);
 }
 
+struct rb_tree *new_tree(void)
+{
+        struct rb_tree *new = malloc(sizeof *new);
+        new->root = NULL;
+        new->peek = NULL;
+        new->n = 0;
+        return (new);
+}
 
 int is_red(struct rb_node *root)
 {

@@ -16,6 +16,7 @@ arawak_SOURCES = arawak.c \
                    lib/redblack/rb.c \
                    lib/sort/mergesort.c \
                    lib/sort/quicksort.c \
+                   lib/switches/sw.c   \
                    cmd/control.c     \
                    gen/dice.c        \
                    gen/mtwist.c      \

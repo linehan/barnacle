@@ -26,7 +26,15 @@
 #include "../gfx/sprite.h"
 #include "../mob/mob.h"
 #include "../mob/boat.h"
+#include "../lib/switches/sw.h"
 //##############################################################################
+enum boat_options {
+        __now__ = 0, 
+        __req__ = 1, 
+        __buf__ = 2, 
+
+        __hdg__ = 3
+};
 
 // Circularly linked list of compass characters
 struct compass_char {
@@ -152,7 +160,7 @@ void mark_hdg(int dir)
         tmp = list_top(&CMP, struct compass_char, node);
         int origin = tmp->dir;
         offsgh = offsdn;
-        set_boat(_BOAT, __buf__, __hdg__, (origin+(offsdn-1))%16);
+        set_sw(_BOAT->sw, 13, HDG, (origin+(offsdn-1))%16);
 }
 /* Calculate the offset of the wind arrow. This is not under the control of
  * the player; the mark will move to indicate the current wind direction on
@@ -197,7 +205,7 @@ void tumble_compass(int dir)
 int seek_heading(void)
 {
         struct compass_char *tmp;
-        int req = get_boat(_BOAT, __req__, __hdg__);
+        int req = get_sw(_BOAT->sw, 13, HDG);
         int origin; // direction at origin
         int mid;    // direction at midpoint
 
@@ -207,7 +215,7 @@ int seek_heading(void)
         mid    = ((origin+6)%cmp_num); // compute direction @ midpoint
 
         /* Set the current heading to the midpoint */
-        set_boat(_BOAT, __now__, __hdg__, mid); 
+        set_sw(_BOAT->sw, 13, HDG, mid); 
 
         /* If the midpoint is not the required heading, tumble the compass, 
          * which will cause the value of the midpoint to be shifted one way 

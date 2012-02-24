@@ -115,15 +115,15 @@ void draw_layers(struct map_t *map, double **pmap)
                                                 MORT(i, j, &z);
                                                 if (i == imax) {
                                                         mvwadd_wch(PEEK(map->L[DRP]), i, j, &MTN[2]);
-                                                        set_cell(map->tree, z, LAY, DRP);
-                                                        set_cell(map->tree, z, SED, LIME);
-                                                        set_cell(map->tree, z, SOI, MOLL);
+                                                        set_sw(map->sw, z, LAY, DRP);
+                                                        set_sw(map->sw, z, SED, LIME);
+                                                        set_sw(map->sw, z, SOI, MOLL);
                                                         continue;
                                                 }
                                                 mvwadd_wch(PEEK(map->L[TOP]), i, j, bgtop); // top
-                                                set_cell(map->tree, z, LAY, TOP);
-                                                set_cell(map->tree, z, SED, LIME);
-                                                set_cell(map->tree, z, SOI, MOLL);
+                                                set_sw(map->sw, z, LAY, TOP);
+                                                set_sw(map->sw, z, SED, LIME);
+                                                set_sw(map->sw, z, SOI, MOLL);
                                         }
                                 }
                                 // Draw the tree box
@@ -138,16 +138,16 @@ void draw_layers(struct map_t *map, double **pmap)
                                         for (j=tx0; j<jmax; j++) {
                                                 MORT(i, j, &z);
                                                 if (i == imax) {
-                                                        set_cell(map->tree, z, LAY, VEG);
-                                                        set_cell(map->tree, z, SED, LIME);
-                                                        set_cell(map->tree, z, SOI, MOLL);
+                                                        set_sw(map->sw, z, LAY, VEG);
+                                                        set_sw(map->sw, z, SED, LIME);
+                                                        set_sw(map->sw, z, SOI, MOLL);
                                                         mvwadd_wch(PEEK(map->L[VEG]), i, j, &TREE[0]);
                                                         continue;
                                                 }
                                                 mvwadd_wch(PEEK(map->L[VEG]), i, j, &TREE[1]);
-                                                set_cell(map->tree, z, LAY, VEG);
-                                                set_cell(map->tree, z, SED, LIME);
-                                                set_cell(map->tree, z, SOI, SPOD);
+                                                set_sw(map->sw, z, LAY, VEG);
+                                                set_sw(map->sw, z, SED, LIME);
+                                                set_sw(map->sw, z, SOI, SPOD);
                                         }
                                 }
                         }
@@ -163,7 +163,7 @@ void draw_water_rim(struct map_t *map)
         int i, j;             // Incrementors
         int iu, jl, jr;       // Incrementors for up, left, and right.
         uint32_t z;           // For computing current Morton code
-        uint32_t zu, zl, zr;  // Morton code for cells above, left, and right
+        uint32_t zu, zl, zr;  // Morton code for sws above, left, and right
         uint32_t zul, zur;    // Check if at top corners
         WINDOW *rim1, *rim2;  // Where to draw seashore animation.
 
@@ -177,8 +177,8 @@ void draw_water_rim(struct map_t *map)
                         MORT(i, j, &z);
 
                         // Draw nothing is the cursor is on land.
-                        if ((is_cell(map->tree, z, LAY, TOP))) continue;
-                        if ((is_cell(map->tree, z, LAY, DRP))) continue;
+                        if ((is_sw(map->sw, z, LAY, TOP))) continue;
+                        if ((is_sw(map->sw, z, LAY, DRP))) continue;
 
                         // Compute offsets
                         iu = (i-1);
@@ -193,22 +193,22 @@ void draw_water_rim(struct map_t *map)
                         MORT(iu, jr, &zur);
 
                         // Draw nothing if the cursor is at a top corner.
-                        if (  (is_cell(map->tree, zul, LAY, XXX))
-                            &&(is_cell(map->tree, zl,  LAY, TOP))) continue;
-                        if (  (is_cell(map->tree, zur, LAY, XXX))
-                            &&(is_cell(map->tree, zr,  LAY, TOP))) continue;
+                        if (  (is_sw(map->sw, zul, LAY, XXX))
+                            &&(is_sw(map->sw, zl,  LAY, TOP))) continue;
+                        if (  (is_sw(map->sw, zur, LAY, XXX))
+                            &&(is_sw(map->sw, zr,  LAY, TOP))) continue;
 
                         // Draw an edge if there is an edge in the directions.
-                        if (  (is_cell(map->tree, zu, LAY, TOP))
-                            ||(is_cell(map->tree, zu, LAY, DRP))
-                            ||(is_cell(map->tree, zr, LAY, TOP))
-                            ||(is_cell(map->tree, zr, LAY, DRP))
-                            ||(is_cell(map->tree, zl, LAY, TOP))
-                            ||(is_cell(map->tree, zl, LAY, DRP)))
+                        if (  (is_sw(map->sw, zu, LAY, TOP))
+                            ||(is_sw(map->sw, zu, LAY, DRP))
+                            ||(is_sw(map->sw, zr, LAY, TOP))
+                            ||(is_sw(map->sw, zr, LAY, DRP))
+                            ||(is_sw(map->sw, zl, LAY, TOP))
+                            ||(is_sw(map->sw, zl, LAY, DRP)))
                         {
                                 mvwadd_wch(rim1, i, j, &OCEAN[3]);
                                 mvwadd_wch(rim2, i, j, &OCEAN[2]);
-                                set_cell(map->tree, z, LAY, RIM);
+                                set_sw(map->sw, z, LAY, RIM);
                         }
                 }
         }

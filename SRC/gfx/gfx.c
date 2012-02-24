@@ -99,7 +99,7 @@ int hit_test(struct map_t *map, int y, int x)
 
         MORT(y, x, &z);
 
-        if (is_cell(map->tree, z, LAY, TOP) || is_cell(map->tree, z, LAY, DRP))
+        if (is_sw(map->sw, z, LAY, TOP) || is_sw(map->sw, z, LAY, DRP))
                 return (0);
         else    
                 return (1);
@@ -109,17 +109,62 @@ int hit_test(struct map_t *map, int y, int x)
         /*MORT(y, xl, &zl);*/
         /*MORT(y, xr, &zr);*/
 
-        /*if (  (is_cell(map->tree, zu, LAY, TOP))*/
-            /*||(is_cell(map->tree, zu, LAY, DRP))*/
-            /*||(is_cell(map->tree, zd, LAY, TOP))*/
-            /*||(is_cell(map->tree, zd, LAY, DRP))*/
-            /*||(is_cell(map->tree, zr, LAY, TOP))*/
-            /*||(is_cell(map->tree, zr, LAY, DRP))*/
-            /*||(is_cell(map->tree, zl, LAY, TOP))*/
-            /*||(is_cell(map->tree, zl, LAY, DRP)))*/
+        /*if (  (is_cell(map->sw, zu, LAY, TOP))*/
+            /*||(is_cell(map->sw, zu, LAY, DRP))*/
+            /*||(is_cell(map->sw, zd, LAY, TOP))*/
+            /*||(is_cell(map->sw, zd, LAY, DRP))*/
+            /*||(is_cell(map->sw, zr, LAY, TOP))*/
+            /*||(is_cell(map->sw, zr, LAY, DRP))*/
+            /*||(is_cell(map->sw, zl, LAY, TOP))*/
+            /*||(is_cell(map->sw, zl, LAY, DRP)))*/
         /*{*/
 
 }
+
+/*struct gpkg *new_gpkg(const wchar_t **wch, int len, short pair, int ofs0, int ofs1, int ofs2)*/
+/*{*/
+        /*struct gpkg *new = malloc(sizeof *new);*/
+
+        /*new->ofs[0] = ofs0;*/
+        /*new->ofs[1] = ofs1;*/
+        /*new->ofs[2] = ofs2;*/
+
+        /*[>new->len = (wcslen(wch))+1;<]*/
+        /*wprintw(DIAGNOSTIC_WIN, "%u\n", new->len);*/
+        /*new->pair = pair;*/
+        /*[>new->_wch = malloc(new->len * sizeof(wchar_t));<]*/
+        /*[>new->_wch = wch;<]*/
+        /*new->len = len;*/
+        /*new->_cch = malloc(new->len * sizeof(cchar_t));*/
+
+        /*[>new->_wch = wcsncpy(new->_wch, wch, new->len);<]*/
+
+        /*int i;*/
+        /*for (i=0; i<(new->len); i++) {*/
+                /*setcchar(&new->_cch[i], wch[i], 0, new->pair, NULL); // Generate cchar*/
+        /*}*/
+
+        /*return (new);*/
+/*}*/
+struct gpkg *
+new_gpkg(const wchar_t *wch, short pair, int yo, int xo, int yr, int xr)
+{
+        struct gpkg *new = malloc(sizeof *new);
+        int i;
+
+        new->len = (unsigned)(wcslen(wch)+1);
+        new->cch = malloc(new->len * sizeof(cchar_t));
+        for (i=0; i<(new->len); i++) {
+                setcchar(&new->cch[i], &wch[i], 0, pair, NULL);
+        }
+        new->xofs = xo;
+        new->yofs = yo;
+        new->xrel = xr;
+        new->yrel = yr;
+
+        return (new);
+}
+
 
 
 

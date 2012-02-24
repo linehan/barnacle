@@ -40,6 +40,9 @@ void *iolisten(EV_P_ ev_io *w, int revents)
 
         while((ch = getch())) { 
                 switch (ch) { 
+                case '@':
+                        order_boat('f', 0);
+                        break;
                 case '0':
                         set_wind(__pre__, 0);
                         break;
@@ -87,6 +90,9 @@ void *iolisten(EV_P_ ev_io *w, int revents)
                         /*break;*/
                 case 'g':
                         order_boat('r', 0);
+                        break;
+                case 'f':
+                        order_boat('R', 0);
                         break;
                 case 't':
                         TOGPAN(BIGPAN);

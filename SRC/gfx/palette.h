@@ -94,6 +94,8 @@ enum ramp_pairs {
         MENU          = 108,
         WARNING       = 109,
         WARNSHADOW    = 110,
+        GUN_FLASH     = 111,
+        GUN_SMOKE     = 112,
 
         SEA_DARK      = 17,     /* SHADE0 colors for environment */
         SEA_MED       = 18,
