@@ -109,22 +109,20 @@ struct ring_t {
         struct list_head *ring;
 };
 
-
 struct gpkg {
-        cchar_t *cch;
-        unsigned int len;
-        unsigned int xofs;
-        unsigned int yofs;
-        unsigned int xrel; // Relative offsets
-        unsigned int yrel;
+        unsigned char n;
+        unsigned char ofs[16];
+        short pair;
+        const wchar_t *wch[16];
+        unsigned char len[16];
+        cchar_t *cch[16];
 };
 
-struct gpkg *new_gpkg(const wchar_t *wch, short pair, int yo, int xo, int yr, int xr);
 
+void build_gpkg(struct gpkg *g);
 void geojug_start(void);
 
 struct wnode_t   *new_wnode(int id, int h, int w, int y0, int x0);
 struct ring_t  *new_winring(int h, int w, int y0, int x0, int nwindows);
 int                hit_test(struct map_t *map, int y, int x);
-
 #endif

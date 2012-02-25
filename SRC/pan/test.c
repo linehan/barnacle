@@ -143,7 +143,7 @@ void move_inspector(int dir)
         inspector_yy = ufo_y(GLOBE->ufo)+(inspector_y);
         inspector_xx = ufo_x(GLOBE->ufo)+(inspector_x);
 
-        mort(inspector_yy, inspector_xx, &z);
+        MORT(inspector_yy, inspector_xx, &z);
         move_panel(INSPECTORPAN, inspector_y, inspector_x);
         top_panel(INSPECTORPAN);
         top_panel(INSPECTORMSGPAN);

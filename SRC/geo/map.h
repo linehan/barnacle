@@ -56,7 +56,7 @@ struct map_t {
 extern struct map_t *GLOBE; // Global map.
 
 //{{{1 NIBBLE GUIDE 
-enum nibbles {LAY=0,ALT=1,BED=2,SED=3,SOI=4,MOI=5,TEM=6,WND=7};
+enum map_nibs {LAY=0,ALT=1,BED=2,SED=3,SOI=4,MOI=5,TEM=6,WND=7};
 static const 
 char *map_nibs[8] = {"LAY","ALT","BED","SED","SOI","MOI","TEM","WND"};
 //}}}1

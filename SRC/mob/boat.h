@@ -114,18 +114,13 @@ char **boat_opts[8] = {lay_tag,RIG_tag,hdg_tag,SAI_tag,GUN_tag,ROT_tag,FLG_tag,g
 
 extern struct mob_t *_BOAT;
 
-void         init_boat(void);
-void     nominate_boat(struct mob_t *mob);
 struct mob_t *new_boat(struct map_t *map);
-void         sync_boat(void);
-int           get_boat(struct mob_t *mob, int a, int b);
-int           set_boat(struct mob_t *mob, int a, int b, int val);
-void        *sail_boat(void *);
-void        order_boat(int, int);
-int    get_pointofsail(void);
-void         deck_init(void);
-void         draw_deck(void);
-void          tog_deck(void);
-
+void init_boats(void);
+void nominate_boat(struct mob_t *mob);
+void sync_boat(void);
+void *sail_boat(void *);
+void order_boat(int, int);
 
 #endif
+
+

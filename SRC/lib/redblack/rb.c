@@ -24,6 +24,7 @@ struct rb_node *make_node(uint32_t key)
                 new->link[0] = NULL;
                 new->link[1] = NULL;
                 new->data = 0;
+                new->box = NULL;
         }
         return (new);
 }
@@ -35,6 +36,14 @@ struct rb_tree *new_tree(void)
         new->peek = NULL;
         new->n = 0;
         return (new);
+}
+
+
+void rb_init(struct rb_tree *tree)
+{
+        tree->root = NULL;
+        tree->peek = NULL;
+        tree->n = 0;
 }
 
 int is_red(struct rb_node *root)
@@ -309,12 +318,24 @@ struct rb_node *rb_retreive(struct rb_node *node, uint32_t key)
                 else if (key > node->key)
                         rb_retreive(node->link[1], key); // go right
         }
+        return (NULL); // Nothing found
 }
 
-void rb_store(struct rb_tree *tree, uint32_t key, uint32_t data)
+void rb_peek(struct rb_tree *tree, uint32_t key)
 {
-        struct rb_node *node;
-        node = rb_retreive(tree->root, key);
+        if (tree->root == NULL)
+                return;
+        else 
+                tree->peek = rb_retreive(tree->root, key);
+}
 
-        node->data = data;
+void rb_store(struct rb_tree *tree, uint32_t key, void *extra)
+{
+        rb_peek(tree, key);
+        if (tree->peek == NULL) { // No entry with this key yet exists.
+                rb_insert(tree, key); // Insert a new record.
+                rb_store(tree, key, extra); // Call self recursively.
+        }
+        else
+                tree->peek->box = extra; // Attach extra to node.
 }

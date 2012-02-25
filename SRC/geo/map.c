@@ -61,7 +61,6 @@
 #include "map.h"
 #include "terrain.h"
 //##############################################################################
-
 /*
   Initialize and construct the red-black tree structure. Generates the 
   Morton code keys and inserts them into the tree in sorted order.
@@ -157,8 +156,6 @@ void roll_map(struct map_t *map, int dir)
                 break;
         case 'd': 
                 ufo_d(map->ufo);
-                break;
-        /*case 0:*/
                 break;
         }
         map_refresh(map);

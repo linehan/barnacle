@@ -103,12 +103,8 @@ int main()
 
         wprintw(DIAGNOSTIC_WIN, "%u\n", (LINES*COLS)*3);
 
-        boat_test();
-
         struct mob_t *boat = new_boat(pad);
         nominate_boat(boat);
-
-
 
         /* master off switch */
         sem_t master_off; 
@@ -128,7 +124,7 @@ int main()
         OO_time sailor;
         ev_init(&(sailor.w), &blow_wind);
         /*sailor.w.repeat = .1;*/
-        sailor.w.repeat = .15;
+        sailor.w.repeat = .12;
         ev_timer_again(mainloop, &(sailor.w));
         sailor.sem = &master_off;
 

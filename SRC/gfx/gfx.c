@@ -52,7 +52,7 @@ void geojug_start(void)
         init_simplex();     // Perlin simplex noise generator
         init_palette(0);    // Set color palette
         init_gfx_colors();  // Apply palette to character set
-        init_boat();        // Initialize boat MOBs
+        init_boats();       // Initialize boat MOBs
         init_weather();     // Start weather engine
         init_instruments(); // Various meters (compass)
         init_menus();       // psh menu and commands
@@ -103,68 +103,21 @@ int hit_test(struct map_t *map, int y, int x)
                 return (0);
         else    
                 return (1);
-
-        /*MORT(yu, x, &zu);*/
-        /*MORT(yd, x, &zd);*/
-        /*MORT(y, xl, &zl);*/
-        /*MORT(y, xr, &zr);*/
-
-        /*if (  (is_cell(map->sw, zu, LAY, TOP))*/
-            /*||(is_cell(map->sw, zu, LAY, DRP))*/
-            /*||(is_cell(map->sw, zd, LAY, TOP))*/
-            /*||(is_cell(map->sw, zd, LAY, DRP))*/
-            /*||(is_cell(map->sw, zr, LAY, TOP))*/
-            /*||(is_cell(map->sw, zr, LAY, DRP))*/
-            /*||(is_cell(map->sw, zl, LAY, TOP))*/
-            /*||(is_cell(map->sw, zl, LAY, DRP)))*/
-        /*{*/
-
 }
 
-/*struct gpkg *new_gpkg(const wchar_t **wch, int len, short pair, int ofs0, int ofs1, int ofs2)*/
-/*{*/
-        /*struct gpkg *new = malloc(sizeof *new);*/
-
-        /*new->ofs[0] = ofs0;*/
-        /*new->ofs[1] = ofs1;*/
-        /*new->ofs[2] = ofs2;*/
-
-        /*[>new->len = (wcslen(wch))+1;<]*/
-        /*wprintw(DIAGNOSTIC_WIN, "%u\n", new->len);*/
-        /*new->pair = pair;*/
-        /*[>new->_wch = malloc(new->len * sizeof(wchar_t));<]*/
-        /*[>new->_wch = wch;<]*/
-        /*new->len = len;*/
-        /*new->_cch = malloc(new->len * sizeof(cchar_t));*/
-
-        /*[>new->_wch = wcsncpy(new->_wch, wch, new->len);<]*/
-
-        /*int i;*/
-        /*for (i=0; i<(new->len); i++) {*/
-                /*setcchar(&new->_cch[i], wch[i], 0, new->pair, NULL); // Generate cchar*/
-        /*}*/
-
-        /*return (new);*/
-/*}*/
-struct gpkg *
-new_gpkg(const wchar_t *wch, short pair, int yo, int xo, int yr, int xr)
+void build_gpkg(struct gpkg *g)
 {
-        struct gpkg *new = malloc(sizeof *new);
-        int i;
+        unsigned char n, i;
+        n = g->n;
 
-        new->len = (unsigned)(wcslen(wch)+1);
-        new->cch = malloc(new->len * sizeof(cchar_t));
-        for (i=0; i<(new->len); i++) {
-                setcchar(&new->cch[i], &wch[i], 0, pair, NULL);
+        while (n-->0) {
+               g->len[n] = (unsigned char)(wcslen(g->wch[n])+1);
+               g->cch[n] = malloc(g->len[n] * sizeof(cchar_t));
+               for (i=0; i<(g->len[n]); i++) {
+                       setcchar(&g->cch[n][i], &g->wch[n][i], 0, g->pair, NULL);
+               }
         }
-        new->xofs = xo;
-        new->yofs = yo;
-        new->xrel = xr;
-        new->yrel = yr;
-
-        return (new);
 }
-
 
 
 

@@ -90,6 +90,18 @@
 */
 
 
+#define BEGIN_TWINDEX_CHAR(decl) static const char *decl ## _CHAR[] = {
+#define BEGIN_TWINDEX_ENUM(decl) enum decl ## _ENUM {
+
+#define GLOSSARIZE(decl) static const char **decl ## _gloss[] = { GLOSS };
+
+#define END_TWINDEX };
+
+
+#define DO_TWINDEX(mode, list) \
+        BEGIN_TWINDEX_ ## mode(list) \
+        list ## _LIST                \
+        END_TWINDEX
 
 
 #define MAKE_MY(item, name, kind) \
