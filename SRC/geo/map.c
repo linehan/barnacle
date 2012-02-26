@@ -103,8 +103,7 @@ struct map_t *new_map(int rows, int cols)
         new->W    = malloc(sizeof new->W);
         new->pan  = malloc(sizeof new->pan);
         new->win  = malloc(sizeof new->win);
-        new->sw   = new_sw(&map_nibs, &map_opts);
-        new->sw->tree = new_tree();
+        new->sw   = new_sw(map_nibs, map_opts);
         build_rb_tree(new->sw->tree, new->h, new->w, new->a);
 
         return (new);

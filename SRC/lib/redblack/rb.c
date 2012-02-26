@@ -318,7 +318,7 @@ struct rb_node *rb_retreive(struct rb_node *node, uint32_t key)
                 else if (key > node->key)
                         rb_retreive(node->link[1], key); // go right
         }
-        return (NULL); // Nothing found
+        /* return (NULL);  This is a no-no */
 }
 
 void rb_peek(struct rb_tree *tree, uint32_t key)

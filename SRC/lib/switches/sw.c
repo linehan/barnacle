@@ -1,6 +1,8 @@
 // vim:fdm=marker
 #include <stdint.h>
 #include <ncurses.h>
+#include <panel.h>
+#include "../../pan/test.h"
 #include "../redblack/rb.h"
 #include "sw.h"
 
@@ -11,7 +13,7 @@ struct sw_t *new_sw(const char **fields, const char ***options)
 {
         struct sw_t *new = malloc(sizeof *new);
 
-        new->tree = NULL;
+        new->tree = new_tree();
         new->nib = fields;
         new->opt = options;
         new->c = 0;
@@ -113,5 +115,6 @@ void stat_sw(WINDOW *win, struct sw_t *sw, uint32_t key)
                 sw->c &= ~(scrub[n]); // Wipe all but the nibble we want
                 sw->c >>= offset[n];  // Push our nibble to the end
                 wprintw(win, "%3s: %3s | ", sw->nib[n], sw->opt[n][sw->c]);
+                wprintw(DIAGNOSTIC_WIN, "%3s: %3s | ", sw->nib[n], sw->opt[n][sw->c]);
         } while (n-->0);
 }
