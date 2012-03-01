@@ -12,8 +12,10 @@
 #include <panel.h>
 #include <pthread.h>
 #include <semaphore.h>
+#include <stdint.h>
 
 #include "../lib/llist/list.h"
+
 #include "../gen/perlin.h"
 #include "../gfx/gfx.h"
 #include "mob.h"
@@ -23,23 +25,26 @@
 #include "../geo/terrain.h"
 #include "../lib/ufo.h"
 #include "../geo/map.h"
+#include "../itm/itm.h"
 
+
+/* 
+  Create and initialize a new mob_t of kind 'k', registering it as an itm_t
+  with register_itm(). Return the uint32_t key for the mob_t's retreival.
+*/
 struct mob_t *new_mob(struct map_t *map, int h, int w, int y0, int x0)
 {
-        struct mob_t *mob = (struct mob_t *)malloc(sizeof(struct mob_t));
+        struct mob_t *mob = malloc(sizeof(*mob));
 
-        WINDOW *win = newwin(h, w, y0, x0);
-        mob->pan = new_panel(win);
         mob->ufo = new_ufo(h, w, y0, x0, map->h, map->w, 0, 0);
-        mob->sem = malloc(sizeof(sem_t));
-        sem_init(mob->sem, 0, 1);
+        sem_init(&mob->sem, 0, 1);
 
-        return mob;
+        return (mob);
 }
 
 void move_mob(struct mob_t *mob, int dir)
 {
-        sem_wait(mob->sem);
+        sem_wait(&mob->sem);
 
         int y = ufo_y(mob->ufo);
         int x = ufo_x(mob->ufo);
@@ -72,5 +77,5 @@ void move_mob(struct mob_t *mob, int dir)
         top_panel(mob->pan);
         scr_refresh();
 
-        sem_post(mob->sem);
+        sem_post(&mob->sem);
 }

@@ -23,7 +23,8 @@ enum arne_colors {
         LWOOD      = 37,
         WOOD       = 38,
         SHADOW     = 39, 
-        DARK_RED   = 42 
+        DARK_RED   = 42, 
+        DARK_BROWN = 43,
 };
 
 enum arne_shadow1 {
@@ -96,6 +97,31 @@ enum ramp_pairs {
         WARNSHADOW    = 110,
         GUN_FLASH     = 111,
         GUN_SMOKE     = 112,
+
+        BEI_BLU = 113,
+        BEI_DGR = 114,
+        BEI_BRO = 115,
+        BEI_DBR = 116,
+        BEI_WOO = 117,
+
+        WOO_BLU = 118,
+        WOO_DGR = 119,
+        WOO_BEI = 120,
+        WOO_BRO = 121,
+        WOO_DBR = 122,
+
+        BRO_BLU = 123,
+        BRO_DGR = 124,
+        BRO_BEI = 125,
+        BRO_DBR = 126,
+        BRO_WOO = 127,
+
+        DBR_BLU = 128,
+        DBR_DGR = 129,
+        DBR_BEI = 130,
+        DBR_BRO = 131,
+        DBR_WOO = 132,
+        YEL_BLU = 133,
 
         SEA_DARK      = 17,     /* SHADE0 colors for environment */
         SEA_MED       = 18,

@@ -115,15 +115,15 @@ void draw_layers(struct map_t *map, double **pmap)
                                                 MORT(i, j, &z);
                                                 if (i == imax) {
                                                         mvwadd_wch(PEEK(map->L[DRP]), i, j, &MTN[2]);
-                                                        set_sw(map->sw, z, LAY, DRP);
-                                                        set_sw(map->sw, z, SED, LIME);
-                                                        set_sw(map->sw, z, SOI, MOLL);
+                                                        set_state(map->dom, z, LAY, DRP);
+                                                        set_state(map->dom, z, SED, LIME);
+                                                        set_state(map->dom, z, SOI, MOLL);
                                                         continue;
                                                 }
                                                 mvwadd_wch(PEEK(map->L[TOP]), i, j, bgtop); // top
-                                                set_sw(map->sw, z, LAY, TOP);
-                                                set_sw(map->sw, z, SED, LIME);
-                                                set_sw(map->sw, z, SOI, MOLL);
+                                                set_state(map->dom, z, LAY, TOP);
+                                                set_state(map->dom, z, SED, LIME);
+                                                set_state(map->dom, z, SOI, MOLL);
                                         }
                                 }
                                 // Draw the tree box
@@ -138,16 +138,16 @@ void draw_layers(struct map_t *map, double **pmap)
                                         for (j=tx0; j<jmax; j++) {
                                                 MORT(i, j, &z);
                                                 if (i == imax) {
-                                                        set_sw(map->sw, z, LAY, VEG);
-                                                        set_sw(map->sw, z, SED, LIME);
-                                                        set_sw(map->sw, z, SOI, MOLL);
+                                                        set_state(map->dom, z, LAY, VEG);
+                                                        set_state(map->dom, z, SED, LIME);
+                                                        set_state(map->dom, z, SOI, MOLL);
                                                         mvwadd_wch(PEEK(map->L[VEG]), i, j, &TREE[0]);
                                                         continue;
                                                 }
                                                 mvwadd_wch(PEEK(map->L[VEG]), i, j, &TREE[1]);
-                                                set_sw(map->sw, z, LAY, VEG);
-                                                set_sw(map->sw, z, SED, LIME);
-                                                set_sw(map->sw, z, SOI, SPOD);
+                                                set_state(map->dom, z, LAY, VEG);
+                                                set_state(map->dom, z, SED, LIME);
+                                                set_state(map->dom, z, SOI, SPOD);
                                         }
                                 }
                         }
@@ -177,8 +177,8 @@ void draw_water_rim(struct map_t *map)
                         MORT(i, j, &z);
 
                         // Draw nothing is the cursor is on land.
-                        if ((is_sw(map->sw, z, LAY, TOP))) continue;
-                        if ((is_sw(map->sw, z, LAY, DRP))) continue;
+                        if ((is_state(map->dom, z, LAY, TOP))) continue;
+                        if ((is_state(map->dom, z, LAY, DRP))) continue;
 
                         // Compute offsets
                         iu = (i-1);
@@ -193,22 +193,22 @@ void draw_water_rim(struct map_t *map)
                         MORT(iu, jr, &zur);
 
                         // Draw nothing if the cursor is at a top corner.
-                        if (  (is_sw(map->sw, zul, LAY, XXX))
-                            &&(is_sw(map->sw, zl,  LAY, TOP))) continue;
-                        if (  (is_sw(map->sw, zur, LAY, XXX))
-                            &&(is_sw(map->sw, zr,  LAY, TOP))) continue;
+                        if (  (is_state(map->dom, zul, LAY, XXX))
+                            &&(is_state(map->dom, zl,  LAY, TOP))) continue;
+                        if (  (is_state(map->dom, zur, LAY, XXX))
+                            &&(is_state(map->dom, zr,  LAY, TOP))) continue;
 
                         // Draw an edge if there is an edge in the directions.
-                        if (  (is_sw(map->sw, zu, LAY, TOP))
-                            ||(is_sw(map->sw, zu, LAY, DRP))
-                            ||(is_sw(map->sw, zr, LAY, TOP))
-                            ||(is_sw(map->sw, zr, LAY, DRP))
-                            ||(is_sw(map->sw, zl, LAY, TOP))
-                            ||(is_sw(map->sw, zl, LAY, DRP)))
+                        if (  (is_state(map->dom, zu, LAY, TOP))
+                            ||(is_state(map->dom, zu, LAY, DRP))
+                            ||(is_state(map->dom, zr, LAY, TOP))
+                            ||(is_state(map->dom, zr, LAY, DRP))
+                            ||(is_state(map->dom, zl, LAY, TOP))
+                            ||(is_state(map->dom, zl, LAY, DRP)))
                         {
                                 mvwadd_wch(rim1, i, j, &OCEAN[3]);
                                 mvwadd_wch(rim2, i, j, &OCEAN[2]);
-                                set_sw(map->sw, z, LAY, RIM);
+                                set_state(map->dom, z, LAY, RIM);
                         }
                 }
         }

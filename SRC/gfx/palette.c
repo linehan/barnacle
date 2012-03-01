@@ -42,7 +42,8 @@ enum arne_colors {
         LWOOD      = 37,
         WOOD       = 38,
         SHADOW     = 39, 
-        DARK_RED   = 42 
+        DARK_RED   = 42, 
+        DARK_BROWN = 43,
 };
 
 
@@ -118,6 +119,33 @@ enum ramp_pairs {
         WARNSHADOW    = 110,
         GUN_FLASH     = 111,
         GUN_SMOKE     = 112,
+
+        BEI_BLU = 113,
+        BEI_DGR = 114,
+        BEI_BRO = 115,
+        BEI_DBR = 116,
+        BEI_WOO = 117,
+
+        WOO_BLU = 118,
+        WOO_DGR = 119,
+        WOO_BEI = 120,
+        WOO_BRO = 121,
+        WOO_DBR = 122,
+
+        BRO_BLU = 123,
+        BRO_DGR = 124,
+        BRO_BEI = 125,
+        BRO_DBR = 126,
+        BRO_WOO = 127,
+
+        DBR_BLU = 128,
+        DBR_DGR = 129,
+        DBR_BEI = 130,
+        DBR_BRO = 131,
+        DBR_WOO = 132,
+
+        YEL_BLU = 133,
+
 
         SEA_DARK      = 17,     /* SHADE0 colors for environment */
         SEA_MED       = 18,
@@ -245,6 +273,7 @@ void init_palette(int set)
         init_color(WHITE,      902,  894,  835);
         init_color(SHADOW,     372,  349,  376);
         init_color(DARK_RED,   416,  141,  176);
+        init_color(DARK_BROWN, 282, 220, 137);
 
         init_color(_DGREY,     172,  153,  180);
         init_color(_GREY,      490,  490,  490);
@@ -309,6 +338,33 @@ void init_palette(int set)
 
         init_pair(GUN_FLASH, WHITE, RED);
         init_pair(GUN_SMOKE, WHITE, DSEA);
+
+        init_pair(BEI_BLU, BEIGE, DSEA);
+        init_pair(BEI_DGR, BEIGE, DGREY);
+        init_pair(BEI_BRO, BEIGE, BROWN);
+        init_pair(BEI_DBR, BEIGE, DARK_BROWN);
+        init_pair(BEI_WOO, BEIGE, WOOD);
+
+        init_pair(WOO_BLU, WOOD, DSEA);
+        init_pair(WOO_DGR, WOOD, DGREY);
+        init_pair(WOO_BEI, WOOD, BEIGE);
+        init_pair(WOO_BRO, WOOD, BROWN);
+        init_pair(WOO_DBR, WOOD, DARK_BROWN);
+
+        init_pair(BRO_BLU, BROWN, DSEA);
+        init_pair(BRO_DGR, BROWN, DGREY);
+        init_pair(BRO_BEI, BROWN, BEIGE);
+        init_pair(BRO_DBR, BROWN, DARK_BROWN);
+        init_pair(BRO_WOO, BROWN, WOOD);
+
+        init_pair(DBR_BLU, DARK_BROWN, DSEA);
+        init_pair(DBR_DGR, DARK_BROWN, DGREY);
+        init_pair(DBR_DGR, DARK_BROWN, DGREY);
+        init_pair(DBR_BEI, DARK_BROWN, BEIGE);
+        init_pair(DBR_BRO, DARK_BROWN, BROWN);
+        init_pair(DBR_WOO, DARK_BROWN, WOOD);
+
+        init_pair(YEL_BLU, YELLOW, DSEA);
 
         /* IN-GAME COLOR PAIRS */
         init_pair(BOAT_WHITE, WHITE, DSEA);

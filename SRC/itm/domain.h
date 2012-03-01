@@ -28,54 +28,60 @@
 //#
 //##############################################################################
 //}}}1
-#ifndef __SWITCH_TYPES
-#define __SWITCH_TYPES
+#ifndef __DOMAINS
+#define __DOMAINS
 
 #include <stdint.h>
 #include <ncurses.h>
-#include "../redblack/rb.h"
+#include "../lib/redblack/rb.h"
 
-#define NNIBS    8  // Number of nibbles in a MAP byte.
+#define NNIBS    8  // Number of nibbles in a state word.
 #define NSTATES 16  // Number of states each nibble can take.
-#define NBITS   32  // Number of bits (total) in a MAP byte.
+#define NBITS   32  // Number of bits (total) in a state word.
 
-/*
-  Bit mask for each of the 16 possible states of a single nibble.
-*/
+//##############################################################################
+// Bit masks for each of the 16 possible states of a single nibble.
+//##############################################################################
 static const uint32_t 
 state[NSTATES] = {0x00000000, 0x00000001, 0x00000002, 0x00000003,
                   0x00000004, 0x00000005, 0x00000006, 0x00000007,
                   0x00000008, 0x00000009, 0x0000000A, 0x0000000B,
                   0x0000000C, 0x0000000D, 0x0000000E, 0x0000000F};
-/*
-  Bit mask for each of the 8 nibbles in a 32-bit uint32_t.
-*/
+//##############################################################################
+// Bit masks for each of the 8 nibbles in a 32-bit uint32_t.
+//##############################################################################
 static const uint32_t 
 scrub[NNIBS]   = {0x0FFFFFFF, 0xF0FFFFFF, 0xFF0FFFFF, 0xFFF0FFFF,
                   0xFFFF0FFF, 0xFFFFF0FF, 0xFFFFFF0F, 0xFFFFFFF0};
-/*
-  Inverted bit mask for each of the 8 nibbles in a 32-bit uint32_t.
-*/
+//##############################################################################
+// Inverted bit masks for each of the 8 nibbles in a 32-bit uint32_t.
+//##############################################################################
 static const uint32_t 
 gouge[NNIBS]   = {0xF0000000, 0x0F000000, 0x00F00000, 0x000F0000,
                   0x0000F000, 0x00000F00, 0x000000F0, 0x0000000F};
-/*
-  The left offset of each of the 8 nibbles in a 32-bit uint32_t.
-*/
+//##############################################################################
+// The left offset of each of the 8 nibbles in a 32-bit uint32_t.
+//##############################################################################
 static const uint32_t 
 offset[NNIBS]  = {28, 24, 20, 16, 12, 8, 4, 0};
+//##############################################################################
+// Typedefs to simplify the pointer madness.
+//##############################################################################
+typedef const char    **TOC; // Labels for each nibble.
+typedef const char ***GLOSS; // Labels for the 16 states each nibble may take.
 
-
-struct sw_t {
+//##############################################################################
+// The actual domain type.
+//##############################################################################
+struct dom_t {
         struct rb_tree *tree;  // Data is stored in this red-black tree.
         uint32_t c;            // Used for copies, scratchwork, or errors.
-        const char  **nib;     // Labels for each nibble.
-        const char ***opt;     // Labels for the 16 states of each nibble.
+        TOC   nib;             
+        GLOSS opt;             
 };                                                                      
-
-/*
-  General option types
-*/
+//##############################################################################
+// Generic (shared) gloss types.
+//##############################################################################
 //{{{1 Directional quantity
 enum hdg_t {NORTH,NNE,NE,ENE,EAST,ESE,SE,SSE,SOUTH,SSW,SW,WSW,WEST,WNW,NW,NNW};        
 static const 
@@ -120,11 +126,11 @@ char *lay_tag[16] = {"XXX", "BGR", "HIG", "RIM", "DRP", "TOP", "GRO", "HUT",
 //}}}1
 
 
-struct sw_t *new_sw(const char **fields, const char ***options);
-void             set_sw(struct sw_t *sw, uint32_t key, int nib, int opt);
-int              get_sw(struct sw_t *sw, uint32_t key, int nib);
-int               is_sw(struct sw_t *sw, uint32_t key, int nib, int opt);
-const char   *get_swtag(struct sw_t *sw, uint32_t key, int nib);
-void            stat_sw(WINDOW *win, struct sw_t *sw, uint32_t key);
+struct dom_t     *new_dom(TOC, GLOSS);
+void            set_state(struct dom_t *dom, uint32_t key, int nib, int opt);
+int             get_state(struct dom_t *dom, uint32_t key, int nib);
+int              is_state(struct dom_t *dom, uint32_t key, int nib, int opt);
+const char *get_state_tag(struct dom_t *dom, uint32_t key, int nib);
+void           stat_state(WINDOW *win, struct dom_t *dom, uint32_t key);
 
 #endif

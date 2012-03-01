@@ -47,13 +47,14 @@ PROGRAMS = $(bin_PROGRAMS)
 am__dirstamp = $(am__leading_dot)dirstamp
 am_arawak_OBJECTS = arawak.$(OBJEXT) lib/redblack/rb.$(OBJEXT) \
 	lib/sort/mergesort.$(OBJEXT) lib/sort/quicksort.$(OBJEXT) \
-	lib/switches/sw.$(OBJEXT) cmd/control.$(OBJEXT) \
+	itm/domain.$(OBJEXT) itm/itm.$(OBJEXT) cmd/control.$(OBJEXT) \
 	gen/dice.$(OBJEXT) gen/mtwist.$(OBJEXT) geo/weather.$(OBJEXT) \
 	geo/terrain.$(OBJEXT) geo/map.$(OBJEXT) gfx/palette.$(OBJEXT) \
 	gfx/sprite.$(OBJEXT) gfx/gfx.$(OBJEXT) gen/perlin.$(OBJEXT) \
-	gfx/term.$(OBJEXT) mob/mob.$(OBJEXT) mob/boat.$(OBJEXT) \
-	pan/instruments.$(OBJEXT) pan/menus.$(OBJEXT) \
-	pan/test.$(OBJEXT) txt/rk.$(OBJEXT) txt/psh.$(OBJEXT)
+	gfx/term.$(OBJEXT) env/deck.$(OBJEXT) mob/mob.$(OBJEXT) \
+	mob/boat.$(OBJEXT) pan/instruments.$(OBJEXT) \
+	pan/menus.$(OBJEXT) pan/test.$(OBJEXT) txt/rk.$(OBJEXT) \
+	txt/psh.$(OBJEXT)
 arawak_OBJECTS = $(am_arawak_OBJECTS)
 arawak_LDADD = $(LDADD)
 DEFAULT_INCLUDES = -I.@am__isrc@
@@ -165,7 +166,8 @@ arawak_SOURCES = arawak.c \
                    lib/redblack/rb.c \
                    lib/sort/mergesort.c \
                    lib/sort/quicksort.c \
-                   lib/switches/sw.c   \
+                   itm/domain.c      \
+                   itm/itm.c         \
                    cmd/control.c     \
                    gen/dice.c        \
                    gen/mtwist.c      \
@@ -177,6 +179,7 @@ arawak_SOURCES = arawak.c \
                    gfx/gfx.c         \
                    gen/perlin.c      \
                    gfx/term.c        \
+                   env/deck.c        \
                    mob/mob.c         \
                    mob/boat.c        \
                    pan/instruments.c \
@@ -274,14 +277,15 @@ lib/sort/mergesort.$(OBJEXT): lib/sort/$(am__dirstamp) \
 	lib/sort/$(DEPDIR)/$(am__dirstamp)
 lib/sort/quicksort.$(OBJEXT): lib/sort/$(am__dirstamp) \
 	lib/sort/$(DEPDIR)/$(am__dirstamp)
-lib/switches/$(am__dirstamp):
-	@$(MKDIR_P) lib/switches
-	@: > lib/switches/$(am__dirstamp)
-lib/switches/$(DEPDIR)/$(am__dirstamp):
-	@$(MKDIR_P) lib/switches/$(DEPDIR)
-	@: > lib/switches/$(DEPDIR)/$(am__dirstamp)
-lib/switches/sw.$(OBJEXT): lib/switches/$(am__dirstamp) \
-	lib/switches/$(DEPDIR)/$(am__dirstamp)
+itm/$(am__dirstamp):
+	@$(MKDIR_P) itm
+	@: > itm/$(am__dirstamp)
+itm/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) itm/$(DEPDIR)
+	@: > itm/$(DEPDIR)/$(am__dirstamp)
+itm/domain.$(OBJEXT): itm/$(am__dirstamp) \
+	itm/$(DEPDIR)/$(am__dirstamp)
+itm/itm.$(OBJEXT): itm/$(am__dirstamp) itm/$(DEPDIR)/$(am__dirstamp)
 cmd/$(am__dirstamp):
 	@$(MKDIR_P) cmd
 	@: > cmd/$(am__dirstamp)
@@ -324,6 +328,13 @@ gfx/gfx.$(OBJEXT): gfx/$(am__dirstamp) gfx/$(DEPDIR)/$(am__dirstamp)
 gen/perlin.$(OBJEXT): gen/$(am__dirstamp) \
 	gen/$(DEPDIR)/$(am__dirstamp)
 gfx/term.$(OBJEXT): gfx/$(am__dirstamp) gfx/$(DEPDIR)/$(am__dirstamp)
+env/$(am__dirstamp):
+	@$(MKDIR_P) env
+	@: > env/$(am__dirstamp)
+env/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) env/$(DEPDIR)
+	@: > env/$(DEPDIR)/$(am__dirstamp)
+env/deck.$(OBJEXT): env/$(am__dirstamp) env/$(DEPDIR)/$(am__dirstamp)
 mob/$(am__dirstamp):
 	@$(MKDIR_P) mob
 	@: > mob/$(am__dirstamp)
@@ -357,6 +368,7 @@ arawak$(EXEEXT): $(arawak_OBJECTS) $(arawak_DEPENDENCIES) $(EXTRA_arawak_DEPENDE
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
 	-rm -f cmd/control.$(OBJEXT)
+	-rm -f env/deck.$(OBJEXT)
 	-rm -f gen/dice.$(OBJEXT)
 	-rm -f gen/mtwist.$(OBJEXT)
 	-rm -f gen/perlin.$(OBJEXT)
@@ -367,10 +379,11 @@ mostlyclean-compile:
 	-rm -f gfx/palette.$(OBJEXT)
 	-rm -f gfx/sprite.$(OBJEXT)
 	-rm -f gfx/term.$(OBJEXT)
+	-rm -f itm/domain.$(OBJEXT)
+	-rm -f itm/itm.$(OBJEXT)
 	-rm -f lib/redblack/rb.$(OBJEXT)
 	-rm -f lib/sort/mergesort.$(OBJEXT)
 	-rm -f lib/sort/quicksort.$(OBJEXT)
-	-rm -f lib/switches/sw.$(OBJEXT)
 	-rm -f mob/boat.$(OBJEXT)
 	-rm -f mob/mob.$(OBJEXT)
 	-rm -f pan/instruments.$(OBJEXT)
@@ -384,6 +397,7 @@ distclean-compile:
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/arawak.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@cmd/$(DEPDIR)/control.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@env/$(DEPDIR)/deck.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@gen/$(DEPDIR)/dice.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@gen/$(DEPDIR)/mtwist.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@gen/$(DEPDIR)/perlin.Po@am__quote@
@@ -394,10 +408,11 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@gfx/$(DEPDIR)/palette.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@gfx/$(DEPDIR)/sprite.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@gfx/$(DEPDIR)/term.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@itm/$(DEPDIR)/domain.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@itm/$(DEPDIR)/itm.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@lib/redblack/$(DEPDIR)/rb.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@lib/sort/$(DEPDIR)/mergesort.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@lib/sort/$(DEPDIR)/quicksort.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@lib/switches/$(DEPDIR)/sw.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@mob/$(DEPDIR)/boat.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@mob/$(DEPDIR)/mob.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@pan/$(DEPDIR)/instruments.Po@am__quote@
@@ -539,18 +554,20 @@ distclean-generic:
 	-test . = "$(srcdir)" || test -z "$(CONFIG_CLEAN_VPATH_FILES)" || rm -f $(CONFIG_CLEAN_VPATH_FILES)
 	-rm -f cmd/$(DEPDIR)/$(am__dirstamp)
 	-rm -f cmd/$(am__dirstamp)
+	-rm -f env/$(DEPDIR)/$(am__dirstamp)
+	-rm -f env/$(am__dirstamp)
 	-rm -f gen/$(DEPDIR)/$(am__dirstamp)
 	-rm -f gen/$(am__dirstamp)
 	-rm -f geo/$(DEPDIR)/$(am__dirstamp)
 	-rm -f geo/$(am__dirstamp)
 	-rm -f gfx/$(DEPDIR)/$(am__dirstamp)
 	-rm -f gfx/$(am__dirstamp)
+	-rm -f itm/$(DEPDIR)/$(am__dirstamp)
+	-rm -f itm/$(am__dirstamp)
 	-rm -f lib/redblack/$(DEPDIR)/$(am__dirstamp)
 	-rm -f lib/redblack/$(am__dirstamp)
 	-rm -f lib/sort/$(DEPDIR)/$(am__dirstamp)
 	-rm -f lib/sort/$(am__dirstamp)
-	-rm -f lib/switches/$(DEPDIR)/$(am__dirstamp)
-	-rm -f lib/switches/$(am__dirstamp)
 	-rm -f mob/$(DEPDIR)/$(am__dirstamp)
 	-rm -f mob/$(am__dirstamp)
 	-rm -f pan/$(DEPDIR)/$(am__dirstamp)
@@ -566,7 +583,7 @@ clean: clean-am
 clean-am: clean-binPROGRAMS clean-generic mostlyclean-am
 
 distclean: distclean-am
-	-rm -rf ./$(DEPDIR) cmd/$(DEPDIR) gen/$(DEPDIR) geo/$(DEPDIR) gfx/$(DEPDIR) lib/redblack/$(DEPDIR) lib/sort/$(DEPDIR) lib/switches/$(DEPDIR) mob/$(DEPDIR) pan/$(DEPDIR) txt/$(DEPDIR)
+	-rm -rf ./$(DEPDIR) cmd/$(DEPDIR) env/$(DEPDIR) gen/$(DEPDIR) geo/$(DEPDIR) gfx/$(DEPDIR) itm/$(DEPDIR) lib/redblack/$(DEPDIR) lib/sort/$(DEPDIR) mob/$(DEPDIR) pan/$(DEPDIR) txt/$(DEPDIR)
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
 	distclean-tags
@@ -612,7 +629,7 @@ install-ps-am:
 installcheck-am:
 
 maintainer-clean: maintainer-clean-am
-	-rm -rf ./$(DEPDIR) cmd/$(DEPDIR) gen/$(DEPDIR) geo/$(DEPDIR) gfx/$(DEPDIR) lib/redblack/$(DEPDIR) lib/sort/$(DEPDIR) lib/switches/$(DEPDIR) mob/$(DEPDIR) pan/$(DEPDIR) txt/$(DEPDIR)
+	-rm -rf ./$(DEPDIR) cmd/$(DEPDIR) env/$(DEPDIR) gen/$(DEPDIR) geo/$(DEPDIR) gfx/$(DEPDIR) itm/$(DEPDIR) lib/redblack/$(DEPDIR) lib/sort/$(DEPDIR) mob/$(DEPDIR) pan/$(DEPDIR) txt/$(DEPDIR)
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 

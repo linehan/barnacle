@@ -99,7 +99,7 @@ int hit_test(struct map_t *map, int y, int x)
 
         MORT(y, x, &z);
 
-        if (is_sw(map->sw, z, LAY, TOP) || is_sw(map->sw, z, LAY, DRP))
+        if (is_state(map->dom, z, LAY, TOP) || is_state(map->dom, z, LAY, DRP))
                 return (0);
         else    
                 return (1);
@@ -107,18 +107,28 @@ int hit_test(struct map_t *map, int y, int x)
 
 void build_gpkg(struct gpkg *g)
 {
-        unsigned char n, i;
+        int n, i;
         n = g->n;
 
         while (n-->0) {
-               g->len[n] = (unsigned char)(wcslen(g->wch[n])+1);
+               g->len[n] = (int)(wcslen(g->wch[n])+1);
                g->cch[n] = malloc(g->len[n] * sizeof(cchar_t));
                for (i=0; i<(g->len[n]); i++) {
                        setcchar(&g->cch[n][i], &g->wch[n][i], 0, g->pair, NULL);
                }
         }
 }
+void build_gpkg_cbar(struct gpkg *g, struct cbar *c)
+{
+        int i, p;
 
+        g->len[0] = (int)(wcslen(g->wch[0])+1);
+        g->cch[0] = malloc(g->len[0] * sizeof(cchar_t));
+        for (i=0, p=0; i<(g->len[0]); i++) {
+                p = (c->bar[i] - '0');
+                setcchar(&g->cch[0][i], &g->wch[0][i], 0, c->pair[p], NULL);
+        }
+}
 
 
 /******************************************************************************

@@ -25,15 +25,15 @@ display and navigation of a BOAT.
 #include "../pan/test.h"
 
 #include "../lib/llist/list.h"
-#include "../lib/redblack/rb.h"
 #include "../lib/bitwise.h"
 #include "../lib/ufo.h"
 
+#include "../itm/itm.h"
 #include "mob.h"
 #include "boat.h"
 #include "../gfx/gfx_boat.h"
-/******************************************************************************/
-/*
+
+/*******************************************************************************
   ⎛⎝     
   ◥■◤ 
   ⎛⎝  
@@ -56,11 +56,17 @@ display and navigation of a BOAT.
     ◥◤
    ⎛⎝    
    ◥■◤
-*/
-/******************************************************************************/
+*******************************************************************************/
+#define BOAT_KIND 'b'
+
+struct dom_t *DOMAIN;
+
 struct mob_t *_BOAT;
+struct itm_t *_ITEM;
 
 struct boat_gfx *tester;
+
+uint32_t keys[10];
 /******************************************************************************/
 /*
   Spool up the genera for each of the graphical elements that comprise
@@ -68,6 +74,8 @@ struct boat_gfx *tester;
 */
 void init_boats(void)
 {
+        DOMAIN = register_dom(BOAT_KIND, boat_nibs, boat_opts);
+
         unsigned char i;
         i = HULLCOUNT;  while (i-->0) { build_gpkg(&_hull[i]); };
         i = MASTCOUNT;  while (i-->0) { build_gpkg(&_mast[i]); };
@@ -78,30 +86,31 @@ void init_boats(void)
         tester = test;
 }
 
-/* Set boat as active */
-void nominate_boat(struct mob_t *mob)
-{
-        _BOAT = mob;
-}
 /*
   Create a new boat mob. This is essentially just creating a mob of genera
   "boat". That genera is associated with a set of nibbles and options that
   correspond to it's states and settings. This could be generalized.
 */
-struct mob_t *new_boat(struct map_t *map)
+uint32_t new_boat(struct map_t *map)
 {
-        struct mob_t *mob = new_mob(map, 2, 4, 3, 3);
-        mob->sw = new_sw(&boat_nibs, &boat_opts);
-        mob->sw->tree = new_tree();
-        rb_insert(mob->sw->tree, 13); // Key
+        // Generate ufo and semaphore.
+        struct mob_t *new = new_mob(map, 2, 4, 3, 3);
 
-        WINDOW *win = panel_window(mob->pan);
+        // Make the panel.
+        WINDOW *win = newwin(2, 4, 3, 3);
         wbkgrnd(win, &OCEAN[0]);
+        new->pan = new_panel(win);
 
-        vrt_refresh();
-        return mob;
+        // Register the mob_t as an item and return the key.
+        keys[0] = register_itm(BOAT_KIND, new);
+        return (keys[0]);
 }
 
+void nominate_boat(uint32_t key)
+{
+        _ITEM = retreive_itm(BOAT_KIND, key);
+        _BOAT = (struct mob_t *)_ITEM->data;
+}
 /*
   The boat's state is checked and any changes of state result in some action
   being taken. For example, if the state indicates the guns are in a state
@@ -127,14 +136,14 @@ void sync_boat(void)
         gunf = tester->gunf->cch; 
         guns = tester->guns->cch; 
 
-        sem_wait(_BOAT->sem);
+        sem_wait(&_BOAT->sem);
                 WINDOW *win = panel_window(_BOAT->pan);
-        sem_post(_BOAT->sem);
+        sem_post(&_BOAT->sem);
 
         // Retreive states
-        H = get_sw(_BOAT->sw, 13, HDG);
-        R = get_sw(_BOAT->sw, 13, SAI);
-        G = get_sw(_BOAT->sw, 13, GUN);
+        H = get_state(DOMAIN, keys[0], HDG);
+        R = get_state(DOMAIN, keys[0], SAI);
+        G = get_state(DOMAIN, keys[0], GUN);
         W = get_wind(__dir__);
 
         // Maps 16 directions --> 4 cardinals
@@ -157,12 +166,12 @@ void sync_boat(void)
         case FIR:
                 mvwadd_wch(win, 1, xo, gunf[ROU_F]);
                 if (roll_fair(2))
-                        set_sw(_BOAT->sw, 13, GUN, LD0);
+                        set_state(DOMAIN, keys[0], GUN, LD0);
                 break;
         case LD0:
                 mvwadd_wch(win, 1, xo, guns[ROU_F]);
                 if (roll_fair(5))
-                        set_sw(_BOAT->sw, 13, GUN, RDY);
+                        set_state(DOMAIN, keys[0], GUN, RDY);
                 break;
         }
         scr_refresh();
@@ -178,8 +187,8 @@ void *sail_boat(void *ptr)
         int H, S, W; // Heading, sail and wind enums.
 
         sync_boat();
-        H = get_sw(_BOAT->sw, 13, HDG);
-        S = get_sw(_BOAT->sw, 13, SAI);
+        H = get_state(DOMAIN, keys[0], HDG);
+        S = get_state(DOMAIN, keys[0], SAI);
         W = get_wind(__dir__);
 
         if ((S!=POL)&&(W!=H)) { /*not in irons*/
@@ -199,34 +208,34 @@ void *sail_boat(void *ptr)
   of the boat.
 
   This, too, can be made more generalized, with a more friendly state
-  interface in sw.h, since obviously more than just boats will need to
+  interface in dom.h, since obviously more than just boats will need to
   have their state modified by the control thread.
 */
 void order_boat(int order, int val)
 {
         int H; // Heading enum
 
-        H = get_sw(_BOAT->sw, 13, HDG);
+        H = get_state(DOMAIN, keys[0], HDG);
 
                 switch(order) { 
                 case 'p':
                         H = (H>0) ? H-1 : NNW;
-                        set_sw(_BOAT->sw, 13, HDG, H);
+                        set_state(DOMAIN, keys[0], HDG, H);
                         mark_hdg('L');
                         break;
                 case 's':
                         H = (H < NNW) ? H+1 : NORTH;
-                        set_sw(_BOAT->sw, 13, HDG, H);
+                        set_state(DOMAIN, keys[0], HDG, H);
                         mark_hdg('R');
                         break;
                 case 'f':
-                        set_sw(_BOAT->sw, 13, GUN, FIR);
+                        set_state(DOMAIN, keys[0], GUN, FIR);
                         break;
                 case 'R':
-                        set_sw(_BOAT->sw, 13, SAI, MAI); // Set mainsail
+                        set_state(DOMAIN, keys[0], SAI, MAI); // Set mainsail
                         break;
                 case 'r':
-                        set_sw(_BOAT->sw, 13, SAI, POL); // Run with bare poles 
+                        set_state(DOMAIN, keys[0], SAI, POL); // Run with bare poles 
                         break;
                 }
         sync_boat();

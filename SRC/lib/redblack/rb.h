@@ -22,5 +22,6 @@ struct rb_node *rb_retreive(struct rb_node *node, uint32_t key);
 void rb_store(struct rb_tree *tree, uint32_t key, void *extra);
 struct rb_tree *new_tree(void);
 void rb_init(struct rb_tree *tree);
+void rb_peek(struct rb_tree *tree, uint32_t key);
 
 #endif

@@ -110,16 +110,22 @@ struct ring_t {
 };
 
 struct gpkg {
-        unsigned char n;
-        unsigned char ofs[16];
+        int n;
+        int ofs[16];
         short pair;
         const wchar_t *wch[16];
-        unsigned char len[16];
+        int len[16];
         cchar_t *cch[16];
+};
+
+struct cbar {
+        short pair[5];
+        const char *bar;
 };
 
 
 void build_gpkg(struct gpkg *g);
+void build_gpkg_cbar(struct gpkg *g, struct cbar *c);
 void geojug_start(void);
 
 struct wnode_t   *new_wnode(int id, int h, int w, int y0, int x0);

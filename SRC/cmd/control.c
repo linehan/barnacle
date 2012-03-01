@@ -28,6 +28,7 @@ Bindings and actions for the user's keyboard input.
 #include "../mob/mob.h"
 #include "../mob/boat.h"
 #include "../pan/menus.h"
+#include "../env/deck.h"
 /******************************************************************************/
 PANEL *deckp;
 
@@ -95,7 +96,7 @@ void *iolisten(EV_P_ ev_io *w, int revents)
                         order_boat('R', 0);
                         break;
                 case 't':
-                        TOGPAN(BIGPAN);
+                        pop_deck();
                         break;
                 case KEY_UP:
                         move_inspector('u');

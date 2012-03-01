@@ -1,7 +1,7 @@
 // vim:fdm=marker
 #ifndef __BOAT_OPTIONS
 #define __BOAT_OPTIONS
-#include "../lib/switches/sw.h"
+#include "../itm/domain.h"
 
 //{{{1 BOAT NIBBLE GUIDE 
 static const 
@@ -113,10 +113,11 @@ char **boat_opts[8] = {lay_tag,RIG_tag,hdg_tag,SAI_tag,GUN_tag,ROT_tag,FLG_tag,g
 //}}}1
 
 extern struct mob_t *_BOAT;
+extern struct itm_t *_ITEM;
 
-struct mob_t *new_boat(struct map_t *map);
+uint32_t new_boat(struct map_t *map);
 void init_boats(void);
-void nominate_boat(struct mob_t *mob);
+void nominate_boat(uint32_t key);
 void sync_boat(void);
 void *sail_boat(void *);
 void order_boat(int, int);

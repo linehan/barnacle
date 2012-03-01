@@ -35,6 +35,7 @@
 #include "pan/test.h"
 #include "lib/ufo.h"
 #include "lib/morton.h"
+#include "env/deck.h"
 /******************************************************************************/
 /* The callback function for the sailing event watcher. Manages the wind
  * and the sailboat's response to it. Checks a semaphore which is also
@@ -93,6 +94,8 @@ int main()
         geojug_start();       // Start the graphics engine
         terminal_check();     // No xterm allowed
 
+        init_deck();
+        draw_deck();
 
         struct map_t *pad = new_map((LINES*3), (COLS*3));
         gen_map(pad);
@@ -103,8 +106,8 @@ int main()
 
         wprintw(DIAGNOSTIC_WIN, "%u\n", (LINES*COLS)*3);
 
-        struct mob_t *boat = new_boat(pad);
-        nominate_boat(boat);
+        uint32_t boatkey = new_boat(pad);
+        nominate_boat(boatkey);
 
         /* master off switch */
         sem_t master_off; 
