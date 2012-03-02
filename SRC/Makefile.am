@@ -21,6 +21,7 @@ arawak_SOURCES = arawak.c \
                    cmd/control.c     \
                    gen/dice.c        \
                    gen/mtwist.c      \
+                   gen/wave.c        \
                    geo/weather.c     \
                    geo/terrain.c     \
                    geo/map.c         \
@@ -30,9 +31,11 @@ arawak_SOURCES = arawak.c \
                    gen/perlin.c      \
                    gfx/term.c        \
                    env/deck.c        \
+                   env/cloud.c       \
                    mob/mob.c         \
                    mob/boat.c        \
                    pan/instruments.c \
+                   pan/dialog.c      \
                    pan/menus.c       \
                    pan/test.c        \
                    txt/rk.c          \

@@ -1,6 +1,9 @@
 extern WINDOW *SYSWIN;
 extern PANEL  *SYSPAN;
 
+extern WINDOW *MARQUEEW;
+extern PANEL  *MARQUEEP;
+
 extern WINDOW *DIAGNOSTIC_WIN;
 extern PANEL  *DIAGNOSTIC_PAN;
 

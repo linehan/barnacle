@@ -118,12 +118,27 @@ struct gpkg {
         cchar_t *cch[16];
 };
 
-struct cbar {
-        short pair[5];
-        const char *bar;
+struct recipe {
+        int n;
+        int xof;
+        int yof;
+        short pair[64];
+        const wchar_t *wch[100];
+        const char *bar[100];
+        int len[100];
+        cchar_t cch[100][100];
+        int wid;
+        WINDOW *win;
+        void (*paint)(const void *self); // method
 };
 
 
+struct cbar {
+        short pair[10];
+        const char *bar;
+};
+
+void illuminate(struct recipe *R);
 void build_gpkg(struct gpkg *g);
 void build_gpkg_cbar(struct gpkg *g, struct cbar *c);
 void geojug_start(void);

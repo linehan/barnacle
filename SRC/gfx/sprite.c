@@ -33,6 +33,7 @@ const wchar_t gfxSHADE[3] = L"░▒▓";
 const wchar_t gfxWARNPIP = L'⋇';
 
 const wchar_t gfxTREE[] = L"╹⬢";
+const wchar_t gfxSOLID = L'█';
 
 cchar_t HERO;
 cchar_t OCEAN[4];
@@ -56,6 +57,8 @@ cchar_t __TREE[2];
 cchar_t GRASS[5];
 cchar_t _GRASS[5];
 cchar_t __GRASS[5];
+cchar_t UNDERSEA;
+cchar_t DAYSKY;
 /******************************************************************************/
 void init_gfx_colors(void)
 {
@@ -81,10 +84,10 @@ void init_gfx_colors(void)
         setcchar(&__SURF0, &WAVE_BREAK_GFX, 0, __SEA_LIG,  NULL);
         setcchar(&__SURF1, &WAVE_FLOW_GFX,  0, __SEA_LIG,  NULL);
 
-        setcchar(&BLANK, &gfxBLANK, 0, MENU, NULL);
+        setcchar(&BLANK, &gfxBLANK, 0, 0, NULL);
         setcchar(&PLAIN, &gfxBLANK, 0, COLOR_PAIR(WHITE), NULL);
 
-        setcchar(&BORDER, &gfxBORDER, 0, MENU, NULL);
+        setcchar(&BORDER, &gfxBORDER, 0, 0, NULL);
 
         setcchar(&WARNBG, &gfxBLANK, 0, WARNING, NULL);
         setcchar(&WARNSH, &gfxBLANK, 0, WARNSHADOW, NULL);
@@ -106,6 +109,9 @@ void init_gfx_colors(void)
         setcchar(&__GRASS[0], &gfxSHADE[0], 0, __GRASSY, NULL);
         setcchar(&__GRASS[1], &gfxSHADE[1], 0, __GRASSY, NULL);
         setcchar(&__GRASS[2], &gfxSHADE[2], 0, __GRASSY, NULL);
+
+        setcchar(&UNDERSEA, &gfxSOLID, 0, UND_SEA, NULL);
+        setcchar(&DAYSKY, &gfxSOLID, 0, DAY_SKY, NULL);
 
         setcchar(&DIRT[0], &gfxBLANK, 0, LAND, NULL);
 

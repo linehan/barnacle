@@ -23,6 +23,9 @@
 WINDOW *DIAGNOSTIC_WIN;
 PANEL  *DIAGNOSTIC_PAN;
 
+WINDOW *MARQUEEW;
+PANEL  *MARQUEEP;
+
 WINDOW *BIGWIN;
 PANEL  *BIGPAN;
 
@@ -52,6 +55,9 @@ void init_test(void)
 
         BIGWIN = newwin(LINES, COLS, 0, 0);
         BIGPAN = new_panel(BIGWIN);
+
+        MARQUEEW = newwin(1, COLS, LINES-1, 0);
+        MARQUEEP = new_panel(MARQUEEW);
 
         INSPECTORWIN = newwin(1, 1, 0, 0);
         INSPECTORPAN = new_panel(INSPECTORWIN);

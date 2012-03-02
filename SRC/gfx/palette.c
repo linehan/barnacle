@@ -99,7 +99,11 @@ enum arne_shadow2 {
         __LWOOD  = 88,
         __WOOD   = 89,
         __SHADOW = 90,
-        __DARK_RED = 91 
+        __DARK_RED = 91 ,
+        CELESTIALBLUE = 92,
+        CERULEAN = 93,
+        WILDBLUEYONDER = 94,
+        BLASTOFFBRONZE = 95
 };
 
 
@@ -114,37 +118,52 @@ enum ramp_pairs {
         CMP_PINK      = 105,
         CMP_YELLOW    = 106,
         CMP_SHADOW    = 107,
-        MENU          = 108,
         WARNING       = 109,
         WARNSHADOW    = 110,
         GUN_FLASH     = 111,
         GUN_SMOKE     = 112,
 
-        BEI_BLU = 113,
-        BEI_DGR = 114,
-        BEI_BRO = 115,
-        BEI_DBR = 116,
-        BEI_WOO = 117,
+        BEI_SKY = 113,
+        BEI_SEA = 114,
+        BEI_DGR = 115,
+        BEI_BRO = 116,
+        BEI_DBR = 117,
+        BEI_WOO = 118,
 
-        WOO_BLU = 118,
-        WOO_DGR = 119,
-        WOO_BEI = 120,
-        WOO_BRO = 121,
-        WOO_DBR = 122,
+        WOO_SKY = 119,
+        WOO_SEA = 120,
+        WOO_DGR = 121,
+        WOO_BEI = 122,
+        WOO_BRO = 123,
+        WOO_DBR = 124,
 
-        BRO_BLU = 123,
-        BRO_DGR = 124,
-        BRO_BEI = 125,
-        BRO_DBR = 126,
-        BRO_WOO = 127,
+        BRO_SKY = 125,
+        BRO_SEA = 126,
+        BRO_DGR = 127,
+        BRO_BEI = 128,
+        BRO_DBR = 129,
+        BRO_WOO = 130,
 
-        DBR_BLU = 128,
-        DBR_DGR = 129,
-        DBR_BEI = 130,
-        DBR_BRO = 131,
-        DBR_WOO = 132,
+        DBR_SKY = 131,
+        DBR_SEA = 132,
+        DBR_DGR = 133,
+        DBR_BEI = 134,
+        DBR_BRO = 135,
+        DBR_WOO = 136,
 
-        YEL_BLU = 133,
+        YEL_SKY = 137,
+        UND_SEA = 138,
+        DAY_SKY = 139,
+        RED_SKY = 22,
+        SKY_BRO = 141,
+        D_SEA = 142,
+        DD_SEA = 143,
+        BRZ_SKY = 144,
+        BRZ_DBR = 145,
+        BRZ_WOO = 146,
+        BRZ_BRO = 147,
+        GRE_SKY = 148,
+        WHI_SKY = 149,
 
 
         SEA_DARK      = 17,     /* SHADE0 colors for environment */
@@ -152,7 +171,7 @@ enum ramp_pairs {
         BOAT_DEEP     = 19,
         BOAT_WOOD     = 20, 
         BOAT_WHITE    = 21,
-        SAIL_DEEP     = 22,
+        /*SAIL_DEEP     = 22,*/
         LAND          = 23,
         TREETOP       = 24,
         TREETRUNK     = 25,
@@ -274,6 +293,12 @@ void init_palette(int set)
         init_color(SHADOW,     372,  349,  376);
         init_color(DARK_RED,   416,  141,  176);
         init_color(DARK_BROWN, 282, 220, 137);
+        /*init_color(CELESTIALBLUE, 286, 592, 815);*/
+        init_color(CELESTIALBLUE, 353, 537, 784);
+        init_color(CERULEAN, 0, 482, 655);
+        /*init_color(WILDBLUEYONDER, 635, 678, 815);*/
+        #define WILDBLUEYONDER DSEA
+        init_color(BLASTOFFBRONZE, 647, 443, 392);
 
         init_color(_DGREY,     172,  153,  180);
         init_color(_GREY,      490,  490,  490);
@@ -332,39 +357,54 @@ void init_palette(int set)
         init_pair(CMP_PINK, BEIGE, BEIGE);
         init_pair(CMP_YELLOW, YELLOW, ORANGE);
         init_pair(CMP_SHADOW, DGREY, ORANGE);
-        init_pair(MENU, DGREY, WHITE);
         init_pair(WARNING, WHITE, RED);
         init_pair(WARNSHADOW, RED, DARK_RED);
 
         init_pair(GUN_FLASH, WHITE, RED);
         init_pair(GUN_SMOKE, WHITE, DSEA);
 
-        init_pair(BEI_BLU, BEIGE, DSEA);
+        init_pair(BEI_SKY, BEIGE, WILDBLUEYONDER);
+        init_pair(BEI_SEA, BEIGE, DSEA);
         init_pair(BEI_DGR, BEIGE, DGREY);
         init_pair(BEI_BRO, BEIGE, BROWN);
         init_pair(BEI_DBR, BEIGE, DARK_BROWN);
         init_pair(BEI_WOO, BEIGE, WOOD);
 
-        init_pair(WOO_BLU, WOOD, DSEA);
+        init_pair(WOO_SKY, WOOD, WILDBLUEYONDER);
+        init_pair(WOO_SEA, WOOD, DSEA);
         init_pair(WOO_DGR, WOOD, DGREY);
         init_pair(WOO_BEI, WOOD, BEIGE);
         init_pair(WOO_BRO, WOOD, BROWN);
         init_pair(WOO_DBR, WOOD, DARK_BROWN);
 
-        init_pair(BRO_BLU, BROWN, DSEA);
+        init_pair(BRO_SKY, BROWN, WILDBLUEYONDER);
+        init_pair(BRO_SEA, BROWN, DSEA);
         init_pair(BRO_DGR, BROWN, DGREY);
         init_pair(BRO_BEI, BROWN, BEIGE);
         init_pair(BRO_DBR, BROWN, DARK_BROWN);
         init_pair(BRO_WOO, BROWN, WOOD);
 
-        init_pair(DBR_BLU, DARK_BROWN, DSEA);
+        init_pair(DBR_SKY, DARK_BROWN, WILDBLUEYONDER);
+        init_pair(DBR_SEA, DARK_BROWN, DSEA);
         init_pair(DBR_DGR, DARK_BROWN, DGREY);
         init_pair(DBR_DGR, DARK_BROWN, DGREY);
         init_pair(DBR_BEI, DARK_BROWN, BEIGE);
         init_pair(DBR_BRO, DARK_BROWN, BROWN);
         init_pair(DBR_WOO, DARK_BROWN, WOOD);
 
-        init_pair(YEL_BLU, YELLOW, DSEA);
+        init_pair(YEL_SKY, YELLOW, WILDBLUEYONDER);
+        init_pair(UND_SEA, DSEA, DSEA);
+        init_pair(D_SEA,  DSEA, _DSEA);
+        init_pair(DD_SEA, _DSEA, DSEA);
+        init_pair(DAY_SKY, WILDBLUEYONDER, WILDBLUEYONDER);
+        init_pair(RED_SKY, RED, WILDBLUEYONDER);
+        init_pair(SKY_BRO, WILDBLUEYONDER, BROWN);
+        init_pair(BRZ_SKY, BLASTOFFBRONZE, WILDBLUEYONDER);
+        init_pair(BRZ_DBR, BLASTOFFBRONZE, DARK_BROWN);
+        init_pair(BRZ_WOO, BLASTOFFBRONZE, WOOD);
+        init_pair(BRZ_BRO, BLASTOFFBRONZE, BROWN);
+        init_pair(WHI_SKY, WHITE, WILDBLUEYONDER);
+        init_pair(GRE_SKY, CELESTIALBLUE, WILDBLUEYONDER);
 
         /* IN-GAME COLOR PAIRS */
         init_pair(BOAT_WHITE, WHITE, DSEA);

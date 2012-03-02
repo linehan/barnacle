@@ -17,7 +17,7 @@
 
 #include "lib/llist/list.h"
 
-#include "pan/menus.h"
+#include "pan/dialog.h"
 #include "typedefs.h"
 #include "txt/psh.h"
 #include "cmd/control.h"
@@ -35,7 +35,9 @@
 #include "pan/test.h"
 #include "lib/ufo.h"
 #include "lib/morton.h"
+#include "gen/wave.h"
 #include "env/deck.h"
+#include "pan/menus.h"
 /******************************************************************************/
 /* The callback function for the sailing event watcher. Manages the wind
  * and the sailboat's response to it. Checks a semaphore which is also
@@ -55,12 +57,13 @@ void tumbler(EV_P_ ev_timer *w, int revents)
 {
         OO_time *bun = container_of(w, OO_time, w);
 
+        wrap_wave('r');
         mark_wind();
         seek_heading();
         seek_prevailing();
         draw_compass();
-        /*render_clouds(GLOBE->P);*/
-        /*shift_highlights(GLOBE->P);*/
+        top_panel(_BOAT->pan);
+        top_panel(crew_menu_pan);
 
         if ((sem_trywait(bun->sem) == -1)) ev_timer_again(EV_DEFAULT, w);
         else                               ev_break(EV_A_ EVBREAK_ALL);
@@ -97,6 +100,8 @@ int main()
         init_deck();
         draw_deck();
 
+        init_bottombar();
+
         struct map_t *pad = new_map((LINES*3), (COLS*3));
         gen_map(pad);
         GLOBE = pad;
@@ -117,6 +122,8 @@ int main()
 
         /* Main event loop */
         struct ev_loop *mainloop = EV_DEFAULT;
+
+        TOGPAN(DECKP);
 
         /* Create the user input watcher */
         OO_io listener;

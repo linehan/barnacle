@@ -77,5 +77,6 @@ void move_mob(struct mob_t *mob, int dir)
         top_panel(mob->pan);
         scr_refresh();
 
+
         sem_post(&mob->sem);
 }

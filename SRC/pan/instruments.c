@@ -283,5 +283,5 @@ void draw_compass(void)
         mvwadd_wch(cmpbox_win, 2, (box_wid-1), &(CBOR[RSIDE]));
 
         vrt_refresh();
-        scr_refresh();
+        /*scr_refresh();*/
 }

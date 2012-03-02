@@ -1,3 +1,6 @@
+
+extern cchar_t DAYSKY;
+extern cchar_t UNDERSEA;
 extern cchar_t HERO;
 extern cchar_t OCEAN[4];
 extern cchar_t _OCEAN[4];
