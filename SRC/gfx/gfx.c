@@ -196,6 +196,31 @@ void center_text(WINDOW *win, int y0, int x0, int w, char *string)
 	mvwprintw(win, y, x, "%s", string);
 }
 
+void wwrapstr(WINDOW *win, const char *string)
+{
+        int width = getmaxx(win);
+        int ch;
+        int i;
+        int wrap; // The index at which to wrap the string.
+
+        i = wrap = 0;
+
+        while (ch = string[i++]) {
+                if ((ch==' ')&&(i<width)) wrap = i;
+        }
+        /* If the line will fit, simply print it. */
+        if (i < width) {
+                waddstr(win, string);
+                return;
+        }
+        /* Else wrap it. */
+        else {
+                waddnstr(win, string, wrap);
+                wprintw(win, "\n");
+                waddstr(win, &string[wrap]);
+        }
+}
+
 
 
 /******************************************************************************

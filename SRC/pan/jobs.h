@@ -18,55 +18,65 @@
 
 const char *job_descriptions[] = {
         "You know how to handle a boat.",
-        "More than a bean-counter.",
-        "You were born to do this.",
-        "Adventures are so tedious.",
-        "Better than GPS.",
-        "Trim and a shave, and also root canals.",
-        "Hobo hero, ready for anything.",
-        "You can handle an anvil.",
-        "Shhh!",
+        "Beans can't count themselves.",
+        "This could be your big breakthrough.",
+        "Armchair adventures are so tedious.",
+        "Save your batteries, the GPS;          my tables guarantee success.",
+        "You trim, you shave, you even root canal.",
+        "You're a hobo hero!",
+        "And he sang: \"Hurra for my handiwork!\" "
+        "And the red sparks lit the air;",
+        // Charles Mackay, Tubal Cain, Stanza 4.
+        "You--SHHH!",
         "You've always been excited about binominal nomenclature.",
         "Your cold cuts are first-rate.",
         "You are the most valuable thing on a ship.",
-        "Adept at stink-bombs, tonics, fire-related gifts.",
-        "You don't have any healing spells, but they don't need to know that.",
+        "Double, double toil and trouble;     Fire burn, and caldron bubble.",
+        // William Shakespeare, Macbeth (c. 1605) Act IV, scene 1
+        "Whose faith has centre everywhere,   Nor cares to fix itself to form.",
+        // Alfred Tennyson, In Memoriam A.H.H. (1849), XXXIII.
         "Your barrels are only matched by your buckets.",
-        "How long can you hold your breath?",
-        "Time to trade in your horse and buggy.",
-        "You built an invincible wall and invented its only weakness.",
-        "Pigs and goats and cows and cats, soiled clothes and floppy hats.",
-        "People have to eat, but they don't have to farm.",
-        "A stranger on the open road.",
-        "The whirligig of time brings in his revenges.",
-        //"Come what come may, time and the hour runs through the roughest day.",
+        "Water is a very good servant, but it is a cruell maister.",
+        // William Bullein in Bulwarke of Defence against All Sicknesses (1562)
+        "Spare the rod, the horse, the buggy.",
+        "An invincible wall, its only weakness.",
+        "Enjoy the cows, the cats, the soiled clothes, the floppy hats.",
+        "You feed the people, for a price.",
+        "There is no safety this side of the grave.",
+        // Robert Heinlein, Stranger in a Strange Land (1961)
+        "The whirligig of time brings in your revenges.",
+        // William Shakespeare, Twelfth Night (c. 1601-02), Act V, scene 1, line 384. (sub. "his")
         "You know how to make a bed look comfortable.",
-        "Give me a screwdriver, two hours, and a bag of cheetos.",
-        "Vi estas adepto en antikvaj esperanto.", // You are adept at ancient esperanto
+        "One spanner, one hour, one bag of cheetos.",
+        "Vi estas adepto en antikvaj esperanto.", 
+        // "You are adept at ancient esperanto."
         "More tattoo than man.", 
         "You do a lot of thinking.",
-        "Poor in wealth and often spoony.",
+        "You're poor in wealth, sometimes spoony.",
         "You've got maps.",
-        "Dough boy.",
-        "Sardine.",
-        "Open wide...",
+        "You're a dough boy.",
+        "You're a sardine.",
+        "\"Open wide...\"",
         "Your eyes are the beholder.",
-        "What is a man?",
-        "Leg-bones, ankle-bones, all those bones.",
-        "You know what's under the water.",
-        "Good ol' southurn tobacca.", 
-        "Good with words.",
-        "How's it going, big-time?",
+        "What is \"you\", really?",
+        "You know the leg-bones, ankle-bones, all those bones.",
+        "What's under the water?",
+        "Grow'd good ol' southurn tobacca.", 
+        "Poetry's a mere drug, Sir.",
+        // George Farquhar, Love and a Bottle (1698)
+        "Pleasure in others.",
         "Raise your hand before speaking.",
-        "Your hand hurts.",
-        "Yes, sir.",
-        "There is more to sheep than meets the eye.",
-        "FIGHT",
-        "Hold still.",
-        "Over the hills and far away.",
-        "Stand up straight.",
-        "What, this? I got it from a friend.",
-        "I weave stuff.",
+        "Word processor.",
+        "You live to serve.",
+        "Sheep are people, too.",
+        "You've studied Taloon.",
+        "To serve the user.",
+        "Your fist is ever ready for a knock-down blow.",
+        "\"Hold still\"!",
+        "This theodolite cost more than your house.",
+        "I can sew, so what?",
+        "You can't help yourself.",
+        "You weave stuff.",
         (char *)NULL
 };
 
@@ -109,7 +119,6 @@ const char *job_list[] = {
         "Pilot",
         "Planter",
         "Poet",
-        "Priest",
         "Prostitute",
         "Schoolmaster",
         "Scribe",
@@ -125,58 +134,3 @@ const char *job_list[] = {
         "Weaver",
         (char *)NULL 
 };
-
-
-
-#define NJOBS 54
-#define ARRAY_SIZE(a) (sizeof(a)/sizeof(a[0]))
-
-MENU   *job_menu;
-WINDOW *job_menu_win;
-WINDOW *job_desc_win;
-
-static void set_menu_color(MENU *menu, short pair)
-{
-        WINDOW *win = menu_sub(menu);
-        wcolor_set(win, pair, NULL);
-        vrt_refresh();
-}
-
-static inline set_menu_info(MENU *menu, int h, int w, int y, int x)
-{
-        WINDOW *win = menu_win(menu);
-        job_desc_win = derwin(win, h, w, y, x);
-}
-
-static void post_job_info(MENU *menu)
-{
-        int ind = item_index(current_item(menu));
-        werase(job_desc_win);
-        wprintw(job_desc_win, job_descriptions[ind]);
-        vrt_refresh();
-}
-
-static void put_job_menu(WINDOW *win, int y, int x)
-{
-        int i;
-        ITEM *job_items[NJOBS];
-
-        i = NJOBS;
-        for (i=0; i<NJOBS; i++) {
-                job_items[i] = new_item(job_list[i], job_list[i]);
-        }
-        
-        job_menu = new_menu(job_items);
-
-        set_menu_win(job_menu, win);
-        set_menu_sub(job_menu, derwin(win, 4, 15, y, x));
-
-	menu_opts_off(job_menu, O_SHOWDESC);
-        set_menu_fore(job_menu, COLOR_PAIR(PUR_YEL));
-        set_menu_back(job_menu, COLOR_PAIR(PUR_PUR));
-        set_menu_format(job_menu, 4, 1);
-        set_menu_mark(job_menu, "");
-
-        post_menu(job_menu);
-        vrt_refresh();
-}

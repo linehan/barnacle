@@ -17,6 +17,7 @@
 #include "../gen/name/name.h"
 #include "ctrlpanels.h"
 #include "jobs.h"
+#include "../gfx/fancy_menus.h"
 
 #define KEY_ESC 27 // Char value of ESC
 #define W_FIELD 20
@@ -31,6 +32,7 @@ void new_character(void)
         FIELD *field[5];
         FORM  *sheet;
         WSELECT *sel;
+        struct fancy_menu *jobs;
         int ch, i;
 
         if (getenv ("ESCDELAY") == NULL) ESCDELAY = 25;
@@ -74,10 +76,12 @@ void new_character(void)
         wselect_driver(sel, SEL_FOCUS);
         wselect_driver(sel, SEL_FIRST);
 
-        put_job_menu(INFOW[BODY], 10, 15);
-        set_menu_info(job_menu, 4, 30, 10, 30);
-        
-        int FOC_job_menu = 0;
+        /* Create the fancy jobs menu */
+        jobs = new_fancy_menu(job_list, job_descriptions, PUR_GRE, PUR_PUR);
+        put_fancy_menu(jobs, INFOW[BODY], 1, 45, 10, 15);
+        set_fancy_detail(jobs, 2, 40, 11, 15, PUR_PUR);
+        set_fancy_select(jobs, PUR_YEL);
+        post_fancy_menu(jobs);
 
         i = 0;
 
@@ -103,6 +107,7 @@ void new_character(void)
                                 break;
                         case KEY_UP:   
                                 wselect_driver(sel, SEL_UNFOCUS);
+                                tog_fancy_select(jobs);
                                 i = 5;
                                 break;
                         }
@@ -116,7 +121,7 @@ void new_character(void)
                                 i++;
                                 if (i == 5) {
                                         curs_set(0);
-                                        set_menu_color(job_menu, PUR_YEL);
+                                        tog_fancy_select(jobs);
                                 };
                                 break;
                         case KEY_UP:
@@ -139,18 +144,20 @@ void new_character(void)
                 else if (i == 5) {
                         switch(ch) {
                         case 'j':
-                                menu_driver(job_menu, REQ_DOWN_ITEM);
-                                post_job_info(job_menu);
+                                menu_driver(jobs->menu, REQ_DOWN_ITEM);
+                                post_fancy_detail(jobs);
                                 break;
                         case 'k':
-                                menu_driver(job_menu, REQ_UP_ITEM);
-                                post_job_info(job_menu);
+                                menu_driver(jobs->menu, REQ_UP_ITEM);
+                                post_fancy_detail(jobs);
                                 break;
                         case KEY_DOWN:
+                                tog_fancy_select(jobs);
                                 wselect_driver(sel, SEL_FOCUS);
                                 i = 0;
                                 break;
                         case KEY_UP:
+                                tog_fancy_select(jobs);
                                 curs_set(1);
                                 form_driver(sheet, REQ_LAST_FIELD); // Focus forms
                                 i--;

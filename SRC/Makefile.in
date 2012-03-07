@@ -52,12 +52,13 @@ am_arawak_OBJECTS = arawak.$(OBJEXT) lib/redblack/rb.$(OBJEXT) \
 	gen/name/name.$(OBJEXT) gen/wave.$(OBJEXT) \
 	geo/weather.$(OBJEXT) geo/terrain.$(OBJEXT) geo/map.$(OBJEXT) \
 	gfx/palette.$(OBJEXT) gfx/sprite.$(OBJEXT) gfx/gfx.$(OBJEXT) \
-	gfx/wselect.$(OBJEXT) gen/perlin.$(OBJEXT) gfx/term.$(OBJEXT) \
-	env/deck.$(OBJEXT) env/cloud.$(OBJEXT) mob/mob.$(OBJEXT) \
-	mob/boat.$(OBJEXT) pan/ctrlpanels.$(OBJEXT) \
-	pan/new_character.$(OBJEXT) pan/instruments.$(OBJEXT) \
-	pan/dialog.$(OBJEXT) pan/menus.$(OBJEXT) pan/test.$(OBJEXT) \
-	pan/crewgen.$(OBJEXT) txt/rk.$(OBJEXT) txt/psh.$(OBJEXT)
+	gfx/wselect.$(OBJEXT) gfx/fancy_menus.$(OBJEXT) \
+	gen/perlin.$(OBJEXT) gfx/term.$(OBJEXT) env/deck.$(OBJEXT) \
+	env/cloud.$(OBJEXT) mob/mob.$(OBJEXT) mob/boat.$(OBJEXT) \
+	pan/ctrlpanels.$(OBJEXT) pan/new_character.$(OBJEXT) \
+	pan/instruments.$(OBJEXT) pan/dialog.$(OBJEXT) \
+	pan/menus.$(OBJEXT) pan/test.$(OBJEXT) pan/crewgen.$(OBJEXT) \
+	txt/rk.$(OBJEXT) txt/psh.$(OBJEXT)
 arawak_OBJECTS = $(am_arawak_OBJECTS)
 arawak_LDADD = $(LDADD)
 DEFAULT_INCLUDES = -I.@am__isrc@
@@ -183,6 +184,7 @@ arawak_SOURCES = arawak.c \
                    gfx/sprite.c      \
                    gfx/gfx.c         \
                    gfx/wselect.c     \
+                   gfx/fancy_menus.c \
                    gen/perlin.c      \
                    gfx/term.c        \
                    env/deck.c        \
@@ -347,6 +349,8 @@ gfx/sprite.$(OBJEXT): gfx/$(am__dirstamp) \
 gfx/gfx.$(OBJEXT): gfx/$(am__dirstamp) gfx/$(DEPDIR)/$(am__dirstamp)
 gfx/wselect.$(OBJEXT): gfx/$(am__dirstamp) \
 	gfx/$(DEPDIR)/$(am__dirstamp)
+gfx/fancy_menus.$(OBJEXT): gfx/$(am__dirstamp) \
+	gfx/$(DEPDIR)/$(am__dirstamp)
 gen/perlin.$(OBJEXT): gen/$(am__dirstamp) \
 	gen/$(DEPDIR)/$(am__dirstamp)
 gfx/term.$(OBJEXT): gfx/$(am__dirstamp) gfx/$(DEPDIR)/$(am__dirstamp)
@@ -409,6 +413,7 @@ mostlyclean-compile:
 	-rm -f geo/map.$(OBJEXT)
 	-rm -f geo/terrain.$(OBJEXT)
 	-rm -f geo/weather.$(OBJEXT)
+	-rm -f gfx/fancy_menus.$(OBJEXT)
 	-rm -f gfx/gfx.$(OBJEXT)
 	-rm -f gfx/palette.$(OBJEXT)
 	-rm -f gfx/sprite.$(OBJEXT)
@@ -446,6 +451,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@geo/$(DEPDIR)/map.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@geo/$(DEPDIR)/terrain.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@geo/$(DEPDIR)/weather.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@gfx/$(DEPDIR)/fancy_menus.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@gfx/$(DEPDIR)/gfx.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@gfx/$(DEPDIR)/palette.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@gfx/$(DEPDIR)/sprite.Po@am__quote@

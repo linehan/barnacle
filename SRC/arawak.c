@@ -114,7 +114,6 @@ int main()
         roll_map(pad, 0);
 
         wprintw(DIAGNOSTIC_WIN, "%u\n", (LINES*COLS)*3);
-
         wprintw(DIAGNOSTIC_WIN, "%i\n", init_surnames());
 
         uint32_t boatkey = new_boat(pad);

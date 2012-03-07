@@ -30,6 +30,7 @@ arawak_SOURCES = arawak.c \
                    gfx/sprite.c      \
                    gfx/gfx.c         \
                    gfx/wselect.c     \
+                   gfx/fancy_menus.c \
                    gen/perlin.c      \
                    gfx/term.c        \
                    env/deck.c        \
