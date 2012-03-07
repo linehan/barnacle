@@ -30,6 +30,8 @@ Bindings and actions for the user's keyboard input.
 #include "../pan/dialog.h"
 #include "../env/deck.h"
 #include "../pan/menus.h"
+#include "../pan/ctrlpanels.h"
+#include "../pan/new_character.h"
 /******************************************************************************/
 PANEL *deckp;
 
@@ -96,9 +98,13 @@ void *iolisten(EV_P_ ev_io *w, int revents)
                 case 'f':
                         order_boat('R', 0);
                         break;
-                case 't':
-                        TOGPAN(DECKP);
-                        vrt_refresh();
+                case 'c':
+                        crewgen(8);
+                        scr_refresh();
+                        break;
+                case 'n':
+                        new_character();
+                        scr_refresh();
                         break;
                 case '?':
                         TOGPAN(MARQUEEP);

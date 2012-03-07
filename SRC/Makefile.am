@@ -5,12 +5,12 @@ AUTOMAKE_OPTIONS = foreign subdir-objects
 # optimize  | warnings
 # lvl 3 \   |    /
 CFLAGS=-O3 -pg -Wall -DVERSION=\"$(VERSION)\" -DPROG="\"$(PACKAGE)\""
-LDFLAGS=-lm -lpthread -lmenu -lpanel -lncursesw -lev
-#       /      |        \         |       \       |_____________
-#  math.h      |       menu     panels     \                    \
-#          POSIX     (curses)  (curses)   ncurses with          libev   
-#          threads                        wide character   (event handler)
-#                                         support
+LDFLAGS=-lm -lpthread -lmenu -lpanel -lform -lncursesw -lev
+#       /      |        \         |       \       \       |_____________
+#  math.h      |       menu     panels   forms     \                    \
+#          POSIX     (curses)  (curses) (curses) ncurses with          libev   
+#          threads                               wide character  (event handler)
+#                                                support
 bin_PROGRAMS = arawak
 arawak_SOURCES = arawak.c \
                    lib/redblack/rb.c \
@@ -21,6 +21,7 @@ arawak_SOURCES = arawak.c \
                    cmd/control.c     \
                    gen/dice.c        \
                    gen/mtwist.c      \
+                   gen/name/name.c   \
                    gen/wave.c        \
                    geo/weather.c     \
                    geo/terrain.c     \
@@ -28,15 +29,19 @@ arawak_SOURCES = arawak.c \
                    gfx/palette.c     \
                    gfx/sprite.c      \
                    gfx/gfx.c         \
+                   gfx/wselect.c     \
                    gen/perlin.c      \
                    gfx/term.c        \
                    env/deck.c        \
                    env/cloud.c       \
                    mob/mob.c         \
                    mob/boat.c        \
+                   pan/ctrlpanels.c  \
+                   pan/new_character.c \
                    pan/instruments.c \
                    pan/dialog.c      \
                    pan/menus.c       \
                    pan/test.c        \
+                   pan/crewgen.c     \
                    txt/rk.c          \
                    txt/psh.c

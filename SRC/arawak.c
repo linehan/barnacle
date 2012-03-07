@@ -38,6 +38,10 @@
 #include "gen/wave.h"
 #include "env/deck.h"
 #include "pan/menus.h"
+#include "gen/name/name.h"
+#include "pan/crewgen.h"
+#include "pan/ctrlpanels.h"
+#include "pan/new_character.h"
 /******************************************************************************/
 /* The callback function for the sailing event watcher. Manages the wind
  * and the sailboat's response to it. Checks a semaphore which is also
@@ -62,8 +66,7 @@ void tumbler(EV_P_ ev_timer *w, int revents)
         seek_heading();
         seek_prevailing();
         draw_compass();
-        top_panel(_BOAT->pan);
-        top_panel(crew_menu_pan);
+        /*top_panel(_BOAT->pan);*/
 
         if ((sem_trywait(bun->sem) == -1)) ev_timer_again(EV_DEFAULT, w);
         else                               ev_break(EV_A_ EVBREAK_ALL);
@@ -100,7 +103,8 @@ int main()
         init_deck();
         draw_deck();
 
-        init_bottombar();
+        init_crew_menu();
+        init_ctrlpanels();
 
         struct map_t *pad = new_map((LINES*3), (COLS*3));
         gen_map(pad);
@@ -110,6 +114,8 @@ int main()
         roll_map(pad, 0);
 
         wprintw(DIAGNOSTIC_WIN, "%u\n", (LINES*COLS)*3);
+
+        wprintw(DIAGNOSTIC_WIN, "%i\n", init_surnames());
 
         uint32_t boatkey = new_boat(pad);
         nominate_boat(boatkey);

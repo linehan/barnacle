@@ -103,7 +103,8 @@ enum arne_shadow2 {
         CELESTIALBLUE = 92,
         CERULEAN = 93,
         WILDBLUEYONDER = 94,
-        BLASTOFFBRONZE = 95
+        BLASTOFFBRONZE = 95,
+        METALYELLOW    = 96,
 };
 
 
@@ -164,7 +165,13 @@ enum ramp_pairs {
         BRZ_BRO = 147,
         GRE_SKY = 148,
         WHI_SKY = 149,
-
+        PUR_WHI = 150,
+        PUR_DPU = 151,
+        PUR_DDP = 152,
+        PUR_PUR = 153,
+        PUR_YEL = 154,
+        PUR_GRE = 155,
+        PUR_DYE = 156,
 
         SEA_DARK      = 17,     /* SHADE0 colors for environment */
         SEA_MED       = 18,
@@ -206,8 +213,6 @@ enum ramp_pairs {
         __SEA_LIG       = 52,
 
 };
-
-
 
 /* The shaded color pairs are indexed by their lighter cousins */
 /*int shade[128];*/
@@ -299,6 +304,7 @@ void init_palette(int set)
         /*init_color(WILDBLUEYONDER, 635, 678, 815);*/
         #define WILDBLUEYONDER DSEA
         init_color(BLASTOFFBRONZE, 647, 443, 392);
+        init_color(METALYELLOW, 972, 972, 576);
 
         init_color(_DGREY,     172,  153,  180);
         init_color(_GREY,      490,  490,  490);
@@ -405,6 +411,13 @@ void init_palette(int set)
         init_pair(BRZ_BRO, BLASTOFFBRONZE, BROWN);
         init_pair(WHI_SKY, WHITE, WILDBLUEYONDER);
         init_pair(GRE_SKY, CELESTIALBLUE, WILDBLUEYONDER);
+        init_pair(PUR_WHI, WHITE, DGREY);
+        init_pair(PUR_PUR, DGREY, __DGREY);
+        init_pair(PUR_DPU, WHITE, _DGREY);
+        init_pair(PUR_DDP, WHITE, __DGREY);
+        init_pair(PUR_YEL, YELLOW, __DGREY);
+        init_pair(PUR_DYE, __YELLOW, __DGREY);
+        init_pair(PUR_GRE, _GREY, __DGREY);
 
         /* IN-GAME COLOR PAIRS */
         init_pair(BOAT_WHITE, WHITE, DSEA);

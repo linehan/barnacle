@@ -179,7 +179,22 @@ void illuminate(struct recipe *R)
         if (R->win   == NULL) R->win   = newwin(R->n, wid, R->yof, R->xof);
         vrt_refresh();
 }
-                         
+
+void center_text(WINDOW *win, int y0, int x0, int w, char *string)
+{
+	int len, x, y;
+	float temp;
+
+	getyx(win, y, x);
+	if (x0 != 0) x = x0;
+	if (y0 != 0) y = y0;
+	if (w  == 0) w = 80;
+
+	len = strlen(string);
+	temp = (w - len)/2;
+	x = x0 + (int)temp;
+	mvwprintw(win, y, x, "%s", string);
+}
 
 
 

@@ -83,7 +83,8 @@ enum arne_shadow2 {
         CELESTIALBLUE = 92,
         CERULEAN = 93,
         WILDBLUEYONDER = 94,
-        BLASTOFFBRONZE = 95
+        BLASTOFFBRONZE = 95,
+        METALYELLOW    = 96,
 };
 
 /* FG_BG color pairs; odd ones are swaps of even ones. */
@@ -143,6 +144,13 @@ enum ramp_pairs {
         BRZ_BRO = 147,
         GRE_SKY = 148,
         WHI_SKY = 149,
+        PUR_WHI = 150,
+        PUR_DPU = 151,
+        PUR_DDP = 152,
+        PUR_PUR = 153,
+        PUR_YEL = 154,
+        PUR_GRE = 155,
+        PUR_DYE = 156,
 
         SEA_DARK      = 17,     /* SHADE0 colors for environment */
         SEA_MED       = 18,

@@ -74,7 +74,7 @@ void move_mob(struct mob_t *mob, int dir)
                 ufo_l(mob->ufo);
         }
         move_panel(mob->pan, ufo_y(mob->ufo), ufo_x(mob->ufo));
-        top_panel(mob->pan);
+        /*top_panel(mob->pan);*/
         scr_refresh();
 
 
