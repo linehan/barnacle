@@ -14,27 +14,28 @@
 */
 
 
-struct rb_node *make_node(uint32_t key)
+struct rb_node *make_node(uint32_t key, uint8_t words)
 {
         struct rb_node *new = malloc(sizeof *new);
 
         if (new != NULL) {
-                new->key = key;
-                new->red = 1; // 1 is red, 0 is black
+                new->key     = key;
+                new->red     = 1; // 1 is red, 0 is black
                 new->link[0] = NULL;
                 new->link[1] = NULL;
-                new->data = 0;
-                new->box = NULL;
+                new->data    = calloc(words, sizeof(uint32_t));
+                new->extra   = NULL;
         }
         return (new);
 }
 
-struct rb_tree *new_tree(void)
+struct rb_tree *new_tree(int words)
 {
         struct rb_tree *new = malloc(sizeof *new);
-        new->root = NULL;
-        new->peek = NULL;
-        new->n = 0;
+        new->root  = NULL;
+        new->peek  = NULL;
+        new->words = (uint8_t)words;
+        new->n     = 0;
         return (new);
 }
 
@@ -125,45 +126,43 @@ int rb_assert(struct rb_node *root)
 /*
   The recursive part of the recursive insertion routine.
 */
-struct rb_node *rb_insert_r(struct rb_node *root, uint32_t key)
-{
-        if (root == NULL)
-                root = make_node(key);
-        else if (key != root->key) {
-                int dir = root->key < key;
+/*struct rb_node *rb_insert_r(struct rb_node *root, uint32_t key)*/
+/*{*/
+        /*if (root == NULL)*/
+                /*root = make_node(key);*/
+        /*else if (key != root->key) {*/
+                /*int dir = root->key < key;*/
 
-                root->link[dir] = rb_insert_r(root->link[dir], key);
+                /*root->link[dir] = rb_insert_r(root->link[dir], key);*/
 
-                // Rebalancing
-                if (is_red(root->link[dir])) {
-                        if (is_red(root->link[!dir])) {
-                                // Case 1
-                                root->red = 1;
-                                root->link[0]->red = 0;
-                                root->link[1]->red = 0;
-                        }
-                        else {
-                                // Cases 2&3
-                                if (is_red(root->link[dir]->link[dir]))
-                                        root = rb_rot_single(root, !dir);
-                                else if (is_red(root->link[dir]->link[dir]))
-                                        root = rb_rot_double(root, !dir);
-                        }
-                }
-        }
-        return (root);
-}
+                /*// Rebalancing*/
+                /*if (is_red(root->link[dir])) {*/
+                        /*if (is_red(root->link[!dir])) {*/
+                                /*// Case 1*/
+                                /*root->red = 1;*/
+                                /*root->link[0]->red = 0;*/
+                                /*root->link[1]->red = 0;*/
+                        /*}*/
+                        /*else {*/
+                                /*// Cases 2&3*/
+                                /*if (is_red(root->link[dir]->link[dir]))*/
+                                        /*root = rb_rot_single(root, !dir);*/
+                                /*else if (is_red(root->link[dir]->link[dir]))*/
+                                        /*root = rb_rot_double(root, !dir);*/
+                        /*}*/
+                /*}*/
+        /*}*/
+        /*return (root);*/
+/*}*/
 
 
-/*
-  The recursive insertion routine.
-*/
-int rb_insert_recurse(struct rb_tree *tree, uint32_t key)
-{
-        tree->root = rb_insert_r(tree->root, key);
-        tree->root->red = 0;
-        return (1);
-}
+  /*The recursive insertion routine.*/
+/*int rb_insert_recurse(struct rb_tree *tree, uint32_t key)*/
+/*{*/
+        /*tree->root = rb_insert_r(tree->root, key);*/
+        /*tree->root->red = 0;*/
+        /*return (1);*/
+/*}*/
 
 
 /*
@@ -172,7 +171,9 @@ int rb_insert_recurse(struct rb_tree *tree, uint32_t key)
 int rb_insert(struct rb_tree *tree, uint32_t key)
 {
         if (tree->root == NULL) {
-                tree->root = make_node(key);
+                if (tree->words < DEFAULT_WORD_COUNT) 
+                        tree->words = DEFAULT_WORD_COUNT;
+                tree->root = make_node(key, tree->words);
                 if (tree->root == NULL) // malloc screwed us
                         return (0);
         }
@@ -191,7 +192,8 @@ int rb_insert(struct rb_tree *tree, uint32_t key)
                 for (;;) { 
                         if (q == NULL) {
                                 // Insert new node at the bottom
-                                p->link[dir] = q = make_node(key);
+                                p->link[dir] = q = make_node(key, tree->words);
+
                                 if (q == NULL)
                                         return (0);
                         }
@@ -226,6 +228,7 @@ int rb_insert(struct rb_tree *tree, uint32_t key)
                 tree->root = head.link[1]; // Update root
         }
         tree->root->red = 0; // Make root black
+        tree->n += 1; /* Increment the counter. */
 
         return (1);
 }
@@ -296,16 +299,18 @@ int rb_remove(struct rb_tree *tree, uint32_t key)
                         f->key = q->key;
                         p->link[p->link[1] == q] = q->link[q->link[0] == NULL];
                         free (q);
+
                 }
                 // Update root and make it black
                 tree->root = head.link[1];
                 if (tree->root != NULL)
                         tree->root->red = 0;
         }
+        if (tree->n > 0) tree->n--;
         return (1);
 }
 
-struct rb_node *rb_retreive(struct rb_node *node, uint32_t key)
+struct rb_node *_rb_retreive(struct rb_node *node, uint32_t key)
 {
         if (node == NULL) 
                 return (NULL);
@@ -314,9 +319,9 @@ struct rb_node *rb_retreive(struct rb_node *node, uint32_t key)
                 return (node);
         else {
                 if (key < node->key)
-                        rb_retreive(node->link[0], key); // go left
+                        _rb_retreive(node->link[0], key); // go left
                 else if (key > node->key)
-                        rb_retreive(node->link[1], key); // go right
+                        _rb_retreive(node->link[1], key); // go right
         }
         /* return (NULL);  This is a no-no */
 }
@@ -326,7 +331,7 @@ void rb_peek(struct rb_tree *tree, uint32_t key)
         if (tree->root == NULL)
                 return;
         else 
-                tree->peek = rb_retreive(tree->root, key);
+                tree->peek = _rb_retreive(tree->root, key);
 }
 
 void rb_store(struct rb_tree *tree, uint32_t key, void *extra)
@@ -337,5 +342,16 @@ void rb_store(struct rb_tree *tree, uint32_t key, void *extra)
                 rb_store(tree, key, extra); // Call self recursively.
         }
         else
-                tree->peek->box = extra; // Attach extra to node.
+                tree->peek->extra = extra; // Attach extra to node.
 }
+
+void *rb_extra(struct rb_tree *tree, uint32_t key)
+{
+        rb_peek(tree, key);
+        if (tree->peek == NULL) /* Peek failed */
+                return NULL;
+        else
+                return (tree->peek->extra);
+}
+
+                

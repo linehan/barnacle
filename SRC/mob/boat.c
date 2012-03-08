@@ -28,7 +28,6 @@ display and navigation of a BOAT.
 #include "../lib/bitwise.h"
 #include "../lib/ufo.h"
 
-#include "../itm/itm.h"
 #include "mob.h"
 #include "boat.h"
 #include "../gfx/gfx_boat.h"
@@ -59,10 +58,13 @@ display and navigation of a BOAT.
 *******************************************************************************/
 #define BOAT_KIND 'b'
 
-struct dom_t *DOMAIN;
+/*struct dom_t *DOMAIN;*/
+
+struct rb_tree *BOAT_TREE;
+struct rb_node *BOAT_NODE;
+uint32_t TEMPKEY = 0;
 
 struct mob_t *_BOAT;
-struct itm_t *_ITEM;
 
 struct boat_gfx *tester;
 
@@ -74,7 +76,8 @@ uint32_t keys[10];
 */
 void init_boats(void)
 {
-        DOMAIN = register_dom(BOAT_KIND, boat_nibs, boat_opts);
+        /*DOMAIN = register_dom(BOAT_KIND, boat_nibs, boat_opts);*/
+        BOAT_TREE = new_tree(1);
 
         unsigned char i;
         i = HULLCOUNT;  while (i-->0) { build_gpkg(&_hull[i]); };
@@ -102,14 +105,16 @@ uint32_t new_boat(struct map_t *map)
         new->pan = new_panel(win);
 
         // Register the mob_t as an item and return the key.
-        keys[0] = register_itm(BOAT_KIND, new);
-        return (keys[0]);
+        /*keys[0] = register_itm(BOAT_KIND, new);*/
+
+        rb_store(BOAT_TREE, TEMPKEY, new);
+        return (TEMPKEY);
 }
 
 void nominate_boat(uint32_t key)
 {
-        _ITEM = retreive_itm(BOAT_KIND, key);
-        _BOAT = (struct mob_t *)_ITEM->data;
+        BOAT_NODE = rb_retreive(BOAT_TREE, key);
+        _BOAT = (struct mob_t *)BOAT_NODE->extra;
 }
 /*
   The boat's state is checked and any changes of state result in some action
@@ -141,9 +146,9 @@ void sync_boat(void)
         sem_post(&_BOAT->sem);
 
         // Retreive states
-        H = get_state(DOMAIN, keys[0], HDG);
-        R = get_state(DOMAIN, keys[0], SAI);
-        G = get_state(DOMAIN, keys[0], GUN);
+        H = get_state(BOAT_TREE, TEMPKEY, 0, HDG);
+        R = get_state(BOAT_TREE, TEMPKEY, 0, SAI);
+        G = get_state(BOAT_TREE, TEMPKEY, 0, GUN);
         W = get_wind(__dir__);
 
         // Maps 16 directions --> 4 cardinals
@@ -166,12 +171,12 @@ void sync_boat(void)
         case FIR:
                 mvwadd_wch(win, 1, xo, gunf[ROU_F]);
                 if (roll_fair(2))
-                        set_state(DOMAIN, keys[0], GUN, LD0);
+                        set_state(BOAT_TREE, TEMPKEY, 0, GUN, LD0);
                 break;
         case LD0:
                 mvwadd_wch(win, 1, xo, guns[ROU_F]);
                 if (roll_fair(5))
-                        set_state(DOMAIN, keys[0], GUN, RDY);
+                        set_state(BOAT_TREE, TEMPKEY, 0, GUN, RDY);
                 break;
         }
         scr_refresh();
@@ -187,8 +192,8 @@ void *sail_boat(void *ptr)
         int H, S, W; // Heading, sail and wind enums.
 
         sync_boat();
-        H = get_state(DOMAIN, keys[0], HDG);
-        S = get_state(DOMAIN, keys[0], SAI);
+        H = get_state(BOAT_TREE, TEMPKEY, 0, HDG);
+        S = get_state(BOAT_TREE, TEMPKEY, 0, SAI);
         W = get_wind(__dir__);
 
         if ((S!=POL)&&(W!=H)) { /*not in irons*/
@@ -215,27 +220,27 @@ void order_boat(int order, int val)
 {
         int H; // Heading enum
 
-        H = get_state(DOMAIN, keys[0], HDG);
+        H = get_state(BOAT_TREE, TEMPKEY, 0, HDG);
 
                 switch(order) { 
                 case 'p':
                         H = (H>0) ? H-1 : NNW;
-                        set_state(DOMAIN, keys[0], HDG, H);
+                        set_state(BOAT_TREE, TEMPKEY, 0, HDG, H);
                         mark_hdg('L');
                         break;
                 case 's':
                         H = (H < NNW) ? H+1 : NORTH;
-                        set_state(DOMAIN, keys[0], HDG, H);
+                        set_state(BOAT_TREE, TEMPKEY, 0, HDG, H);
                         mark_hdg('R');
                         break;
                 case 'f':
-                        set_state(DOMAIN, keys[0], GUN, FIR);
+                        set_state(BOAT_TREE, TEMPKEY, 0, GUN, FIR);
                         break;
                 case 'R':
-                        set_state(DOMAIN, keys[0], SAI, MAI); // Set mainsail
+                        set_state(BOAT_TREE, TEMPKEY, 0, SAI, MAI); // Set mainsail
                         break;
                 case 'r':
-                        set_state(DOMAIN, keys[0], SAI, POL); // Run with bare poles 
+                        set_state(BOAT_TREE, TEMPKEY, 0, SAI, POL); // Run with bare poles 
                         break;
                 }
         sync_boat();

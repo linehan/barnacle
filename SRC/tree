@@ -1,0 +1,61 @@
+gfx/gfx.c:102:        if (is_cell(map->tree, z, LAY, TOP) || is_cell(map->tree, z, LAY, DRP))
+gfx/gfx.c:112:        /*if (  (is_cell(map->tree, zu, LAY, TOP))*/
+gfx/gfx.c:113:            /*||(is_cell(map->tree, zu, LAY, DRP))*/
+gfx/gfx.c:114:            /*||(is_cell(map->tree, zd, LAY, TOP))*/
+gfx/gfx.c:115:            /*||(is_cell(map->tree, zd, LAY, DRP))*/
+gfx/gfx.c:116:            /*||(is_cell(map->tree, zr, LAY, TOP))*/
+gfx/gfx.c:117:            /*||(is_cell(map->tree, zr, LAY, DRP))*/
+gfx/gfx.c:118:            /*||(is_cell(map->tree, zl, LAY, TOP))*/
+gfx/gfx.c:119:            /*||(is_cell(map->tree, zl, LAY, DRP)))*/
+gfx/gfx.h:36:        copywin(PEEK(map->W), map->win, ufo_y(map->ufo), ufo_x(map->ufo), 0, 0, LINES-1, COLS-1, 0); \
+mob/mob.c:35:        mob->ufo = new_ufo(h, w, y0, x0, map->h, map->w, 3, 3);
+geo/terrain.c:86:        ymax     = ((map->h)-1)-chunkmin; // beware the fencepost error
+geo/terrain.c:87:        xmax     = ((map->w)-1)-chunkmin;
+geo/terrain.c:109:                                if (imax > map->h) h = imax-map->h;
+geo/terrain.c:110:                                if (jmax > map->w) w = jmax-map->w;
+geo/terrain.c:117:                                                        mvwadd_wch(PEEK(map->L[DRP]), i, j, &MTN[2]);
+geo/terrain.c:118:                                                        set_cell(map->tree, z, LAY, DRP);
+geo/terrain.c:119:                                                        set_cell(map->tree, z, SED, LIME);
+geo/terrain.c:120:                                                        set_cell(map->tree, z, SOI, MOLL);
+geo/terrain.c:123:                                                mvwadd_wch(PEEK(map->L[TOP]), i, j, bgtop); // top
+geo/terrain.c:124:                                                set_cell(map->tree, z, LAY, TOP);
+geo/terrain.c:125:                                                set_cell(map->tree, z, SED, LIME);
+geo/terrain.c:126:                                                set_cell(map->tree, z, SOI, MOLL);
+geo/terrain.c:141:                                                        set_cell(map->tree, z, LAY, VEG);
+geo/terrain.c:142:                                                        set_cell(map->tree, z, SED, LIME);
+geo/terrain.c:143:                                                        set_cell(map->tree, z, SOI, MOLL);
+geo/terrain.c:144:                                                        mvwadd_wch(PEEK(map->L[VEG]), i, j, &TREE[0]);
+geo/terrain.c:147:                                                mvwadd_wch(PEEK(map->L[VEG]), i, j, &TREE[1]);
+geo/terrain.c:148:                                                set_cell(map->tree, z, LAY, VEG);
+geo/terrain.c:149:                                                set_cell(map->tree, z, SED, LIME);
+geo/terrain.c:150:                                                set_cell(map->tree, z, SOI, SPOD);
+geo/terrain.c:154:                        mvwadd_wch(PEEK(map->L[BGR]), y0, x0, &OCEAN[0]);
+geo/terrain.c:170:        rim1 = PEEK(map->L[RIM]);
+geo/terrain.c:171:               NEXT(map->L[RIM]);
+geo/terrain.c:172:        rim2 = PEEK(map->L[RIM]);
+geo/terrain.c:174:        for (i=1; i<(map->h); i++) {
+geo/terrain.c:175:                for (j=1; j<(map->w); j++) {
+geo/terrain.c:180:                        if ((is_cell(map->tree, z, LAY, TOP))) continue;
+geo/terrain.c:181:                        if ((is_cell(map->tree, z, LAY, DRP))) continue;
+geo/terrain.c:196:                        if (  (is_cell(map->tree, zul, LAY, XXX))
+geo/terrain.c:197:                            &&(is_cell(map->tree, zl,  LAY, TOP))) continue;
+geo/terrain.c:198:                        if (  (is_cell(map->tree, zur, LAY, XXX))
+geo/terrain.c:199:                            &&(is_cell(map->tree, zr,  LAY, TOP))) continue;
+geo/terrain.c:202:                        if (  (is_cell(map->tree, zu, LAY, TOP))
+geo/terrain.c:203:                            ||(is_cell(map->tree, zu, LAY, DRP))
+geo/terrain.c:204:                            ||(is_cell(map->tree, zr, LAY, TOP))
+geo/terrain.c:205:                            ||(is_cell(map->tree, zr, LAY, DRP))
+geo/terrain.c:206:                            ||(is_cell(map->tree, zl, LAY, TOP))
+geo/terrain.c:207:                            ||(is_cell(map->tree, zl, LAY, DRP)))
+geo/terrain.c:211:                                set_cell(map->tree, z, LAY, RIM);
+geo/map.c:117:        double **pmap = gen_perlin_map(map->h, map->w); // 2D Perlin map
+geo/map.c:119:        map->win = newwin(LINES, COLS, 0, 0); // Fullscreen
+geo/map.c:120:        map->pan = new_panel(map->win);
+geo/map.c:123:                if (i == RIM) map->L[i] = new_winring(map->h, map->w, 0, 0, 2);
+geo/map.c:124:                else          map->L[i] = new_winring(map->h, map->w, 0, 0, 1);
+geo/map.c:127:        map->W = new_winring(map->h, map->w, 0, 0, 2);
+geo/map.c:235:                overlay(PEEK(map->L[i]), PEEK(map->W));
+geo/map.c:243:                ufo_l(map->ufo);
+geo/map.c:246:                ufo_r(map->ufo);
+geo/map.c:249:                ufo_u(map->ufo);
+geo/map.c:252:                ufo_d(map->ufo);

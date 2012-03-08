@@ -53,10 +53,8 @@
 #include "../pan/test.h"
 #include "../lib/ufo.h"
 
-#include "../lib/redblack/rb.h"
 #include "../lib/sort/quicksort.h"
 #include "../lib/morton.h"
-#include "../itm/domain.h"
 
 #include "map.h"
 #include "terrain.h"
@@ -103,8 +101,8 @@ struct map_t *new_map(int rows, int cols)
         new->W    = malloc(sizeof new->W);
         new->pan  = malloc(sizeof new->pan);
         new->win  = malloc(sizeof new->win);
-        new->dom   = new_dom(map_nibs, map_opts);
-        build_rb_tree(new->dom->tree, new->h, new->w, new->a);
+        new->tree = new_tree(1);
+        build_rb_tree(new->tree, new->h, new->w, new->a);
 
         return (new);
 }

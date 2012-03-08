@@ -55,7 +55,15 @@ extern sem_t *REFRESH_LOCK; // keeps things from going crazy in the i/o thread
         else                     \
                 hide_panel(pan)  
 
-
+static inline void reveal(PANEL *pan)
+{
+        if (panel_hidden(pan)) {
+                show_panel(pan);
+                top_panel(pan);
+        }
+        else
+                hide_panel(pan);
+}
 /******************************************************************************
  * Using the DIMS structure is all about laziness, plain and simple. Anything
  * that has dimensions of any kind gets slapped with one of these, so that I

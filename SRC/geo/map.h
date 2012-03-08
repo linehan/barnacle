@@ -32,7 +32,7 @@
 #define __MAP_TYPES
 #include <stdint.h>
 #include "../lib/redblack/rb.h"
-#include "../itm/domain.h"
+#include "../eng/state.h"
 
 #define NLAYERS 16  // Number of layers on the world map.
 
@@ -44,7 +44,7 @@ struct map_t {
         struct ring_t *W;
         WINDOW *win;
         PANEL  *pan;
-        struct dom_t *dom;
+        struct rb_tree *tree;
         struct ufo_t *ufo;
         int w;
         int h;

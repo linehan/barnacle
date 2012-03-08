@@ -103,7 +103,7 @@ int hit_test(struct map_t *map, int y, int x)
 
         MORT(y, x, &z);
 
-        if (is_state(map->dom, z, LAY, TOP) || is_state(map->dom, z, LAY, DRP))
+        if (is_state(map->tree, z, 1, LAY, TOP) || is_state(map->tree, z, 1, LAY, DRP))
                 return (0);
         else    
                 return (1);

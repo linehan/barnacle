@@ -157,6 +157,6 @@ void move_inspector(int dir)
 
         werase(INSPECTORMSGWIN);
         wprintw(INSPECTORMSGWIN, "MORT:%5u Y: %2u X: %2u | ", z, inspector_yy, inspector_xx);
-        stat_state(INSPECTORMSGWIN, GLOBE->dom, z);
+        /*stat_state(INSPECTORMSGWIN, GLOBE->dom, z);*/
         scr_refresh();
 }

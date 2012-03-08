@@ -25,7 +25,6 @@
 #include "../geo/terrain.h"
 #include "../lib/ufo.h"
 #include "../geo/map.h"
-#include "../itm/itm.h"
 
 
 /* 

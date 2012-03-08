@@ -24,7 +24,6 @@
 #include "../lib/bitwise.h"
 #include "../lib/ufo.h"
 
-#include "../itm/itm.h"
 #include "../mob/boat.h"
 #include "../gfx/gfx_deck.h"
 #include "cloud.h"

@@ -4,7 +4,6 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <string.h>
-#include "dep/list.h"
 /******************************************************************************
  * Paul Hsieh's blazing fast hash function.                             
  * See http://www.azillionmonkeys.com/qed/hash.html
@@ -105,3 +104,4 @@ static inline uint32_t fasthash(const char *data, int len)
 
             return hash;
 }
+#endif

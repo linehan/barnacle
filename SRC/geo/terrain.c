@@ -25,6 +25,8 @@
 #include "../lib/morton.h"
 #include "../pan/test.h"
 #include "../lib/ufo.h"
+
+#include "../eng/state.h"
 //##############################################################################
 /* Move terrain highlights in a direction determined by the current wind
  * direction. */
@@ -115,15 +117,15 @@ void draw_layers(struct map_t *map, double **pmap)
                                                 MORT(i, j, &z);
                                                 if (i == imax) {
                                                         mvwadd_wch(PEEK(map->L[DRP]), i, j, &MTN[2]);
-                                                        set_state(map->dom, z, LAY, DRP);
-                                                        set_state(map->dom, z, SED, LIME);
-                                                        set_state(map->dom, z, SOI, MOLL);
+                                                        set_state(map->tree, z, 0, LAY, DRP);
+                                                        set_state(map->tree, z, 0, SED, LIME);
+                                                        set_state(map->tree, z, 0, SOI, MOLL);
                                                         continue;
                                                 }
                                                 mvwadd_wch(PEEK(map->L[TOP]), i, j, bgtop); // top
-                                                set_state(map->dom, z, LAY, TOP);
-                                                set_state(map->dom, z, SED, LIME);
-                                                set_state(map->dom, z, SOI, MOLL);
+                                                set_state(map->tree, z, 0, LAY, TOP);
+                                                set_state(map->tree, z, 0, SED, LIME);
+                                                set_state(map->tree, z, 0, SOI, MOLL);
                                         }
                                 }
                                 // Draw the tree box
@@ -138,16 +140,16 @@ void draw_layers(struct map_t *map, double **pmap)
                                         for (j=tx0; j<jmax; j++) {
                                                 MORT(i, j, &z);
                                                 if (i == imax) {
-                                                        set_state(map->dom, z, LAY, VEG);
-                                                        set_state(map->dom, z, SED, LIME);
-                                                        set_state(map->dom, z, SOI, MOLL);
+                                                        set_state(map->tree, z, 0, LAY, VEG);
+                                                        set_state(map->tree, z, 0, SED, LIME);
+                                                        set_state(map->tree, z, 0, SOI, MOLL);
                                                         mvwadd_wch(PEEK(map->L[VEG]), i, j, &TREE[0]);
                                                         continue;
                                                 }
                                                 mvwadd_wch(PEEK(map->L[VEG]), i, j, &TREE[1]);
-                                                set_state(map->dom, z, LAY, VEG);
-                                                set_state(map->dom, z, SED, LIME);
-                                                set_state(map->dom, z, SOI, SPOD);
+                                                set_state(map->tree, z, 0, LAY, VEG);
+                                                set_state(map->tree, z, 0, SED, LIME);
+                                                set_state(map->tree, z, 0, SOI, SPOD);
                                         }
                                 }
                         }
@@ -177,8 +179,8 @@ void draw_water_rim(struct map_t *map)
                         MORT(i, j, &z);
 
                         // Draw nothing is the cursor is on land.
-                        if ((is_state(map->dom, z, LAY, TOP))) continue;
-                        if ((is_state(map->dom, z, LAY, DRP))) continue;
+                        if ((is_state(map->tree, z, 0, LAY, TOP))) continue;
+                        if ((is_state(map->tree, z, 0, LAY, DRP))) continue;
 
                         // Compute offsets
                         iu = (i-1);
@@ -193,22 +195,22 @@ void draw_water_rim(struct map_t *map)
                         MORT(iu, jr, &zur);
 
                         // Draw nothing if the cursor is at a top corner.
-                        if (  (is_state(map->dom, zul, LAY, XXX))
-                            &&(is_state(map->dom, zl,  LAY, TOP))) continue;
-                        if (  (is_state(map->dom, zur, LAY, XXX))
-                            &&(is_state(map->dom, zr,  LAY, TOP))) continue;
+                        if (  (is_state(map->tree, zul, 0, LAY, XXX))
+                            &&(is_state(map->tree, zl,  0, LAY, TOP))) continue;
+                        if (  (is_state(map->tree, zur, 0, LAY, XXX))
+                            &&(is_state(map->tree, zr,  0, LAY, TOP))) continue;
 
                         // Draw an edge if there is an edge in the directions.
-                        if (  (is_state(map->dom, zu, LAY, TOP))
-                            ||(is_state(map->dom, zu, LAY, DRP))
-                            ||(is_state(map->dom, zr, LAY, TOP))
-                            ||(is_state(map->dom, zr, LAY, DRP))
-                            ||(is_state(map->dom, zl, LAY, TOP))
-                            ||(is_state(map->dom, zl, LAY, DRP)))
+                        if (  (is_state(map->tree, zu, 0, LAY, TOP))
+                            ||(is_state(map->tree, zu, 0, LAY, DRP))
+                            ||(is_state(map->tree, zr, 0, LAY, TOP))
+                            ||(is_state(map->tree, zr, 0, LAY, DRP))
+                            ||(is_state(map->tree, zl, 0, LAY, TOP))
+                            ||(is_state(map->tree, zl, 0, LAY, DRP)))
                         {
                                 mvwadd_wch(rim1, i, j, &OCEAN[3]);
                                 mvwadd_wch(rim2, i, j, &OCEAN[2]);
-                                set_state(map->dom, z, LAY, RIM);
+                                set_state(map->tree, z, 0, LAY, RIM);
                         }
                 }
         }

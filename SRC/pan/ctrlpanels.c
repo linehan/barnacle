@@ -41,8 +41,6 @@ PANEL  *INFOP[4];
 enum info_panel_enum { BORD, PADD, HEAD, BODY };
 
 
-
-
 void init_ctrlpanels(void)
 {
         INFOW[BORD] = newwin(H_BORD, W_BORD, Y_BORD, X_BORD);
@@ -65,4 +63,39 @@ void init_ctrlpanels(void)
         hide_panel(INFOP[PADD]);
         hide_panel(INFOP[HEAD]);
         hide_panel(INFOP[BODY]);
+}
+
+
+PANEL *make_purple_panel(WINDOW *win[4], int h, int w, int y, int x)
+{
+        #define X_PADD 2
+        #define Y_PADD 1
+        #define PADD_W(w) w-(2*X_PADD)
+        #define PADD_H(h) h-(2*Y_PADD) 
+
+        #define X_BODY 2 
+        #define Y_BODY 3 
+        #define BODY_W(w) PADD_W(w)-(2*X_BODY)
+        #define BODY_H(h) PADD_H(h)-(2*Y_BODY)
+
+        #define X_HEAD 2
+        #define Y_HEAD 1
+        #define HEAD_W(w) PADD_W(w)-(2*X_HEAD)
+        #define HEAD_H(h) PADD_H(h)-(2*Y_HEAD)
+
+        win[BORD] = newwin(h, w, y, x);
+        win[PADD] = derwin(win[BORD], PADD_H(h), PADD_W(w), Y_PADD, X_PADD);
+        win[HEAD] = derwin(win[PADD], HEAD_H(h), HEAD_W(w), Y_HEAD, X_HEAD);
+        win[BODY] = derwin(win[PADD], BODY_H(h), BODY_W(w), Y_BODY, X_BODY);
+        keypad(win[BODY], 1);
+
+        wbkgrnd(win[BORD], &PURPLE[1]);
+        wbkgrnd(win[PADD], &PURPLE[2]);
+        wbkgrnd(win[HEAD], &PURPLE[2]);
+        wbkgrnd(win[BODY], &PURPLE[2]);
+
+        PANEL *new = new_panel(win[BORD]);
+        hide_panel(new);
+
+        return (new);
 }

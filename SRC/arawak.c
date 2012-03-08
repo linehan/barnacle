@@ -42,6 +42,8 @@
 #include "pan/crewgen.h"
 #include "pan/ctrlpanels.h"
 #include "pan/new_character.h"
+#include "mob/pc.h"
+#include "pan/char_stats.h"
 /******************************************************************************/
 /* The callback function for the sailing event watcher. Manages the wind
  * and the sailboat's response to it. Checks a semaphore which is also
@@ -118,6 +120,8 @@ int main()
 
         uint32_t boatkey = new_boat(pad);
         nominate_boat(boatkey);
+
+        init_cstat();
 
         /* master off switch */
         sem_t master_off; 

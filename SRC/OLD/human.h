@@ -74,16 +74,9 @@
         TWINDEX(WEAVER       ,51)
 
 
-// Each attribute takes half a nibble.
-uint32_t human_attr;
-enum human_attr { 
-       STR=0,    DEX=2,     VIT=4,     AGI=6,   INT=8,        CHA=10, 
-//     Strength  Dexterity  Vitality   Agility  Intelligence  Charm
-       TRA=12,   WEA=14,    EDU=16,    MAL=18,  BEN=20, 
-//     Travel    Wealth     Education  Malice   Benificence
-       EAR=22,   EYE=24,    NOS=26,    TOU=28,  TAS=30 
-//     Hearing   Sight      Smell      Touch    Taste
-};
+uint32_t offset[NNIBS]  = {28, 24, 20, 16, 12, 8, 4, 0};
+
+enum human_primary_attributes {STR, DEX, VIT, AGI, INT, WIS, CHA, LUC};
 
 struct human {
         uint32_t key;

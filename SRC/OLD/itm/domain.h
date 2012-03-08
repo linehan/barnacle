@@ -90,8 +90,21 @@ char *hdg_tag[16] = {"NORTH","NNE","NE","ENE","EAST","ESE","SE",
                                   "NW", "NNW"};
 //}}}1
 //{{{1 Graduated quantity
-enum grad_t {NIL=1,HI5=2,HI4=3,HI3=4,HI2=5,HI1=6,HI0=7,LO5=8,LO4=9,LO3=10,
-             LO2=11,LO1=12,LO0=13,ALL=14};
+enum grad_t {
+        NIL=1,
+        HI5=2,
+        HI4=3,
+        HI3=4,
+        HI2=5,
+        HI1=6,
+        HI0=7,
+        LO5=8,
+        LO4=9,
+        LO3=10,
+        LO2=11,
+        LO1=12,
+        LO0=13,
+        ALL=14};
 static const char *grad_tag[16] = {"XXX","NIL","HI5","HI4","HI3","HI2","HI1",
                                    "HI0","LO5","LO4","LO3","LO2","LO1","LO0",
                                    "ALL"};
@@ -124,13 +137,18 @@ static const // Label strings for terrain states
 char *lay_tag[16] = {"XXX", "BGR", "HIG", "RIM", "DRP", "TOP", "GRO", "HUT",
                      "VEG", "SKY", "XXX", "XXX", "XXX", "XXX", "XXX", "XXX"};
 //}}}1
+//{{{1 Scalar value 
+/* No enum is necessary, since it would be redundant. */
+static const char *scal_tag[16] = {"XX","00","01","02","03","04","05","06",
+                                   "07","08","09","10","11","12","13","14"};
+//}}}1
 
 
-struct dom_t     *new_dom(TOC, GLOSS);
-void            set_state(struct dom_t *dom, uint32_t key, int nib, int opt);
-int             get_state(struct dom_t *dom, uint32_t key, int nib);
-int              is_state(struct dom_t *dom, uint32_t key, int nib, int opt);
-const char *get_state_tag(struct dom_t *dom, uint32_t key, int nib);
-void           stat_state(WINDOW *win, struct dom_t *dom, uint32_t key);
+//struct dom_t     *new_dom(TOC, GLOSS);
+//void            set_state(struct dom_t *dom, uint32_t key, int nib, int opt);
+//int             get_state(struct dom_t *dom, uint32_t key, int nib);
+//int              is_state(struct dom_t *dom, uint32_t key, int nib, int opt);
+//const char *get_state_tag(struct dom_t *dom, uint32_t key, int nib);
+//void           stat_state(WINDOW *win, struct dom_t *dom, uint32_t key);
 
 #endif

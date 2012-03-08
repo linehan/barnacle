@@ -32,6 +32,7 @@ Bindings and actions for the user's keyboard input.
 #include "../pan/menus.h"
 #include "../pan/ctrlpanels.h"
 #include "../pan/new_character.h"
+#include "../pan/char_stats.h"
 /******************************************************************************/
 PANEL *deckp;
 
@@ -104,6 +105,11 @@ void *iolisten(EV_P_ ev_io *w, int revents)
                         break;
                 case 'n':
                         new_character();
+                        scr_refresh();
+                        break;
+                case 'u':
+                        post_cstat(); 
+                        reveal(cstat_pan);
                         scr_refresh();
                         break;
                 case '?':
