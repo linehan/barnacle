@@ -42,7 +42,6 @@ arawak_SOURCES = arawak.c \
                    pan/instruments.c \
                    pan/button.c      \
                    pan/dialog.c      \
-                   pan/char_stats.c  \
                    pan/menus.c       \
                    pan/test.c        \
                    pan/crewgen.c     \

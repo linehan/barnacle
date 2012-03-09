@@ -9,7 +9,7 @@ extern cchar_t DIRT[2];
 
 extern cchar_t UNDERSEA;
 extern cchar_t DAYSKY;
-extern cchar_t PURPLE[3];
+extern cchar_t PURPLE[4];
 
 enum tiletype { 
         __non__ = 0,

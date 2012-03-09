@@ -46,7 +46,6 @@ void set_state(struct rb_tree *tree, uint32_t key, int w, int n, int s)
         tree->peek->data[w] |= (state[s]<<offset[n]);
 }
 
-
 /*
   Retreive nibble 'n' of word 'w' of cell 'z', and return its state 's'.
 */
@@ -61,6 +60,18 @@ int get_state(struct rb_tree *tree, uint32_t key, int w, int n)
         c  &= ~(scrub[n]);         /* Wipe all but n */
         c >>= offset[n];           /* Move n to the end */
 
+        return (int)(c);
+}
+
+/*
+  Return state 's' of nibble 'n', in uint32_t 'v'
+*/
+int see_state(int n, uint32_t *v)
+{
+        uint32_t c = *v; // copy
+
+        c &= ~(scrub[n]);
+        c >>= offset[n];
         return (int)(c);
 }
 

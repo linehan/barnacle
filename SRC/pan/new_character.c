@@ -18,7 +18,6 @@
 #include "../gfx/wselect.h"
 #include "../gen/name/name.h"
 #include "ctrlpanels.h"
-#include "../kin/k_character.h"
 #include "../mob/pc.h"
 #include "../gfx/fancy_menus.h"
 #include "button.h"
@@ -31,31 +30,6 @@
 
 #define MAX_PEOPLE 100
 uint32_t person[MAX_PEOPLE];
-
-
-/*void strstrip(char *dest, char *s)*/
-/*{*/
-        /*size_t size, trimsize;*/
-        /*char *end;*/
-
-        /*size = strlen(s);*/
-
-        /*if (!size)*/
-                /*dest = s;*/
-
-        /*end = s + size - 1;*/
-        /*while (end >= s && isspace(*end))*/
-        /*end--;*/
-        /**(end + 1) = '\0';*/
-
-        /*while (*s && isspace(*s))*/
-        /*s++;*/
-
-        /*trimsize = (size_t)(end-s);*/
-
-        /*memcpy(dest, s, trimsize);*/
-        /*dest[trimsize] = '\0';*/
-/*}*/
 
 
 char *strstrip(char *s)
@@ -173,7 +147,6 @@ void new_character(void)
 
         prev_item: /* Focus is transferred to the previous item on the menu. */
 
-
                 switch (i) {
                 case 0:
                         wselect_driver(sel, SEL_UNFOCUS);
@@ -211,7 +184,6 @@ void new_character(void)
 
         next_item: /* Focus is transferred to the next item on the menu. */
 
-
                 switch (i) {
                 case 0:
                         wselect_driver(sel, SEL_UNFOCUS); 
@@ -248,7 +220,6 @@ void new_character(void)
 
 
         get_input: /* The user's input manipulates the current item. */
-
 
                 switch (i) {
                 case 0:
@@ -306,7 +277,6 @@ void new_character(void)
 
 
         ok_pressed: /* The user has decided to confirm and end the menu. */
-
 
                 firname = strstrip(field_buffer(field[0], 0));
                 midname = strstrip(field_buffer(field[1], 0));

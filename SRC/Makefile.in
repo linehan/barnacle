@@ -57,9 +57,8 @@ am_arawak_OBJECTS = arawak.$(OBJEXT) lib/redblack/rb.$(OBJEXT) \
 	mob/mob.$(OBJEXT) mob/boat.$(OBJEXT) mob/pc.$(OBJEXT) \
 	pan/ctrlpanels.$(OBJEXT) pan/new_character.$(OBJEXT) \
 	pan/instruments.$(OBJEXT) pan/button.$(OBJEXT) \
-	pan/dialog.$(OBJEXT) pan/char_stats.$(OBJEXT) \
-	pan/menus.$(OBJEXT) pan/test.$(OBJEXT) pan/crewgen.$(OBJEXT) \
-	txt/rk.$(OBJEXT) txt/psh.$(OBJEXT)
+	pan/dialog.$(OBJEXT) pan/menus.$(OBJEXT) pan/test.$(OBJEXT) \
+	pan/crewgen.$(OBJEXT) txt/rk.$(OBJEXT) txt/psh.$(OBJEXT)
 arawak_OBJECTS = $(am_arawak_OBJECTS)
 arawak_LDADD = $(LDADD)
 DEFAULT_INCLUDES = -I.@am__isrc@
@@ -197,7 +196,6 @@ arawak_SOURCES = arawak.c \
                    pan/instruments.c \
                    pan/button.c      \
                    pan/dialog.c      \
-                   pan/char_stats.c  \
                    pan/menus.c       \
                    pan/test.c        \
                    pan/crewgen.c     \
@@ -388,8 +386,6 @@ pan/button.$(OBJEXT): pan/$(am__dirstamp) \
 	pan/$(DEPDIR)/$(am__dirstamp)
 pan/dialog.$(OBJEXT): pan/$(am__dirstamp) \
 	pan/$(DEPDIR)/$(am__dirstamp)
-pan/char_stats.$(OBJEXT): pan/$(am__dirstamp) \
-	pan/$(DEPDIR)/$(am__dirstamp)
 pan/menus.$(OBJEXT): pan/$(am__dirstamp) pan/$(DEPDIR)/$(am__dirstamp)
 pan/test.$(OBJEXT): pan/$(am__dirstamp) pan/$(DEPDIR)/$(am__dirstamp)
 pan/crewgen.$(OBJEXT): pan/$(am__dirstamp) \
@@ -433,7 +429,6 @@ mostlyclean-compile:
 	-rm -f mob/mob.$(OBJEXT)
 	-rm -f mob/pc.$(OBJEXT)
 	-rm -f pan/button.$(OBJEXT)
-	-rm -f pan/char_stats.$(OBJEXT)
 	-rm -f pan/crewgen.$(OBJEXT)
 	-rm -f pan/ctrlpanels.$(OBJEXT)
 	-rm -f pan/dialog.$(OBJEXT)
@@ -473,7 +468,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@mob/$(DEPDIR)/mob.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@mob/$(DEPDIR)/pc.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@pan/$(DEPDIR)/button.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@pan/$(DEPDIR)/char_stats.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@pan/$(DEPDIR)/crewgen.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@pan/$(DEPDIR)/ctrlpanels.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@pan/$(DEPDIR)/dialog.Po@am__quote@

@@ -13,15 +13,9 @@
 
 #include "../lib/redblack/rb.h"
 #include "../eng/state.h"
-#include "../kin/k_character.h"
 #include "../lib/hash.h"
 #include "../pan/test.h"
-
-/* Holds all player characters in the program. */
-struct rb_tree *PC_TREE;
-
-#define MAX_PEOPLE 100
-uint32_t person_list[MAX_PEOPLE];
+#include "pc.h"
 
 inline void init_pc(void)
 {
@@ -94,75 +88,136 @@ uint32_t new_pc(char *firname,
 }
 
 
-/* Return character stat n */
-uint32_t get_cstat(uint32_t key, int n)
+void attr_all(int *out, uint32_t key)
 {
-        return (get_state(PC_TREE, key, 0, n));
+        uint32_t attrcopy;
+        int i;
+
+        rb_peek(PC_TREE, key);
+        if (PC_TREE->peek != NULL) 
+                attrcopy = (uint32_t)PC_TREE->peek->data;
+
+        for (i=0; i<NATTRS; i++) {
+                out[i] = see_state(i, &attrcopy);
+        }
 }
 
-/* Set character stat n to value v */
-void set_cstat(uint32_t key, int n, int v)
+
+
+void load_pc_test(void)
 {
-        set_state(PC_TREE, key, 0, n, v);
-}
+        #include "../lib/fyshuffle.h"
 
-/* Increment character stat n by 1 */
-void inc_cstat(uint32_t key, int n)
-{
-        set_state(PC_TREE, key, 0, n, get_cstat(key, n)+1);
-}
+        char *fn[24] = { "Robert", 
+                         "Jonathan",
+                         "Morgan",
+                         "Mackenzie",
+                         "Matt",
+                         "Willard",
+                         "Maximilian",
+                         "John",
+                         "Garth",
+                         "Kathryn",
+                         "James",
+                         "Geordi",
+                         "Owen",
+                         "Jean-Luc",
+                         "Christopher",
+                         "Erik",
+                         "William",
+                         "Richard",
+                         "Montgomery",
+                         "Tryla",
+                         "Benjamin",
+                         "Hikaru",
+                         "Clark",
+                         "Robert"};
 
-/* Decrement character stat n by 1 */
-void dec_cstat(uint32_t key, int n)
-{
-        set_state(PC_TREE, key, 0, n, get_cstat(key, n)-1);
-}
+        char *mn[24] = { "John",
+                         "George",
+                         "Rob",
+                         "Bob",
+                         "Bobnotrob",
+                         "Hackensack",
+                         "O",
+                         "Lingo",
+                         "Noam",
+                         "Nome",
+                         "Foam",
+                         "Steele",
+                         "Eisen",
+                         "Frog",
+                         "Cartouche",
+                         "Lamy",
+                         "Bootstrap",
+                         "Wrede",
+                         "Avec",
+                         "Yank",
+                         "Swappy",
+                         "Dijk",
+                         "Faiyum",
+                         "Bergamot"};
 
-/* Returns first name. */
-char *fname(uint32_t key)
-{
-        struct character_t *guy;
-        guy = (struct character_t *)rb_extra(PC_TREE, key);
+        char *ln[24] = { "Aruga",
+                         "Ahab",
+                         "Cook",
+                         "Bligh",
+                         "Dana",
+                         "Englehorn",
+                         "Gault",
+                         "Haddock",
+                         "Hook",
+                         "Hornblower",
+                         "April",
+                         "Perry",
+                         "Jat",
+                         "Maak",
+                         "Pickle",
+                         "Pugwash",
+                         "Picard",
+                         "Stubing",
+                         "Nelson",
+                         "Aubrey",
+                         "Wilkes",
+                         "Bering",
+                         "Truxton",
+                         "Sakuma"};
+        
+        char *bp[24] = { "Aruba",
+                         "Janjaweed",
+                         "Lisbon",
+                         "Pickledown",
+                         "Idaho",
+                         "Lingoville",
+                         "Ripfeather",
+                         "Penburken",
+                         "Delft",
+                         "Somewhere",
+                         "Willydill",
+                         "Bingotown",
+                         "Housetown",
+                         "Gorlax",
+                         "Billings",
+                         "Adj",
+                         "Fffff",
+                         "Howhowhow",
+                         "Delicious",
+                         "Fork",
+                         "Bongomont",
+                         "Meatslope",
+                         "Ducat",
+                         "Guinea"};
 
-        return (guy->fname);
-}
+        uint8_t j[] = {5,3,1,0,9,2,3,4,5,8,12,3,5,7,5,1,2,2,6,8,22,4,0,23};
+        uint8_t g[] = {0};
+        uint8_t a[24], w[24], h[24];
 
-/* Returns middle name. */
-char *mname(uint32_t key)
-{
-        struct character_t *guy;
-        guy = (struct character_t *)rb_extra(PC_TREE, key);
+        fy_shuffle(j, a, 24);
+        fy_shuffle(a, w, 24);
+        fy_shuffle(w, h, 24);
 
-        return (guy->mname);
-}
-
-/* Returns last name. */
-char *lname(uint32_t key)
-{
-        struct character_t *guy;
-        guy = (struct character_t *)rb_extra(PC_TREE, key);
-
-        return (guy->lname);
-}
-
-/* Returns full name (just a tweaked three_name_hash). */
-char *fullname(uint32_t key)
-{
-        char *a, *b, *c;
-
-        a = fname(key);
-        b = mname(key);
-        c = lname(key);
-
-        char *abc = malloc(strlen(a) + strlen(b) + strlen(c) + 3);
-
-        sprintf(abc, "%s %s %s", a, b, c);
-
-        return (abc);
-}
-
-int npersons(void)
-{
-        if (PC_TREE == NULL)    return 0;
-        else                    return (PC_TREE->n);
+        int i;
+        for (i=0; i<24; i++) {
+                new_pc(fn[i], mn[i], ln[i], bp[i], j[i], a[i], w[i], h[i], g[i]);
+        }
 }

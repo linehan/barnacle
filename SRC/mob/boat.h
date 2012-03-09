@@ -71,7 +71,7 @@ enum GUN_state_tags {
         ROU = 8,  // Round shot              XOR 0x8 with these to get 
         CAN = 9,  // Canister shot           the graphics indexes
         GRA = 10, // Grape shot
-        CHA = 11, // Chain shot
+        CHI = 11, // Chain shot
         LAN = 12, // Langrage (bags of junk)
         HOT = 13, // Heated shot
         DBL = 14, // Double shot

@@ -66,27 +66,27 @@ void init_ctrlpanels(void)
 }
 
 
-PANEL *make_purple_panel(WINDOW *win[4], int h, int w, int y, int x)
+PANEL *_purple_panel(WINDOW *win[4], int h, int w, int y, int x)
 {
-        #define X_PADD 2
-        #define Y_PADD 1
-        #define PADD_W(w) w-(2*X_PADD)
-        #define PADD_H(h) h-(2*Y_PADD) 
+        #define PADD_X 2
+        #define PADD_Y 1
+        #define PADD_W(w) w-(2*PADD_X)
+        #define PADD_H(h) h-(2*PADD_Y) 
 
-        #define X_BODY 2 
-        #define Y_BODY 3 
-        #define BODY_W(w) PADD_W(w)-(2*X_BODY)
-        #define BODY_H(h) PADD_H(h)-(2*Y_BODY)
+        #define BODY_X 2 
+        #define BODY_Y 3 
+        #define BODY_W(w) PADD_W(w)-(2*BODY_X)
+        #define BODY_H(h) PADD_H(h)-(2*BODY_Y)
 
-        #define X_HEAD 2
-        #define Y_HEAD 1
-        #define HEAD_W(w) PADD_W(w)-(2*X_HEAD)
-        #define HEAD_H(h) PADD_H(h)-(2*Y_HEAD)
+        #define HEAD_X 2
+        #define HEAD_Y 1
+        #define HEAD_W(w) PADD_W(w)-(2*HEAD_X)
+        #define HEAD_H(h) PADD_H(h)-(2*HEAD_Y)
 
         win[BORD] = newwin(h, w, y, x);
-        win[PADD] = derwin(win[BORD], PADD_H(h), PADD_W(w), Y_PADD, X_PADD);
-        win[HEAD] = derwin(win[PADD], HEAD_H(h), HEAD_W(w), Y_HEAD, X_HEAD);
-        win[BODY] = derwin(win[PADD], BODY_H(h), BODY_W(w), Y_BODY, X_BODY);
+        win[PADD] = derwin(win[BORD], PADD_H(h), PADD_W(w), PADD_Y, PADD_X);
+        win[HEAD] = derwin(win[PADD], HEAD_H(h), HEAD_W(w), HEAD_Y, HEAD_X);
+        win[BODY] = derwin(win[PADD], BODY_H(h), BODY_W(w), BODY_Y, BODY_X);
         keypad(win[BODY], 1);
 
         wbkgrnd(win[BORD], &PURPLE[1]);

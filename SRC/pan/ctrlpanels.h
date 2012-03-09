@@ -30,10 +30,6 @@ enum info_panel_enum { BORD, PADD, HEAD, BODY };
         TOGPAN(INFOP[PADD]);    \
         TOGPAN(INFOP[HEAD]);    \
         TOGPAN(INFOP[BODY]);    
-        //top_panel(INFOP[BORD]); \
-        //top_panel(INFOP[PADD]); \
-        //top_panel(INFOP[HEAD]); \
-        //top_panel(INFOP[BODY])  
 
 
-PANEL *make_purple_panel(WINDOW *win[4], int h, int w, int y, int x);
+PANEL *purple_panel(WINDOW *win[4], int h, int w, int y, int x);

@@ -43,7 +43,6 @@
 #include "pan/ctrlpanels.h"
 #include "pan/new_character.h"
 #include "mob/pc.h"
-#include "pan/char_stats.h"
 /******************************************************************************/
 /* The callback function for the sailing event watcher. Manages the wind
  * and the sailboat's response to it. Checks a semaphore which is also
@@ -68,7 +67,7 @@ void tumbler(EV_P_ ev_timer *w, int revents)
         seek_heading();
         seek_prevailing();
         draw_compass();
-        /*top_panel(_BOAT->pan);*/
+        post_dockbox();
 
         if ((sem_trywait(bun->sem) == -1)) ev_timer_again(EV_DEFAULT, w);
         else                               ev_break(EV_A_ EVBREAK_ALL);
@@ -105,7 +104,6 @@ int main()
         init_deck();
         draw_deck();
 
-        init_crew_menu();
         init_ctrlpanels();
 
         struct map_t *pad = new_map((LINES*3), (COLS*3));
@@ -121,7 +119,11 @@ int main()
         uint32_t boatkey = new_boat(pad);
         nominate_boat(boatkey);
 
-        init_cstat();
+        load_pc_test();
+        post_menu_crew();
+
+        /*init_cstat();*/
+        /*post_menu_crew();*/
 
         /* master off switch */
         sem_t master_off; 

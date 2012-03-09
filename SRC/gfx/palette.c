@@ -100,6 +100,7 @@ enum arne_shadow2 {
         __WOOD   = 89,
         __SHADOW = 90,
         __DARK_RED = 91 ,
+        __BG = 97,
         CELESTIALBLUE = 92,
         CERULEAN = 93,
         WILDBLUEYONDER = 94,
@@ -336,6 +337,7 @@ void init_palette(int set)
         init_color(_LWOOD,       721,    521,    325);
 
         init_color(__DGREY,     78,   71,   78);
+        init_color(__BG,     74, 74, 74);
         init_color(__GREY,     388,  388,  388);
         init_color(__LGREY,    729,  729,  729);
         init_color(__DBLUE,    204,  227,  459);

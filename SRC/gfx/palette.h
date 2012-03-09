@@ -80,6 +80,7 @@ enum arne_shadow2 {
         __WOOD   = 89,
         __SHADOW = 90,
         __DARK_RED = 91,
+        __BG = 97,
         CELESTIALBLUE = 92,
         CERULEAN = 93,
         WILDBLUEYONDER = 94,
