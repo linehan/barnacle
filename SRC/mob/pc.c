@@ -103,7 +103,6 @@ void attr_all(int *out, uint32_t key)
 }
 
 
-
 void load_pc_test(void)
 {
         #include "../lib/fyshuffle.h"

@@ -10,14 +10,17 @@
 #include <wchar.h>
 #include <string.h>
 
+#include "../gen/dice.h"
 #include "../gfx/gfx.h"
 #include "../gfx/palette.h"
 #include "../gfx/sprite.h"
 #include "../mob/pc.h"
+#include "../mob/vit.h"
 #include "test.h"
 
 #define ARRAY_SIZE(a) (sizeof(a)/sizeof(a[0]))
 #define KEY_ESC 27 /* char value of ESC key */
+
 #define newpan new_panel
 
 
@@ -33,7 +36,9 @@
 #define thR ((COLS)-(thW))  /* Offset for rightmost third */
 #define thB ((LINES)-(thH)) /* Vertical offset to the bottom third */
 
-#define WPARTS 2
+#define WPARTS 3
+
+
 
 /*
   Draw a box around a window using wide-character strings. 
@@ -78,7 +83,7 @@ inline void wbox(WINDOW *win,
 }
 
 
-enum panel_parts { BORD, BODY };
+enum panel_parts { BORD, BODY, BUFF };
 
 /*
   Paint a pretty purple panel to perfection.
@@ -98,13 +103,13 @@ PANEL *purple_panel(WINDOW *win[WPARTS], int h, int w, int y, int x)
         hide_panel(new); // No peeking
 
         win[BODY] = derwin(win[BORD], hshrink(h), hshrink(w), 1, 1);
+        win[BUFF] = derwin(win[BORD], 1, w, h-1, 0);
         wcolor_set(win[BODY], PUR_PUR, NULL);
-        for (i=0; i<w; i++)        
-                mvwaddwstr(win[BORD], h-1, i, L"█"); /* Draw bottom */
 
         keypad(win[BODY], 1);
         wbkgrnd(win[BORD], FILL);
         wbkgrnd(win[BODY], FILL);
+        wbkgrnd(win[BUFF], &PURPLE[1]);
         vrt_refresh();
 
         return (new);
@@ -212,7 +217,9 @@ enum operator_modes {
         INTELLIGENCE,
         WISDOM,
         CHARISMA,
-        LUCK
+        LUCK,
+        VITALS,
+        PATTERN
 };
 const char *mode_tag[] = { 
         "",
@@ -237,7 +244,10 @@ const char *mode_tag[] = {
         "Intelligence: ",
         "Wisdom: ",
         "Charisma: ",
-        "Luck: "
+        "Luck: ",
+        ""
+        ""
+        /*"Vitals: "*/
 };
 
 
@@ -273,6 +283,26 @@ inline void setmode(int newmode)
 }
 
 
+void printbar(WINDOW *win, int y, int x, int n, int v)
+{
+        #define redline 3
+        #define grain 4 
+
+        static short pair[4]={PUR_RED, PUR_BRZ, PUR_BLU, PUR_GRE};
+        static char *tags[4]={   "HP",    "SP",    "LP",    "EP"};
+
+        cchar_t block;//▣□▢▤▥▦▧▨▩ⲺⲻⲿⲾ⑇Ⱎ⬣༕◡◠
+
+        n /= grain;
+
+        mvwprintw(win, y, x, "%s", tags[v]);
+        setcchar(&block, L"▩", 0, pair[v], NULL);
+        mvwhline_set(win, y, x+3, &block, n);
+        setcchar(&block, L"▨", 0, pair[v], NULL);
+        mvwhline_set(win, y, x+n+3, &block, 1);
+}
+
+
 void operate_on(void *noun)
 {
         #define _out_ dockbox_buf
@@ -282,6 +312,7 @@ void operate_on(void *noun)
         static int label_width;
         static char *label;
         static int a[8];
+
        
         if (mode_changed) {
                 werase(_out_);
@@ -299,6 +330,15 @@ void operate_on(void *noun)
                 }
         }
 
+        uint32_t key = *(uint32_t *)noun;
+        int i;
+        for (i=0; i<npersons(); i++) {
+                set_vital(vit(person_list[i]), HP, roll_fair(64));
+                set_vital(vit(person_list[i]), SP, roll_fair(64));
+                set_vital(vit(person_list[i]), LP, roll_fair(64));
+                set_vital(vit(person_list[i]), EP, roll_fair(64));
+        }
+
         wmove(_out_, 0, label_width);
         wclrtoeol(_out_);
 
@@ -309,6 +349,14 @@ void operate_on(void *noun)
                 waddwstr(_out_, L"Σ    Φ    Δ    A    Ψ    W    Χ    Λ");
                 wcolor_set(_out_, NORMAL_COLOR, NULL);
                 allattr(_out_, label_width, *(uint32_t *)noun);
+                win_refresh(_out_);
+                break;
+        case VITALS:
+                wcolor_set(_out_, NORMAL_COLOR, NULL);
+                printbar(_out_, 0, label_width,    get_vital(vit(key), HP), HP);
+                printbar(_out_, 0, label_width+25, get_vital(vit(key), SP), SP);
+                printbar(_out_, 0, label_width+50, get_vital(vit(key), LP), LP);
+                printbar(_out_, 0, label_width+75, get_vital(vit(key), EP), EP);
                 win_refresh(_out_);
                 break;
         case FULLNAME:
@@ -341,6 +389,14 @@ void operate_on(void *noun)
 
 void choose_noun(void) 
 {
+        /* ncurses sets the ESC key delay at 100ms by default, and this
+         * is way too slow. According to Wolfram Alpha, 
+         * 60hz == 0.0167s == 16.7ms, and is about equivalent to the time 
+         * it takes a nerve impulse to travel the length of an avg. human 
+         * body. For comparison, a typical human blink duration is 100ms-
+         * 400ms, and that's just not what we're looking for here. */
+        if (getenv ("ESCDELAY") == NULL) ESCDELAY = 25;
+
         ITEM *item = NULL;
         int c;
 
@@ -348,6 +404,39 @@ void choose_noun(void)
         {
                 switch (c)
                 {
+                case '/': 
+                        wprintw(crew_win[BUFF], " /"); 
+                        win_refresh(crew_win[BUFF]);
+                        scr_refresh();
+                        while ((c=getch()) != '\n') {
+
+                                if (c==KEY_ESC) {
+                                        if (*(menu_pattern(crew_menu)) == '\0')
+                                                goto end_pattern;
+                                        else
+                                                menu_driver(crew_menu, REQ_CLEAR_PATTERN);
+                                }
+
+                                if (c==KEY_BACKSPACE)
+                                        menu_driver(crew_menu, REQ_BACK_PATTERN);
+
+                                menu_driver(crew_menu, c);
+
+                                werase(crew_win[BUFF]);
+                                wprintw(crew_win[BUFF], " /%s", menu_pattern(crew_menu));
+                                win_refresh(crew_win[BUFF]);
+
+                                item=current_item(crew_menu);
+                                operate_on(item_userptr(item));
+
+                                win_refresh(crew_win[BUFF]);
+                                scr_refresh();
+                        }
+                        end_pattern:
+                        menu_driver(crew_menu, REQ_CLEAR_PATTERN);
+                        werase(crew_win[BUFF]);
+                        win_refresh(crew_win[BUFF]);
+                        break;
                 case 'k':
                         menu_driver(crew_menu, REQ_PREV_ITEM);
                         break;
@@ -355,6 +444,12 @@ void choose_noun(void)
                         menu_driver(crew_menu, REQ_NEXT_ITEM);
                         break;
                 case 'n':
+                        menu_driver(crew_menu, REQ_PREV_MATCH);
+                        break;
+                case 'p':
+                        menu_driver(crew_menu, REQ_NEXT_MATCH);
+                        break;
+                case 'N':
                         timeout(1000);
                         switch(getch()) 
                         {
@@ -373,21 +468,23 @@ void choose_noun(void)
                         }
                         timeout(-1);
                         break;
-                case 'p':
+                case 'P':
                         setmode(PROFESSION);
                         break;
                 case 's':
                         setmode(ATTRIBUTES);
                         break;
+                case 'v':
+                        setmode(VITALS);
+                        break;
                 case 'o':
                         setmode(EXITING);
-                        operate_on(NULL);
+                        /*operate_on(NULL);*/
 
                         TOGPAN(crew_pan);
                         scr_refresh();
                         return;
                 }
-
                 item=current_item(crew_menu);
                 operate_on(item_userptr(item));
 

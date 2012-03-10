@@ -86,6 +86,7 @@ enum arne_shadow2 {
         WILDBLUEYONDER = 94,
         BLASTOFFBRONZE = 95,
         METALYELLOW    = 96,
+        ZEN_BG = 97,
 };
 
 /* FG_BG color pairs; odd ones are swaps of even ones. */
@@ -152,6 +153,11 @@ enum ramp_pairs {
         PUR_YEL = 154,
         PUR_GRE = 155,
         PUR_DYE = 156,
+        PUR_BLU = 157,
+        PUR_RED = 158,
+        PUR_EEN = 159,
+        PUR_BRZ = 160,
+        ZENBURN = 161,
 
         SEA_DARK      = 17,     /* SHADE0 colors for environment */
         SEA_MED       = 18,

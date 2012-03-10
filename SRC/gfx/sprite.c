@@ -38,7 +38,7 @@ cchar_t BLANK, PLAIN;
 cchar_t DIRT[2];
 cchar_t UNDERSEA;
 cchar_t DAYSKY;
-cchar_t PURPLE[4];
+cchar_t PURPLE[5];
 /******************************************************************************/
 void init_gfx_colors(void)
 {
@@ -112,6 +112,7 @@ void init_gfx_colors(void)
         setcchar(&PURPLE[1], &gfxBLANK, 0, PUR_DPU, NULL);
         setcchar(&PURPLE[2], &gfxBLANK, 0, PUR_PUR, NULL);
         setcchar(&PURPLE[3], &gfxBLANK, 0, PUR_DDP, NULL);
+        setcchar(&PURPLE[4], &gfxBLANK, A_REVERSE, PUR_PUR, NULL);
 }
 
 cchar_t *swap_shade(cchar_t *cch, int mylvl, int tolvl)

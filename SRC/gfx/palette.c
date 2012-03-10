@@ -106,6 +106,7 @@ enum arne_shadow2 {
         WILDBLUEYONDER = 94,
         BLASTOFFBRONZE = 95,
         METALYELLOW    = 96,
+        ZEN_BG = 97,
 };
 
 
@@ -173,6 +174,11 @@ enum ramp_pairs {
         PUR_YEL = 154,
         PUR_GRE = 155,
         PUR_DYE = 156,
+        PUR_BLU = 157,
+        PUR_RED = 158,
+        PUR_EEN = 159,
+        PUR_BRZ = 160,
+        ZENBURN = 161,
 
         SEA_DARK      = 17,     /* SHADE0 colors for environment */
         SEA_MED       = 18,
@@ -306,6 +312,7 @@ void init_palette(int set)
         #define WILDBLUEYONDER DSEA
         init_color(BLASTOFFBRONZE, 647, 443, 392);
         init_color(METALYELLOW, 972, 972, 576);
+        init_color(ZEN_BG, 247, 247, 247);
 
         init_color(_DGREY,     172,  153,  180);
         init_color(_GREY,      490,  490,  490);
@@ -420,6 +427,11 @@ void init_palette(int set)
         init_pair(PUR_YEL, YELLOW, __DGREY);
         init_pair(PUR_DYE, __YELLOW, __DGREY);
         init_pair(PUR_GRE, _GREY, __DGREY);
+        init_pair(PUR_BLU, CELESTIALBLUE, __DGREY);
+        init_pair(PUR_RED, RED, __DGREY);
+        init_pair(PUR_EEN, LGREEN, __DGREY);
+        init_pair(PUR_BRZ, BLASTOFFBRONZE, __DGREY);
+        init_pair(ZENBURN, LGREY, ZEN_BG);
 
         /* IN-GAME COLOR PAIRS */
         init_pair(BOAT_WHITE, WHITE, DSEA);

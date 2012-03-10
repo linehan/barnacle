@@ -22,12 +22,15 @@ enum attr_enum { STR,  DEX,  VIT,  AGI,  INT,  WIS,  CHA,  LUC };
 static const wchar_t attr_sym[]={L"ΣΦΔAΨWΧΛ"};
 static const wchar_t attr_str[]={L"Σ   Φ   Δ   A   Ψ   W   Χ   Λ"};
 
+
 #define TAG(n) attr_tags[n]
 #define SYM(n) attr_symb[n]
 
 
 
 #define MAX_BUFFER 30
+
+
 
 struct character_t {
         char fname[MAX_BUFFER];
@@ -39,6 +42,7 @@ struct character_t {
         uint8_t weight;
         uint8_t height;
         uint8_t gender;
+        uint32_t vitals;
 };
 
 
@@ -256,9 +260,14 @@ static inline int npersons(void)
         else                    return (PC_TREE->n);
 }
 
+static inline uint32_t *vit(uint32_t key)
+{
+        focus(key);
+        return (&focused->vitals);
+}
+
 void load_pc_test(void);
 void attr_see(wchar_t *wch, uint32_t key);
-
 
 uint32_t new_pc(char *firname,
                 char *midname,
