@@ -178,7 +178,7 @@ enum ramp_pairs {
         PUR_RED = 158,
         PUR_EEN = 159,
         PUR_BRZ = 160,
-        ZENBURN = 161,
+        TITLE_SCREEN = 161,
 
         SEA_DARK      = 17,     /* SHADE0 colors for environment */
         SEA_MED       = 18,
@@ -308,8 +308,8 @@ void init_palette(int set)
         /*init_color(CELESTIALBLUE, 286, 592, 815);*/
         init_color(CELESTIALBLUE, 353, 537, 784);
         init_color(CERULEAN, 0, 482, 655);
-        /*init_color(WILDBLUEYONDER, 635, 678, 815);*/
-        #define WILDBLUEYONDER DSEA
+        init_color(WILDBLUEYONDER, 635, 678, 815);
+        /*#define WILDBLUEYONDER DSEA*/
         init_color(BLASTOFFBRONZE, 647, 443, 392);
         init_color(METALYELLOW, 972, 972, 576);
         init_color(ZEN_BG, 247, 247, 247);
@@ -431,7 +431,7 @@ void init_palette(int set)
         init_pair(PUR_RED, RED, __DGREY);
         init_pair(PUR_EEN, LGREEN, __DGREY);
         init_pair(PUR_BRZ, BLASTOFFBRONZE, __DGREY);
-        init_pair(ZENBURN, LGREY, ZEN_BG);
+        init_pair(TITLE_SCREEN, DGREY, __DGREY);
 
         /* IN-GAME COLOR PAIRS */
         init_pair(BOAT_WHITE, WHITE, DSEA);

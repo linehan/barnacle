@@ -17,6 +17,7 @@ arawak_SOURCES = arawak.c \
                    lib/sort/mergesort.c \
                    lib/sort/quicksort.c \
                    eng/state.c       \
+                   eng/exchange.c    \
                    cmd/control.c     \
                    gen/dice.c        \
                    gen/mtwist.c      \
@@ -36,7 +37,8 @@ arawak_SOURCES = arawak.c \
                    env/cloud.c       \
                    mob/mob.c         \
                    mob/boat.c        \
-                   mob/pc.c          \
+                   guy/guy.c         \
+                   guy/vit.c         \
                    pan/ctrlpanels.c  \
                    pan/new_character.c \
                    pan/instruments.c \

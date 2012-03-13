@@ -18,7 +18,8 @@
 #include "../gfx/wselect.h"
 #include "../gen/name/name.h"
 #include "ctrlpanels.h"
-#include "../mob/pc.h"
+#include "../guy/guy.h"
+#include "../guy/jobs.h"
 #include "../gfx/fancy_menus.h"
 #include "button.h"
 
@@ -284,7 +285,7 @@ void new_character(void)
                 birthpl = strstrip(field_buffer(field[3], 0));
 
                 /* Register a new player character. */
-                new_pc(firname, midname, lasname, birthpl, 0, 0, 0, 0, 0);
+                new_guy(firname, midname, lasname, birthpl, 0, 0, 0, 0, 0);
 
                 wprintw(DIAGNOSTIC_WIN, "key: %u\n", npersons());
         

@@ -157,7 +157,7 @@ enum ramp_pairs {
         PUR_RED = 158,
         PUR_EEN = 159,
         PUR_BRZ = 160,
-        ZENBURN = 161,
+        TITLE_SCREEN = 161,
 
         SEA_DARK      = 17,     /* SHADE0 colors for environment */
         SEA_MED       = 18,

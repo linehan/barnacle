@@ -1,5 +1,6 @@
 #ifndef __ENG_STATE
 #define __ENG_STATE
+#include "../lib/redblack/rb.h"
 
 
 

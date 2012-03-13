@@ -9,85 +9,61 @@
 #include <menu.h>
 #include <wchar.h>
 #include <string.h>
+#include <stdbool.h>
 
 #include "../gen/dice.h"
 #include "../gfx/gfx.h"
 #include "../gfx/palette.h"
 #include "../gfx/sprite.h"
-#include "../mob/pc.h"
-#include "../mob/vit.h"
+#include "../guy/guy.h"
+#include "../guy/vit.h"
 #include "test.h"
 
 #define ARRAY_SIZE(a) (sizeof(a)/sizeof(a[0]))
 #define KEY_ESC 27 /* char value of ESC key */
 
-#define newpan new_panel
+// MODES
+//------------------------------------------------------------------------------
 
+enum operator_modes { EXITING,STARTING,ATTRIBUTES,PROFESSION,VITALS,PATTERN };
 
+#define NMODES 23
+#define RESET -1 
 
-// Helper Functions
-//##############################################################################
+int mode;
+int mode_changed;
 
-#define quW (COLS/4)        // Quarter width
-#define thH (LINES/3)       /* 1/3 height of stdscr */
-#define thW (COLS/3)        /* 1/3 width of stdscr */        
-#define thL 0               /* Offset for leftmost third */
-#define thM thW             /* Offset for middle third */
-#define thR ((COLS)-(thW))  /* Offset for rightmost third */
-#define thB ((LINES)-(thH)) /* Vertical offset to the bottom third */
-
-#define WPARTS 3
-
-
-
-/*
-  Draw a box around a window using wide-character strings. 
- */
-inline void wbox(WINDOW *win, 
-                const wchar_t *ls,  // Left side
-                const wchar_t *rs,  // Right side
-                const wchar_t *ts,  // Top side
-                const wchar_t *bs,  // Bottom side
-                const wchar_t *ul,  // Upper-left corner
-                const wchar_t *ur,  // Upper-right corner
-                const wchar_t *bl,  // Bottom-left corner
-                const wchar_t *br)  // Bottom-right corner
+inline void setmode(int newmode)
 {
-        int ymax;
-        int xmax;
-        int h;
-        int w;
-        int i;
-
-        getmaxyx(win, h, w);
-        ymax = h-1;
-        xmax = w-1;
-
-        /* Top */
-        mvwaddwstr(win, 0, 0, ul);
-        for (i=1; i<w; i++)        
-                mvwaddwstr(win, 0, i, ts);
-        mvwaddwstr(win, 0, xmax, ur);            
-
-        /* Sides */
-        for (i=1; i<h; i++) {
-                mvwaddwstr(win, i, 0, ls);
-                mvwaddwstr(win, i, xmax, rs);
+        if (mode == newmode) return;
+        if (newmode == RESET) mode_changed ^= 1;
+        else {
+                mode = newmode;
+                mode_changed = 1;
         }
-
-        /* Bottom */
-        mvwaddwstr(win, ymax, 0, bl);            
-        for (i=1; i<w; i++)        
-                mvwaddwstr(win, ymax, i, bs);
-        mvwaddwstr(win, ymax, xmax, br);            
 }
 
 
+// DIMENSIONS
+//------------------------------------------------------------------------------
+
+#define MENU_W 20
+#define MENU_H (LINES/3)
+#define MENU_X 1
+#define MENU_Y LINES-MENU_H
+
+#define DOCK_W COLS
+#define DOCK_H 1
+#define DOCK_X 0
+#define DOCK_Y LINES-DOCK_H
+
+
+// HELPER FUNCS
+//------------------------------------------------------------------------------
+
+#define WPARTS 3
 enum panel_parts { BORD, BODY, BUFF };
 
-/*
-  Paint a pretty purple panel to perfection.
-*/
 PANEL *purple_panel(WINDOW *win[WPARTS], int h, int w, int y, int x)
 {
         #define COLOR PUR_PUR
@@ -99,7 +75,7 @@ PANEL *purple_panel(WINDOW *win[WPARTS], int h, int w, int y, int x)
         int i;
 
         win[BORD] = newwin(h, w, y, x);
-        new       = newpan(win[BORD]); 
+        new       = new_panel(win[BORD]); 
         hide_panel(new); // No peeking
 
         win[BODY] = derwin(win[BORD], hshrink(h), hshrink(w), 1, 1);
@@ -109,17 +85,19 @@ PANEL *purple_panel(WINDOW *win[WPARTS], int h, int w, int y, int x)
         keypad(win[BODY], 1);
         wbkgrnd(win[BORD], FILL);
         wbkgrnd(win[BODY], FILL);
-        wbkgrnd(win[BUFF], &PURPLE[1]);
+        wbkgrnd(win[BUFF], FILL);
         vrt_refresh();
 
         return (new);
 }
 
-// Menus
-//##############################################################################
+// THE MENUS 
+//------------------------------------------------------------------------------
 
 // 00. THE DOCK BOX
+//------------------------------------------------------------------------------
 WINDOW *dockbox_win;
+WINDOW *dockbox_nam;
 WINDOW *dockbox_buf;
 PANEL  *dockbox_pan;
 PANEL  *crew_pan;
@@ -132,16 +110,19 @@ void post_dockbox(void)
                         top_panel(crew_pan);
         }
         else {
-                dockbox_win = newwin(1, COLS, LINES-1, 0);
-                dockbox_buf = derwin(dockbox_win, 1, COLS-30, 0, 30);
+                dockbox_win = newwin(DOCK_H, DOCK_W, DOCK_Y, DOCK_X);
+                dockbox_nam = derwin(dockbox_win, 1, 20, 0, 1);
+                dockbox_buf = derwin(dockbox_win, 1, COLS-25, 0, 23);
                 wbkgrnd(dockbox_win, &PURPLE[2]);
+                wbkgrnd(dockbox_nam, &PURPLE[2]);
                 wbkgrnd(dockbox_buf, &PURPLE[2]);
-                dockbox_pan = newpan(dockbox_win);
+                dockbox_pan = new_panel(dockbox_win);
         }
 }
 
 
 // 00. THE CREW MENU
+//------------------------------------------------------------------------------
 #define CREW_W 20
 
 WINDOW *crew_win[WPARTS];
@@ -155,21 +136,19 @@ void post_menu_crew(void)
         ITEM **item;
 
         if (crew_pan == NULL)
-                crew_pan = purple_panel(crew_win, thH, CREW_W+5, thB, 3);
+                crew_pan = purple_panel(crew_win, MENU_H, MENU_W+1, MENU_Y, MENU_X);
 
         /* Collect the menu items. */
         name = calloc(n, sizeof(char *));
-
         for (i=0; i<n; i++) {
-                name[i] = flname(person_list[i]);
+                name[i] = flname(muster[i]);
         }
 
         /* Build the menu. */
         item = calloc(n+1, sizeof(ITEM *));
-
         for (i=0; i<n; i++) {
                 item[i] = new_item(name[i], name[i]);
-                set_item_userptr(item[i], &person_list[i]);
+                set_item_userptr(item[i], &muster[i]);
         }
         item[n] = (ITEM *)NULL;
 
@@ -178,212 +157,102 @@ void post_menu_crew(void)
         /* Configure and post the menu */
         set_menu_win(crew_menu, crew_win[BORD]);
         set_menu_sub(crew_menu, crew_win[BODY]);
-        set_menu_fore(crew_menu, COLOR_PAIR(PUR_GRE));
+        set_menu_fore(crew_menu, COLOR_PAIR(PUR_YEL));
         set_menu_back(crew_menu, COLOR_PAIR(PUR_PUR));
         menu_opts_off(crew_menu, O_SHOWDESC);
-        set_menu_format(crew_menu, thH-3, 1);
+
+        set_menu_format(crew_menu, MENU_H-2, 1);
         set_menu_mark(crew_menu, "");
 
         post_menu(crew_menu);
-
 }
 
 
 
-enum operator_modes { 
-        EXITING,
-
-        FULLNAME, 
-        FIRSTLASTNAME, 
-        FIRSTNAME, 
-        MIDDLENAME, 
-        LASTNAME,
-                      
-        PROFESSION, 
-        GUILD,
-                      
-        PHYSICAL, 
-        GENDER,
-        AGE, 
-        WEIGHT, 
-        HEIGHT,
-
-        ATTRIBUTES,
-        SKILL,
-        STRENGTH,
-        DEXTERITY,
-        VITALITY,
-        AGILITY,
-        INTELLIGENCE,
-        WISDOM,
-        CHARISMA,
-        LUCK,
-        VITALS,
-        PATTERN
-};
-const char *mode_tag[] = { 
-        "",
-        "Full name: ",
-        "Name: ",
-        "First name: ",
-        "Middle name: ",
-        "Last name: ",
-        "Job: ",
-        "Guild: ",
-        "Physical: ",
-        "Sex: ",
-        "Age: ",
-        "Weight: ",
-        "Height: ",
-        "Attributes: ",
-        "Skill: ",
-        "Strength: ",
-        "Dexterity: ",
-        "Vitality: ",
-        "Agility: ",
-        "Intelligence: ",
-        "Wisdom: ",
-        "Charisma: ",
-        "Luck: ",
-        ""
-        ""
-        /*"Vitals: "*/
-};
+//------------------------------------------------------------------------------
 
 
-inline void allattr(WINDOW *win, int ofs, uint32_t key)
+inline void put_attr(WINDOW *win, int ofs, uint32_t key)
 {
         #define STRIDE 5
+        static const short STANDOUT = PUR_GRE;
+        static const short ORIGINAL = PUR_PUR;
 
-        int val[NATTRS];
+        int val[8];
         int i;
 
-        attr_all(val, key);
-        for (i=0; i<NATTRS; i++) {
+        wcolor_set(win, STANDOUT, NULL);
+        waddwstr(win, L"Σ    Φ    Δ    A    Ψ    W    Χ    Λ");
+        wcolor_set(win, ORIGINAL, NULL);
+
+        attr_pkg(val, key);
+        for (i=0; i<8; i++) {
                 mvwprintw(win, 0, ofs+(i*STRIDE)+1, "%02u", val[i]);
         }
 }
 
 
-#define NMODES 23
-                      
-int mode;
-int mode_changed;
-
-#define RESET -1 
-
-inline void setmode(int newmode)
-{
-        if (mode == newmode) return;
-        if (newmode == RESET) mode_changed ^= 1;
-        else {
-                mode = newmode;
-                mode_changed = 1;
-        }
-}
-
-
-void printbar(WINDOW *win, int y, int x, int n, int v)
-{
-        #define redline 3
-        #define grain 4 
-
-        static short pair[4]={PUR_RED, PUR_BRZ, PUR_BLU, PUR_GRE};
-        static char *tags[4]={   "HP",    "SP",    "LP",    "EP"};
-
-        cchar_t block;//▣□▢▤▥▦▧▨▩ⲺⲻⲿⲾ⑇Ⱎ⬣༕◡◠
-
-        n /= grain;
-
-        mvwprintw(win, y, x, "%s", tags[v]);
-        setcchar(&block, L"▩", 0, pair[v], NULL);
-        mvwhline_set(win, y, x+3, &block, n);
-        setcchar(&block, L"▨", 0, pair[v], NULL);
-        mvwhline_set(win, y, x+n+3, &block, 1);
-}
-
-
 void operate_on(void *noun)
 {
-        #define _out_ dockbox_buf
-        #define NORMAL_COLOR PUR_PUR
-        #define SELECT_COLOR PUR_YEL
+        #define OUT dockbox_buf
+        const short STANDOUT = PUR_YEL;
+        const short BRIGHTER = PUR_GRE;
+        const short ORIGINAL = PUR_PUR;
 
         static int label_width;
         static char *label;
         static int a[8];
 
+        uint32_t key = (noun!=NULL) ? *(uint32_t *)noun : 0;
        
         if (mode_changed) {
-                werase(_out_);
-                if (mode == EXITING) return;
-                else {
-                        label = mode_tag[mode];
-                        label_width = strlen(label);
-                        werase(_out_);
-                        wcolor_set(_out_, NORMAL_COLOR, NULL);
-                        wprintw(_out_, "%s", label);
-                        wcolor_set(_out_, SELECT_COLOR, NULL);
-
-                        win_refresh(_out_);
-                        setmode(RESET);
+                if (mode != EXITING) {
+                        werase(OUT);
+                        win_refresh(OUT);
                 }
+                setmode(RESET);
         }
 
-        uint32_t key = *(uint32_t *)noun;
+        static int not_again;
         int i;
-        for (i=0; i<npersons(); i++) {
-                set_vital(vit(person_list[i]), HP, roll_fair(64));
-                set_vital(vit(person_list[i]), SP, roll_fair(64));
-                set_vital(vit(person_list[i]), LP, roll_fair(64));
-                set_vital(vit(person_list[i]), EP, roll_fair(64));
+        if (not_again != -1) {
+                for (i=0; i<npersons(); i++) {
+                        set_vital(vit_getpkg(muster[i]), HP, roll_fair(8));
+                        set_vital(vit_getpkg(muster[i]), SP, roll_fair(8));
+                        set_vital(vit_getpkg(muster[i]), LP, roll_fair(8));
+                        set_vital(vit_getpkg(muster[i]), EP, roll_fair(8));
+                        focus(muster[i]);
+                        focused->positive = true;
+                        focused->xpulse = vit_blocklen(focused->vitals);
+                }
+                not_again = -1;
         }
 
-        wmove(_out_, 0, label_width);
-        wclrtoeol(_out_);
-
-        switch(mode)
-        {
+        switch(mode) {
+        case EXITING:
+                werase(dockbox_nam);
+                wcolor_set(dockbox_nam, BRIGHTER, NULL);
+                wprintw(dockbox_nam, "%s", flname(key));
+                win_refresh(dockbox_nam);
+                return;
         case ATTRIBUTES:
-                wcolor_set(_out_, PUR_GRE, NULL);
-                waddwstr(_out_, L"Σ    Φ    Δ    A    Ψ    W    Χ    Λ");
-                wcolor_set(_out_, NORMAL_COLOR, NULL);
-                allattr(_out_, label_width, *(uint32_t *)noun);
-                win_refresh(_out_);
+                wcolor_set(OUT, ORIGINAL, NULL);
+                put_attr(OUT, label_width, key);
                 break;
         case VITALS:
-                wcolor_set(_out_, NORMAL_COLOR, NULL);
-                printbar(_out_, 0, label_width,    get_vital(vit(key), HP), HP);
-                printbar(_out_, 0, label_width+25, get_vital(vit(key), SP), SP);
-                printbar(_out_, 0, label_width+50, get_vital(vit(key), LP), LP);
-                printbar(_out_, 0, label_width+75, get_vital(vit(key), EP), EP);
-                win_refresh(_out_);
-                break;
-        case FULLNAME:
-                wprintw(_out_, "%s", fullname(*(uint32_t *)noun));
-                win_refresh(_out_);
-                break;
-        case FIRSTLASTNAME:
-                wprintw(_out_, "%s", flname(*(uint32_t *)noun));
-                win_refresh(_out_);
-                break;
-        case FIRSTNAME:
-                wprintw(_out_, "%s", fname(*(uint32_t *)noun));
-                win_refresh(_out_);
-                break;
-        case MIDDLENAME:
-                wprintw(_out_, "%s", mname(*(uint32_t *)noun));
-                win_refresh(_out_);
-                break;
-        case LASTNAME:
-                wprintw(_out_, "%s", lname(*(uint32_t *)noun));
-                win_refresh(_out_);
+                werase(OUT);
+                wcolor_set(OUT, ORIGINAL, NULL);
+                vit_print_blocks(OUT, label_width, key);
                 break;
         case PROFESSION:
-                wprintw(_out_, "%s", getjob(*(uint32_t *)noun));
-                win_refresh(_out_);
+                wprintw(OUT, "%s", getjob(key));
                 break;
         }
+        werase(dockbox_nam);
+        wcolor_set(dockbox_nam, STANDOUT, NULL);
+        wprintw(dockbox_nam, "%s", flname(key));
+        win_refresh(dockbox_nam);
+        win_refresh(OUT);
 }
 
 
@@ -397,14 +266,23 @@ void choose_noun(void)
          * 400ms, and that's just not what we're looking for here. */
         if (getenv ("ESCDELAY") == NULL) ESCDELAY = 25;
 
+        #define DEFAULT_MODE VITALS
+
         ITEM *item = NULL;
         int c;
+
+        // First run
+        setmode(DEFAULT_MODE);
+        item=current_item(crew_menu);
+        operate_on(item_userptr(item));
 
         while ((c = getch())) 
         {
                 switch (c)
                 {
                 case '/': 
+                        TOGPAN(crew_pan);
+                        wbkgrnd(crew_win[BUFF], &PURPLE[1]);
                         wprintw(crew_win[BUFF], " /"); 
                         win_refresh(crew_win[BUFF]);
                         scr_refresh();
@@ -424,7 +302,6 @@ void choose_noun(void)
 
                                 werase(crew_win[BUFF]);
                                 wprintw(crew_win[BUFF], " /%s", menu_pattern(crew_menu));
-                                win_refresh(crew_win[BUFF]);
 
                                 item=current_item(crew_menu);
                                 operate_on(item_userptr(item));
@@ -435,6 +312,7 @@ void choose_noun(void)
                         end_pattern:
                         menu_driver(crew_menu, REQ_CLEAR_PATTERN);
                         werase(crew_win[BUFF]);
+                        wbkgrnd(crew_win[BUFF], &PURPLE[3]);
                         win_refresh(crew_win[BUFF]);
                         break;
                 case 'k':
@@ -449,25 +327,6 @@ void choose_noun(void)
                 case 'p':
                         menu_driver(crew_menu, REQ_NEXT_MATCH);
                         break;
-                case 'N':
-                        timeout(1000);
-                        switch(getch()) 
-                        {
-                        case 'N':
-                                setmode(FULLNAME);
-                                break;
-                        case 'f':
-                                setmode(FIRSTNAME);
-                                break;
-                        case 'm':
-                                setmode(MIDDLENAME);
-                                break;
-                        case 'l':
-                                setmode(LASTNAME);
-                                break;
-                        }
-                        timeout(-1);
-                        break;
                 case 'P':
                         setmode(PROFESSION);
                         break;
@@ -477,11 +336,17 @@ void choose_noun(void)
                 case 'v':
                         setmode(VITALS);
                         break;
+                case 'O':
+                        TOGPAN(crew_pan);
+                        vrt_refresh();
+                        scr_refresh();
+                        break;
+                case KEY_ESC:
                 case 'o':
                         setmode(EXITING);
-                        /*operate_on(NULL);*/
-
-                        TOGPAN(crew_pan);
+                        hide_panel(crew_pan);
+                        operate_on(item_userptr(item));
+                        vrt_refresh();
                         scr_refresh();
                         return;
                 }
@@ -495,7 +360,6 @@ void choose_noun(void)
 
 void toggle_menu_crew(void)
 {
-        TOGPAN(crew_pan);
         scr_refresh();
         choose_noun();
 }

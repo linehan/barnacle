@@ -131,3 +131,45 @@ void post_fancy_detail(struct fancy_menu *fancy)
         wwrapstr(fancy->detail_win, fancy->detail[ind]);
         win_refresh(fancy->detail_win);
 }
+
+/*
+  Draw a box around a window using wide-character strings. 
+ */
+inline void wbox(WINDOW *win, 
+                const wchar_t *ls,  // Left side
+                const wchar_t *rs,  // Right side
+                const wchar_t *ts,  // Top side
+                const wchar_t *bs,  // Bottom side
+                const wchar_t *ul,  // Upper-left corner
+                const wchar_t *ur,  // Upper-right corner
+                const wchar_t *bl,  // Bottom-left corner
+                const wchar_t *br)  // Bottom-right corner
+{
+        int ymax;
+        int xmax;
+        int h;
+        int w;
+        int i;
+
+        getmaxyx(win, h, w);
+        ymax = h-1;
+        xmax = w-1;
+
+        /* Top */
+        mvwaddwstr(win, 0, 0, ul);
+        for (i=1; i<w; i++)        
+                mvwaddwstr(win, 0, i, ts);
+        mvwaddwstr(win, 0, xmax, ur);            
+
+        /* Sides */
+        for (i=1; i<h; i++) {
+                mvwaddwstr(win, i, 0, ls);
+                mvwaddwstr(win, i, xmax, rs);
+        }
+
+        /* Bottom */
+        mvwaddwstr(win, ymax, 0, bl);            
+        for (i=1; i<w; i++)        
+                mvwaddwstr(win, ymax, i, bs);
+        mvwaddwstr(win, ymax, xmax, br);            
+}
