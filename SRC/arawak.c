@@ -42,9 +42,7 @@
 #include "pan/crewgen.h"
 #include "pan/ctrlpanels.h"
 #include "pan/new_character.h"
-#include "guy/guy.h"
-#include "eng/exchange.h"
-#include "guy/vit.h"
+#include "guy/model/guy.h"
 
 
 /******************************************************************************/
@@ -124,10 +122,8 @@ int main()
         uint32_t boatkey = new_boat(pad);
         nominate_boat(boatkey);
 
-        load_pc_test();
+        load_guy_test();
         post_menu_crew();
-
-        acp_test();
 
         /*init_cstat();*/
         /*post_menu_crew();*/

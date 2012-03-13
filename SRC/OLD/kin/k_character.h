@@ -1,6 +1,49 @@
+#ifndef __K_CHARACTER
+#define __K_CHARACTER
+
+/*
+   k_character.h
+
+   Definitions, values, and macros to define the properties and operations
+   on characters, both player-controlled and NPC. This file is intended to
+   be used in conjunction with the domain model found in ../itm
+*/
+
+#include <stdint.h>
+
+#define KIND_INDEX 1 // Used to index the domain.
+
+/*
+  A character's stats are the classic D&D-style modifiers that determine ability and
+  situational performance. A characters sense is the particular adeptitude or experience
+  in one of three social endeavors, plus the five senses.
+*/
+enum character_stats_enum                  { STR,  DEX,  VIT,  AGI,  INT,  WIS,  CHA,  LUC };
+static const char *character_stats_str[] = {"STR","DEX","VIT","AGI","INT","WIS","CHA","LUC"};
+//enum character_sense_enum           { TRA,  WEA,  EDU,  EAR,  EYE,  NOS,  TOU,  TAS };
+//const char *character_sense_str[] = {"TRA","WEA","EDU","EAR","EYE","NOS","TOU","TAS"};
+
+#define TAG(n) character_stats_str[n]
+
+#define MAX_BUFFER 30
+
+
+struct character_t {
+        char fname[MAX_BUFFER];
+        char mname[MAX_BUFFER];
+        char lname[MAX_BUFFER];
+        char birth[MAX_BUFFER];
+        uint8_t job;
+        uint8_t age;
+        uint8_t weight;
+        uint8_t height;
+        uint8_t gender;
+};
+
 
 #define JOB_COUNT 51
 
+/* These are the professions a character can have. */
 static const char *job_list[] = { 
         "Able Seaman",
         "Accountant",
@@ -55,6 +98,7 @@ static const char *job_list[] = {
         "Weaver",
         (char *)NULL 
 };
+
 /* Flavor text to be printed as a sort of "job description". */
 static const char *job_flavor[] = {
         "You know how to handle a boat.",
@@ -118,3 +162,5 @@ static const char *job_flavor[] = {
         "You weave stuff.",
         (char *)NULL
 };
+
+#endif

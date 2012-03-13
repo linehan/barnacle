@@ -6,6 +6,7 @@
 #include "state.h"
 
 
+
 /* Bit masks for each of the 16 possible states of a single nibble. */
 static const uint32_t 
 state[NSTATES] = {0x00000000, 0x00000001, 0x00000002, 0x00000003,

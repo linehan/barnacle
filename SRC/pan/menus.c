@@ -15,8 +15,11 @@
 #include "../gfx/gfx.h"
 #include "../gfx/palette.h"
 #include "../gfx/sprite.h"
-#include "../guy/guy.h"
-#include "../guy/vit.h"
+#include "../guy/model/guy.h"
+#include "../guy/model/vitals.h"
+#include "../guy/model/jobs.h"
+#include "../guy/model/attributes.h"
+#include "../guy/model/names.h"
 #include "test.h"
 
 #define ARRAY_SIZE(a) (sizeof(a)/sizeof(a[0]))
@@ -25,7 +28,15 @@
 // MODES
 //------------------------------------------------------------------------------
 
-enum operator_modes { EXITING,STARTING,ATTRIBUTES,PROFESSION,VITALS,PATTERN };
+enum operator_modes { 
+        EXITING,
+        STARTING,
+        ATTRIBUTES,
+        PROFESSION,
+        VITALS,
+        PATTERN,
+        ACTION,
+};
 
 #define NMODES 23
 #define RESET -1 
@@ -131,7 +142,7 @@ MENU   *crew_menu;
 void post_menu_crew(void)
 {
         int i;
-        int n = npersons();
+        int n = nguys();
         char **name;
         ITEM **item;
 
@@ -185,7 +196,7 @@ inline void put_attr(WINDOW *win, int ofs, uint32_t key)
         waddwstr(win, L"Σ    Φ    Δ    A    Ψ    W    Χ    Λ");
         wcolor_set(win, ORIGINAL, NULL);
 
-        attr_pkg(val, key);
+        unpack_attributes(key, val);
         for (i=0; i<8; i++) {
                 mvwprintw(win, 0, ofs+(i*STRIDE)+1, "%02u", val[i]);
         }
@@ -216,14 +227,14 @@ void operate_on(void *noun)
         static int not_again;
         int i;
         if (not_again != -1) {
-                for (i=0; i<npersons(); i++) {
-                        set_vital(vit_getpkg(muster[i]), HP, roll_fair(8));
-                        set_vital(vit_getpkg(muster[i]), SP, roll_fair(8));
-                        set_vital(vit_getpkg(muster[i]), LP, roll_fair(8));
-                        set_vital(vit_getpkg(muster[i]), EP, roll_fair(8));
+                for (i=0; i<nguys(); i++) {
+                        set_vital(muster[i], HP, roll_fair(8));
+                        set_vital(muster[i], SP, roll_fair(8));
+                        set_vital(muster[i], LP, roll_fair(8));
+                        set_vital(muster[i], EP, roll_fair(8));
                         focus(muster[i]);
                         focused->positive = true;
-                        focused->xpulse = vit_blocklen(focused->vitals);
+                        focused->xpulse = vit_blocklen(muster[i]);
                 }
                 not_again = -1;
         }
@@ -239,13 +250,16 @@ void operate_on(void *noun)
                 wcolor_set(OUT, ORIGINAL, NULL);
                 put_attr(OUT, label_width, key);
                 break;
+        case ACTION:
+                focus(key);
+                focused->action = 1;
         case VITALS:
                 werase(OUT);
                 wcolor_set(OUT, ORIGINAL, NULL);
                 vit_print_blocks(OUT, label_width, key);
                 break;
         case PROFESSION:
-                wprintw(OUT, "%s", getjob(key));
+                wprintw(OUT, "%s", get_job(key));
                 break;
         }
         werase(dockbox_nam);
@@ -314,6 +328,9 @@ void choose_noun(void)
                         werase(crew_win[BUFF]);
                         wbkgrnd(crew_win[BUFF], &PURPLE[3]);
                         win_refresh(crew_win[BUFF]);
+                        break;
+                case '!':
+                        setmode(ACTION);
                         break;
                 case 'k':
                         menu_driver(crew_menu, REQ_PREV_ITEM);

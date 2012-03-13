@@ -47,7 +47,7 @@ PROGRAMS = $(bin_PROGRAMS)
 am__dirstamp = $(am__leading_dot)dirstamp
 am_arawak_OBJECTS = arawak.$(OBJEXT) lib/redblack/rb.$(OBJEXT) \
 	lib/sort/mergesort.$(OBJEXT) lib/sort/quicksort.$(OBJEXT) \
-	eng/state.$(OBJEXT) eng/exchange.$(OBJEXT) \
+	eng/state.$(OBJEXT) eng/model/bytes.$(OBJEXT) \
 	cmd/control.$(OBJEXT) gen/dice.$(OBJEXT) gen/mtwist.$(OBJEXT) \
 	gen/name/name.$(OBJEXT) gen/wave.$(OBJEXT) \
 	geo/weather.$(OBJEXT) geo/terrain.$(OBJEXT) geo/map.$(OBJEXT) \
@@ -55,11 +55,11 @@ am_arawak_OBJECTS = arawak.$(OBJEXT) lib/redblack/rb.$(OBJEXT) \
 	gfx/wselect.$(OBJEXT) gfx/fancy_menus.$(OBJEXT) \
 	gen/perlin.$(OBJEXT) gfx/term.$(OBJEXT) env/deck.$(OBJEXT) \
 	env/cloud.$(OBJEXT) mob/mob.$(OBJEXT) mob/boat.$(OBJEXT) \
-	guy/guy.$(OBJEXT) guy/vit.$(OBJEXT) pan/ctrlpanels.$(OBJEXT) \
-	pan/new_character.$(OBJEXT) pan/instruments.$(OBJEXT) \
-	pan/button.$(OBJEXT) pan/dialog.$(OBJEXT) pan/menus.$(OBJEXT) \
-	pan/test.$(OBJEXT) pan/crewgen.$(OBJEXT) txt/rk.$(OBJEXT) \
-	txt/psh.$(OBJEXT)
+	guy/model/guy.$(OBJEXT) guy/view/vitals.$(OBJEXT) \
+	pan/ctrlpanels.$(OBJEXT) pan/new_character.$(OBJEXT) \
+	pan/instruments.$(OBJEXT) pan/button.$(OBJEXT) \
+	pan/dialog.$(OBJEXT) pan/menus.$(OBJEXT) pan/test.$(OBJEXT) \
+	pan/crewgen.$(OBJEXT) txt/rk.$(OBJEXT) txt/psh.$(OBJEXT)
 arawak_OBJECTS = $(am_arawak_OBJECTS)
 arawak_LDADD = $(LDADD)
 DEFAULT_INCLUDES = -I.@am__isrc@
@@ -172,7 +172,7 @@ arawak_SOURCES = arawak.c \
                    lib/sort/mergesort.c \
                    lib/sort/quicksort.c \
                    eng/state.c       \
-                   eng/exchange.c    \
+                   eng/model/bytes.c \
                    cmd/control.c     \
                    gen/dice.c        \
                    gen/mtwist.c      \
@@ -192,8 +192,8 @@ arawak_SOURCES = arawak.c \
                    env/cloud.c       \
                    mob/mob.c         \
                    mob/boat.c        \
-                   guy/guy.c         \
-                   guy/vit.c         \
+                   guy/model/guy.c   \
+                   guy/view/vitals.c \
                    pan/ctrlpanels.c  \
                    pan/new_character.c \
                    pan/instruments.c \
@@ -301,8 +301,14 @@ eng/$(DEPDIR)/$(am__dirstamp):
 	@$(MKDIR_P) eng/$(DEPDIR)
 	@: > eng/$(DEPDIR)/$(am__dirstamp)
 eng/state.$(OBJEXT): eng/$(am__dirstamp) eng/$(DEPDIR)/$(am__dirstamp)
-eng/exchange.$(OBJEXT): eng/$(am__dirstamp) \
-	eng/$(DEPDIR)/$(am__dirstamp)
+eng/model/$(am__dirstamp):
+	@$(MKDIR_P) eng/model
+	@: > eng/model/$(am__dirstamp)
+eng/model/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) eng/model/$(DEPDIR)
+	@: > eng/model/$(DEPDIR)/$(am__dirstamp)
+eng/model/bytes.$(OBJEXT): eng/model/$(am__dirstamp) \
+	eng/model/$(DEPDIR)/$(am__dirstamp)
 cmd/$(am__dirstamp):
 	@$(MKDIR_P) cmd
 	@: > cmd/$(am__dirstamp)
@@ -374,14 +380,22 @@ mob/$(DEPDIR)/$(am__dirstamp):
 	@: > mob/$(DEPDIR)/$(am__dirstamp)
 mob/mob.$(OBJEXT): mob/$(am__dirstamp) mob/$(DEPDIR)/$(am__dirstamp)
 mob/boat.$(OBJEXT): mob/$(am__dirstamp) mob/$(DEPDIR)/$(am__dirstamp)
-guy/$(am__dirstamp):
-	@$(MKDIR_P) guy
-	@: > guy/$(am__dirstamp)
-guy/$(DEPDIR)/$(am__dirstamp):
-	@$(MKDIR_P) guy/$(DEPDIR)
-	@: > guy/$(DEPDIR)/$(am__dirstamp)
-guy/guy.$(OBJEXT): guy/$(am__dirstamp) guy/$(DEPDIR)/$(am__dirstamp)
-guy/vit.$(OBJEXT): guy/$(am__dirstamp) guy/$(DEPDIR)/$(am__dirstamp)
+guy/model/$(am__dirstamp):
+	@$(MKDIR_P) guy/model
+	@: > guy/model/$(am__dirstamp)
+guy/model/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) guy/model/$(DEPDIR)
+	@: > guy/model/$(DEPDIR)/$(am__dirstamp)
+guy/model/guy.$(OBJEXT): guy/model/$(am__dirstamp) \
+	guy/model/$(DEPDIR)/$(am__dirstamp)
+guy/view/$(am__dirstamp):
+	@$(MKDIR_P) guy/view
+	@: > guy/view/$(am__dirstamp)
+guy/view/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) guy/view/$(DEPDIR)
+	@: > guy/view/$(DEPDIR)/$(am__dirstamp)
+guy/view/vitals.$(OBJEXT): guy/view/$(am__dirstamp) \
+	guy/view/$(DEPDIR)/$(am__dirstamp)
 pan/$(am__dirstamp):
 	@$(MKDIR_P) pan
 	@: > pan/$(am__dirstamp)
@@ -417,7 +431,7 @@ arawak$(EXEEXT): $(arawak_OBJECTS) $(arawak_DEPENDENCIES) $(EXTRA_arawak_DEPENDE
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
 	-rm -f cmd/control.$(OBJEXT)
-	-rm -f eng/exchange.$(OBJEXT)
+	-rm -f eng/model/bytes.$(OBJEXT)
 	-rm -f eng/state.$(OBJEXT)
 	-rm -f env/cloud.$(OBJEXT)
 	-rm -f env/deck.$(OBJEXT)
@@ -435,8 +449,8 @@ mostlyclean-compile:
 	-rm -f gfx/sprite.$(OBJEXT)
 	-rm -f gfx/term.$(OBJEXT)
 	-rm -f gfx/wselect.$(OBJEXT)
-	-rm -f guy/guy.$(OBJEXT)
-	-rm -f guy/vit.$(OBJEXT)
+	-rm -f guy/model/guy.$(OBJEXT)
+	-rm -f guy/view/vitals.$(OBJEXT)
 	-rm -f lib/redblack/rb.$(OBJEXT)
 	-rm -f lib/sort/mergesort.$(OBJEXT)
 	-rm -f lib/sort/quicksort.$(OBJEXT)
@@ -458,8 +472,8 @@ distclean-compile:
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/arawak.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@cmd/$(DEPDIR)/control.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@eng/$(DEPDIR)/exchange.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@eng/$(DEPDIR)/state.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@eng/model/$(DEPDIR)/bytes.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@env/$(DEPDIR)/cloud.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@env/$(DEPDIR)/deck.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@gen/$(DEPDIR)/dice.Po@am__quote@
@@ -476,8 +490,8 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@gfx/$(DEPDIR)/sprite.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@gfx/$(DEPDIR)/term.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@gfx/$(DEPDIR)/wselect.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@guy/$(DEPDIR)/guy.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@guy/$(DEPDIR)/vit.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@guy/model/$(DEPDIR)/guy.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@guy/view/$(DEPDIR)/vitals.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@lib/redblack/$(DEPDIR)/rb.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@lib/sort/$(DEPDIR)/mergesort.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@lib/sort/$(DEPDIR)/quicksort.Po@am__quote@
@@ -629,6 +643,8 @@ distclean-generic:
 	-rm -f cmd/$(am__dirstamp)
 	-rm -f eng/$(DEPDIR)/$(am__dirstamp)
 	-rm -f eng/$(am__dirstamp)
+	-rm -f eng/model/$(DEPDIR)/$(am__dirstamp)
+	-rm -f eng/model/$(am__dirstamp)
 	-rm -f env/$(DEPDIR)/$(am__dirstamp)
 	-rm -f env/$(am__dirstamp)
 	-rm -f gen/$(DEPDIR)/$(am__dirstamp)
@@ -639,8 +655,10 @@ distclean-generic:
 	-rm -f geo/$(am__dirstamp)
 	-rm -f gfx/$(DEPDIR)/$(am__dirstamp)
 	-rm -f gfx/$(am__dirstamp)
-	-rm -f guy/$(DEPDIR)/$(am__dirstamp)
-	-rm -f guy/$(am__dirstamp)
+	-rm -f guy/model/$(DEPDIR)/$(am__dirstamp)
+	-rm -f guy/model/$(am__dirstamp)
+	-rm -f guy/view/$(DEPDIR)/$(am__dirstamp)
+	-rm -f guy/view/$(am__dirstamp)
 	-rm -f lib/redblack/$(DEPDIR)/$(am__dirstamp)
 	-rm -f lib/redblack/$(am__dirstamp)
 	-rm -f lib/sort/$(DEPDIR)/$(am__dirstamp)
@@ -660,7 +678,7 @@ clean: clean-am
 clean-am: clean-binPROGRAMS clean-generic mostlyclean-am
 
 distclean: distclean-am
-	-rm -rf ./$(DEPDIR) cmd/$(DEPDIR) eng/$(DEPDIR) env/$(DEPDIR) gen/$(DEPDIR) gen/name/$(DEPDIR) geo/$(DEPDIR) gfx/$(DEPDIR) guy/$(DEPDIR) lib/redblack/$(DEPDIR) lib/sort/$(DEPDIR) mob/$(DEPDIR) pan/$(DEPDIR) txt/$(DEPDIR)
+	-rm -rf ./$(DEPDIR) cmd/$(DEPDIR) eng/$(DEPDIR) eng/model/$(DEPDIR) env/$(DEPDIR) gen/$(DEPDIR) gen/name/$(DEPDIR) geo/$(DEPDIR) gfx/$(DEPDIR) guy/model/$(DEPDIR) guy/view/$(DEPDIR) lib/redblack/$(DEPDIR) lib/sort/$(DEPDIR) mob/$(DEPDIR) pan/$(DEPDIR) txt/$(DEPDIR)
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
 	distclean-tags
@@ -706,7 +724,7 @@ install-ps-am:
 installcheck-am:
 
 maintainer-clean: maintainer-clean-am
-	-rm -rf ./$(DEPDIR) cmd/$(DEPDIR) eng/$(DEPDIR) env/$(DEPDIR) gen/$(DEPDIR) gen/name/$(DEPDIR) geo/$(DEPDIR) gfx/$(DEPDIR) guy/$(DEPDIR) lib/redblack/$(DEPDIR) lib/sort/$(DEPDIR) mob/$(DEPDIR) pan/$(DEPDIR) txt/$(DEPDIR)
+	-rm -rf ./$(DEPDIR) cmd/$(DEPDIR) eng/$(DEPDIR) eng/model/$(DEPDIR) env/$(DEPDIR) gen/$(DEPDIR) gen/name/$(DEPDIR) geo/$(DEPDIR) gfx/$(DEPDIR) guy/model/$(DEPDIR) guy/view/$(DEPDIR) lib/redblack/$(DEPDIR) lib/sort/$(DEPDIR) mob/$(DEPDIR) pan/$(DEPDIR) txt/$(DEPDIR)
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 
