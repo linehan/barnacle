@@ -113,7 +113,6 @@ void choose_noun(int op)
         MENU *menu[2]={get_noun_menu(KEY_SUBJECT), get_noun_menu(KEY_OBJECT)};
         ITEM *item = NULL;
         int c;
-        int op=0;
 
         // First run
         setmode(DEFAULT_MODE);
