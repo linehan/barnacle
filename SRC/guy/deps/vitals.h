@@ -1,33 +1,11 @@
-/*|  \ \ | |/ /
-  |  |\ `' ' /
-  |  ;'      \      / ,          
-  | ;    _,   |    / / ,          
-  | |   (  `-.;_,-' '-' ,
-  | `,   `-._       _,-'_
-  |,-`.    `.)    ,<_,-'_,          
- ,'    `.   /   ,'  `;-' _,       
-;        `./   /`,    \-'
-|         /   |  ;\   |\
-|        ;_,._|_,  `, ' \               vitals.h
-|        \    \ `       `,
-`      __ `    \         ;,
- \   ,'  `      \,       ;,    
-  \_(            ;,      ;;
-  |  \           `;,     ;;
-  |  |`.          `;;,   ;'
-  |  |  `-.        ;;;;,;'   
-  |  |    |`-.._  ,;;;;;'
-  |  |    |   | ``';;;'
-*/
-
+#ifndef MODEL_VITALS
+#define MODEL_VITALS
 #include <stdint.h>
 #include <stdbool.h>
-#include "guy.h"
+#include "../guy_model.h"
 
 static const int VIT_MAXLEN=30;
 static const int VIT_GRAIN=24; // Each block represents this many stat points.
-
-enum VIT_TAG_BLOCKS { __HP__ , __SP__ , __LP__ , __EP__  };
 
 static const int VIT_MAX_BLOCK[]={5, 8, 5, 3};
 static const int VIT_MIN_BLOCK[]={1, 1, 1, 1};
@@ -70,3 +48,4 @@ static inline int vit_blocklen(uint32_t key)
 
         return accumulate;
 }
+#endif

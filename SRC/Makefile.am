@@ -37,14 +37,14 @@ arawak_SOURCES = arawak.c \
                    env/cloud.c       \
                    mob/mob.c         \
                    mob/boat.c        \
-                   guy/model/guy.c   \
-                   guy/view/vitals.c \
+                   guy/guy_model.c   \
+                   guy/guy_view.c    \
+                   guy/guy_control.c \
                    pan/ctrlpanels.c  \
                    pan/new_character.c \
                    pan/instruments.c \
                    pan/button.c      \
                    pan/dialog.c      \
-                   pan/menus.c       \
                    pan/test.c        \
                    pan/crewgen.c     \
                    txt/rk.c          \

@@ -1,34 +1,58 @@
-// vim:fdm=marker
-/*******************************************************************************
-*******************************************************************************/
-#define _XOPEN_SOURCE_EXTENDED = 1  /* extended character sets */
+////////////////////////////////////////////////////////////////////////////////
+//    |  \ \ | |/ /                                                           //
+//    |  |\ `' ' /                                                            //
+//    |  ;'      \      / ,                                                   //
+//    | ;    _,   |    / / ,                                                  //
+//    | |   (  `-.;_,-' '-' ,                                                 //
+//    | `,   `-._       _,-'_                                                 //
+//    |,-`.    `.)    ,<_,-'_,                                                //
+//   ,'    `.   /   ,'  `;-' _,                                               //
+//  ;        `./   /`,    \-'                                                 //
+//  |         /   |  ;\   |\                                                  //
+//  |        ;_,._|_,  `, ' \                    guy_model.c                  //
+//  |        \    \ `       `,                                                //
+//  `      __ `    \         ;,                                               //
+//   \   ,'  `      \,       ;,                                               //
+//    \_(            ;,      ;;                                               //
+//    |  \           `;,     ;;                                               //
+//    |  |`.          `;;,   ;'                                               //
+//    |  |  `-.        ;;;;,;'                                                //
+//    |  |    |`-.._  ,;;;;;'                                                 //
+//    |  |    |   | ``';;;'                                                   //
+////////////////////////////////////////////////////////////////////////////////
+#define _XOPEN_SOURCE_EXTENDED = 1 
 #include <stdio.h>
 #include <stdlib.h>
-#include <ncurses.h>
-#include <panel.h>
-#include <wchar.h>
-#include <locale.h>
-#include <pthread.h>
-#include <semaphore.h>
+#include "../lib/hash.h"
+#include "guy_model.h"
 
-#include "../../lib/hash.h"
-#include "../../pan/test.h"
-#include "guy.h"
+struct rb_tree *GUY_TREE; // Holds all creatures
 
-inline void init_guy(void)
+////////////////////////////////////////////////////////////////////////////////
+//                                                                            //
+//                                                                            //
+//                                helpers                                     //
+//                                                                            //
+//                                                                            //
+////////////////////////////////////////////////////////////////////////////////
+void focus(uint32_t key)
 {
-        GUY_TREE = new_tree(1);
+        focused = (struct guy_t *)rb_extra(GUY_TREE, key);
 }
 
-/*
-  Accepts a trio of strings, concatenates them, and produces a hash value.
-*/
+
+int nguys(void)
+{
+        if (GUY_TREE == NULL)   return 0;
+        else                    return (GUY_TREE->n);
+}
+
+
 uint32_t three_name_hash(char *a, char *b, char *c)
 {
         uint32_t hashval;
         size_t size;
         char *abc;
-
 
         size = strlen(a) + strlen(b) + strlen(c) + 3;
         abc  = malloc(size);
@@ -39,10 +63,13 @@ uint32_t three_name_hash(char *a, char *b, char *c)
 
         return(hashval);
 }
-
-/*
-  Creates a new player-character and stores it in GUY_TREE.
-*/
+////////////////////////////////////////////////////////////////////////////////
+//                                                                            //
+//                                                                            //
+//                                new_guy                                     //
+//                                                                            //
+//                                                                            //
+////////////////////////////////////////////////////////////////////////////////
 uint32_t new_guy(char *firname,
                  char *midname,
                  char *lasname,
@@ -53,7 +80,7 @@ uint32_t new_guy(char *firname,
                  uint8_t height,
                  uint8_t gender)
 {
-        if (GUY_TREE == NULL) init_guy();
+        if (GUY_TREE == NULL) GUY_TREE = new_tree(1);
 
         uint32_t key = three_name_hash(firname, midname, lasname);
         struct guy_t *new = malloc(sizeof(struct guy_t));
@@ -81,17 +108,22 @@ uint32_t new_guy(char *firname,
 
         new->action = 0;
 
-        muster[GUY_TREE->n] = key; /* Store the key in the persons array. */
+        keyring[GUY_TREE->n] = key; /* Store the key in the persons array. */
 
         rb_store(GUY_TREE, key, new);
 
         return (GUY_TREE->n);
 }
-
-
+////////////////////////////////////////////////////////////////////////////////
+//                                                                            //
+//                                                                            //
+//                                test                                        //
+//                                                                            //
+//                                                                            //
+////////////////////////////////////////////////////////////////////////////////
 void load_guy_test(void)
 {
-        #include "../../lib/fyshuffle.h"
+        #include "../lib/fyshuffle.h"
 
         char *fn[24] = { "Robert", 
                          "Jonathan",
@@ -204,5 +236,14 @@ void load_guy_test(void)
         int i;
         for (i=0; i<24; i++) {
                 new_guy(fn[i], mn[i], ln[i], bp[i], j[i], a[i], w[i], h[i], g[i]);
+        }
+        for (i=0; i<nguys(); i++) {
+                set_vital(keyring[i], HP, roll_fair(8));
+                set_vital(keyring[i], SP, roll_fair(8));
+                set_vital(keyring[i], LP, roll_fair(8));
+                set_vital(keyring[i], EP, roll_fair(8));
+                focus(keyring[i]);
+                focused->forward = true;
+                focused->xpulse = vit_blocklen(keyring[i]);
         }
 }

@@ -29,9 +29,9 @@ Bindings and actions for the user's keyboard input.
 #include "../mob/boat.h"
 #include "../pan/dialog.h"
 #include "../env/deck.h"
-#include "../pan/menus.h"
 #include "../pan/ctrlpanels.h"
 #include "../pan/new_character.h"
+#include "../guy/guy_control.h"
 /******************************************************************************/
 PANEL *deckp;
 
@@ -125,8 +125,8 @@ void *iolisten(EV_P_ ev_io *w, int revents)
                         move_inspector('r');
                         break;
                 case 'o':
-                        post_dockbox();
-                        toggle_menu_crew();
+                        view_dock();
+                        choose_noun();
                         break;
                 case 'p':
                         wrap_wave('r');

@@ -18,8 +18,7 @@
 #include "../gfx/wselect.h"
 #include "../gen/name/name.h"
 #include "ctrlpanels.h"
-#include "../guy/model/guy.h"
-#include "../guy/model/jobs.h"
+#include "../guy/guy_model.h"
 #include "../gfx/fancy_menus.h"
 #include "button.h"
 

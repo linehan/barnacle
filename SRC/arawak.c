@@ -42,7 +42,9 @@
 #include "pan/crewgen.h"
 #include "pan/ctrlpanels.h"
 #include "pan/new_character.h"
-#include "guy/model/guy.h"
+#include "guy/guy_model.h"
+#include "guy/guy_control.h"
+
 
 
 /******************************************************************************/
@@ -69,8 +71,8 @@ void tumbler(EV_P_ ev_timer *w, int revents)
         seek_heading();
         seek_prevailing();
         draw_compass();
-        post_dockbox();
-        vit_dopulse();
+        view_dock();
+        do_pulse();
 
         if ((sem_trywait(bun->sem) == -1)) ev_timer_again(EV_DEFAULT, w);
         else                               ev_break(EV_A_ EVBREAK_ALL);
@@ -123,10 +125,6 @@ int main()
         nominate_boat(boatkey);
 
         load_guy_test();
-        post_menu_crew();
-
-        /*init_cstat();*/
-        /*post_menu_crew();*/
 
         /* master off switch */
         sem_t master_off; 

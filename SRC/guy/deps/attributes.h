@@ -1,4 +1,6 @@
-#include "guy.h"
+#ifndef __MODEL_ATTRIBUTES
+#define __MODEL_ATTRIBUTES
+#include "../guy_model.h"
 
 /*
   Creatures have an 'attributes' member, which is a packaged state consisting
@@ -25,3 +27,5 @@ static inline void unpack_attributes(uint32_t key, int *dest)
         focus(key);
         unpack_nibbles(focused->attributes, dest, NNIBBLES);
 }
+
+#endif

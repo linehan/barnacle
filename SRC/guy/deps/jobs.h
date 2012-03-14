@@ -1,3 +1,5 @@
+#ifndef __MODEL_JOB
+#define __MODEL_JOB
 
 #define JOB_COUNT 51
 
@@ -119,8 +121,10 @@ static const char *job_flavor[] = {
         (char *)NULL
 };
 
-static inline char *get_job(uint32_t key)
+static inline const char *get_job(uint32_t key)
 {
         focus(key);
         return (job_list[(uint8_t)focused->job]);
 }
+
+#endif

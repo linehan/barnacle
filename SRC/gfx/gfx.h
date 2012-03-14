@@ -5,6 +5,8 @@
 #include <stdlib.h>
 #include <wchar.h>
 #include <ncurses.h>
+#include <panel.h>
+#include <locale.h>
 #include <pthread.h>
 #include <semaphore.h>
 #include "../lib/llist/list.h"

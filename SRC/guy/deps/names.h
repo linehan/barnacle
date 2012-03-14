@@ -1,8 +1,7 @@
-#include <stdlib.h>
-#include <stdio.h>
+#ifndef __MODEL_NAMES
+#define __MODEL_NAMES
 #include <string.h>
-#include "guy.h"
-
+#include "../guy_model.h"
 
 static inline char *fname(uint32_t key)
 {
@@ -20,8 +19,6 @@ static inline char *lname(uint32_t key)
         return (focused->lname);
 }
 
-/* Returns first and last name
-------------------------------------------------------------------------------*/
 static char *flname(uint32_t key)
 {
         char *f, *l;
@@ -35,8 +32,7 @@ static char *flname(uint32_t key)
 
         return (fl);
 }
-/* Returns full name (just a tweaked three_name_hash)
-------------------------------------------------------------------------------*/
+
 static char *fullname(uint32_t key)
 {
         char *a, *b, *c;
@@ -51,3 +47,5 @@ static char *fullname(uint32_t key)
 
         return (abc);
 }
+
+#endif
