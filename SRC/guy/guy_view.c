@@ -26,6 +26,31 @@
 #include "../gfx/sprite.h"
 #include "../pan/test.h"
 #include "guy_model.h"
+#include "guy_view.h"
+////////////////////////////////////////////////////////////////////////////////
+//                                                                            //
+//                                                                            //
+//                                  keys                                      //
+//                                                                            //
+//                                                                            //
+////////////////////////////////////////////////////////////////////////////////
+
+uint32_t active_key[2];
+
+void install_key(uint32_t key, int option)
+{
+        if (option!=KEY_OBJECT && option!=KEY_SUBJECT) return;
+        else
+                active_key[option] = key;
+}
+
+
+inline uint32_t request_key(int option)
+{
+        if (option!=KEY_OBJECT && option!=KEY_SUBJECT) return 0;
+        else
+                return (active_key[option]);
+}
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
 //                                                                            //
@@ -103,7 +128,12 @@ void view_nouns(void)
         set_menu_mark(noun_menu, "");
 
         post_menu(noun_menu);
-        top_panel(noun_pan);
+}
+
+
+MENU *get_noun_menu(void)
+{
+        return (noun_menu);
 }
 
 
@@ -116,36 +146,58 @@ void close_nouns(void)
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
 //                                                                            //
-//                              dock window                                   //
+//                                dock window                                 //
 //                                                                            //
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
-#define DOCK_W COLS
+/*
++------------------------------------------------------------------------------+
+|                               dock parent window                             |
++------------------------------------------------------------------------------+
++-----------------------------------+      +-----------------------------------+
+|          subject window           |      |           object window           |
++-----------------------------------+      +-----------------------------------+
++-----------+ +---------------------+      +---------------------+ +-----------+
+| id window | |    widget window    |      |    widget window    | | id window |
++-----------+ +---------------------+      +---------------------+ +-----------+
+*/
 #define DOCK_H 1
-#define DOCK_X 0
+#define DOCK_W COLS
 #define DOCK_Y LINES-DOCK_H
-#define DOCKNAM_H 1
-#define DOCKNAM_W 20
-#define DOCKNAM_Y 0
-#define DOCKNAM_X 2
-#define DOCKBUF_H 1
-#define DOCKBUF_W COLS-25
-#define DOCKBUF_Y 0
-#define DOCKBUF_X 22
+#define DOCK_X 0
+
+#define OPERAND_W 54
+#define ID_W 20
+#define WIDGET_W 30
+
+#define SUBJECT_X 2
+#define OBJECT_X COLS-OPERAND_W-2
+
 WINDOW *dock_win;
-WINDOW *dock_nam;
-WINDOW *dock_buf;
+WINDOW *subject_win, *subj_id_win, *subj_wi_win;
+WINDOW *object_win, *obj_id_win, *obj_wi_win;
 PANEL  *dock_pan;
 
 
 inline void buildview_dock(void)
 {
         dock_win = newwin(DOCK_H, DOCK_W, DOCK_Y, DOCK_X);
-        dock_nam = derwin(dock_win, DOCKNAM_H, DOCKNAM_W, DOCKNAM_Y, DOCKNAM_X);
-        dock_buf = derwin(dock_win, DOCKBUF_H, DOCKBUF_W, DOCKBUF_Y, DOCKBUF_X);
+
+        subject_win = derwin(   dock_win , DOCK_H , OPERAND_W , 0 , SUBJECT_X);
+        subj_id_win = derwin(subject_win , DOCK_H , ID_W      , 0 ,         0);
+        subj_wi_win = derwin(subject_win , DOCK_H , WIDGET_W  , 0 ,      ID_W);
+
+        object_win  =  derwin(  dock_win , DOCK_H , OPERAND_W , 0 ,  OBJECT_X);
+        obj_id_win  =  derwin(object_win , DOCK_H , ID_W      , 0 ,  WIDGET_W);
+        obj_wi_win  =  derwin(object_win , DOCK_H , WIDGET_W  , 0 ,         0);
+
         wbkgrnd(dock_win, &PURPLE[2]);
-        wbkgrnd(dock_nam, &PURPLE[2]);
-        wbkgrnd(dock_buf, &PURPLE[2]);
+        wbkgrnd(subject_win, &PURPLE[2]);
+        wbkgrnd(subj_id_win, &PURPLE[2]);
+        wbkgrnd(subj_wi_win, &PURPLE[2]);
+        wbkgrnd(object_win, &PURPLE[2]);
+        wbkgrnd(obj_id_win, &PURPLE[2]);
+        wbkgrnd(obj_wi_win, &PURPLE[2]);
         dock_pan = new_panel(dock_win);
 }
 
@@ -185,7 +237,7 @@ void *get_pattern(void)
                 goto PATTERN_LISTEN;
 
         PATTERN_LISTEN:
-                while ((c=getch()) != '\n') {
+                while ((c=getch()), c!='\n') {
                         switch (c) {
                         case KEY_ESC:
                                 if (*(PATTERN)=='\0') goto PATTERN_END;
@@ -203,7 +255,7 @@ void *get_pattern(void)
                         return (current_item(PATTERN_MENU));
                 }
         PATTERN_END:
-                menu_driver(noun_menu, REQ_CLEAR_PATTERN);
+                menu_driver(PATTERN_MENU, REQ_CLEAR_PATTERN);
                 werase(PATTERN_WIN);
                 wbkgrnd(PATTERN_WIN, &PURPLE[3]);
                 win_refresh(PATTERN_WIN);
@@ -230,35 +282,43 @@ static const wchar_t  BOX_WCH[]=L"▩▨▧▦▣□ⲾⲿⲺⲻ";
 static cchar_t BOX_CCH;
 
 
-#define WIDGETS dock_buf
-uint32_t active_key;
+#define SUBJ_WIN subj_wi_win
+#define OBJ_WIN obj_wi_win
 
 
-inline void put_nblocks(int y, int x, int block, short pair, int n)
+inline void put_nblocks(WINDOW *win, int y, int x, int block, short pair, int n)
 {
         setcchar(&BOX_CCH, &BOX_WCH[block], 0, pair, NULL);
-        mvwhline_set(WIDGETS, y, x, &BOX_CCH, n);
+        mvwhline_set(win, y, x, &BOX_CCH, n);
 }
 
 
-void view_vitals(void)
+void view_vitals(int operand)
 {
+        if (operand!=KEY_SUBJECT && operand!=KEY_OBJECT) operand=KEY_SUBJECT;
+
+        #define X(op) (op==KEY_SUBJECT) ? 0 : VIT_MAXLEN
+        #define W(op) (op==KEY_SUBJECT) ? SUBJ_WIN : OBJ_WIN
+
         uint8_t xpulse; // x-offset of the pulse peak
         int vital;      // value of each vital in loop
         int i, xofs;
 
-        focus(active_key);
-        xpulse = focused->xpulse;
+        werase(W(operand));
+        put_nblocks(W(operand), 0, 0, SMHBAR, TITLE_SCREEN, VIT_MAXLEN);
 
-        werase(WIDGETS);
-        put_nblocks(0, 0, SMHBAR, TITLE_SCREEN, VIT_MAXLEN);
+        focus(active_key[operand]);
+        xpulse = focused->xpulse;
+        xofs = X(operand);
 
         for (i=0; i<4; i++) {
-                vital = get_vital(active_key, i);
-                put_nblocks(0, xofs, DBOX, VIT_PAIR[i], vital);
-                xofs += vital;
+                vital = get_vital(active_key[operand], i);
+                if (operand==KEY_OBJECT)  xofs -= vital;
+                put_nblocks(W(operand), 0, xofs, DBOX, VIT_PAIR[i], vital);
+                if (operand==KEY_SUBJECT) xofs += vital;
+
         }
-        win_refresh(WIDGETS);
+        win_refresh(W(operand));
 }
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
@@ -286,16 +346,16 @@ void do_pulse(void)
                 forward = focused->forward;
                 action  = focused->action;
 
-                if (keyring[i] == active_key) {
-                        put_nblocks(0, xmin, BLOCKSTYLE, (VIT_MAXLEN-xmin));
+                if (keyring[i] == active_key[KEY_SUBJECT]) {
+                        put_nblocks(SUBJ_WIN, 0, xmin, BLOCKSTYLE, (VIT_MAXLEN-xmin));
                         if (action != 0) {
                                 if (forward)
-                                        put_nblocks(0, pulse+1, BLOCKSTYLE, 1);
+                                        put_nblocks(SUBJ_WIN, 0, pulse+1, BLOCKSTYLE, 1);
                                 else
-                                        put_nblocks(0, pulse-1, BLOCKSTYLE, 1);
+                                        put_nblocks(SUBJ_WIN, 0, pulse-1, BLOCKSTYLE, 1);
                         }
-                        put_nblocks(0, pulse, PULSESTYLE, 1);
-                        win_refresh(WIDGETS);
+                        put_nblocks(SUBJ_WIN, 0, pulse, PULSESTYLE, 1);
+                        win_refresh(SUBJ_WIN);
                 }
 
                 if (forward)  pulse++; 
@@ -327,16 +387,16 @@ void view_attributes(void)
         int val[8];
         int i;
 
-        werase(WIDGETS);
-        wcolor_set(WIDGETS, ATTR_STANDOUT, NULL);
-        waddwstr(WIDGETS, L"Σ    Φ    Δ    A    Ψ    W    Χ    Λ");
-        wcolor_set(WIDGETS, ATTR_ORIGINAL, NULL);
+        werase(SUBJ_WIN);
+        wcolor_set(SUBJ_WIN, ATTR_STANDOUT, NULL);
+        waddwstr(SUBJ_WIN, L"Σ    Φ    Δ    A    Ψ    W    Χ    Λ");
+        wcolor_set(SUBJ_WIN, ATTR_ORIGINAL, NULL);
 
-        unpack_attributes(active_key, val);
+        unpack_attributes(active_key[KEY_SUBJECT], val);
         for (i=0; i<8; i++) {
-                mvwprintw(WIDGETS, 0, (i*STRIDE)+1, "%02u", val[i]);
+                mvwprintw(SUBJ_WIN, 0, (i*STRIDE)+1, "%02u", val[i]);
         }
-        win_refresh(WIDGETS);
+        win_refresh(SUBJ_WIN);
 }
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
@@ -348,14 +408,14 @@ void view_attributes(void)
 #define NOUN_STANDOUT PUR_YEL
 #define NOUN_BRIGHTER PUR_GRE
 #define NOUN_ORIGINAL PUR_PUR
-#define NOUNWIN dock_nam
+#define NOUNWIN subj_id_win
 
 
 void view_noun(void)
 {
         werase(NOUNWIN);
         wcolor_set(NOUNWIN, NOUN_STANDOUT, NULL);
-        wprintw(NOUNWIN, "%s", flname(active_key));
+        wprintw(NOUNWIN, "%s", flname(active_key[KEY_SUBJECT]));
         win_refresh(NOUNWIN);
 }
 
@@ -364,6 +424,6 @@ void view_noun_grey(void)
 {
         werase(NOUNWIN);
         wcolor_set(NOUNWIN, NOUN_BRIGHTER, NULL);
-        wprintw(NOUNWIN, "%s", flname(active_key));
+        wprintw(NOUNWIN, "%s", flname(active_key[KEY_SUBJECT]));
         win_refresh(NOUNWIN);
 }

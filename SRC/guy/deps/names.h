@@ -1,5 +1,6 @@
-#ifndef __MODEL_NAMES
-#define __MODEL_NAMES
+#pragma once
+#ifndef __NAMES_MODEL
+#define __NAMES_MODEL
 #include <string.h>
 #include "../guy_model.h"
 

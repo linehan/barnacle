@@ -1,5 +1,6 @@
-#ifndef __MODEL_JOB
-#define __MODEL_JOB
+#pragma once
+#ifndef __JOBS_MODEL
+#define __JOBS_MODEL
 
 #define JOB_COUNT 51
 

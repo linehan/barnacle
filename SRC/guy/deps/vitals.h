@@ -1,5 +1,6 @@
-#ifndef MODEL_VITALS
-#define MODEL_VITALS
+#pragma once
+#ifndef __VITALS_MODEL
+#define __VITALS_MODEL
 #include <stdint.h>
 #include <stdbool.h>
 #include "../guy_model.h"

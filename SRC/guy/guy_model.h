@@ -1,5 +1,6 @@
-#ifndef __CREATURES
-#define __CREATURES
+#pragma once
+#ifndef __GUY_MODEL
+#define __GUY_MODEL
 
 #include <stdbool.h>
 #include <stdint.h>

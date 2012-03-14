@@ -38,7 +38,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 enum operator_modes { EXITING, STARTING,
                       NOUNMENU, ATTRIBUTES, PROFESSION, VITALS, 
-                      PATTERN, ACTION };
+                      PATTERN, ACTION, TARGET };
 
 #define RESET -1 
 bool mode_changed;
@@ -71,7 +71,8 @@ void operate_on(void *noun)
                 setmode(RESET);
         }
 
-        install_key(key);
+        install_key(key, KEY_OBJECT);
+        install_key(key, KEY_SUBJECT);
 
         switch(mode) {
         case EXITING:
@@ -88,7 +89,8 @@ void operate_on(void *noun)
                 focus(key);
                 focused->action = 1;
         case VITALS:
-                view_vitals();
+                view_vitals(KEY_OBJECT);
+                view_vitals(KEY_SUBJECT);
                 break;
 
         }
@@ -113,12 +115,13 @@ void choose_noun(void)
 
         #define DEFAULT_MODE VITALS
 
+        MENU *menu = get_noun_menu();
         ITEM *item = NULL;
         int c;
 
         // First run
         setmode(DEFAULT_MODE);
-        item=current_item(noun_menu);
+        item=current_item(menu);
         operate_on(item_userptr(item));
 
         while ((c = getch())) 
@@ -126,23 +129,23 @@ void choose_noun(void)
                 switch (c)
                 {
                 case '/': 
-                        while ((item = (ITEM *)get_pattern()) != NULL);
+                        while (item = (ITEM *)get_pattern(), item!=NULL)
                                 operate_on(item_userptr(item));
                         break;
                 case '!':
                         setmode(ACTION);
                         break;
                 case 'k':
-                        menu_driver(noun_menu, REQ_PREV_ITEM);
+                        menu_driver(menu, REQ_PREV_ITEM);
                         break;
                 case 'j':
-                        menu_driver(noun_menu, REQ_NEXT_ITEM);
+                        menu_driver(menu, REQ_NEXT_ITEM);
                         break;
                 case 'n':
-                        menu_driver(noun_menu, REQ_PREV_MATCH);
+                        menu_driver(menu, REQ_PREV_MATCH);
                         break;
                 case 'p':
-                        menu_driver(noun_menu, REQ_NEXT_MATCH);
+                        menu_driver(menu, REQ_NEXT_MATCH);
                         break;
                 case 'P':
                         setmode(PROFESSION);
@@ -153,6 +156,9 @@ void choose_noun(void)
                 case 'v':
                         setmode(VITALS);
                         break;
+                case 't':
+                        setmode(TARGET);
+                        break;
                 case 'O':
                         setmode(NOUNMENU);
                         break;
@@ -162,7 +168,7 @@ void choose_noun(void)
                         operate_on(item_userptr(item));
                         return;
                 }
-                item=current_item(noun_menu);
+                item=current_item(menu);
                 operate_on(item_userptr(item));
 
                 scr_refresh();

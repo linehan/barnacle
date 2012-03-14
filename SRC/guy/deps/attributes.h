@@ -1,5 +1,6 @@
-#ifndef __MODEL_ATTRIBUTES
-#define __MODEL_ATTRIBUTES
+#pragma once
+#ifndef __ATTRIBUTES_MODEL
+#define __ATTRIBUTES_MODEL
 #include "../guy_model.h"
 
 /*

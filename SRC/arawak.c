@@ -37,7 +37,6 @@
 #include "lib/morton.h"
 #include "gen/wave.h"
 #include "env/deck.h"
-#include "pan/menus.h"
 #include "gen/name/name.h"
 #include "pan/crewgen.h"
 #include "pan/ctrlpanels.h"
