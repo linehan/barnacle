@@ -19,6 +19,8 @@ struct guy_t {
         uint8_t gender;
         uint8_t xpulse;
         bool forward;
+        uint32_t fundamental;// Fundamental pulse
+        uint32_t pulse;      // Received pulses
         uint32_t vitals;     // Byte-oriented
         uint32_t attributes; // Nibble-oriented
         uint32_t action;     // Nibble-oriented

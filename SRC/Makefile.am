@@ -3,7 +3,7 @@ AUTOMAKE_OPTIONS = foreign subdir-objects
 #         gprof       non-GNU     compile objects in the 
 #           |                      indicated relative paths
 # optimize  | warnings
-# lvl 3 \   |    /
+# lvl 3 \   |    /    
 CFLAGS=-O3 -pg -Wall -DVERSION=\"$(VERSION)\" -DPROG="\"$(PACKAGE)\""
 LDFLAGS=-lm -lpthread -lmenu -lpanel -lform -lncursesw -lev
 #       /      |        \         |       \       \       |_____________

@@ -244,6 +244,8 @@ void load_guy_test(void)
                 set_vital(keyring[i], EP, roll_fair(8));
                 focus(keyring[i]);
                 focused->forward = true;
-                focused->xpulse = vit_blocklen(keyring[i]);
+                focused->fundamental = 0x80000000>>vit_blocklen(keyring[i]);
         }
 }
+
+

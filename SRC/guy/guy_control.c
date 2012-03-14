@@ -48,10 +48,10 @@ int  mode;
 inline void setmode(int newmode)
 {
         if (mode == newmode) return;
-        if (newmode == RESET) mode_changed ^= 1;
+        if (newmode == RESET) mode_changed = false;
         else {
                 mode = newmode;
-                mode_changed = 1;
+                mode_changed = true;
         }
 }
 ////////////////////////////////////////////////////////////////////////////////
@@ -66,8 +66,6 @@ void operate_on(void *noun)
         uint32_t key = (noun!=NULL) ? *(uint32_t *)noun : 0;
        
         if (mode_changed) {
-                if (mode != EXITING) {
-                }
                 setmode(RESET);
         }
 
@@ -76,12 +74,10 @@ void operate_on(void *noun)
 
         switch(mode) {
         case EXITING:
-                view_noun_grey();
-                close_nouns();
+                view_noun_grey(KEY_OBJECT);
+                close_nouns(KEY_OBJECT);
+                close_nouns(KEY_SUBJECT);
                 return;
-        case NOUNMENU:
-                view_nouns();
-                break;
         case ATTRIBUTES:
                 view_attributes();
                 break;
@@ -92,9 +88,8 @@ void operate_on(void *noun)
                 view_vitals(KEY_OBJECT);
                 view_vitals(KEY_SUBJECT);
                 break;
-
         }
-        view_noun();
+        view_noun(KEY_SUBJECT);
 }
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
@@ -103,7 +98,7 @@ void operate_on(void *noun)
 //                                                                            //
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
-void choose_noun(void) 
+void choose_noun(int op) 
 {
         /* ncurses sets the ESC key delay at 100ms by default, and this
          * is way too slow. According to Wolfram Alpha, 
@@ -115,13 +110,14 @@ void choose_noun(void)
 
         #define DEFAULT_MODE VITALS
 
-        MENU *menu = get_noun_menu();
+        MENU *menu[2]={get_noun_menu(KEY_SUBJECT), get_noun_menu(KEY_OBJECT)};
         ITEM *item = NULL;
         int c;
+        int op=0;
 
         // First run
         setmode(DEFAULT_MODE);
-        item=current_item(menu);
+        item=current_item(menu[op]);
         operate_on(item_userptr(item));
 
         while ((c = getch())) 
@@ -136,16 +132,16 @@ void choose_noun(void)
                         setmode(ACTION);
                         break;
                 case 'k':
-                        menu_driver(menu, REQ_PREV_ITEM);
+                        menu_driver(menu[op], REQ_PREV_ITEM);
                         break;
                 case 'j':
-                        menu_driver(menu, REQ_NEXT_ITEM);
+                        menu_driver(menu[op], REQ_NEXT_ITEM);
                         break;
                 case 'n':
-                        menu_driver(menu, REQ_PREV_MATCH);
+                        menu_driver(menu[op], REQ_PREV_MATCH);
                         break;
                 case 'p':
-                        menu_driver(menu, REQ_NEXT_MATCH);
+                        menu_driver(menu[op], REQ_NEXT_MATCH);
                         break;
                 case 'P':
                         setmode(PROFESSION);
@@ -157,10 +153,10 @@ void choose_noun(void)
                         setmode(VITALS);
                         break;
                 case 't':
-                        setmode(TARGET);
+                        open_nouns(1);
                         break;
-                case 'O':
-                        setmode(NOUNMENU);
+                case 'm':
+                        open_nouns(op);
                         break;
                 case KEY_ESC:
                 case 'o':
@@ -168,7 +164,7 @@ void choose_noun(void)
                         operate_on(item_userptr(item));
                         return;
                 }
-                item=current_item(menu);
+                item=current_item(menu[op]);
                 operate_on(item_userptr(item));
 
                 scr_refresh();

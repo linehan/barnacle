@@ -54,103 +54,10 @@ inline uint32_t request_key(int option)
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
 //                                                                            //
-//                                noun menu                                   //
-//                                                                            //
-//                                                                            //
-////////////////////////////////////////////////////////////////////////////////
-#define MENU_W 20
-#define MENU_H (LINES/3)
-#define MENU_X 1
-#define MENU_Y LINES-MENU_H
-#define SUB_H MENU_H-3
-#define SUB_W MENU_W-2
-#define SUB_Y 1
-#define SUB_X 1
-#define BUF_H 1
-#define BUF_W MENU_W
-#define BUF_Y MENU_H-1
-#define BUF_X 0
-WINDOW *noun_win;
-WINDOW *noun_sub;
-WINDOW *noun_buf;
-PANEL  *noun_pan;
-MENU   *noun_menu;
-
-
-void buildview_nouns(void)
-{
-        noun_win = newwin(MENU_H, MENU_W, MENU_Y, MENU_X);
-        noun_pan = new_panel(noun_win); 
-        hide_panel(noun_pan);
-
-        noun_sub = derwin(noun_win, SUB_H, SUB_W, SUB_Y, SUB_X);
-        noun_buf = derwin(noun_win, BUF_H, BUF_W, BUF_Y, BUF_X);
-
-        wbkgrnd(noun_win, &PURPLE[2]);
-        wbkgrnd(noun_sub, &PURPLE[2]);
-        wbkgrnd(noun_buf, &PURPLE[2]);
-}
-
-
-void view_nouns(void)
-{
-        #define ORIGINAL PUR_PUR
-        #define STANDOUT PUR_YEL
-        #define NROWS MENU_H-2
-        #define NCOLS 1 
-
-        char **nouns;
-        ITEM **items;
-        int i, n;
-
-        if (noun_pan == NULL) buildview_nouns();
-
-        n     = nguys();
-        nouns = calloc(n, sizeof(char *));
-        items = calloc(n+1, sizeof(ITEM *));
-
-        for (i=0; i<n; i++) {
-                nouns[i] = flname(keyring[i]);
-                items[i] = new_item(nouns[i], nouns[i]);
-                set_item_userptr(items[i], &keyring[i]);
-        }
-        items[n] = (ITEM *)NULL;
-
-        noun_menu = new_menu((ITEM **)items);
-
-         set_menu_win(noun_menu, noun_win);
-         set_menu_sub(noun_menu, noun_sub);
-        set_menu_fore(noun_menu, COLOR_PAIR(STANDOUT));
-        set_menu_back(noun_menu, COLOR_PAIR(ORIGINAL));
-        menu_opts_off(noun_menu, O_SHOWDESC);
-
-        set_menu_format(noun_menu, NROWS, NCOLS);
-        set_menu_mark(noun_menu, "");
-
-        post_menu(noun_menu);
-}
-
-
-MENU *get_noun_menu(void)
-{
-        return (noun_menu);
-}
-
-
-void close_nouns(void)
-{
-        hide_panel(noun_pan);
-        vrt_refresh();
-        scr_refresh();
-}
-////////////////////////////////////////////////////////////////////////////////
-//                                                                            //
-//                                                                            //
 //                                dock window                                 //
 //                                                                            //
 //                                                                            //
-////////////////////////////////////////////////////////////////////////////////
-/*
+/*//////////////////////////////////////////////////////////////////////////////
 +------------------------------------------------------------------------------+
 |                               dock parent window                             |
 +------------------------------------------------------------------------------+
@@ -160,7 +67,7 @@ void close_nouns(void)
 +-----------+ +---------------------+      +---------------------+ +-----------+
 | id window | |    widget window    |      |    widget window    | | id window |
 +-----------+ +---------------------+      +---------------------+ +-----------+
-*/
+*///////////////////////////////////////////////////////////////////////////////
 #define DOCK_H 1
 #define DOCK_W COLS
 #define DOCK_Y LINES-DOCK_H
@@ -202,12 +109,155 @@ inline void buildview_dock(void)
 }
 
 
+
+////////////////////////////////////////////////////////////////////////////////
+//                                                                            //
+//                                                                            //
+//                                noun menu                                   //
+//                                                                            //
+//                                                                            //
+////////////////////////////////////////////////////////////////////////////////
+#define MENU_W 20
+#define MENU_H (LINES/3)
+#define MENU_X 1
+#define MENU_Y LINES-MENU_H-1
+#define SUB_H MENU_H-2
+#define SUB_W MENU_W-2
+#define SUB_Y 1
+#define SUB_X 1
+#define BUF_H 1
+#define BUF_W MENU_W
+#define BUF_Y MENU_H-1
+#define BUF_X 0
+WINDOW *subj_menu_win, *obj_menu_win;
+WINDOW *subj_menu_sub, *obj_menu_sub;
+WINDOW *subj_menu_buf, *obj_menu_buf;
+PANEL  *subj_menu_pan, *obj_menu_pan;
+MENU   *subj_menu, *obj_menu;
+
+
+void buildview_nouns(void)
+{
+        subj_menu_win = newwin(MENU_H, MENU_W, MENU_Y, MENU_X);
+        subj_menu_pan = new_panel(subj_menu_win); 
+        hide_panel(subj_menu_pan);
+
+        subj_menu_sub = derwin(subj_menu_win, SUB_H, SUB_W, SUB_Y, SUB_X);
+        subj_menu_buf = derwin(subj_menu_win, BUF_H, BUF_W, BUF_Y, BUF_X);
+
+        wbkgrnd(subj_menu_win, &PURPLE[2]);
+        wbkgrnd(subj_menu_sub, &PURPLE[2]);
+        wbkgrnd(subj_menu_buf, &PURPLE[2]);
+
+
+        obj_menu_win = newwin(MENU_H, MENU_W, MENU_Y, COLS-MENU_W-1);
+        obj_menu_pan = new_panel(obj_menu_win); 
+        hide_panel(obj_menu_pan);
+
+        obj_menu_sub = derwin(obj_menu_win, SUB_H, SUB_W, SUB_Y, SUB_X);
+        obj_menu_buf = derwin(obj_menu_win, BUF_H, BUF_W, BUF_Y, BUF_X);
+
+        wbkgrnd(obj_menu_win, &PURPLE[2]);
+        wbkgrnd(obj_menu_sub, &PURPLE[2]);
+        wbkgrnd(obj_menu_buf, &PURPLE[2]);
+
+}
+
+
+void build_nouns(void)
+{
+        #define ORIGINAL PUR_GRE
+        #define STANDOUT PUR_DYE
+        #define OTANDOUT PUR_RED
+        #define NROWS MENU_H-2
+        #define NCOLS 1 
+
+        char **subjects;
+        char **objects;
+        ITEM **sitems;
+        ITEM **oitems;
+        int nsubj;
+        int nobj;
+        int i;
+
+        if (subj_menu_pan==NULL || obj_menu_pan==NULL) buildview_nouns();
+        // --------------------------------------------------------------
+        nsubj = nguys();
+        nobj  = nguys();
+
+        subjects = calloc(nsubj, sizeof(char *));
+        objects  = calloc(nobj, sizeof(char *));
+
+        sitems = calloc(nsubj+1, sizeof(ITEM *));
+        oitems = calloc(nobj+1, sizeof(ITEM *));
+        // --------------------------------------------------------------
+        for (i=0; i<nsubj; i++) {
+                subjects[i] = flname(keyring[i]);
+                sitems[i] = new_item(subjects[i], subjects[i]);
+                set_item_userptr(sitems[i], &keyring[i]);
+        }
+        sitems[nsubj] = (ITEM *)NULL;
+
+        for (i=0; i<nobj; i++) {
+                objects[i]  = flname(keyring[i]);
+                oitems[i] = new_item(objects[i], objects[i]);
+                set_item_userptr(oitems[i], &keyring[i]);
+        }
+        oitems[nobj] = (ITEM *)NULL;
+        // --------------------------------------------------------------
+        subj_menu = new_menu((ITEM **)sitems);
+
+           set_menu_win(subj_menu, subj_menu_win);
+           set_menu_sub(subj_menu, subj_menu_sub);
+          set_menu_fore(subj_menu, COLOR_PAIR(STANDOUT));
+          set_menu_back(subj_menu, COLOR_PAIR(ORIGINAL));
+          menu_opts_off(subj_menu, O_SHOWDESC);
+        set_menu_format(subj_menu, NROWS, NCOLS);
+          set_menu_mark(subj_menu, "");
+        // --------------------------------------------------------------
+        obj_menu = new_menu((ITEM **)oitems);
+
+           set_menu_win(obj_menu, obj_menu_win);
+           set_menu_sub(obj_menu, obj_menu_sub);
+          set_menu_fore(obj_menu, COLOR_PAIR(PUR_RED));
+          set_menu_back(obj_menu, COLOR_PAIR(ORIGINAL));
+          menu_opts_off(obj_menu, O_SHOWDESC);
+        set_menu_format(obj_menu, NROWS, NCOLS);
+          set_menu_mark(obj_menu, "");
+        // --------------------------------------------------------------
+        post_menu(subj_menu);
+        post_menu(obj_menu);
+}
+
+
+MENU *get_noun_menu(int operand)
+{
+        return (KEY_SUBJECT) ? subj_menu : obj_menu;
+}
+
+void open_nouns(int operand)
+{
+        PANEL *p = (operand==KEY_SUBJECT) ? subj_menu_pan : obj_menu_pan;
+        if (panel_hidden(p)) show_panel(p);
+        else                 hide_panel(p);
+        vrt_refresh();
+}
+
+void close_nouns(int operand)
+{
+        PANEL *p = (operand==KEY_SUBJECT) ? subj_menu_pan : obj_menu_pan;
+
+        hide_panel(p);
+        vrt_refresh();
+}
+
 void view_dock(void)
 {
         if (dock_pan == NULL) buildview_dock();
-        if (noun_pan == NULL) view_nouns();
+        if (subj_menu_pan == NULL || obj_menu_pan == NULL) build_nouns();
         else                  top_panel(dock_pan);
 }
+
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
 //                                                                            //
@@ -217,9 +267,9 @@ void view_dock(void)
 ////////////////////////////////////////////////////////////////////////////////
 void *get_pattern(void)
 {
-        #define PATTERN_WIN noun_buf
-        #define PATTERN_PAN noun_pan
-        #define PATTERN_MENU noun_menu
+        #define PATTERN_WIN subj_menu_buf
+        #define PATTERN_PAN subj_menu_pan
+        #define PATTERN_MENU subj_menu
         #define PATTERN (menu_pattern(PATTERN_MENU))
         #define KEY_ESC 27 // int value of ESC keycode
 
@@ -300,7 +350,6 @@ void view_vitals(int operand)
         #define X(op) (op==KEY_SUBJECT) ? 0 : VIT_MAXLEN
         #define W(op) (op==KEY_SUBJECT) ? SUBJ_WIN : OBJ_WIN
 
-        uint8_t xpulse; // x-offset of the pulse peak
         int vital;      // value of each vital in loop
         int i, xofs;
 
@@ -308,7 +357,6 @@ void view_vitals(int operand)
         put_nblocks(W(operand), 0, 0, SMHBAR, TITLE_SCREEN, VIT_MAXLEN);
 
         focus(active_key[operand]);
-        xpulse = focused->xpulse;
         xofs = X(operand);
 
         for (i=0; i<4; i++) {
@@ -327,48 +375,80 @@ void view_vitals(int operand)
 //                                                                            //
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
+
+// The best method for counting bits in a 32-bit integer v is the following:
+inline unsigned int ones(uint32_t v)
+{
+        v = v - ((v >> 1) & 0x55555555);                    // reuse input
+        v = (v & 0x33333333) + ((v >> 2) & 0x33333333);     // temp
+        return (((v + (v >> 4) & 0xF0F0F0F) * 0x1010101) >> 24);
+/*
+  The best bit counting method takes only 12 operations, which is the 
+  same as the lookup-table method, but avoids the memory and potential 
+  cache misses of a table. It is a hybrid between the purely parallel 
+  method above and the earlier methods using multiplies (in the section 
+  on counting bits with 64-bit instructions), though it doesn't use 
+  64-bit instructions. The counts of bits set in the bytes is done in 
+  parallel, and the sum total of the bits set in the bytes is computed 
+  by multiplying by 0x1010101 and shifting right 24 bits. 
+*/
+}
+
+
+// Count leading zeroes in a word
+inline unsigned int lzc(uint32_t v)
+{
+        #define WORDBITS 32
+
+        v |= (v >> 1);
+        v |= (v >> 2);
+        v |= (v >> 4);
+        v |= (v >> 8);
+        v |= (v >> 16);
+        return(WORDBITS - ones(v));
+}
+
+
 void do_pulse(void)
 {
+        static const uint32_t rbump = 0x00000008;
+        static const uint32_t lbump = 0xC0000000;
+
         #define BLOCKSTYLE SMHBAR, TITLE_SCREEN
         #define PULSESTYLE LGHBAR, TITLE_SCREEN
 
-        uint32_t action;  // action state
-        int xmin;         // starting x offset
-        int pulse;        // position of pulse
-        bool forward;     // direction of pulse
-        int max=nguys();  // loop boundary
+        uint32_t fundamental; // fundamental pulse state
+        bool forward;         // direction of pulse
+        int xmin;             // starting x offset
+        int max;              // loop boundary
         int i;
+
+        max = nguys();
 
         for (i=0; i<max; i++) {
                 focus(keyring[i]);
-                pulse   = focused->xpulse;
-                xmin    = vit_blocklen(keyring[i]);
-                forward = focused->forward;
-                action  = focused->action;
+                fundamental = focused->fundamental;
+                forward     = focused->forward;
+                xmin        = vit_blocklen(keyring[i]);
 
                 if (keyring[i] == active_key[KEY_SUBJECT]) {
                         put_nblocks(SUBJ_WIN, 0, xmin, BLOCKSTYLE, (VIT_MAXLEN-xmin));
-                        if (action != 0) {
-                                if (forward)
-                                        put_nblocks(SUBJ_WIN, 0, pulse+1, BLOCKSTYLE, 1);
-                                else
-                                        put_nblocks(SUBJ_WIN, 0, pulse-1, BLOCKSTYLE, 1);
-                        }
-                        put_nblocks(SUBJ_WIN, 0, pulse, PULSESTYLE, 1);
-                        win_refresh(SUBJ_WIN);
+                        put_nblocks(SUBJ_WIN, 0, lzc(fundamental), PULSESTYLE, 1);
                 }
+                if (keyring[i] == active_key[KEY_OBJECT]) {
+                        put_nblocks(OBJ_WIN, 0, 0, BLOCKSTYLE, VIT_MAXLEN-xmin);
+                        put_nblocks(OBJ_WIN, 0, (VIT_MAXLEN-1)-lzc(fundamental), PULSESTYLE, 1);
+                }
+                win_refresh(SUBJ_WIN);
+                win_refresh(OBJ_WIN);
 
-                if (forward)  pulse++; 
-                else          pulse--;
+                if (forward) focused->fundamental>>=1;
+                else         focused->fundamental<<=1;
 
-                if (pulse>VIT_MAXLEN-2) forward=false;
-                if (pulse<=xmin)        forward=true;
+                if ((fundamental|rbump)         == rbump) forward=false;
+                if (((fundamental<<xmin)|lbump) == lbump) forward=true;
 
-                if (pulse == VIT_MAXLEN-1 || pulse == xmin) action = 0;
-
-                focused->xpulse  = pulse;
                 focused->forward = forward;
-                focused->action  = action;
         }
 }
 ////////////////////////////////////////////////////////////////////////////////
@@ -410,8 +490,7 @@ void view_attributes(void)
 #define NOUN_ORIGINAL PUR_PUR
 #define NOUNWIN subj_id_win
 
-
-void view_noun(void)
+void view_noun(int operand)
 {
         werase(NOUNWIN);
         wcolor_set(NOUNWIN, NOUN_STANDOUT, NULL);
@@ -420,7 +499,7 @@ void view_noun(void)
 }
 
 
-void view_noun_grey(void)
+void view_noun_grey(int operand)
 {
         werase(NOUNWIN);
         wcolor_set(NOUNWIN, NOUN_BRIGHTER, NULL);
