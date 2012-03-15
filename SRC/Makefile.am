@@ -40,6 +40,7 @@ arawak_SOURCES = arawak.c \
                    noun/noun_model.c   \
                    noun/noun_view.c    \
                    noun/noun_control.c \
+                   verb/verb_model.c \
                    pan/ctrlpanels.c  \
                    pan/new_character.c \
                    pan/instruments.c \

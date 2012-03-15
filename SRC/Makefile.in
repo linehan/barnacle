@@ -56,10 +56,11 @@ am_arawak_OBJECTS = arawak.$(OBJEXT) lib/redblack/rb.$(OBJEXT) \
 	gen/perlin.$(OBJEXT) gfx/term.$(OBJEXT) env/deck.$(OBJEXT) \
 	env/cloud.$(OBJEXT) mob/mob.$(OBJEXT) mob/boat.$(OBJEXT) \
 	noun/noun_model.$(OBJEXT) noun/noun_view.$(OBJEXT) \
-	noun/noun_control.$(OBJEXT) pan/ctrlpanels.$(OBJEXT) \
-	pan/new_character.$(OBJEXT) pan/instruments.$(OBJEXT) \
-	pan/button.$(OBJEXT) pan/dialog.$(OBJEXT) pan/test.$(OBJEXT) \
-	pan/crewgen.$(OBJEXT) txt/rk.$(OBJEXT) txt/psh.$(OBJEXT)
+	noun/noun_control.$(OBJEXT) verb/verb_model.$(OBJEXT) \
+	pan/ctrlpanels.$(OBJEXT) pan/new_character.$(OBJEXT) \
+	pan/instruments.$(OBJEXT) pan/button.$(OBJEXT) \
+	pan/dialog.$(OBJEXT) pan/test.$(OBJEXT) pan/crewgen.$(OBJEXT) \
+	txt/rk.$(OBJEXT) txt/psh.$(OBJEXT)
 arawak_OBJECTS = $(am_arawak_OBJECTS)
 arawak_LDADD = $(LDADD)
 DEFAULT_INCLUDES = -I.@am__isrc@
@@ -195,6 +196,7 @@ arawak_SOURCES = arawak.c \
                    noun/noun_model.c   \
                    noun/noun_view.c    \
                    noun/noun_control.c \
+                   verb/verb_model.c \
                    pan/ctrlpanels.c  \
                    pan/new_character.c \
                    pan/instruments.c \
@@ -392,6 +394,14 @@ noun/noun_view.$(OBJEXT): noun/$(am__dirstamp) \
 	noun/$(DEPDIR)/$(am__dirstamp)
 noun/noun_control.$(OBJEXT): noun/$(am__dirstamp) \
 	noun/$(DEPDIR)/$(am__dirstamp)
+verb/$(am__dirstamp):
+	@$(MKDIR_P) verb
+	@: > verb/$(am__dirstamp)
+verb/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) verb/$(DEPDIR)
+	@: > verb/$(DEPDIR)/$(am__dirstamp)
+verb/verb_model.$(OBJEXT): verb/$(am__dirstamp) \
+	verb/$(DEPDIR)/$(am__dirstamp)
 pan/$(am__dirstamp):
 	@$(MKDIR_P) pan
 	@: > pan/$(am__dirstamp)
@@ -461,6 +471,7 @@ mostlyclean-compile:
 	-rm -f pan/test.$(OBJEXT)
 	-rm -f txt/psh.$(OBJEXT)
 	-rm -f txt/rk.$(OBJEXT)
+	-rm -f verb/verb_model.$(OBJEXT)
 
 distclean-compile:
 	-rm -f *.tab.c
@@ -502,6 +513,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@pan/$(DEPDIR)/test.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@txt/$(DEPDIR)/psh.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@txt/$(DEPDIR)/rk.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@verb/$(DEPDIR)/verb_model.Po@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.o$$||'`;\
@@ -662,6 +674,8 @@ distclean-generic:
 	-rm -f pan/$(am__dirstamp)
 	-rm -f txt/$(DEPDIR)/$(am__dirstamp)
 	-rm -f txt/$(am__dirstamp)
+	-rm -f verb/$(DEPDIR)/$(am__dirstamp)
+	-rm -f verb/$(am__dirstamp)
 
 maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"
@@ -671,7 +685,7 @@ clean: clean-am
 clean-am: clean-binPROGRAMS clean-generic mostlyclean-am
 
 distclean: distclean-am
-	-rm -rf ./$(DEPDIR) cmd/$(DEPDIR) eng/$(DEPDIR) eng/model/$(DEPDIR) env/$(DEPDIR) gen/$(DEPDIR) gen/name/$(DEPDIR) geo/$(DEPDIR) gfx/$(DEPDIR) lib/redblack/$(DEPDIR) lib/sort/$(DEPDIR) mob/$(DEPDIR) noun/$(DEPDIR) pan/$(DEPDIR) txt/$(DEPDIR)
+	-rm -rf ./$(DEPDIR) cmd/$(DEPDIR) eng/$(DEPDIR) eng/model/$(DEPDIR) env/$(DEPDIR) gen/$(DEPDIR) gen/name/$(DEPDIR) geo/$(DEPDIR) gfx/$(DEPDIR) lib/redblack/$(DEPDIR) lib/sort/$(DEPDIR) mob/$(DEPDIR) noun/$(DEPDIR) pan/$(DEPDIR) txt/$(DEPDIR) verb/$(DEPDIR)
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
 	distclean-tags
@@ -717,7 +731,7 @@ install-ps-am:
 installcheck-am:
 
 maintainer-clean: maintainer-clean-am
-	-rm -rf ./$(DEPDIR) cmd/$(DEPDIR) eng/$(DEPDIR) eng/model/$(DEPDIR) env/$(DEPDIR) gen/$(DEPDIR) gen/name/$(DEPDIR) geo/$(DEPDIR) gfx/$(DEPDIR) lib/redblack/$(DEPDIR) lib/sort/$(DEPDIR) mob/$(DEPDIR) noun/$(DEPDIR) pan/$(DEPDIR) txt/$(DEPDIR)
+	-rm -rf ./$(DEPDIR) cmd/$(DEPDIR) eng/$(DEPDIR) eng/model/$(DEPDIR) env/$(DEPDIR) gen/$(DEPDIR) gen/name/$(DEPDIR) geo/$(DEPDIR) gfx/$(DEPDIR) lib/redblack/$(DEPDIR) lib/sort/$(DEPDIR) mob/$(DEPDIR) noun/$(DEPDIR) pan/$(DEPDIR) txt/$(DEPDIR) verb/$(DEPDIR)
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 

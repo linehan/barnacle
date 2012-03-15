@@ -1,5 +1,0 @@
-#!/bin/bash
-
-clear; make; 
-read OK
-./arawak
