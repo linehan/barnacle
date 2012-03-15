@@ -9,6 +9,7 @@
 #define IS_SET(B, n)  B &   (1 << n)
 #define TOGGLE(B, n)  B ^=  (1 << n)
 #define CLEAR(B, n)   B &= ~(1 << n)
+<<<<<<< .merge_file_oRrd1f
 
 /*
   The subexpression (v - 0x01010101UL), evaluates to a high bit set in any 
@@ -38,3 +39,5 @@
 */
 #define hasv(x,n) \
 (hasz((x) ^ (~0UL/255 * (n))))
+=======
+>>>>>>> .merge_file_xz91Vf

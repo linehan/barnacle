@@ -9,13 +9,21 @@
 
 
 /* Allocates memory for and then initializes a new ring head */
+<<<<<<< .merge_file_KNpQci
 #define MAKE_RING(head) \
+=======
+#define __RING(head) \
+>>>>>>> .merge_file_hMcYTj
         head = (struct list_head *)malloc(sizeof(struct list_head)); \
         list_head_init(head)
 
 /* Cycles the node pointed to by tmp, so that tmp points to the next item
    in the ring. */
+<<<<<<< .merge_file_KNpQci
 #define CYCLEF(head, tmp, type)                \
+=======
+#define CYCLE(head, tmp, type)                 \
+>>>>>>> .merge_file_hMcYTj
         tmp = list_top(head, type, node);      \
               list_del_from(head, &tmp->node); \
               list_add_tail(head, &tmp->node)

@@ -23,9 +23,13 @@ enum arne_colors {
         LWOOD      = 37,
         WOOD       = 38,
         SHADOW     = 39, 
+<<<<<<< .merge_file_NL5jqc
         DARK_RED   = 42, 
         DARK_BROWN = 43,
 
+=======
+        DARK_RED   = 42 
+>>>>>>> .merge_file_7wzDLb
 };
 
 enum arne_shadow1 {
@@ -79,6 +83,7 @@ enum arne_shadow2 {
         __LWOOD  = 88,
         __WOOD   = 89,
         __SHADOW = 90,
+<<<<<<< .merge_file_NL5jqc
         __DARK_RED = 91,
         __BG = 97,
         CELESTIALBLUE = 92,
@@ -87,6 +92,9 @@ enum arne_shadow2 {
         BLASTOFFBRONZE = 95,
         METALYELLOW    = 96,
         ZEN_BG = 97,
+=======
+        __DARK_RED = 91 
+>>>>>>> .merge_file_7wzDLb
 };
 
 /* FG_BG color pairs; odd ones are swaps of even ones. */
@@ -100,6 +108,7 @@ enum ramp_pairs {
         CMP_PINK      = 105,
         CMP_YELLOW    = 106,
         CMP_SHADOW    = 107,
+        MENU          = 108,
         WARNING       = 109,
         WARNSHADOW    = 110,
         GUN_FLASH     = 111,
@@ -164,7 +173,11 @@ enum ramp_pairs {
         BOAT_DEEP     = 19,
         BOAT_WOOD     = 20, 
         BOAT_WHITE    = 21,
+<<<<<<< .merge_file_NL5jqc
         //SAIL_DEEP     = 22,
+=======
+        SAIL_DEEP     = 22,
+>>>>>>> .merge_file_7wzDLb
         LAND          = 23,
         TREETOP       = 24,
         TREETRUNK     = 25,

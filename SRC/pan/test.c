@@ -153,10 +153,16 @@ void move_inspector(int dir)
         move_panel(INSPECTORPAN, inspector_y, inspector_x);
         top_panel(INSPECTORPAN);
         top_panel(INSPECTORMSGPAN);
+        move_panel(INSPECTORPAN, inspector_y, inspector_x);
         vrt_refresh();
+<<<<<<< .merge_file_Mk551F
 
         werase(INSPECTORMSGWIN);
         wprintw(INSPECTORMSGWIN, "MORT:%5u Y: %2u X: %2u | ", z, inspector_yy, inspector_xx);
         /*stat_state(INSPECTORMSGWIN, GLOBE->dom, z);*/
+=======
+        /*mort(inspector_y, inspector_x, &z);*/
+        /*stat_nyb(GLOBE->z);*/
+>>>>>>> .merge_file_UIKAXF
         scr_refresh();
 }

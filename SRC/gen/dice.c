@@ -71,6 +71,7 @@ other probabilistic results.
 #include <math.h>
 
 #include "../lib/llist/list.h"
+#include "../lib/memmacro.h"
 #include "../pan/test.h"
 
 #include "mtwist.h"
@@ -159,7 +160,11 @@ int roll_fair(int n)
 DICE *new_dice(char *str, ...)
 {
 	int i;
+<<<<<<< .merge_file_xPEPwS
 	DICE *new = malloc(sizeof *new);
+=======
+	DICE *new = MALLOC(DICE);
+>>>>>>> .merge_file_dNdvsS
 	if (new == NULL) 
 		perror ("DICE was not allocated properly!");
 
@@ -190,7 +195,11 @@ int vose_alias(int n, double *prob_array)
 	struct alias_worklist *tmp_l, *tmp_s;
 
 	for (i=0; i<n; i++) {
+<<<<<<< .merge_file_xPEPwS
 		struct alias_worklist *new = malloc(sizeof *new);
+=======
+		struct alias_worklist *new = MALLOC(struct alias_worklist);
+>>>>>>> .merge_file_dNdvsS
 		new->prob = (prob_array[i]*(double)n);
 		if ((new->prob)<1.0)
 			list_add(&Sm, &(new->node));

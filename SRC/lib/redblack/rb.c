@@ -14,13 +14,22 @@
 */
 
 
+<<<<<<< .merge_file_8d4oRo
 struct rb_node *make_node(uint32_t key, uint8_t words)
+=======
+struct rb_node *make_node(uint32_t key)
+>>>>>>> .merge_file_ChTMeo
 {
         struct rb_node *new = malloc(sizeof *new);
 
         if (new != NULL) {
+<<<<<<< .merge_file_8d4oRo
                 new->key     = key;
                 new->red     = 1; // 1 is red, 0 is black
+=======
+                new->key = key;
+                new->red = 1; // 1 is red, 0 is black
+>>>>>>> .merge_file_ChTMeo
                 new->link[0] = NULL;
                 new->link[1] = NULL;
                 new->data    = calloc(words, sizeof(uint32_t));
@@ -126,6 +135,7 @@ int rb_assert(struct rb_node *root)
 /*
   The recursive part of the recursive insertion routine.
 */
+<<<<<<< .merge_file_8d4oRo
 /*struct rb_node *rb_insert_r(struct rb_node *root, uint32_t key)*/
 /*{*/
         /*if (root == NULL)*/
@@ -163,6 +173,47 @@ int rb_assert(struct rb_node *root)
         /*tree->root->red = 0;*/
         /*return (1);*/
 /*}*/
+=======
+struct rb_node *rb_insert_r(struct rb_node *root, uint32_t key)
+{
+        if (root == NULL)
+                root = make_node(key);
+        else if (key != root->key) {
+                int dir = root->key < key;
+
+                root->link[dir] = rb_insert_r(root->link[dir], key);
+
+                // Rebalancing
+                if (is_red(root->link[dir])) {
+                        if (is_red(root->link[!dir])) {
+                                // Case 1
+                                root->red = 1;
+                                root->link[0]->red = 0;
+                                root->link[1]->red = 0;
+                        }
+                        else {
+                                // Cases 2&3
+                                if (is_red(root->link[dir]->link[dir]))
+                                        root = rb_rot_single(root, !dir);
+                                else if (is_red(root->link[dir]->link[dir]))
+                                        root = rb_rot_double(root, !dir);
+                        }
+                }
+        }
+        return (root);
+}
+
+
+/*
+  The recursive insertion routine.
+*/
+int rb_insert_recurse(struct rb_tree *tree, uint32_t key)
+{
+        tree->root = rb_insert_r(tree->root, key);
+        tree->root->red = 0;
+        return (1);
+}
+>>>>>>> .merge_file_ChTMeo
 
 
 /*
@@ -171,9 +222,13 @@ int rb_assert(struct rb_node *root)
 int rb_insert(struct rb_tree *tree, uint32_t key)
 {
         if (tree->root == NULL) {
+<<<<<<< .merge_file_8d4oRo
                 if (tree->words < DEFAULT_WORD_COUNT) 
                         tree->words = DEFAULT_WORD_COUNT;
                 tree->root = make_node(key, tree->words);
+=======
+                tree->root = make_node(key);
+>>>>>>> .merge_file_ChTMeo
                 if (tree->root == NULL) // malloc screwed us
                         return (0);
         }
@@ -192,8 +247,12 @@ int rb_insert(struct rb_tree *tree, uint32_t key)
                 for (;;) { 
                         if (q == NULL) {
                                 // Insert new node at the bottom
+<<<<<<< .merge_file_8d4oRo
                                 p->link[dir] = q = make_node(key, tree->words);
 
+=======
+                                p->link[dir] = q = make_node(key);
+>>>>>>> .merge_file_ChTMeo
                                 if (q == NULL)
                                         return (0);
                         }
@@ -310,6 +369,7 @@ int rb_remove(struct rb_tree *tree, uint32_t key)
         return (1);
 }
 
+<<<<<<< .merge_file_8d4oRo
 struct rb_node *_rb_retreive(struct rb_node *node, uint32_t key)
 {
         if (node == NULL) 
@@ -343,6 +403,22 @@ void rb_store(struct rb_tree *tree, uint32_t key, void *extra)
         }
         else
                 tree->peek->extra = extra; // Attach extra to node.
+=======
+void *rb_retreive(struct rb_tree *tree, uint32_t key)
+{
+        if (tree->root == NULL) 
+                return (NULL);
+
+        struct rb_node *p = tree->root;
+
+        while (key != p->key) {
+                if (key < p->key)
+                        p = p->link[0]; // go left
+                else if (key > p->key)
+                        p = p->link[1]; // go right
+        }
+        return (p->data);
+>>>>>>> .merge_file_ChTMeo
 }
 
 void *rb_extra(struct rb_tree *tree, uint32_t key)

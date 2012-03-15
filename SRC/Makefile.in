@@ -51,6 +51,7 @@ am_arawak_OBJECTS = arawak.$(OBJEXT) lib/redblack/rb.$(OBJEXT) \
 	cmd/control.$(OBJEXT) gen/dice.$(OBJEXT) gen/mtwist.$(OBJEXT) \
 	gen/name/name.$(OBJEXT) gen/wave.$(OBJEXT) \
 	geo/weather.$(OBJEXT) geo/terrain.$(OBJEXT) geo/map.$(OBJEXT) \
+<<<<<<< .merge_file_3JnK6V
 	gfx/palette.$(OBJEXT) gfx/sprite.$(OBJEXT) gfx/gfx.$(OBJEXT) \
 	gfx/wselect.$(OBJEXT) gfx/fancy_menus.$(OBJEXT) \
 	gen/perlin.$(OBJEXT) gfx/term.$(OBJEXT) env/deck.$(OBJEXT) \
@@ -60,6 +61,13 @@ am_arawak_OBJECTS = arawak.$(OBJEXT) lib/redblack/rb.$(OBJEXT) \
 	pan/new_character.$(OBJEXT) pan/instruments.$(OBJEXT) \
 	pan/button.$(OBJEXT) pan/dialog.$(OBJEXT) pan/test.$(OBJEXT) \
 	pan/crewgen.$(OBJEXT) txt/rk.$(OBJEXT) txt/psh.$(OBJEXT)
+=======
+	gfx/zbox.$(OBJEXT) gfx/palette.$(OBJEXT) gfx/sprite.$(OBJEXT) \
+	gfx/gfx.$(OBJEXT) gen/perlin.$(OBJEXT) gfx/term.$(OBJEXT) \
+	mob/mob.$(OBJEXT) mob/boat.$(OBJEXT) pan/instruments.$(OBJEXT) \
+	pan/menus.$(OBJEXT) pan/test.$(OBJEXT) txt/rk.$(OBJEXT) \
+	txt/psh.$(OBJEXT)
+>>>>>>> .merge_file_SvM2sV
 arawak_OBJECTS = $(am_arawak_OBJECTS)
 arawak_LDADD = $(LDADD)
 DEFAULT_INCLUDES = -I.@am__isrc@
@@ -87,7 +95,11 @@ CCDEPMODE = @CCDEPMODE@
 #         gprof       non-GNU     compile objects in the 
 #           |                      indicated relative paths
 # optimize  | warnings
+<<<<<<< .merge_file_3JnK6V
 # lvl 3 \   |    /    
+=======
+# lvl 3 \   |    /
+>>>>>>> .merge_file_SvM2sV
 CFLAGS = -O3 -pg -Wall -DVERSION=\"$(VERSION)\" -DPROG="\"$(PACKAGE)\""
 CPP = @CPP@
 CPPFLAGS = @CPPFLAGS@
@@ -105,7 +117,11 @@ INSTALL_DATA = @INSTALL_DATA@
 INSTALL_PROGRAM = @INSTALL_PROGRAM@
 INSTALL_SCRIPT = @INSTALL_SCRIPT@
 INSTALL_STRIP_PROGRAM = @INSTALL_STRIP_PROGRAM@
+<<<<<<< .merge_file_3JnK6V
 LDFLAGS = -lm -lpthread -lmenu -lpanel -lform -lncursesw -lev
+=======
+LDFLAGS = -lm -lpthread -lmenu -lpanel -lncursesw -lev
+>>>>>>> .merge_file_SvM2sV
 LIBOBJS = @LIBOBJS@
 LIBS = @LIBS@
 LTLIBOBJS = @LTLIBOBJS@
@@ -181,6 +197,7 @@ arawak_SOURCES = arawak.c \
                    geo/weather.c     \
                    geo/terrain.c     \
                    geo/map.c         \
+                   gfx/zbox.c        \
                    gfx/palette.c     \
                    gfx/sprite.c      \
                    gfx/gfx.c         \
@@ -198,8 +215,12 @@ arawak_SOURCES = arawak.c \
                    pan/ctrlpanels.c  \
                    pan/new_character.c \
                    pan/instruments.c \
+<<<<<<< .merge_file_3JnK6V
                    pan/button.c      \
                    pan/dialog.c      \
+=======
+                   pan/menus.c       \
+>>>>>>> .merge_file_SvM2sV
                    pan/test.c        \
                    pan/crewgen.c     \
                    txt/rk.c          \
@@ -352,6 +373,7 @@ gfx/$(am__dirstamp):
 gfx/$(DEPDIR)/$(am__dirstamp):
 	@$(MKDIR_P) gfx/$(DEPDIR)
 	@: > gfx/$(DEPDIR)/$(am__dirstamp)
+gfx/zbox.$(OBJEXT): gfx/$(am__dirstamp) gfx/$(DEPDIR)/$(am__dirstamp)
 gfx/palette.$(OBJEXT): gfx/$(am__dirstamp) \
 	gfx/$(DEPDIR)/$(am__dirstamp)
 gfx/sprite.$(OBJEXT): gfx/$(am__dirstamp) \
@@ -404,10 +426,14 @@ pan/new_character.$(OBJEXT): pan/$(am__dirstamp) \
 	pan/$(DEPDIR)/$(am__dirstamp)
 pan/instruments.$(OBJEXT): pan/$(am__dirstamp) \
 	pan/$(DEPDIR)/$(am__dirstamp)
+<<<<<<< .merge_file_3JnK6V
 pan/button.$(OBJEXT): pan/$(am__dirstamp) \
 	pan/$(DEPDIR)/$(am__dirstamp)
 pan/dialog.$(OBJEXT): pan/$(am__dirstamp) \
 	pan/$(DEPDIR)/$(am__dirstamp)
+=======
+pan/menus.$(OBJEXT): pan/$(am__dirstamp) pan/$(DEPDIR)/$(am__dirstamp)
+>>>>>>> .merge_file_SvM2sV
 pan/test.$(OBJEXT): pan/$(am__dirstamp) pan/$(DEPDIR)/$(am__dirstamp)
 pan/crewgen.$(OBJEXT): pan/$(am__dirstamp) \
 	pan/$(DEPDIR)/$(am__dirstamp)
@@ -443,7 +469,11 @@ mostlyclean-compile:
 	-rm -f gfx/palette.$(OBJEXT)
 	-rm -f gfx/sprite.$(OBJEXT)
 	-rm -f gfx/term.$(OBJEXT)
+<<<<<<< .merge_file_3JnK6V
 	-rm -f gfx/wselect.$(OBJEXT)
+=======
+	-rm -f gfx/zbox.$(OBJEXT)
+>>>>>>> .merge_file_SvM2sV
 	-rm -f lib/redblack/rb.$(OBJEXT)
 	-rm -f lib/sort/mergesort.$(OBJEXT)
 	-rm -f lib/sort/quicksort.$(OBJEXT)
@@ -457,7 +487,11 @@ mostlyclean-compile:
 	-rm -f pan/ctrlpanels.$(OBJEXT)
 	-rm -f pan/dialog.$(OBJEXT)
 	-rm -f pan/instruments.$(OBJEXT)
+<<<<<<< .merge_file_3JnK6V
 	-rm -f pan/new_character.$(OBJEXT)
+=======
+	-rm -f pan/menus.$(OBJEXT)
+>>>>>>> .merge_file_SvM2sV
 	-rm -f pan/test.$(OBJEXT)
 	-rm -f txt/psh.$(OBJEXT)
 	-rm -f txt/rk.$(OBJEXT)
@@ -484,7 +518,11 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@gfx/$(DEPDIR)/palette.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@gfx/$(DEPDIR)/sprite.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@gfx/$(DEPDIR)/term.Po@am__quote@
+<<<<<<< .merge_file_3JnK6V
 @AMDEP_TRUE@@am__include@ @am__quote@gfx/$(DEPDIR)/wselect.Po@am__quote@
+=======
+@AMDEP_TRUE@@am__include@ @am__quote@gfx/$(DEPDIR)/zbox.Po@am__quote@
+>>>>>>> .merge_file_SvM2sV
 @AMDEP_TRUE@@am__include@ @am__quote@lib/redblack/$(DEPDIR)/rb.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@lib/sort/$(DEPDIR)/mergesort.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@lib/sort/$(DEPDIR)/quicksort.Po@am__quote@
@@ -498,7 +536,11 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@pan/$(DEPDIR)/ctrlpanels.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@pan/$(DEPDIR)/dialog.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@pan/$(DEPDIR)/instruments.Po@am__quote@
+<<<<<<< .merge_file_3JnK6V
 @AMDEP_TRUE@@am__include@ @am__quote@pan/$(DEPDIR)/new_character.Po@am__quote@
+=======
+@AMDEP_TRUE@@am__include@ @am__quote@pan/$(DEPDIR)/menus.Po@am__quote@
+>>>>>>> .merge_file_SvM2sV
 @AMDEP_TRUE@@am__include@ @am__quote@pan/$(DEPDIR)/test.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@txt/$(DEPDIR)/psh.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@txt/$(DEPDIR)/rk.Po@am__quote@
@@ -671,7 +713,11 @@ clean: clean-am
 clean-am: clean-binPROGRAMS clean-generic mostlyclean-am
 
 distclean: distclean-am
+<<<<<<< .merge_file_3JnK6V
 	-rm -rf ./$(DEPDIR) cmd/$(DEPDIR) eng/$(DEPDIR) eng/model/$(DEPDIR) env/$(DEPDIR) gen/$(DEPDIR) gen/name/$(DEPDIR) geo/$(DEPDIR) gfx/$(DEPDIR) lib/redblack/$(DEPDIR) lib/sort/$(DEPDIR) mob/$(DEPDIR) noun/$(DEPDIR) pan/$(DEPDIR) txt/$(DEPDIR)
+=======
+	-rm -rf ./$(DEPDIR) cmd/$(DEPDIR) gen/$(DEPDIR) geo/$(DEPDIR) gfx/$(DEPDIR) lib/redblack/$(DEPDIR) mob/$(DEPDIR) pan/$(DEPDIR) txt/$(DEPDIR)
+>>>>>>> .merge_file_SvM2sV
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
 	distclean-tags
@@ -717,7 +763,11 @@ install-ps-am:
 installcheck-am:
 
 maintainer-clean: maintainer-clean-am
+<<<<<<< .merge_file_3JnK6V
 	-rm -rf ./$(DEPDIR) cmd/$(DEPDIR) eng/$(DEPDIR) eng/model/$(DEPDIR) env/$(DEPDIR) gen/$(DEPDIR) gen/name/$(DEPDIR) geo/$(DEPDIR) gfx/$(DEPDIR) lib/redblack/$(DEPDIR) lib/sort/$(DEPDIR) mob/$(DEPDIR) noun/$(DEPDIR) pan/$(DEPDIR) txt/$(DEPDIR)
+=======
+	-rm -rf ./$(DEPDIR) cmd/$(DEPDIR) gen/$(DEPDIR) geo/$(DEPDIR) gfx/$(DEPDIR) lib/redblack/$(DEPDIR) mob/$(DEPDIR) pan/$(DEPDIR) txt/$(DEPDIR)
+>>>>>>> .merge_file_SvM2sV
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 

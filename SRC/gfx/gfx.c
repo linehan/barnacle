@@ -9,12 +9,19 @@
  ******************************************************************************/
 #define _XOPEN_SOURCE_EXTENDED = 1  /* extended character sets */
 #include <stdio.h>
+<<<<<<< .merge_file_IQam52
 #include <wchar.h>
 #include <stdlib.h>
 #include <locale.h>
 #include <stdarg.h>
 #include <ncurses.h>
 #include <stdint.h>
+=======
+#include <stdlib.h>
+#include <stdint.h>
+#include <stdarg.h>
+#include <ncurses.h>
+>>>>>>> .merge_file_qUHUm5
 #include <panel.h>
 #include <pthread.h>
 #include <semaphore.h>
@@ -25,20 +32,30 @@
 
 #include "../pan/test.h"
 #include "../gen/dice.h"
+<<<<<<< .merge_file_IQam52
 #include "../gen/wave.h"
+=======
+>>>>>>> .merge_file_qUHUm5
 #include "../lib/llist/list.h"
 #include "../gen/perlin.h"
 #include "palette.h"
 #include "sprite.h"
 #include "../geo/terrain.h"
 #include "../lib/morton.h"
+<<<<<<< .merge_file_IQam52
 #include "../lib/ufo.h"
+=======
+>>>>>>> .merge_file_qUHUm5
 
 #define IN_GNODE(G, y, x) \
         ((x>=G->dim.x0)&&(x<=(G->dim.xmax))&&(y>=G->dim.y0)&&(y<=(G->dim.ymax))) ? 1 : 0
 
 sem_t  *REFRESH_LOCK;
+<<<<<<< .merge_file_IQam52
 struct map_t *GLOBE;
+=======
+MAP    *GLOBE;
+>>>>>>> .merge_file_qUHUm5
 
 //##############################################################################
 //# Start the GeoJug engine                                                    #
@@ -55,20 +72,29 @@ void geojug_start(void)
         init_simplex();     // Perlin simplex noise generator
         init_palette(0);    // Set color palette
         init_gfx_colors();  // Apply palette to character set
+<<<<<<< .merge_file_IQam52
         init_boats();       // Initialize boat MOBs
         init_wave();
+=======
+        init_boat();        // Initialize boat MOBs
+>>>>>>> .merge_file_qUHUm5
         init_weather();     // Start weather engine
         init_instruments(); // Various meters (compass)
         init_menus();       // psh menu and commands
         init_test();        // Start test structures
 
+<<<<<<< .merge_file_IQam52
         GLOBE = malloc(sizeof(struct map_t)); // initialize the global map
+=======
+        GLOBE = malloc(sizeof(MAP)); // initialize the global map
+>>>>>>> .merge_file_qUHUm5
 }
 /******************************************************************************
  * Allocate memory for a new WNODE, and initialize it with the arguments
  * supplied. This function is almost always called from inside new_gnode(), 
  * for (pretty good) reasons, as described in that function's description.
  ******************************************************************************/
+<<<<<<< .merge_file_IQam52
 struct wnode_t *new_wnode(int id, int h, int w, int y0, int x0)
 {
         struct wnode_t *new = (struct wnode_t *)malloc(sizeof *new);
@@ -76,10 +102,18 @@ struct wnode_t *new_wnode(int id, int h, int w, int y0, int x0)
         // Detect if WINDOW should be a pad.
         if (h > LINES || w > COLS) new->window = newpad(h, w);
         else                       new->window = newwin(h, w, y0, x0);
+=======
+WNODE *new_wnode(int id, int h, int w, int y0, int x0)
+{
+        WNODE *new = (WNODE *)malloc(sizeof(WNODE));
+        new->window = newwin(h, w, y0, x0);
+        new->id = id;
+>>>>>>> .merge_file_qUHUm5
 
         return new;
 }
 
+<<<<<<< .merge_file_IQam52
 struct ring_t *new_winring(int h, int w, int y0, int x0, int nwindows)
 {
         struct ring_t *new = (struct ring_t *)malloc(sizeof *new);
@@ -223,8 +257,44 @@ void wwrapstr(WINDOW *win, const char *string)
 
 
 
+=======
+/*void next_wnode(const void *gnode)*/
+/*{*/
+        /*GNODE *gfx = (GNODE *)gnode;*/
+        /*CYCLE(gfx->wins, gfx->W, WNODE);*/
+/*}*/
+/*void step_wnode_forward(const void *gnode)*/
+/*{*/
+        /*GNODE *gfx = (GNODE *)gnode;*/
+        /*if (gfx->dim.n <= 1) return;*/
+
+        /*gfx->next(gfx);*/
+        /*replace_panel(gfx->pan, gfx->W->window);*/
+        /*scr_refresh();*/
+/*}*/
+>>>>>>> .merge_file_qUHUm5
 /******************************************************************************
  * DESPAIR, THE ROOST OF WRETCHED FUNCS DEPORTED TO THIS PENULT BARE
  * OF DOCUMENTS OR COMMENTS, YEA, OF HOPE, TO WASTE, UNTIL REPAIR'D.
  ******************************************************************************/
+<<<<<<< .merge_file_IQam52
+=======
+/*int hit_test(PLATE *pl, int y, int x)*/
+/*{*/
+        /*GNODE *tmp;*/
+        /*int i = 0;*/
+
+        /*list_for_each(pl->gfx, tmp, node) {*/
+                /*if ((tmp->dim.layer == __grt__)||(tmp->dim.layer == __drd__)) {*/
+                        /*if (((x >= tmp->dim.x0)                  &&*/
+                             /*(x <= (tmp->dim.x0 + tmp->dim.w))   &&*/
+                             /*(y >= tmp->dim.y0)                  &&*/
+                             /*(y <= (tmp->dim.y0 + tmp->dim.h))))*/
+                                /*i++;*/
+                /*}*/
+        /*}*/
+        /*return i;*/
+/*}*/
+
+>>>>>>> .merge_file_qUHUm5
 

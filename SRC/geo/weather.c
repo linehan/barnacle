@@ -17,6 +17,7 @@
 #include <semaphore.h>
 
 #include "../lib/llist/list.h"
+#include "../lib/memmacro.h"
 #include "../gen/dice.h"
 #include "../gfx/gfx.h"
 #include "../gfx/palette.h"
@@ -51,7 +52,11 @@ void init_weather(void)
         cloudx = 10;
         cloudy = 10;
         cloudfresh = 0;
+<<<<<<< .merge_file_znbhv1
         wind_IO = malloc(sizeof(sem_t));
+=======
+        wind_IO = MALLOC(sem_t);
+>>>>>>> .merge_file_LJlNR0
         sem_init(wind_IO, 0, 1);
 
         g_windstate.dir = 0;
