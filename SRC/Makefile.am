@@ -16,6 +16,7 @@ arawak_SOURCES = arawak.c \
                    lib/redblack/rb.c \
                    lib/sort/mergesort.c \
                    lib/sort/quicksort.c \
+                   lib/magic.c       \
                    eng/state.c       \
                    eng/model/bytes.c \
                    cmd/control.c     \
@@ -29,6 +30,7 @@ arawak_SOURCES = arawak.c \
                    gfx/palette.c     \
                    gfx/sprite.c      \
                    gfx/gfx.c         \
+                   gfx/dock.c        \
                    gfx/wselect.c     \
                    gfx/fancy_menus.c \
                    gen/perlin.c      \
@@ -41,6 +43,7 @@ arawak_SOURCES = arawak.c \
                    noun/noun_view.c    \
                    noun/noun_control.c \
                    verb/verb_model.c \
+                   verb/verb_view.c \
                    pan/ctrlpanels.c  \
                    pan/new_character.c \
                    pan/instruments.c \

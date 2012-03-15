@@ -124,7 +124,7 @@ void *iolisten(EV_P_ ev_io *w, int revents)
                 case KEY_RIGHT:
                         move_inspector('r');
                         break;
-                case 'o':
+                case '\n':
                         view_dock();
                         choose_noun();
                         break;

@@ -47,16 +47,18 @@ PROGRAMS = $(bin_PROGRAMS)
 am__dirstamp = $(am__leading_dot)dirstamp
 am_arawak_OBJECTS = arawak.$(OBJEXT) lib/redblack/rb.$(OBJEXT) \
 	lib/sort/mergesort.$(OBJEXT) lib/sort/quicksort.$(OBJEXT) \
-	eng/state.$(OBJEXT) eng/model/bytes.$(OBJEXT) \
-	cmd/control.$(OBJEXT) gen/dice.$(OBJEXT) gen/mtwist.$(OBJEXT) \
+	lib/magic.$(OBJEXT) eng/state.$(OBJEXT) \
+	eng/model/bytes.$(OBJEXT) cmd/control.$(OBJEXT) \
+	gen/dice.$(OBJEXT) gen/mtwist.$(OBJEXT) \
 	gen/name/name.$(OBJEXT) gen/wave.$(OBJEXT) \
 	geo/weather.$(OBJEXT) geo/terrain.$(OBJEXT) geo/map.$(OBJEXT) \
 	gfx/palette.$(OBJEXT) gfx/sprite.$(OBJEXT) gfx/gfx.$(OBJEXT) \
-	gfx/wselect.$(OBJEXT) gfx/fancy_menus.$(OBJEXT) \
-	gen/perlin.$(OBJEXT) gfx/term.$(OBJEXT) env/deck.$(OBJEXT) \
-	env/cloud.$(OBJEXT) mob/mob.$(OBJEXT) mob/boat.$(OBJEXT) \
-	noun/noun_model.$(OBJEXT) noun/noun_view.$(OBJEXT) \
-	noun/noun_control.$(OBJEXT) verb/verb_model.$(OBJEXT) \
+	gfx/dock.$(OBJEXT) gfx/wselect.$(OBJEXT) \
+	gfx/fancy_menus.$(OBJEXT) gen/perlin.$(OBJEXT) \
+	gfx/term.$(OBJEXT) env/deck.$(OBJEXT) env/cloud.$(OBJEXT) \
+	mob/mob.$(OBJEXT) mob/boat.$(OBJEXT) noun/noun_model.$(OBJEXT) \
+	noun/noun_view.$(OBJEXT) noun/noun_control.$(OBJEXT) \
+	verb/verb_model.$(OBJEXT) verb/verb_view.$(OBJEXT) \
 	pan/ctrlpanels.$(OBJEXT) pan/new_character.$(OBJEXT) \
 	pan/instruments.$(OBJEXT) pan/button.$(OBJEXT) \
 	pan/dialog.$(OBJEXT) pan/test.$(OBJEXT) pan/crewgen.$(OBJEXT) \
@@ -172,6 +174,7 @@ arawak_SOURCES = arawak.c \
                    lib/redblack/rb.c \
                    lib/sort/mergesort.c \
                    lib/sort/quicksort.c \
+                   lib/magic.c       \
                    eng/state.c       \
                    eng/model/bytes.c \
                    cmd/control.c     \
@@ -185,6 +188,7 @@ arawak_SOURCES = arawak.c \
                    gfx/palette.c     \
                    gfx/sprite.c      \
                    gfx/gfx.c         \
+                   gfx/dock.c        \
                    gfx/wselect.c     \
                    gfx/fancy_menus.c \
                    gen/perlin.c      \
@@ -197,6 +201,7 @@ arawak_SOURCES = arawak.c \
                    noun/noun_view.c    \
                    noun/noun_control.c \
                    verb/verb_model.c \
+                   verb/verb_view.c \
                    pan/ctrlpanels.c  \
                    pan/new_character.c \
                    pan/instruments.c \
@@ -296,6 +301,13 @@ lib/sort/mergesort.$(OBJEXT): lib/sort/$(am__dirstamp) \
 	lib/sort/$(DEPDIR)/$(am__dirstamp)
 lib/sort/quicksort.$(OBJEXT): lib/sort/$(am__dirstamp) \
 	lib/sort/$(DEPDIR)/$(am__dirstamp)
+lib/$(am__dirstamp):
+	@$(MKDIR_P) lib
+	@: > lib/$(am__dirstamp)
+lib/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) lib/$(DEPDIR)
+	@: > lib/$(DEPDIR)/$(am__dirstamp)
+lib/magic.$(OBJEXT): lib/$(am__dirstamp) lib/$(DEPDIR)/$(am__dirstamp)
 eng/$(am__dirstamp):
 	@$(MKDIR_P) eng
 	@: > eng/$(am__dirstamp)
@@ -359,6 +371,7 @@ gfx/palette.$(OBJEXT): gfx/$(am__dirstamp) \
 gfx/sprite.$(OBJEXT): gfx/$(am__dirstamp) \
 	gfx/$(DEPDIR)/$(am__dirstamp)
 gfx/gfx.$(OBJEXT): gfx/$(am__dirstamp) gfx/$(DEPDIR)/$(am__dirstamp)
+gfx/dock.$(OBJEXT): gfx/$(am__dirstamp) gfx/$(DEPDIR)/$(am__dirstamp)
 gfx/wselect.$(OBJEXT): gfx/$(am__dirstamp) \
 	gfx/$(DEPDIR)/$(am__dirstamp)
 gfx/fancy_menus.$(OBJEXT): gfx/$(am__dirstamp) \
@@ -401,6 +414,8 @@ verb/$(DEPDIR)/$(am__dirstamp):
 	@$(MKDIR_P) verb/$(DEPDIR)
 	@: > verb/$(DEPDIR)/$(am__dirstamp)
 verb/verb_model.$(OBJEXT): verb/$(am__dirstamp) \
+	verb/$(DEPDIR)/$(am__dirstamp)
+verb/verb_view.$(OBJEXT): verb/$(am__dirstamp) \
 	verb/$(DEPDIR)/$(am__dirstamp)
 pan/$(am__dirstamp):
 	@$(MKDIR_P) pan
@@ -448,12 +463,14 @@ mostlyclean-compile:
 	-rm -f geo/map.$(OBJEXT)
 	-rm -f geo/terrain.$(OBJEXT)
 	-rm -f geo/weather.$(OBJEXT)
+	-rm -f gfx/dock.$(OBJEXT)
 	-rm -f gfx/fancy_menus.$(OBJEXT)
 	-rm -f gfx/gfx.$(OBJEXT)
 	-rm -f gfx/palette.$(OBJEXT)
 	-rm -f gfx/sprite.$(OBJEXT)
 	-rm -f gfx/term.$(OBJEXT)
 	-rm -f gfx/wselect.$(OBJEXT)
+	-rm -f lib/magic.$(OBJEXT)
 	-rm -f lib/redblack/rb.$(OBJEXT)
 	-rm -f lib/sort/mergesort.$(OBJEXT)
 	-rm -f lib/sort/quicksort.$(OBJEXT)
@@ -472,6 +489,7 @@ mostlyclean-compile:
 	-rm -f txt/psh.$(OBJEXT)
 	-rm -f txt/rk.$(OBJEXT)
 	-rm -f verb/verb_model.$(OBJEXT)
+	-rm -f verb/verb_view.$(OBJEXT)
 
 distclean-compile:
 	-rm -f *.tab.c
@@ -490,12 +508,14 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@geo/$(DEPDIR)/map.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@geo/$(DEPDIR)/terrain.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@geo/$(DEPDIR)/weather.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@gfx/$(DEPDIR)/dock.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@gfx/$(DEPDIR)/fancy_menus.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@gfx/$(DEPDIR)/gfx.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@gfx/$(DEPDIR)/palette.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@gfx/$(DEPDIR)/sprite.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@gfx/$(DEPDIR)/term.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@gfx/$(DEPDIR)/wselect.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@lib/$(DEPDIR)/magic.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@lib/redblack/$(DEPDIR)/rb.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@lib/sort/$(DEPDIR)/mergesort.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@lib/sort/$(DEPDIR)/quicksort.Po@am__quote@
@@ -514,6 +534,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@txt/$(DEPDIR)/psh.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@txt/$(DEPDIR)/rk.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@verb/$(DEPDIR)/verb_model.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@verb/$(DEPDIR)/verb_view.Po@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.o$$||'`;\
@@ -662,6 +683,8 @@ distclean-generic:
 	-rm -f geo/$(am__dirstamp)
 	-rm -f gfx/$(DEPDIR)/$(am__dirstamp)
 	-rm -f gfx/$(am__dirstamp)
+	-rm -f lib/$(DEPDIR)/$(am__dirstamp)
+	-rm -f lib/$(am__dirstamp)
 	-rm -f lib/redblack/$(DEPDIR)/$(am__dirstamp)
 	-rm -f lib/redblack/$(am__dirstamp)
 	-rm -f lib/sort/$(DEPDIR)/$(am__dirstamp)
@@ -685,7 +708,7 @@ clean: clean-am
 clean-am: clean-binPROGRAMS clean-generic mostlyclean-am
 
 distclean: distclean-am
-	-rm -rf ./$(DEPDIR) cmd/$(DEPDIR) eng/$(DEPDIR) eng/model/$(DEPDIR) env/$(DEPDIR) gen/$(DEPDIR) gen/name/$(DEPDIR) geo/$(DEPDIR) gfx/$(DEPDIR) lib/redblack/$(DEPDIR) lib/sort/$(DEPDIR) mob/$(DEPDIR) noun/$(DEPDIR) pan/$(DEPDIR) txt/$(DEPDIR) verb/$(DEPDIR)
+	-rm -rf ./$(DEPDIR) cmd/$(DEPDIR) eng/$(DEPDIR) eng/model/$(DEPDIR) env/$(DEPDIR) gen/$(DEPDIR) gen/name/$(DEPDIR) geo/$(DEPDIR) gfx/$(DEPDIR) lib/$(DEPDIR) lib/redblack/$(DEPDIR) lib/sort/$(DEPDIR) mob/$(DEPDIR) noun/$(DEPDIR) pan/$(DEPDIR) txt/$(DEPDIR) verb/$(DEPDIR)
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
 	distclean-tags
@@ -731,7 +754,7 @@ install-ps-am:
 installcheck-am:
 
 maintainer-clean: maintainer-clean-am
-	-rm -rf ./$(DEPDIR) cmd/$(DEPDIR) eng/$(DEPDIR) eng/model/$(DEPDIR) env/$(DEPDIR) gen/$(DEPDIR) gen/name/$(DEPDIR) geo/$(DEPDIR) gfx/$(DEPDIR) lib/redblack/$(DEPDIR) lib/sort/$(DEPDIR) mob/$(DEPDIR) noun/$(DEPDIR) pan/$(DEPDIR) txt/$(DEPDIR) verb/$(DEPDIR)
+	-rm -rf ./$(DEPDIR) cmd/$(DEPDIR) eng/$(DEPDIR) eng/model/$(DEPDIR) env/$(DEPDIR) gen/$(DEPDIR) gen/name/$(DEPDIR) geo/$(DEPDIR) gfx/$(DEPDIR) lib/$(DEPDIR) lib/redblack/$(DEPDIR) lib/sort/$(DEPDIR) mob/$(DEPDIR) noun/$(DEPDIR) pan/$(DEPDIR) txt/$(DEPDIR) verb/$(DEPDIR)
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 
