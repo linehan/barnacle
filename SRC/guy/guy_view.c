@@ -39,7 +39,7 @@ uint32_t active_key[2];
 
 void install_key(uint32_t key, int option)
 {
-        if (option!=KEY_OBJECT && option!=KEY_SUBJECT) return;
+        if (option!=OBJECT && option!=SUBJECT) return;
         else
                 active_key[option] = key;
 }
@@ -47,7 +47,7 @@ void install_key(uint32_t key, int option)
 
 inline uint32_t request_key(int option)
 {
-        if (option!=KEY_OBJECT && option!=KEY_SUBJECT) return 0;
+        if (option!=OBJECT && option!=SUBJECT) return 0;
         else
                 return (active_key[option]);
 }
@@ -95,7 +95,7 @@ inline void buildview_dock(void)
         subj_wi_win = derwin(subject_win , DOCK_H , WIDGET_W  , 0 ,      ID_W);
 
         object_win  =  derwin(  dock_win , DOCK_H , OPERAND_W , 0 ,  OBJECT_X);
-        obj_id_win  =  derwin(object_win , DOCK_H , ID_W      , 0 ,  WIDGET_W);
+        obj_id_win  =  derwin(object_win , DOCK_H , ID_W      , 0 ,  OPERAND_W-ID_W);
         obj_wi_win  =  derwin(object_win , DOCK_H , WIDGET_W  , 0 ,         0);
 
         wbkgrnd(dock_win, &PURPLE[2]);
@@ -232,20 +232,21 @@ void build_nouns(void)
 
 MENU *get_noun_menu(int operand)
 {
-        return (KEY_SUBJECT) ? subj_menu : obj_menu;
+        return (operand == SUBJECT) ? subj_menu : obj_menu;
 }
 
 void open_nouns(int operand)
 {
-        PANEL *p = (operand==KEY_SUBJECT) ? subj_menu_pan : obj_menu_pan;
+        PANEL *p = (operand==SUBJECT) ? subj_menu_pan : obj_menu_pan;
         if (panel_hidden(p)) show_panel(p);
         else                 hide_panel(p);
         vrt_refresh();
+        scr_refresh();
 }
 
 void close_nouns(int operand)
 {
-        PANEL *p = (operand==KEY_SUBJECT) ? subj_menu_pan : obj_menu_pan;
+        PANEL *p = (operand==SUBJECT) ? subj_menu_pan : obj_menu_pan;
 
         hide_panel(p);
         vrt_refresh();
@@ -345,10 +346,10 @@ inline void put_nblocks(WINDOW *win, int y, int x, int block, short pair, int n)
 
 void view_vitals(int operand)
 {
-        if (operand!=KEY_SUBJECT && operand!=KEY_OBJECT) operand=KEY_SUBJECT;
+        if (operand!=SUBJECT && operand!=OBJECT) operand=SUBJECT;
 
-        #define X(op) (op==KEY_SUBJECT) ? 0 : VIT_MAXLEN
-        #define W(op) (op==KEY_SUBJECT) ? SUBJ_WIN : OBJ_WIN
+        #define X(op) (op==SUBJECT) ? 0 : VIT_MAXLEN
+        #define W(op) (op==SUBJECT) ? SUBJ_WIN : OBJ_WIN
 
         int vital;      // value of each vital in loop
         int i, xofs;
@@ -361,10 +362,9 @@ void view_vitals(int operand)
 
         for (i=0; i<4; i++) {
                 vital = get_vital(active_key[operand], i);
-                if (operand==KEY_OBJECT)  xofs -= vital;
+                if (operand==OBJECT)  xofs -= vital;
                 put_nblocks(W(operand), 0, xofs, DBOX, VIT_PAIR[i], vital);
-                if (operand==KEY_SUBJECT) xofs += vital;
-
+                if (operand==SUBJECT) xofs += vital;
         }
         win_refresh(W(operand));
 }
@@ -431,11 +431,11 @@ void do_pulse(void)
                 forward     = focused->forward;
                 xmin        = vit_blocklen(keyring[i]);
 
-                if (keyring[i] == active_key[KEY_SUBJECT]) {
+                if (keyring[i] == active_key[SUBJECT]) {
                         put_nblocks(SUBJ_WIN, 0, xmin, BLOCKSTYLE, (VIT_MAXLEN-xmin));
                         put_nblocks(SUBJ_WIN, 0, lzc(fundamental), PULSESTYLE, 1);
                 }
-                if (keyring[i] == active_key[KEY_OBJECT]) {
+                if (keyring[i] == active_key[OBJECT]) {
                         put_nblocks(OBJ_WIN, 0, 0, BLOCKSTYLE, VIT_MAXLEN-xmin);
                         put_nblocks(OBJ_WIN, 0, (VIT_MAXLEN-1)-lzc(fundamental), PULSESTYLE, 1);
                 }
@@ -472,7 +472,7 @@ void view_attributes(void)
         waddwstr(SUBJ_WIN, L"Σ    Φ    Δ    A    Ψ    W    Χ    Λ");
         wcolor_set(SUBJ_WIN, ATTR_ORIGINAL, NULL);
 
-        unpack_attributes(active_key[KEY_SUBJECT], val);
+        unpack_attributes(active_key[SUBJECT], val);
         for (i=0; i<8; i++) {
                 mvwprintw(SUBJ_WIN, 0, (i*STRIDE)+1, "%02u", val[i]);
         }
@@ -488,21 +488,36 @@ void view_attributes(void)
 #define NOUN_STANDOUT PUR_YEL
 #define NOUN_BRIGHTER PUR_GRE
 #define NOUN_ORIGINAL PUR_PUR
-#define NOUNWIN subj_id_win
+#define NOUNWIN(op) (op==SUBJECT) ? subj_id_win : obj_id_win
 
-void view_noun(int operand)
+void view_noun(int op)
 {
-        werase(NOUNWIN);
-        wcolor_set(NOUNWIN, NOUN_STANDOUT, NULL);
-        wprintw(NOUNWIN, "%s", flname(active_key[KEY_SUBJECT]));
-        win_refresh(NOUNWIN);
+        if (op > 1) return;
+        werase(NOUNWIN(op));
+
+        if (op==SUBJECT) {
+                wcolor_set(NOUNWIN(op), PUR_YEL, NULL);
+                wprintw(NOUNWIN(op), "%-*s",ID_W,  flname(active_key[op]));
+        }
+        if (op==OBJECT) {
+                wcolor_set(NOUNWIN(op), PUR_RED, NULL);
+                wprintw(NOUNWIN(op), "%*s", ID_W, flname(active_key[op]));
+        }
+        win_refresh(NOUNWIN(op));
 }
 
 
-void view_noun_grey(int operand)
+void view_noun_grey(int op)
 {
-        werase(NOUNWIN);
-        wcolor_set(NOUNWIN, NOUN_BRIGHTER, NULL);
-        wprintw(NOUNWIN, "%s", flname(active_key[KEY_SUBJECT]));
-        win_refresh(NOUNWIN);
+        if (op > 1) return;
+        werase(NOUNWIN(op));
+        if (op==SUBJECT) {
+                wcolor_set(NOUNWIN(op), PUR_GRE, NULL);
+                wprintw(NOUNWIN(op), "%-*s", ID_W, flname(active_key[op]));
+        }
+        if (op==OBJECT) {
+                wcolor_set(NOUNWIN(op), PUR_GRE, NULL);
+                wprintw(NOUNWIN(op), "%*s", ID_W, flname(active_key[op]));
+        }
+        win_refresh(NOUNWIN(op));
 }

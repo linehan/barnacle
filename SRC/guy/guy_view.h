@@ -12,4 +12,4 @@ void open_nouns(int operand);
 MENU *get_noun_menu(int operand);
 
 void install_key(uint32_t key, int option);
-enum install_key_opts {KEY_SUBJECT, KEY_OBJECT};
+enum install_key_opts {SUBJECT, OBJECT};

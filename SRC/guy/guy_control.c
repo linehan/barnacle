@@ -36,48 +36,80 @@
 //                                                                            //
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
-enum operator_modes { EXITING, STARTING,
-                      NOUNMENU, ATTRIBUTES, PROFESSION, VITALS, 
-                      PATTERN, ACTION, TARGET };
+enum operator_modes { STARTING, EXITING, LAST, ATTRIBUTES, PROFESSION, VITALS, 
+                      PATTERN, ACTION,
+                      OPSUBJECT, OPOBJECT, POPMENU  };
 
 #define RESET -1 
 bool mode_changed;
 int  mode;
-
+int  oldmode;
+int  op;
 
 inline void setmode(int newmode)
 {
-        if (mode == newmode) return;
-        if (newmode == RESET) mode_changed = false;
-        else {
+        if (newmode == mode) return;
+
+        switch (newmode) {
+        case RESET:
+                mode_changed = false;
+                return;
+        case LAST:
+                mode = oldmode;
+                return;
+        case OPOBJECT:
+                op = OBJECT;
+                return;
+        case OPSUBJECT:
+                op = SUBJECT;
+                return;
+        default:
+                if (newmode==STARTING) oldmode = newmode;
+                else                   oldmode = mode;
                 mode = newmode;
                 mode_changed = true;
         }
 }
+inline int ismode(int somemode)
+{
+        return (mode == somemode) ? 1 : 0;
+}
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
 //                                                                            //
-//                                  operate                                   //
+//                           operate on the noun                              //
 //                                                                            //
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
 void operate_on(void *noun)
 {
+        #define DEFAULT_MODE VITALS
+        #define DEFAULT_OP OPSUBJECT
+
         uint32_t key = (noun!=NULL) ? *(uint32_t *)noun : 0;
        
-        if (mode_changed) {
-                setmode(RESET);
-        }
+        if (mode_changed == true) setmode(RESET);
 
-        install_key(key, KEY_OBJECT);
-        install_key(key, KEY_SUBJECT);
+        install_key(key, op);
 
         switch(mode) {
+        case STARTING:
+                setmode(DEFAULT_OP);
+                install_key(key, op^1);
+                setmode(DEFAULT_MODE);
+                break;
+        case POPMENU:
+                open_nouns(op);
+                setmode(LAST);
+                break;
         case EXITING:
-                view_noun_grey(KEY_OBJECT);
-                close_nouns(KEY_OBJECT);
-                close_nouns(KEY_SUBJECT);
+                view_noun_grey(op);
+                view_noun_grey(op^1);
+                close_nouns(SUBJECT);
+                close_nouns(OBJECT);
                 return;
+        }
+        switch(mode) {
         case ATTRIBUTES:
                 view_attributes();
                 break;
@@ -85,20 +117,21 @@ void operate_on(void *noun)
                 focus(key);
                 focused->action = 1;
         case VITALS:
-                view_vitals(KEY_OBJECT);
-                view_vitals(KEY_SUBJECT);
+                view_vitals(op);
                 break;
         }
-        view_noun(KEY_SUBJECT);
+        view_noun_grey(op^1);
+        view_noun(op);
+        scr_refresh();
 }
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
 //                                                                            //
-//                                 select                                     //
+//                      select subject or object noun                         //
 //                                                                            //
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
-void choose_noun(int op) 
+void choose_noun(void) 
 {
         /* ncurses sets the ESC key delay at 100ms by default, and this
          * is way too slow. According to Wolfram Alpha, 
@@ -108,14 +141,13 @@ void choose_noun(int op)
          * 400ms, and that's just not what we're looking for here. */
         if (getenv ("ESCDELAY") == NULL) ESCDELAY = 25;
 
-        #define DEFAULT_MODE VITALS
-
-        MENU *menu[2]={get_noun_menu(KEY_SUBJECT), get_noun_menu(KEY_OBJECT)};
+        MENU *menu[2]={get_noun_menu(SUBJECT), get_noun_menu(OBJECT)};
         ITEM *item = NULL;
-        int c;
+        int c;  // User input
 
         // First run
-        setmode(DEFAULT_MODE);
+        setmode(OPSUBJECT);
+        setmode(STARTING);
         item=current_item(menu[op]);
         operate_on(item_userptr(item));
 
@@ -145,20 +177,22 @@ void choose_noun(int op)
                 case 'P':
                         setmode(PROFESSION);
                         break;
-                case 's':
+                case 'a':
                         setmode(ATTRIBUTES);
                         break;
                 case 'v':
                         setmode(VITALS);
                         break;
-                case 't':
-                        open_nouns(1);
+                case 'o':
+                        if (op == OBJECT) setmode(POPMENU);
+                        else              setmode(OPOBJECT);
                         break;
-                case 'm':
-                        open_nouns(op);
+                case 's':
+                        if (op == SUBJECT) setmode(POPMENU);
+                        else               setmode(OPSUBJECT);
                         break;
                 case KEY_ESC:
-                case 'o':
+                case ' ':
                         setmode(EXITING);
                         operate_on(item_userptr(item));
                         return;
