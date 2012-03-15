@@ -68,17 +68,22 @@ inline uint32_t request_key(int option)
 | id window | |    widget window    |      |    widget window    | | id window |
 +-----------+ +---------------------+      +---------------------+ +-----------+
 *///////////////////////////////////////////////////////////////////////////////
-#define DOCK_H 1
+#define DOCK_H 2 
 #define DOCK_W COLS
 #define DOCK_Y LINES-DOCK_H
 #define DOCK_X 0
 
-#define OPERAND_W 54
+#define OPERAND_H 2
+#define OPERAND_W 50
+#define ID_H 1
 #define ID_W 20
+#define ID_Y 0
+#define WIDGET_H 1
 #define WIDGET_W 30
+#define WIDGET_Y 1
 
 #define SUBJECT_X 2
-#define OBJECT_X COLS-OPERAND_W-2
+#define OBJECT_X COLS-OPERAND_W
 
 WINDOW *dock_win;
 WINDOW *subject_win, *subj_id_win, *subj_wi_win;
@@ -88,15 +93,15 @@ PANEL  *dock_pan;
 
 inline void buildview_dock(void)
 {
-        dock_win = newwin(DOCK_H, DOCK_W, DOCK_Y, DOCK_X);
+        dock_win = newwin(DOCK_H, DOCK_W, LINES-2, DOCK_X);
 
-        subject_win = derwin(   dock_win , DOCK_H , OPERAND_W , 0 , SUBJECT_X);
-        subj_id_win = derwin(subject_win , DOCK_H , ID_W      , 0 ,         0);
-        subj_wi_win = derwin(subject_win , DOCK_H , WIDGET_W  , 0 ,      ID_W);
+        subject_win = derwin(   dock_win , OPERAND_H , OPERAND_W , 0        , SUBJECT_X);
+        subj_id_win = derwin(subject_win , ID_H      , ID_W      , ID_Y     , 0);
+        subj_wi_win = derwin(subject_win , WIDGET_H  , WIDGET_W  , WIDGET_Y , 0);
 
-        object_win  =  derwin(  dock_win , DOCK_H , OPERAND_W , 0 ,  OBJECT_X);
-        obj_id_win  =  derwin(object_win , DOCK_H , ID_W      , 0 ,  OPERAND_W-ID_W);
-        obj_wi_win  =  derwin(object_win , DOCK_H , WIDGET_W  , 0 ,         0);
+        object_win  = derwin(  dock_win  , OPERAND_H , OPERAND_W , 0        , OBJECT_X);
+        obj_id_win  = derwin(object_win  , ID_H      , ID_W      , ID_Y     , OPERAND_W-ID_W-2);
+        obj_wi_win  = derwin(object_win  , WIDGET_H  , WIDGET_W  , WIDGET_Y , OPERAND_W-WIDGET_W-2);
 
         wbkgrnd(dock_win, &PURPLE[2]);
         wbkgrnd(subject_win, &PURPLE[2]);
@@ -120,7 +125,7 @@ inline void buildview_dock(void)
 #define MENU_W 20
 #define MENU_H (LINES/3)
 #define MENU_X 1
-#define MENU_Y LINES-MENU_H-1
+#define MENU_Y LINES-MENU_H-DOCK_H
 #define SUB_H MENU_H-2
 #define SUB_W MENU_W-2
 #define SUB_Y 1

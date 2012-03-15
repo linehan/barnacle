@@ -48,12 +48,17 @@ int  op;
 
 inline void setmode(int newmode)
 {
+        #define DEFAULT_OPERAND SUBJECT
+
         if (newmode == mode) return;
 
         switch (newmode) {
         case RESET:
                 mode_changed = false;
                 return;
+        case STARTING:
+                op = DEFAULT_OPERAND;
+                break;
         case LAST:
                 mode = oldmode;
                 return;
@@ -84,7 +89,6 @@ inline int ismode(int somemode)
 void operate_on(void *noun)
 {
         #define DEFAULT_MODE VITALS
-        #define DEFAULT_OP OPSUBJECT
 
         uint32_t key = (noun!=NULL) ? *(uint32_t *)noun : 0;
        
@@ -94,20 +98,20 @@ void operate_on(void *noun)
 
         switch(mode) {
         case STARTING:
-                setmode(DEFAULT_OP);
                 install_key(key, op^1);
                 setmode(DEFAULT_MODE);
-                break;
+                view_vitals(SUBJECT);
+                view_vitals(OBJECT);
+        case EXITING:
+                view_noun_grey(SUBJECT);
+                view_noun_grey(OBJECT);
+                close_nouns(SUBJECT);
+                close_nouns(OBJECT);
+                return;
         case POPMENU:
                 open_nouns(op);
                 setmode(LAST);
                 break;
-        case EXITING:
-                view_noun_grey(op);
-                view_noun_grey(op^1);
-                close_nouns(SUBJECT);
-                close_nouns(OBJECT);
-                return;
         }
         switch(mode) {
         case ATTRIBUTES:
@@ -143,11 +147,13 @@ void choose_noun(void)
 
         MENU *menu[2]={get_noun_menu(SUBJECT), get_noun_menu(OBJECT)};
         ITEM *item = NULL;
-        int c;  // User input
+        int c;  
 
-        // First run
-        setmode(OPSUBJECT);
-        setmode(STARTING);
+        /* If called previously, the mode will be set to EXITING,
+         * where the last call left it. */
+        if (mode==EXITING) setmode(LAST);
+        else               setmode(STARTING);
+
         item=current_item(menu[op]);
         operate_on(item_userptr(item));
 
