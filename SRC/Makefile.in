@@ -55,8 +55,8 @@ am_arawak_OBJECTS = arawak.$(OBJEXT) lib/redblack/rb.$(OBJEXT) \
 	gfx/wselect.$(OBJEXT) gfx/fancy_menus.$(OBJEXT) \
 	gen/perlin.$(OBJEXT) gfx/term.$(OBJEXT) env/deck.$(OBJEXT) \
 	env/cloud.$(OBJEXT) mob/mob.$(OBJEXT) mob/boat.$(OBJEXT) \
-	guy/guy_model.$(OBJEXT) guy/guy_view.$(OBJEXT) \
-	guy/guy_control.$(OBJEXT) pan/ctrlpanels.$(OBJEXT) \
+	noun/noun_model.$(OBJEXT) noun/noun_view.$(OBJEXT) \
+	noun/noun_control.$(OBJEXT) pan/ctrlpanels.$(OBJEXT) \
 	pan/new_character.$(OBJEXT) pan/instruments.$(OBJEXT) \
 	pan/button.$(OBJEXT) pan/dialog.$(OBJEXT) pan/test.$(OBJEXT) \
 	pan/crewgen.$(OBJEXT) txt/rk.$(OBJEXT) txt/psh.$(OBJEXT)
@@ -192,9 +192,9 @@ arawak_SOURCES = arawak.c \
                    env/cloud.c       \
                    mob/mob.c         \
                    mob/boat.c        \
-                   guy/guy_model.c   \
-                   guy/guy_view.c    \
-                   guy/guy_control.c \
+                   noun/noun_model.c   \
+                   noun/noun_view.c    \
+                   noun/noun_control.c \
                    pan/ctrlpanels.c  \
                    pan/new_character.c \
                    pan/instruments.c \
@@ -380,18 +380,18 @@ mob/$(DEPDIR)/$(am__dirstamp):
 	@: > mob/$(DEPDIR)/$(am__dirstamp)
 mob/mob.$(OBJEXT): mob/$(am__dirstamp) mob/$(DEPDIR)/$(am__dirstamp)
 mob/boat.$(OBJEXT): mob/$(am__dirstamp) mob/$(DEPDIR)/$(am__dirstamp)
-guy/$(am__dirstamp):
-	@$(MKDIR_P) guy
-	@: > guy/$(am__dirstamp)
-guy/$(DEPDIR)/$(am__dirstamp):
-	@$(MKDIR_P) guy/$(DEPDIR)
-	@: > guy/$(DEPDIR)/$(am__dirstamp)
-guy/guy_model.$(OBJEXT): guy/$(am__dirstamp) \
-	guy/$(DEPDIR)/$(am__dirstamp)
-guy/guy_view.$(OBJEXT): guy/$(am__dirstamp) \
-	guy/$(DEPDIR)/$(am__dirstamp)
-guy/guy_control.$(OBJEXT): guy/$(am__dirstamp) \
-	guy/$(DEPDIR)/$(am__dirstamp)
+noun/$(am__dirstamp):
+	@$(MKDIR_P) noun
+	@: > noun/$(am__dirstamp)
+noun/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) noun/$(DEPDIR)
+	@: > noun/$(DEPDIR)/$(am__dirstamp)
+noun/noun_model.$(OBJEXT): noun/$(am__dirstamp) \
+	noun/$(DEPDIR)/$(am__dirstamp)
+noun/noun_view.$(OBJEXT): noun/$(am__dirstamp) \
+	noun/$(DEPDIR)/$(am__dirstamp)
+noun/noun_control.$(OBJEXT): noun/$(am__dirstamp) \
+	noun/$(DEPDIR)/$(am__dirstamp)
 pan/$(am__dirstamp):
 	@$(MKDIR_P) pan
 	@: > pan/$(am__dirstamp)
@@ -444,14 +444,14 @@ mostlyclean-compile:
 	-rm -f gfx/sprite.$(OBJEXT)
 	-rm -f gfx/term.$(OBJEXT)
 	-rm -f gfx/wselect.$(OBJEXT)
-	-rm -f guy/guy_control.$(OBJEXT)
-	-rm -f guy/guy_model.$(OBJEXT)
-	-rm -f guy/guy_view.$(OBJEXT)
 	-rm -f lib/redblack/rb.$(OBJEXT)
 	-rm -f lib/sort/mergesort.$(OBJEXT)
 	-rm -f lib/sort/quicksort.$(OBJEXT)
 	-rm -f mob/boat.$(OBJEXT)
 	-rm -f mob/mob.$(OBJEXT)
+	-rm -f noun/noun_control.$(OBJEXT)
+	-rm -f noun/noun_model.$(OBJEXT)
+	-rm -f noun/noun_view.$(OBJEXT)
 	-rm -f pan/button.$(OBJEXT)
 	-rm -f pan/crewgen.$(OBJEXT)
 	-rm -f pan/ctrlpanels.$(OBJEXT)
@@ -485,14 +485,14 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@gfx/$(DEPDIR)/sprite.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@gfx/$(DEPDIR)/term.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@gfx/$(DEPDIR)/wselect.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@guy/$(DEPDIR)/guy_control.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@guy/$(DEPDIR)/guy_model.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@guy/$(DEPDIR)/guy_view.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@lib/redblack/$(DEPDIR)/rb.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@lib/sort/$(DEPDIR)/mergesort.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@lib/sort/$(DEPDIR)/quicksort.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@mob/$(DEPDIR)/boat.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@mob/$(DEPDIR)/mob.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@noun/$(DEPDIR)/noun_control.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@noun/$(DEPDIR)/noun_model.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@noun/$(DEPDIR)/noun_view.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@pan/$(DEPDIR)/button.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@pan/$(DEPDIR)/crewgen.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@pan/$(DEPDIR)/ctrlpanels.Po@am__quote@
@@ -650,14 +650,14 @@ distclean-generic:
 	-rm -f geo/$(am__dirstamp)
 	-rm -f gfx/$(DEPDIR)/$(am__dirstamp)
 	-rm -f gfx/$(am__dirstamp)
-	-rm -f guy/$(DEPDIR)/$(am__dirstamp)
-	-rm -f guy/$(am__dirstamp)
 	-rm -f lib/redblack/$(DEPDIR)/$(am__dirstamp)
 	-rm -f lib/redblack/$(am__dirstamp)
 	-rm -f lib/sort/$(DEPDIR)/$(am__dirstamp)
 	-rm -f lib/sort/$(am__dirstamp)
 	-rm -f mob/$(DEPDIR)/$(am__dirstamp)
 	-rm -f mob/$(am__dirstamp)
+	-rm -f noun/$(DEPDIR)/$(am__dirstamp)
+	-rm -f noun/$(am__dirstamp)
 	-rm -f pan/$(DEPDIR)/$(am__dirstamp)
 	-rm -f pan/$(am__dirstamp)
 	-rm -f txt/$(DEPDIR)/$(am__dirstamp)
@@ -671,7 +671,7 @@ clean: clean-am
 clean-am: clean-binPROGRAMS clean-generic mostlyclean-am
 
 distclean: distclean-am
-	-rm -rf ./$(DEPDIR) cmd/$(DEPDIR) eng/$(DEPDIR) eng/model/$(DEPDIR) env/$(DEPDIR) gen/$(DEPDIR) gen/name/$(DEPDIR) geo/$(DEPDIR) gfx/$(DEPDIR) guy/$(DEPDIR) lib/redblack/$(DEPDIR) lib/sort/$(DEPDIR) mob/$(DEPDIR) pan/$(DEPDIR) txt/$(DEPDIR)
+	-rm -rf ./$(DEPDIR) cmd/$(DEPDIR) eng/$(DEPDIR) eng/model/$(DEPDIR) env/$(DEPDIR) gen/$(DEPDIR) gen/name/$(DEPDIR) geo/$(DEPDIR) gfx/$(DEPDIR) lib/redblack/$(DEPDIR) lib/sort/$(DEPDIR) mob/$(DEPDIR) noun/$(DEPDIR) pan/$(DEPDIR) txt/$(DEPDIR)
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
 	distclean-tags
@@ -717,7 +717,7 @@ install-ps-am:
 installcheck-am:
 
 maintainer-clean: maintainer-clean-am
-	-rm -rf ./$(DEPDIR) cmd/$(DEPDIR) eng/$(DEPDIR) eng/model/$(DEPDIR) env/$(DEPDIR) gen/$(DEPDIR) gen/name/$(DEPDIR) geo/$(DEPDIR) gfx/$(DEPDIR) guy/$(DEPDIR) lib/redblack/$(DEPDIR) lib/sort/$(DEPDIR) mob/$(DEPDIR) pan/$(DEPDIR) txt/$(DEPDIR)
+	-rm -rf ./$(DEPDIR) cmd/$(DEPDIR) eng/$(DEPDIR) eng/model/$(DEPDIR) env/$(DEPDIR) gen/$(DEPDIR) gen/name/$(DEPDIR) geo/$(DEPDIR) gfx/$(DEPDIR) lib/redblack/$(DEPDIR) lib/sort/$(DEPDIR) mob/$(DEPDIR) noun/$(DEPDIR) pan/$(DEPDIR) txt/$(DEPDIR)
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 

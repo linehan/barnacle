@@ -41,8 +41,8 @@
 #include "pan/crewgen.h"
 #include "pan/ctrlpanels.h"
 #include "pan/new_character.h"
-#include "guy/guy_model.h"
-#include "guy/guy_control.h"
+#include "noun/noun_model.h"
+#include "noun/noun_control.h"
 
 
 
@@ -123,7 +123,7 @@ int main()
         uint32_t boatkey = new_boat(pad);
         nominate_boat(boatkey);
 
-        load_guy_test();
+        load_noun_test();
 
         /* master off switch */
         sem_t master_off; 

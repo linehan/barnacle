@@ -37,9 +37,9 @@ arawak_SOURCES = arawak.c \
                    env/cloud.c       \
                    mob/mob.c         \
                    mob/boat.c        \
-                   guy/guy_model.c   \
-                   guy/guy_view.c    \
-                   guy/guy_control.c \
+                   noun/noun_model.c   \
+                   noun/noun_view.c    \
+                   noun/noun_control.c \
                    pan/ctrlpanels.c  \
                    pan/new_character.c \
                    pan/instruments.c \

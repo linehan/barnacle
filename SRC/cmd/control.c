@@ -31,7 +31,7 @@ Bindings and actions for the user's keyboard input.
 #include "../env/deck.h"
 #include "../pan/ctrlpanels.h"
 #include "../pan/new_character.h"
-#include "../guy/guy_control.h"
+#include "../noun/noun_control.h"
 /******************************************************************************/
 PANEL *deckp;
 
