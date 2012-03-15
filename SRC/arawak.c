@@ -16,13 +16,8 @@
 #include <math.h>
 
 #include "lib/llist/list.h"
-#include "lib/memmacro.h"
 
-<<<<<<< .merge_file_0cUacY
 #include "pan/dialog.h"
-=======
-#include "pan/menus.h"
->>>>>>> .merge_file_jM3xdV
 #include "typedefs.h"
 #include "txt/psh.h"
 #include "cmd/control.h"
@@ -75,13 +70,8 @@ void tumbler(EV_P_ ev_timer *w, int revents)
         seek_heading();
         seek_prevailing();
         draw_compass();
-<<<<<<< .merge_file_0cUacY
         view_dock();
         do_pulse();
-=======
-        /*render_clouds(GLOBE->P);*/
-        /*shift_highlights(GLOBE->P);*/
->>>>>>> .merge_file_jM3xdV
 
         if ((sem_trywait(bun->sem) == -1)) ev_timer_again(EV_DEFAULT, w);
         else                               ev_break(EV_A_ EVBREAK_ALL);
@@ -91,14 +81,9 @@ void do_animate(EV_P_ ev_timer *w, int revents)
 {
         OO_time *bun = container_of(w, OO_time, w);
 
-<<<<<<< .merge_file_0cUacY
         NEXT(GLOBE->L[RIM]);
         restack_map(GLOBE);
         map_refresh(GLOBE);
-=======
-        /*GLOBE->P->L[RIM]->step(GLOBE->P->L[RIM]);*/
-        /*combine(GLOBE->P);*/
->>>>>>> .merge_file_jM3xdV
 
         if ((sem_trywait(bun->sem) == -1)) ev_timer_again(EV_DEFAULT, w);
         else                               ev_break(EV_A_ EVBREAK_ALL);
@@ -123,19 +108,12 @@ int main()
         init_deck();
         draw_deck();
 
-<<<<<<< .merge_file_0cUacY
         init_ctrlpanels();
 
         struct map_t *pad = new_map((LINES*3), (COLS*3));
         gen_map(pad);
-=======
-        MAP *pad = gen_map((LINES*3), (COLS*3));
->>>>>>> .merge_file_jM3xdV
         GLOBE = pad;
-        roll(pad, 0);
-        roll(pad, 0);
 
-<<<<<<< .merge_file_0cUacY
         roll_map(pad, 0);
         roll_map(pad, 0);
 
@@ -146,22 +124,12 @@ int main()
         nominate_boat(boatkey);
 
         load_noun_test();
-=======
-        wprintw(DIAGNOSTIC_WIN, "%u", (LINES*COLS)*3);
-
-        /*draw_water_rim(map->P);*/
-
-        MOB *boat = new_boat();
-        nominate_boat(boat);
->>>>>>> .merge_file_jM3xdV
 
         /* master off switch */
         sem_t master_off; 
         sem_init(&master_off, 0, 1);
 
         set_wind(__pre__, 4);
-
-        /*swab_screen();*/
 
         /* Main event loop */
         struct ev_loop *mainloop = EV_DEFAULT;
@@ -176,12 +144,8 @@ int main()
         /* Create the sailboat/wind watcher */
         OO_time sailor;
         ev_init(&(sailor.w), &blow_wind);
-<<<<<<< .merge_file_0cUacY
         /*sailor.w.repeat = .1;*/
         sailor.w.repeat = .12;
-=======
-        sailor.w.repeat = .1;
->>>>>>> .merge_file_jM3xdV
         ev_timer_again(mainloop, &(sailor.w));
         sailor.sem = &master_off;
 

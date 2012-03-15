@@ -42,12 +42,8 @@ enum arne_colors {
         LWOOD      = 37,
         WOOD       = 38,
         SHADOW     = 39, 
-<<<<<<< .merge_file_OfdMha
         DARK_RED   = 42, 
         DARK_BROWN = 43,
-=======
-        DARK_RED   = 42 
->>>>>>> .merge_file_79c5F9
 };
 
 
@@ -103,7 +99,6 @@ enum arne_shadow2 {
         __LWOOD  = 88,
         __WOOD   = 89,
         __SHADOW = 90,
-<<<<<<< .merge_file_OfdMha
         __DARK_RED = 91 ,
         __BG = 97,
         CELESTIALBLUE = 92,
@@ -112,9 +107,6 @@ enum arne_shadow2 {
         BLASTOFFBRONZE = 95,
         METALYELLOW    = 96,
         ZEN_BG = 97,
-=======
-        __DARK_RED = 91 
->>>>>>> .merge_file_79c5F9
 };
 
 
@@ -129,7 +121,6 @@ enum ramp_pairs {
         CMP_PINK      = 105,
         CMP_YELLOW    = 106,
         CMP_SHADOW    = 107,
-        MENU          = 108,
         WARNING       = 109,
         WARNSHADOW    = 110,
         GUN_FLASH     = 111,
@@ -194,11 +185,7 @@ enum ramp_pairs {
         BOAT_DEEP     = 19,
         BOAT_WOOD     = 20, 
         BOAT_WHITE    = 21,
-<<<<<<< .merge_file_OfdMha
         /*SAIL_DEEP     = 22,*/
-=======
-        SAIL_DEEP     = 22,
->>>>>>> .merge_file_79c5F9
         LAND          = 23,
         TREETOP       = 24,
         TREETRUNK     = 25,
@@ -230,15 +217,9 @@ enum ramp_pairs {
         __TREETRUNK     = 49,
         __GRASSY        = 50,
         __SOILGRASS     = 51,
-<<<<<<< .merge_file_OfdMha
         __SEA_LIG       = 52,
 
-=======
-        __SEA_LIG       = 52 
->>>>>>> .merge_file_79c5F9
 };
-
-
 
 /* The shaded color pairs are indexed by their lighter cousins */
 /*int shade[128];*/
@@ -391,7 +372,6 @@ void init_palette(int set)
         init_pair(CMP_PINK, BEIGE, BEIGE);
         init_pair(CMP_YELLOW, YELLOW, ORANGE);
         init_pair(CMP_SHADOW, DGREY, ORANGE);
-        init_pair(MENU, DGREY, WHITE);
         init_pair(WARNING, WHITE, RED);
         init_pair(WARNSHADOW, RED, DARK_RED);
 

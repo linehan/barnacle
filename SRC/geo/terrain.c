@@ -14,25 +14,15 @@
 #include <semaphore.h>
 #include <math.h>
 
-#include "../lib/llist/list.h"
-#include "../lib/memmacro.h"
-#include "../lib/hash/hash.h"
-
 #include "terrain.h"
 #include "weather.h"
 #include "map.h"
-#include "weather.h"
 
 #include "../gfx/gfx.h"
 #include "../gfx/palette.h"
 #include "../gfx/sprite.h"
-#include "../gen/perlin.h"
 #include "../gen/dice.h"
-<<<<<<< .merge_file_Cl2CwZ
 #include "../lib/morton.h"
-=======
-#include "../cmd/control.h"
->>>>>>> .merge_file_pEx2yW
 #include "../pan/test.h"
 #include "../lib/ufo.h"
 
@@ -80,11 +70,7 @@
 //# Where the magic happens - draw the graphics layers based on generated
 //# Perlin simplex noise and some coin flips. 
 //##############################################################################
-<<<<<<< .merge_file_Cl2CwZ
 void draw_layers(struct map_t *map, double **pmap)
-=======
-void draw_layers(MAP *map, double **pmap)
->>>>>>> .merge_file_pEx2yW
 {
         int i, j;
         uint32_t z;           // For computing Morton codes
@@ -94,11 +80,7 @@ void draw_layers(MAP *map, double **pmap)
         int w, h, tw, th;     // width and height of ground and tree boxes
         int chunk, chunkmin;  // unit of land to draw at a time
         int lastchunk;        // value of the previous chunk
-<<<<<<< .merge_file_Cl2CwZ
         double seed;          // perlin noise (elevation) values
-=======
-        double seed;               // perlin noise (elevation) values
->>>>>>> .merge_file_pEx2yW
 
         seed     = 0.95; // threshold value to determine whether to draw
         chunk    = 6;
@@ -134,7 +116,6 @@ void draw_layers(MAP *map, double **pmap)
                                         for (j=x0; j<jmax; j++) {
                                                 MORT(i, j, &z);
                                                 if (i == imax) {
-<<<<<<< .merge_file_Cl2CwZ
                                                         mvwadd_wch(PEEK(map->L[DRP]), i, j, &MTN[2]);
                                                         set_state(map->tree, z, 0, LAY, DRP);
                                                         set_state(map->tree, z, 0, SED, LIME);
@@ -145,18 +126,6 @@ void draw_layers(MAP *map, double **pmap)
                                                 set_state(map->tree, z, 0, LAY, TOP);
                                                 set_state(map->tree, z, 0, SED, LIME);
                                                 set_state(map->tree, z, 0, SOI, MOLL);
-=======
-                                                        mvwadd_wch(map->L[DRP], i, j, &MTN[2]);
-                                                        /*set_nyb(&(map->scr[imax][j]), LAY, DRP);*/
-                                                        /*set_nyb(&(map->scr[imax][j]), SED, LIME);*/
-                                                        /*set_nyb(&(map->scr[imax][j]), SOI, MOLL);*/
-                                                        continue;
-                                                }
-                                                mvwadd_wch(map->L[TOP], i, j, bgtop); // top
-                                                /*set_nyb(&(map->scr[i][j]), LAY, TOP); */
-                                                /*set_nyb(&(map->scr[i][j]), SED, LIME); */
-                                                /*set_nyb(&(map->scr[i][j]), SOI, MOLL); */
->>>>>>> .merge_file_pEx2yW
                                         }
                                 }
                                 // Draw the tree box
@@ -171,7 +140,6 @@ void draw_layers(MAP *map, double **pmap)
                                         for (j=tx0; j<jmax; j++) {
                                                 MORT(i, j, &z);
                                                 if (i == imax) {
-<<<<<<< .merge_file_Cl2CwZ
                                                         set_state(map->tree, z, 0, LAY, VEG);
                                                         set_state(map->tree, z, 0, SED, LIME);
                                                         set_state(map->tree, z, 0, SOI, MOLL);
@@ -186,22 +154,6 @@ void draw_layers(MAP *map, double **pmap)
                                 }
                         }
                         mvwadd_wch(PEEK(map->L[BGR]), y0, x0, &OCEAN[0]);
-=======
-                                                        /*set_nyb(&(map->scr[imax][j]), LAY, VEG);*/
-                                                        /*set_nyb(&(map->scr[imax][j]), SED, LIME);*/
-                                                        /*set_nyb(&(map->scr[imax][j]), SOI, MOLL);*/
-                                                        mvwadd_wch(map->L[VEG], i, j, &TREE[0]);
-                                                        continue;
-                                                }
-                                                mvwadd_wch(map->L[VEG], i, j, &TREE[1]);
-                                                /*set_nyb(&(map->scr[i][j]), LAY, VEG);*/
-                                                /*set_nyb(&(map->scr[i][j]), SED, LIME);*/
-                                                /*set_nyb(&(map->scr[i][j]), SOI, SPOD);*/
-                                        }
-                                }
-                        }
-                        mvwadd_wch(map->L[BGR], y0, x0, &OCEAN[0]);
->>>>>>> .merge_file_pEx2yW
                 }
         }
 
@@ -263,35 +215,6 @@ void draw_water_rim(struct map_t *map)
                 }
         }
 }
-
-/*void draw_water_rim(PLATE *pl)*/
-/*{*/
-        /*uint32_t i, j, n;*/
-
-        /*WINDOW *rimwin1, *rimwin2;*/
-        /*rimwin1 = pl->L[RIM]->W->window;*/
-                  /*pl->L[RIM]->next(pl->L[RIM]);*/
-        /*rimwin2 = pl->L[RIM]->W->window;*/
-
-        /*for (i=1; i<LINES; i++) {*/
-                /*for (j=1; j<COLS-1; j++) {*/
-                        /*if ((is_nyb(pl, i, j, LAY, TOP))) continue;*/
-                        /*if ((is_nyb(pl, i, j, LAY, DRP))) continue;*/
-
-                        /*if ((is_nyb(pl, (i-1), j, LAY, TOP))        ||*/
-                            /*(is_nyb(pl, (i-1), j, LAY, DRP))        ||*/
-                            /*(is_nyb(pl, (i), (j+1), LAY, TOP))      ||*/
-                            /*(is_nyb(pl, (i), (j+1), LAY, DRP))      ||*/
-                            /*(is_nyb(pl, (i), (j-1), LAY, TOP))      ||*/
-                            /*(is_nyb(pl, (i), (j-1), LAY, DRP))) */
-                        /*{*/
-                                /*mvwadd_wch(rimwin1, i, j, &OCEAN[3]);*/
-                                /*mvwadd_wch(rimwin2, i, j, &OCEAN[2]);*/
-                                /*set_nyb(pl, i, j, LAY, RIM);*/
-                        /*} */
-                /*}*/
-        /*}*/
-/*}*/
 
 void testworld(int size_factor, int testtype)
 {
@@ -454,27 +377,3 @@ void testworld(int size_factor, int testtype)
                 break;
         }
 }
-
-void roll(MAP *map, int dir)
-{
-        switch (dir) {
-        case 'l': 
-                ufo_l(map->ufo);
-                break;
-        case 'r': 
-                ufo_r(map->ufo);
-                break;
-        case 'u': 
-                ufo_u(map->ufo);
-                break;
-        case 'd': 
-                ufo_d(map->ufo);
-                break;
-        case 0:
-                break;
-        }
-        top_panel(map->P);
-        pnoutrefresh(map->W, ufo_y(map->ufo), ufo_x(map->ufo), 0, 0, LINES-1, COLS-1);
-        scr_refresh();
-}
-

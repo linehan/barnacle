@@ -9,7 +9,6 @@
 #include <locale.h>
 #include <pthread.h>
 #include <semaphore.h>
-
 #include "../lib/llist/list.h"
 #include "../pan/test.h"
 #include "../geo/map.h"
@@ -112,7 +111,6 @@ typedef struct dimension_t {
  * in memory, but contributes nothing to the screen until it is loaded into
  * the projector. A ring of WNODEs is, naturally, a reel.
  ******************************************************************************/
-<<<<<<< .merge_file_CfbEA7
 struct wnode_t {
         int id;
         WINDOW *window;
@@ -154,27 +152,15 @@ struct cbar {
         short pair[10];
         const char *bar;
 };
-=======
-typedef struct win_wad {
-        int id;
-        WINDOW *window;
-        struct list_node node; 
-} WNODE;
->>>>>>> .merge_file_5A3rw7
 
 void illuminate(struct recipe *R);
 void build_gpkg(struct gpkg *g);
 void build_gpkg_cbar(struct gpkg *g, struct cbar *c);
 void geojug_start(void);
 
-<<<<<<< .merge_file_CfbEA7
 struct wnode_t   *new_wnode(int id, int h, int w, int y0, int x0);
 struct ring_t  *new_winring(int h, int w, int y0, int x0, int nwindows);
 int                hit_test(struct map_t *map, int y, int x);
-=======
-WNODE *new_wnode(int id, int h, int w, int y0, int x0);
-//void draw_water_rim(PLATE *pl);
->>>>>>> .merge_file_5A3rw7
 
 void center_text(WINDOW *win, int y0, int x0, int w, char *string);
 void wwrapstr(WINDOW *win, const char *string);

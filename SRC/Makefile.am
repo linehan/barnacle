@@ -3,7 +3,6 @@ AUTOMAKE_OPTIONS = foreign subdir-objects
 #         gprof       non-GNU     compile objects in the 
 #           |                      indicated relative paths
 # optimize  | warnings
-<<<<<<< .merge_file_BpbCYT
 # lvl 3 \   |    /    
 CFLAGS=-O3 -pg -Wall -DVERSION=\"$(VERSION)\" -DPROG="\"$(PACKAGE)\""
 LDFLAGS=-lm -lpthread -lmenu -lpanel -lform -lncursesw -lev
@@ -48,36 +47,5 @@ arawak_SOURCES = arawak.c \
                    pan/dialog.c      \
                    pan/test.c        \
                    pan/crewgen.c     \
-=======
-# lvl 3 \   |    /
-CFLAGS=-O3 -pg -Wall -DVERSION=\"$(VERSION)\" -DPROG="\"$(PACKAGE)\""
-LDFLAGS=-lm -lpthread -lmenu -lpanel -lncursesw -lev
-#       /      |        \         |       \       |_____________
-#  math.h      |       menu     panels     \                    \
-#          POSIX     (curses)  (curses)   ncurses with          libev   
-#          threads                        wide character   (event handler)
-#                                         support
-
-bin_PROGRAMS = arawak
-arawak_SOURCES = arawak.c \
-                   lib/redblack/rb.c \
-                   cmd/control.c     \
-                   gen/dice.c        \
-                   gen/mtwist.c      \
-                   geo/weather.c     \
-                   geo/terrain.c     \
-                   geo/map.c         \
-                   gfx/zbox.c        \
-                   gfx/palette.c     \
-                   gfx/sprite.c      \
-                   gfx/gfx.c         \
-                   gen/perlin.c      \
-                   gfx/term.c        \
-                   mob/mob.c         \
-                   mob/boat.c        \
-                   pan/instruments.c \
-                   pan/menus.c       \
-                   pan/test.c        \
->>>>>>> .merge_file_umbWjT
                    txt/rk.c          \
                    txt/psh.c

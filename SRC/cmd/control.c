@@ -16,7 +16,6 @@ Bindings and actions for the user's keyboard input.
 #include <semaphore.h>
 
 #include "lib/llist/list.h"
-#include "../lib/memmacro.h"
 
 #include "../pan/test.h"
 #include "../typedefs.h"
@@ -28,15 +27,11 @@ Bindings and actions for the user's keyboard input.
 #include "../pan/instruments.h"
 #include "../mob/mob.h"
 #include "../mob/boat.h"
-<<<<<<< .merge_file_22vZAO
 #include "../pan/dialog.h"
 #include "../env/deck.h"
 #include "../pan/ctrlpanels.h"
 #include "../pan/new_character.h"
 #include "../noun/noun_control.h"
-=======
-#include "../pan/menus.h"
->>>>>>> .merge_file_h2ZchQ
 /******************************************************************************/
 PANEL *deckp;
 
@@ -85,15 +80,9 @@ void *iolisten(EV_P_ ev_io *w, int revents)
                 case 'k':
                         order_boat('s', 0);
                         break;
-<<<<<<< .merge_file_22vZAO
                 /*case ' ':*/
                         /*order_boat('x', 0);*/
                         /*break;*/
-=======
-                case ' ':
-                        order_boat('x', 0);
-                        break;
->>>>>>> .merge_file_h2ZchQ
                 case 'i':
                         toggle_instrument_panel();
                         break;
@@ -106,7 +95,6 @@ void *iolisten(EV_P_ ev_io *w, int revents)
                 case 'g':
                         order_boat('r', 0);
                         break;
-<<<<<<< .merge_file_22vZAO
                 case 'f':
                         order_boat('R', 0);
                         break;
@@ -123,10 +111,6 @@ void *iolisten(EV_P_ ev_io *w, int revents)
                 case '?':
                         TOGPAN(MARQUEEP);
                         vrt_refresh();
-=======
-                case 't':
-                        TOGPAN(BIGPAN);
->>>>>>> .merge_file_h2ZchQ
                         break;
                 case KEY_UP:
                         move_inspector('u');
@@ -148,7 +132,6 @@ void *iolisten(EV_P_ ev_io *w, int revents)
                         wrap_wave('r');
                         break;
                 case 'w':
-<<<<<<< .merge_file_22vZAO
                         roll_map(GLOBE, 'u');
                         break;
                 case 'a':
@@ -159,18 +142,6 @@ void *iolisten(EV_P_ ev_io *w, int revents)
                         break;
                 case 'd':
                         roll_map(GLOBE, 'r');
-=======
-                        roll(GLOBE, 'u');
-                        break;
-                case 'a':
-                        roll(GLOBE, 'l');
-                        break;
-                case 's':
-                        roll(GLOBE, 'd');
-                        break;
-                case 'd':
-                        roll(GLOBE, 'r');
->>>>>>> .merge_file_h2ZchQ
                         break;
                 case '`':
                         toggle_mm();

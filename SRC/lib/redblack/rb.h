@@ -2,25 +2,18 @@
 #ifndef __RED_BLACK_TREES
 #define __RED_BLACK_TREES
 
-<<<<<<< .merge_file_sqexYq
 #define DEFAULT_WORD_COUNT 1
 
 struct rb_node {
         uint32_t key;
         uint32_t *data;
         void *extra;
-=======
-struct rb_node {
-        uint32_t key;
-        void *data;
->>>>>>> .merge_file_qnogmq
         int red;
         struct rb_node *link[2];
 };
 
 struct rb_tree {
         struct rb_node *root;
-<<<<<<< .merge_file_sqexYq
         struct rb_node *peek;
         uint8_t words;
         int n;
@@ -41,13 +34,5 @@ void *rb_extra(struct rb_tree *tree, uint32_t key);
 int rb_remove(struct rb_tree *tree, uint32_t key);
 int rb_insert(struct rb_tree *tree, uint32_t key);
 
-=======
-        int n;
-};
-
-int rb_remove(struct rb_tree *tree, uint32_t key);
-int rb_insert(struct rb_tree *tree, uint32_t key);
-void *rb_retreive(struct rb_tree *tree, uint32_t key);
->>>>>>> .merge_file_qnogmq
 
 #endif

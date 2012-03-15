@@ -15,7 +15,6 @@
 #include <semaphore.h>
 
 #include "../lib/llist/list.h"
-#include "../lib/memmacro.h"
 
 #include "test.h"
 
@@ -161,11 +160,7 @@ void mark_hdg(int dir)
         tmp = list_top(&CMP, struct compass_char, node);
         int origin = tmp->dir;
         offsgh = offsdn;
-<<<<<<< .merge_file_emXwyB
         set_state(BOAT_TREE, BOAT_NODE->key, 0, HDG, (origin+(offsdn-1))%16);
-=======
-        set_boat(_BOAT, __buf__, __hdg__, (origin+(offsdn-1))%16);
->>>>>>> .merge_file_DY5cgD
 }
 /* Calculate the offset of the wind arrow. This is not under the control of
  * the player; the mark will move to indicate the current wind direction on
@@ -210,11 +205,7 @@ void tumble_compass(int dir)
 int seek_heading(void)
 {
         struct compass_char *tmp;
-<<<<<<< .merge_file_emXwyB
         int req = get_state(BOAT_TREE, BOAT_NODE->key, 0, HDG);
-=======
-        int req = get_boat(_BOAT, __req__, __hdg__);
->>>>>>> .merge_file_DY5cgD
         int origin; // direction at origin
         int mid;    // direction at midpoint
 
@@ -224,11 +215,7 @@ int seek_heading(void)
         mid    = ((origin+6)%cmp_num); // compute direction @ midpoint
 
         /* Set the current heading to the midpoint */
-<<<<<<< .merge_file_emXwyB
         set_state(BOAT_TREE, BOAT_NODE->key, 0, HDG, mid); 
-=======
-        set_boat(_BOAT, __now__, __hdg__, mid); 
->>>>>>> .merge_file_DY5cgD
 
         /* If the midpoint is not the required heading, tumble the compass, 
          * which will cause the value of the midpoint to be shifted one way 
@@ -295,9 +282,5 @@ void draw_compass(void)
         mvwadd_wch(cmpbox_win, 2, (box_wid-1), &(CBOR[RSIDE]));
 
         vrt_refresh();
-<<<<<<< .merge_file_emXwyB
         /*scr_refresh();*/
-=======
-        scr_refresh();
->>>>>>> .merge_file_DY5cgD
 }
