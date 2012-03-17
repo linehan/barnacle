@@ -1,3 +1,4 @@
+#include <stdlib.h>
 #include <stdint.h>
 #include <stdbool.h>
 
@@ -59,4 +60,43 @@ uint32_t lzc(uint32_t v)
         v |= (v >> 8);
         v |= (v >> 16);
         return(WORDBITS - ones(v));
+}
+
+
+
+uint32_t mask(int n)
+{
+        (~0 << n) >> n;
+}
+
+
+const char *dispel(uint32_t magic)
+{
+        #define WORDBITS 32
+        static const uint32_t maskmsb = 0x80000000;
+        static char buf[33];
+        int i;
+
+        for (i=0; i<WORDBITS; i++) {
+                if ((magic & maskmsb) == 0) buf[i] = '-';
+                else                        buf[i] = '#';
+                magic <<= 1;
+        }
+        buf[i] = '\0';
+
+        return (&buf);
+};
+
+
+inline int disenchant(uint32_t *buf)
+{
+        static uint32_t read = 0x80000000;
+        static uint32_t cpy;
+
+        if (buf == NULL) cpy <<= 1;
+        else             cpy = *buf;
+        
+        if (cpy == 0U) return -1;
+        else
+                return ((read & cpy) != 0) ? 1 : 0;
 }

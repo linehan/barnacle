@@ -6,6 +6,7 @@
 #include <wchar.h>
 #include <ncurses.h>
 #include <panel.h>
+#include <menu.h>
 #include <locale.h>
 #include <pthread.h>
 #include <semaphore.h>

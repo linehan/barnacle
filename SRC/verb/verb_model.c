@@ -18,12 +18,20 @@
 #define _XOPEN_SOURCE_EXTENDED = 1 
 #include <stdio.h>
 #include <stdlib.h>
+#include "../lib/fifo.h"
+#include "../gfx/palette.h"
+#include "../gfx/gfx.h"
+#include "../gfx/dock.h"
 #include "../noun/noun_model.h"
+#include "../noun/noun_view.h"
 #include "verb_model.h"
-
-
-
-
+////////////////////////////////////////////////////////////////////////////////
+//                                                                            //
+//                                                                            //
+//                               verb functions                               //
+//                                                                            //
+//                                                                            //
+////////////////////////////////////////////////////////////////////////////////
 void hp_inc(uint32_t skey, uint32_t okey)
 {
         inc_vital(okey, HP);
@@ -32,8 +40,7 @@ void hp_dec(uint32_t skey, uint32_t okey)
 {
         dec_vital(okey, HP);
 }
-
-
+//----------------------------------------------------------------------------//
 void sp_inc(uint32_t skey, uint32_t okey)
 {
         inc_vital(okey, SP);
@@ -42,8 +49,7 @@ void sp_dec(uint32_t skey, uint32_t okey)
 {
         dec_vital(okey, SP);
 }
-
-
+//----------------------------------------------------------------------------//
 void lp_inc(uint32_t skey, uint32_t okey)
 {
         inc_vital(okey, LP);
@@ -52,8 +58,7 @@ void lp_dec(uint32_t skey, uint32_t okey)
 {
         dec_vital(okey, LP);
 }
-
-
+//----------------------------------------------------------------------------//
 void ep_inc(uint32_t skey, uint32_t okey)
 {
         inc_vital(okey, EP);
@@ -62,39 +67,93 @@ void ep_dec(uint32_t skey, uint32_t okey)
 {
         dec_vital(okey, EP);
 }
-
-
-
-
-// A verb is simply a pointer to a function accepting two nouns as arguments.
-void (*verbs[8]) (uint32_t skey, uint32_t okey) = {hp_inc, hp_dec, 
-                                                   sp_inc, sp_dec,
-                                                   lp_inc, lp_dec,
-                                                   ep_inc, ep_dec };
-
-
-void do_verb(uint32_t skey, int id)
+////////////////////////////////////////////////////////////////////////////////
+//                                                                            //
+//                                                                            //
+//                               verb varieties                               //
+//                                                                            //
+//                                                                            //
+////////////////////////////////////////////////////////////////////////////////
+struct verb_info verbs[]={{L"⊕", PUR_EEN, hp_inc},
+                          {L"⊖", PUR_RED, hp_dec},
+                          {L"⊗", PUR_BLU, sp_inc},
+                          {L"⊘", PUR_YEL, sp_dec},
+                          {L"⊙", PUR_PUR, lp_inc},
+                          {L"⊛", PUR_GRE, lp_dec},
+                          {L"⊜", PUR_PUR, ep_inc},
+                          {L"⊝", PUR_GRE, ep_dec}};
+////////////////////////////////////////////////////////////////////////////////
+inline uint32_t update_mask(uint32_t key)
 {
-        if (id > 7) return;
-        else {
-                focus(skey);
-                verbs[id](skey, focused->target);
-        }
+        focus(key);
+        focused->verb.mask = (~0U >> vit_blocklen(key));
+        focused->verb.bump = 0x80000000 >> lzc(focused->verb.mask);
 }
-
-
-
-void inject_verb(uint32_t skey, uint32_t okey, int verbid)
+////////////////////////////////////////////////////////////////////////////////
+//                                                                            //
+//                                                                            //
+//                            signal a new verb                               //
+//                                                                            //
+//                                                                            //
+////////////////////////////////////////////////////////////////////////////////
+uint32_t verb_new(uint32_t sender, uint32_t recipient, uint32_t verb)
 {
-        #include "../lib/magic.h"
-        static const uint32_t rbump = 0x00000008;
-        static const uint32_t lbump = 0xC0000000;
+        focus(sender);      
 
-        static const uint32_t verbmasks[]={ 0x80000000, 0xC0000000 };
+        if (focused->verb.send != 0) return; // only one verb at a time
 
-        int xmin = vit_blocklen(skey);
+        update_mask(sender);
 
-        focus(skey);
-        focused->verb = (0x80000000>>xmin);
-        focused->target = okey;
+        fifo_push(&focused->verb.to, recipient);
+        fifo_push(&focused->verb.give, verb);
+
+        return (focused->verb.send |= (focused->verb.bump));
+}
+////////////////////////////////////////////////////////////////////////////////
+//                                                                            //
+//                                                                            //
+//                      transmit a verb to its recipient                      //
+//                                                                            //
+//                                                                            //
+////////////////////////////////////////////////////////////////////////////////
+uint32_t verb_send(uint32_t sender)
+{
+        uint32_t recipient;
+        uint32_t verb;
+        uint32_t sendvalue;
+
+        focus(sender);
+
+        recipient = fifo_pop(&focused->verb.to);
+        verb      = fifo_pop(&focused->verb.give);
+        sendvalue = (focused->verb.send ^ 0x00000001);
+
+        focus(recipient);
+
+        fifo_push(&focused->verb.from, sender);
+        fifo_push(&focused->verb.get, verb);
+        focused->verb.rec |= 0x00000001;
+
+        return (sendvalue);
+}
+////////////////////////////////////////////////////////////////////////////////
+//                                                                            //
+//                                                                            //
+//                              execute a verb                                //
+//                                                                            //
+//                                                                            //
+////////////////////////////////////////////////////////////////////////////////
+uint32_t verb_do(uint32_t to)
+{
+        uint32_t from;        
+        uint32_t verb;
+
+        focus(to);
+
+        from = fifo_pop(&focused->verb.from);
+        verb = fifo_pop(&focused->verb.get);
+
+        verbs[verb].say(from, to);
+
+        return ((focused->verb.rec<<1) ^ focused->verb.bump);
 }

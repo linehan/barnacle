@@ -17,6 +17,7 @@ arawak_SOURCES = arawak.c \
                    lib/sort/mergesort.c \
                    lib/sort/quicksort.c \
                    lib/magic.c       \
+                   lib/fifo.c        \
                    eng/state.c       \
                    eng/model/bytes.c \
                    cmd/control.c     \
@@ -44,6 +45,7 @@ arawak_SOURCES = arawak.c \
                    noun/noun_control.c \
                    verb/verb_model.c \
                    verb/verb_view.c \
+                   verb/verb_control.c \
                    pan/ctrlpanels.c  \
                    pan/new_character.c \
                    pan/instruments.c \

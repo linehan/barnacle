@@ -5,83 +5,45 @@
 #include "../gfx/dock.h"
 #include "../gfx/palette.h"
 #include "../gfx/sprite.h"
+#include "../pan/test.h"
 #include "verb_model.h"
+#include "verb_control.h"
 #include "../noun/noun_model.h"
 #include "../noun/noun_view.h"
 #include "../noun/noun_control.h"
+#include "../lib/magic.h"
 
-
+#define MAX (VIT_MAXLEN)
+enum verb_elements { BASE, FUND, SEND, REC, CANC };
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
 //                                                                            //
-//                            view verb packet                                //
+//                          display diagnostic gfx                            //
 //                                                                            //
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
-void view_verb(WINDOW *win, uint32_t skey)
+void do_pulse_test(struct verb_t *verb, int option)
 {
-        #include "../lib/magic.h"
-
-        static wchar_t iconwch[]=L"⊕⊖⊗⊘⊙⊛⊜⊝";
-        static cchar_t iconcch;
-
-        uint32_t fundamental;
-        uint32_t verb;
-        uint8_t xmin;
-        uint8_t lzf, lzv;
-
-        focus(skey);
-
-        fundamental = focused->fundamental;
-        verb = focused->verb;
-        xmin = vit_blocklen(skey);
-
-        if (verb != 0) {
-
-                lzf = lzc(fundamental);
-                lzv = lzc(verb);
-
-                // Pulse is co-incident with verb at block terminal
-                if (lzv==lzf) {
-                        focused->verb >>= 1;
-                        lzv += 1;
-                }
-                // Pulse is co-incident with verb at free terminal
-                if (lzv==lzf && lzv>30) {
-                        focused->verb <<= 1;
-                        lzv -= 1;
-                }
-
-                setcchar(&iconcch, &iconwch[0], 0, PUR_BLU, NULL);
-                mvwadd_wch(win, 0, lzv, &iconcch);
-
-                // Pulse moving left behind verb
-                if (lzf==(lzv+1)) {
-                        if ((verb << xmin) == 0) {
-                                do_verb(skey, 0);
-                                focused->verb = verb;
-                                operate_on(&skey);
-                        }
-                        else focused->verb << 1;
-                }                        
-
-                // Pulse moving right behind verb
-                else if (lzv==(lzf+1)) {
-                        if ((verb >> 3) == 0) {
-                                do_verb(skey, 0);
-                                focused->verb = 0;
-                                operate_on(&skey);
-                        }
-                        else focused->verb >> 1;
-                }
-
-
+        if (verb == NULL) {
+                werase(DIAGNOSTIC_WIN);
+                return;
         }
+        if (option == SUBJECT)
+                wprintw(DIAGNOSTIC_WIN, "subject\n");
+        else    wprintw(DIAGNOSTIC_WIN, "object\n");
+
+        wprintw(DIAGNOSTIC_WIN, "mask %s\n", dispel(verb->mask));
+        wprintw(DIAGNOSTIC_WIN, "bump %s\n", dispel(verb->bump));
+        wprintw(DIAGNOSTIC_WIN, "fund %s\n", dispel(verb->fund));
+        wprintw(DIAGNOSTIC_WIN, "send %s\n", dispel(verb->send));
+        wprintw(DIAGNOSTIC_WIN, " rec %s\n", dispel(verb->rec));
+        vrt_refresh();
+        scr_refresh();
 }
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
 //                                                                            //
-//                              pulse widget                                  //
+//                            verb element views                              //
 //                                                                            //
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
@@ -91,52 +53,148 @@ inline void put_n(WINDOW *win, int y, int x, wchar_t *wch, short pair, int n)
         setcchar(&cch, wch, 0, pair, NULL);
         mvwhline_set(win, y, x, &cch, n);
 }
+////////////////////////////////////////////////////////////////////////////////
+inline void verb_view_elem(int elem, struct verb_t *verb, WINDOW *win, int opt)
+{
+        static wchar_t basics[]=L"ⲻⲺ";
+        static wchar_t boom[]=L"✶";
+        uint32_t xofs, xlen, vbid;
+        wchar_t *wch;
+        short pair;
 
+        if (opt == SUBJECT) goto subjects;
+        else                goto objects;
+        
+        subjects:
+
+        switch (elem) {
+        case BASE:
+                xofs = lzc(verb->bump);
+                xlen = (MAX-xofs);
+                goto gfx_base;
+        case FUND:
+                xofs = lzc(verb->fund);
+                xlen = 1;
+                goto gfx_fund;
+        case SEND:
+                xofs = lzc(verb->send);
+                xlen = 1;
+                goto gfx_send;
+        case REC:
+                xofs = lzc(verb->rec);
+                xlen = 1;
+                goto gfx_rec;
+        case CANC: 
+                xofs = lzc(verb->canc);
+                xlen = 1;
+                goto gfx_canc;
+        }
+
+        objects:
+
+        switch (elem) {
+        case BASE:
+                xofs = 0;
+                xlen = (MAX-lzc(verb->bump));
+                goto gfx_base;
+        case FUND:
+                xofs = ((MAX-1)-lzc(verb->fund));
+                xlen = 1;
+                goto gfx_fund;
+        case SEND:
+                xofs = ((MAX-1)-lzc(verb->send));
+                xlen = 1;
+                goto gfx_send;
+        case REC:
+                xofs = ((MAX-1)-lzc(verb->rec));
+                xlen = 1;
+                goto gfx_rec;
+        case CANC: 
+                xofs = ((MAX-1)-lzc(verb->canc));
+                xlen = 1;
+                goto gfx_canc;
+        }
+
+
+        gfx_base:
+                wch  = &basics[0];
+                pair = TITLE_SCREEN;
+                goto drawing;
+        gfx_fund:
+                wch  = &basics[1];
+                pair = TITLE_SCREEN;
+                goto drawing;
+        gfx_send:
+                wch  = verbs[fifo_peek(&verb->give, 0)].wch;
+                pair = verbs[fifo_peek(&verb->give, 0)].pair;
+                goto drawing;
+        gfx_rec:
+                wch  = verbs[fifo_peek(&verb->get, 0)].wch;
+                pair = verbs[fifo_peek(&verb->get, 0)].pair;
+                goto drawing;
+        gfx_canc:
+                if (verb->canc == 0) return; // Cancels are only drawn
+                else verb->canc = 0;         // for one frame.
+                wch  = &boom[0];
+                pair = PUR_YEL;
+                goto drawing;
+
+
+        drawing:
+                put_n(win, 0, xofs, wch, pair, xlen); // draw it
+}
+////////////////////////////////////////////////////////////////////////////////
+//                                                                            //
+//                                                                            //
+//                            master verb viewer                              //
+//                                                                            //
+//                                                                            //
+////////////////////////////////////////////////////////////////////////////////
+void verb_view(uint32_t key, int opt)
+{
+        #define TESTING 1
+        WINDOW *win; 
+        opt %= 2;
+
+        if (opt==SUBJECT) win = dock_window(SUBJ_WI_WIN);
+        else              win = dock_window(OBJ_WI_WIN);
+
+        focus(key);
+
+        verb_view_elem(BASE, &focused->verb, win, opt);
+        verb_view_elem(FUND, &focused->verb, win, opt);
+        verb_view_elem(SEND, &focused->verb, win, opt);
+        verb_view_elem(CANC, &focused->verb, win, opt);
+        verb_view_elem(REC, &focused->verb, win, opt);
+
+        win_refresh(win);
+
+        if (TESTING) {
+                do_pulse_test(NULL, SUBJECT);
+                do_pulse_test(&focused->verb, SUBJECT);
+        }
+}
+////////////////////////////////////////////////////////////////////////////////
+//                                                                            //
+//                                                                            //
+//                         tick and decide what to view                       //
+//                                                                            //
+//                                                                            //
+////////////////////////////////////////////////////////////////////////////////
 void do_pulse(void)
 {
-        #include "../lib/magic.h"
-        static const uint32_t rbump = 0x00000008;
-        static const uint32_t lbump = 0xC0000000;
-        static wchar_t wch[]=L"ⲾⲿⲺⲻ";
-
-        #define BASELINE &wch[3], TITLE_SCREEN
-        #define PULSING  &wch[2], TITLE_SCREEN
-        #define SUBJ_WIN dock_window(SUBJ_WI_WIN)
-        #define OBJ_WIN dock_window(OBJ_WI_WIN)
-
-        uint32_t fundamental; // fundamental pulse state
-        uint32_t verb;
-        bool forward;         // direction of pulse
-        int xmin;             // starting x offset
-        int max;              // loop boundary
+        int max;             
         int i;
 
         max = nnouns();
-
         for (i=0; i<max; i++) {
-                focus(keyring[i]);
-                fundamental = focused->fundamental;
-                forward     = focused->forward;
-                xmin        = vit_blocklen(keyring[i]);
 
-                if (keyring[i] == request_key(SUBJECT)) {
-                        put_n(SUBJ_WIN, 0, xmin, BASELINE, (VIT_MAXLEN-xmin));
-                        put_n(SUBJ_WIN, 0, lzc(fundamental), PULSING, 1);
-                        view_verb(SUBJ_WIN, request_key(SUBJECT));
-                }
-                if (keyring[i] == request_key(OBJECT)) {
-                        put_n(OBJ_WIN, 0, 0, BASELINE, VIT_MAXLEN-xmin);
-                        put_n(OBJ_WIN, 0, (VIT_MAXLEN-1)-lzc(fundamental), PULSING, 1);
-                }
-                win_refresh(SUBJ_WIN);
-                win_refresh(OBJ_WIN);
+                if (keyring[i] == request_key(SUBJECT)) 
+                        verb_view(keyring[i], SUBJECT);
 
-                if (forward) focused->fundamental>>=1;
-                else         focused->fundamental<<=1;
+                if (keyring[i] == request_key(OBJECT)) 
+                        verb_view(keyring[i], OBJECT);
 
-                if ((fundamental|rbump)         == rbump) forward=false;
-                if (((fundamental<<xmin)|lbump) == lbump) forward=true;
-
-                focused->forward = forward;
+                verb_tick(keyring[i]);
         }
 }

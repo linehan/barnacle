@@ -14,7 +14,7 @@ enum dockw_enum { DOCK_WIN, SUBJECT_WIN, SUBJ_ID_WIN, SUBJ_WI_WIN,
 #define ID_W 20
 #define ID_Y 0
 #define WIDGET_H 1
-#define WIDGET_W 30
+#define WIDGET_W 32
 #define WIDGET_Y 1
 
 #define SUBJECT_X 2

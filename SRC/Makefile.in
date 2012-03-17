@@ -47,7 +47,7 @@ PROGRAMS = $(bin_PROGRAMS)
 am__dirstamp = $(am__leading_dot)dirstamp
 am_arawak_OBJECTS = arawak.$(OBJEXT) lib/redblack/rb.$(OBJEXT) \
 	lib/sort/mergesort.$(OBJEXT) lib/sort/quicksort.$(OBJEXT) \
-	lib/magic.$(OBJEXT) eng/state.$(OBJEXT) \
+	lib/magic.$(OBJEXT) lib/fifo.$(OBJEXT) eng/state.$(OBJEXT) \
 	eng/model/bytes.$(OBJEXT) cmd/control.$(OBJEXT) \
 	gen/dice.$(OBJEXT) gen/mtwist.$(OBJEXT) \
 	gen/name/name.$(OBJEXT) gen/wave.$(OBJEXT) \
@@ -59,10 +59,10 @@ am_arawak_OBJECTS = arawak.$(OBJEXT) lib/redblack/rb.$(OBJEXT) \
 	mob/mob.$(OBJEXT) mob/boat.$(OBJEXT) noun/noun_model.$(OBJEXT) \
 	noun/noun_view.$(OBJEXT) noun/noun_control.$(OBJEXT) \
 	verb/verb_model.$(OBJEXT) verb/verb_view.$(OBJEXT) \
-	pan/ctrlpanels.$(OBJEXT) pan/new_character.$(OBJEXT) \
-	pan/instruments.$(OBJEXT) pan/button.$(OBJEXT) \
-	pan/dialog.$(OBJEXT) pan/test.$(OBJEXT) pan/crewgen.$(OBJEXT) \
-	txt/rk.$(OBJEXT) txt/psh.$(OBJEXT)
+	verb/verb_control.$(OBJEXT) pan/ctrlpanels.$(OBJEXT) \
+	pan/new_character.$(OBJEXT) pan/instruments.$(OBJEXT) \
+	pan/button.$(OBJEXT) pan/dialog.$(OBJEXT) pan/test.$(OBJEXT) \
+	pan/crewgen.$(OBJEXT) txt/rk.$(OBJEXT) txt/psh.$(OBJEXT)
 arawak_OBJECTS = $(am_arawak_OBJECTS)
 arawak_LDADD = $(LDADD)
 DEFAULT_INCLUDES = -I.@am__isrc@
@@ -175,6 +175,7 @@ arawak_SOURCES = arawak.c \
                    lib/sort/mergesort.c \
                    lib/sort/quicksort.c \
                    lib/magic.c       \
+                   lib/fifo.c        \
                    eng/state.c       \
                    eng/model/bytes.c \
                    cmd/control.c     \
@@ -202,6 +203,7 @@ arawak_SOURCES = arawak.c \
                    noun/noun_control.c \
                    verb/verb_model.c \
                    verb/verb_view.c \
+                   verb/verb_control.c \
                    pan/ctrlpanels.c  \
                    pan/new_character.c \
                    pan/instruments.c \
@@ -308,6 +310,7 @@ lib/$(DEPDIR)/$(am__dirstamp):
 	@$(MKDIR_P) lib/$(DEPDIR)
 	@: > lib/$(DEPDIR)/$(am__dirstamp)
 lib/magic.$(OBJEXT): lib/$(am__dirstamp) lib/$(DEPDIR)/$(am__dirstamp)
+lib/fifo.$(OBJEXT): lib/$(am__dirstamp) lib/$(DEPDIR)/$(am__dirstamp)
 eng/$(am__dirstamp):
 	@$(MKDIR_P) eng
 	@: > eng/$(am__dirstamp)
@@ -417,6 +420,8 @@ verb/verb_model.$(OBJEXT): verb/$(am__dirstamp) \
 	verb/$(DEPDIR)/$(am__dirstamp)
 verb/verb_view.$(OBJEXT): verb/$(am__dirstamp) \
 	verb/$(DEPDIR)/$(am__dirstamp)
+verb/verb_control.$(OBJEXT): verb/$(am__dirstamp) \
+	verb/$(DEPDIR)/$(am__dirstamp)
 pan/$(am__dirstamp):
 	@$(MKDIR_P) pan
 	@: > pan/$(am__dirstamp)
@@ -470,6 +475,7 @@ mostlyclean-compile:
 	-rm -f gfx/sprite.$(OBJEXT)
 	-rm -f gfx/term.$(OBJEXT)
 	-rm -f gfx/wselect.$(OBJEXT)
+	-rm -f lib/fifo.$(OBJEXT)
 	-rm -f lib/magic.$(OBJEXT)
 	-rm -f lib/redblack/rb.$(OBJEXT)
 	-rm -f lib/sort/mergesort.$(OBJEXT)
@@ -488,6 +494,7 @@ mostlyclean-compile:
 	-rm -f pan/test.$(OBJEXT)
 	-rm -f txt/psh.$(OBJEXT)
 	-rm -f txt/rk.$(OBJEXT)
+	-rm -f verb/verb_control.$(OBJEXT)
 	-rm -f verb/verb_model.$(OBJEXT)
 	-rm -f verb/verb_view.$(OBJEXT)
 
@@ -515,6 +522,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@gfx/$(DEPDIR)/sprite.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@gfx/$(DEPDIR)/term.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@gfx/$(DEPDIR)/wselect.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@lib/$(DEPDIR)/fifo.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@lib/$(DEPDIR)/magic.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@lib/redblack/$(DEPDIR)/rb.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@lib/sort/$(DEPDIR)/mergesort.Po@am__quote@
@@ -533,6 +541,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@pan/$(DEPDIR)/test.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@txt/$(DEPDIR)/psh.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@txt/$(DEPDIR)/rk.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@verb/$(DEPDIR)/verb_control.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@verb/$(DEPDIR)/verb_model.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@verb/$(DEPDIR)/verb_view.Po@am__quote@
 
