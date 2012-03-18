@@ -1,3 +1,6 @@
+#pragma once
+#ifndef __PALETTE_H
+#define __PALETTE_H
 /* The system's colors go from 0-7 */
 enum arne_colors {
         BLACK      = 17,
@@ -241,4 +244,6 @@ static inline short to_shade(short pair, int lvl)
         return newpair;
 }
 
-int init_palette(int);
+void init_palette(int);
+
+#endif

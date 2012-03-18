@@ -5,12 +5,12 @@ AUTOMAKE_OPTIONS = foreign subdir-objects
 # optimize  | warnings
 # lvl 3 \   |    /    
 CFLAGS=-O3 -pg -Wall -DVERSION=\"$(VERSION)\" -DPROG="\"$(PACKAGE)\""
-LDFLAGS=-lm -lpthread -lmenu -lpanel -lform -lncursesw -lev
-#       /      |        \         |       \       \       |_____________
-#  math.h      |       menu     panels   forms     \                    \
-#          POSIX     (curses)  (curses) (curses) ncurses with          libev   
-#          threads                               wide character  (event handler)
-#                                                support
+LDFLAGS=-pg -lm -lpthread -lmenu -lpanel -lform -lncursesw -lev
+#       /    /      |        \         |       \       \       \__________
+#      / math.h     |       menu     panels   forms     \                 \
+#  gprof         POSIX     (curses)  (curses) (curses) ncurses with      libev   
+#                threads                               wide character  
+#                                                      support
 bin_PROGRAMS = arawak
 arawak_SOURCES = arawak.c \
                    lib/redblack/rb.c \
@@ -36,6 +36,7 @@ arawak_SOURCES = arawak.c \
                    gfx/fancy_menus.c \
                    gen/perlin.c      \
                    gfx/term.c        \
+                   gfx/stdpan.c      \
                    env/deck.c        \
                    env/cloud.c       \
                    mob/mob.c         \
@@ -46,6 +47,7 @@ arawak_SOURCES = arawak.c \
                    verb/verb_model.c \
                    verb/verb_view.c \
                    verb/verb_control.c \
+                   verb/verbs.c      \
                    pan/ctrlpanels.c  \
                    pan/new_character.c \
                    pan/instruments.c \

@@ -221,8 +221,6 @@ void wwrapstr(WINDOW *win, const char *string)
         }
 }
 
-
-
 /******************************************************************************
  * DESPAIR, THE ROOST OF WRETCHED FUNCS DEPORTED TO THIS PENULT BARE
  * OF DOCUMENTS OR COMMENTS, YEA, OF HOPE, TO WASTE, UNTIL REPAIR'D.

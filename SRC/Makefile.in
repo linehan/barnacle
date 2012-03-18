@@ -55,11 +55,12 @@ am_arawak_OBJECTS = arawak.$(OBJEXT) lib/redblack/rb.$(OBJEXT) \
 	gfx/palette.$(OBJEXT) gfx/sprite.$(OBJEXT) gfx/gfx.$(OBJEXT) \
 	gfx/dock.$(OBJEXT) gfx/wselect.$(OBJEXT) \
 	gfx/fancy_menus.$(OBJEXT) gen/perlin.$(OBJEXT) \
-	gfx/term.$(OBJEXT) env/deck.$(OBJEXT) env/cloud.$(OBJEXT) \
-	mob/mob.$(OBJEXT) mob/boat.$(OBJEXT) noun/noun_model.$(OBJEXT) \
-	noun/noun_view.$(OBJEXT) noun/noun_control.$(OBJEXT) \
-	verb/verb_model.$(OBJEXT) verb/verb_view.$(OBJEXT) \
-	verb/verb_control.$(OBJEXT) pan/ctrlpanels.$(OBJEXT) \
+	gfx/term.$(OBJEXT) gfx/stdpan.$(OBJEXT) env/deck.$(OBJEXT) \
+	env/cloud.$(OBJEXT) mob/mob.$(OBJEXT) mob/boat.$(OBJEXT) \
+	noun/noun_model.$(OBJEXT) noun/noun_view.$(OBJEXT) \
+	noun/noun_control.$(OBJEXT) verb/verb_model.$(OBJEXT) \
+	verb/verb_view.$(OBJEXT) verb/verb_control.$(OBJEXT) \
+	verb/verbs.$(OBJEXT) pan/ctrlpanels.$(OBJEXT) \
 	pan/new_character.$(OBJEXT) pan/instruments.$(OBJEXT) \
 	pan/button.$(OBJEXT) pan/dialog.$(OBJEXT) pan/test.$(OBJEXT) \
 	pan/crewgen.$(OBJEXT) txt/rk.$(OBJEXT) txt/psh.$(OBJEXT)
@@ -108,7 +109,7 @@ INSTALL_DATA = @INSTALL_DATA@
 INSTALL_PROGRAM = @INSTALL_PROGRAM@
 INSTALL_SCRIPT = @INSTALL_SCRIPT@
 INSTALL_STRIP_PROGRAM = @INSTALL_STRIP_PROGRAM@
-LDFLAGS = -lm -lpthread -lmenu -lpanel -lform -lncursesw -lev
+LDFLAGS = -pg -lm -lpthread -lmenu -lpanel -lform -lncursesw -lev
 LIBOBJS = @LIBOBJS@
 LIBS = @LIBS@
 LTLIBOBJS = @LTLIBOBJS@
@@ -194,6 +195,7 @@ arawak_SOURCES = arawak.c \
                    gfx/fancy_menus.c \
                    gen/perlin.c      \
                    gfx/term.c        \
+                   gfx/stdpan.c      \
                    env/deck.c        \
                    env/cloud.c       \
                    mob/mob.c         \
@@ -204,6 +206,7 @@ arawak_SOURCES = arawak.c \
                    verb/verb_model.c \
                    verb/verb_view.c \
                    verb/verb_control.c \
+                   verb/verbs.c      \
                    pan/ctrlpanels.c  \
                    pan/new_character.c \
                    pan/instruments.c \
@@ -382,6 +385,8 @@ gfx/fancy_menus.$(OBJEXT): gfx/$(am__dirstamp) \
 gen/perlin.$(OBJEXT): gen/$(am__dirstamp) \
 	gen/$(DEPDIR)/$(am__dirstamp)
 gfx/term.$(OBJEXT): gfx/$(am__dirstamp) gfx/$(DEPDIR)/$(am__dirstamp)
+gfx/stdpan.$(OBJEXT): gfx/$(am__dirstamp) \
+	gfx/$(DEPDIR)/$(am__dirstamp)
 env/$(am__dirstamp):
 	@$(MKDIR_P) env
 	@: > env/$(am__dirstamp)
@@ -421,6 +426,8 @@ verb/verb_model.$(OBJEXT): verb/$(am__dirstamp) \
 verb/verb_view.$(OBJEXT): verb/$(am__dirstamp) \
 	verb/$(DEPDIR)/$(am__dirstamp)
 verb/verb_control.$(OBJEXT): verb/$(am__dirstamp) \
+	verb/$(DEPDIR)/$(am__dirstamp)
+verb/verbs.$(OBJEXT): verb/$(am__dirstamp) \
 	verb/$(DEPDIR)/$(am__dirstamp)
 pan/$(am__dirstamp):
 	@$(MKDIR_P) pan
@@ -473,6 +480,7 @@ mostlyclean-compile:
 	-rm -f gfx/gfx.$(OBJEXT)
 	-rm -f gfx/palette.$(OBJEXT)
 	-rm -f gfx/sprite.$(OBJEXT)
+	-rm -f gfx/stdpan.$(OBJEXT)
 	-rm -f gfx/term.$(OBJEXT)
 	-rm -f gfx/wselect.$(OBJEXT)
 	-rm -f lib/fifo.$(OBJEXT)
@@ -497,6 +505,7 @@ mostlyclean-compile:
 	-rm -f verb/verb_control.$(OBJEXT)
 	-rm -f verb/verb_model.$(OBJEXT)
 	-rm -f verb/verb_view.$(OBJEXT)
+	-rm -f verb/verbs.$(OBJEXT)
 
 distclean-compile:
 	-rm -f *.tab.c
@@ -520,6 +529,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@gfx/$(DEPDIR)/gfx.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@gfx/$(DEPDIR)/palette.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@gfx/$(DEPDIR)/sprite.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@gfx/$(DEPDIR)/stdpan.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@gfx/$(DEPDIR)/term.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@gfx/$(DEPDIR)/wselect.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@lib/$(DEPDIR)/fifo.Po@am__quote@
@@ -544,6 +554,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@verb/$(DEPDIR)/verb_control.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@verb/$(DEPDIR)/verb_model.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@verb/$(DEPDIR)/verb_view.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@verb/$(DEPDIR)/verbs.Po@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.o$$||'`;\

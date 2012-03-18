@@ -22,8 +22,6 @@
 | id window | |    widget window    |      |    widget window    | | id window |
 +-----------+ +---------------------+      +---------------------+ +-----------+
 *///////////////////////////////////////////////////////////////////////////////
-
-
 WINDOW *dock_win;
 WINDOW *subject_win, *subj_id_win, *subj_wi_win;
 WINDOW *object_win, *obj_id_win, *obj_wi_win;
@@ -70,3 +68,8 @@ void view_dock(void)
         else    
                 top_panel(dock_pan);
 }
+
+
+
+
+

@@ -45,7 +45,6 @@
 #include "noun/noun_control.h"
 
 
-
 /******************************************************************************/
 /* The callback function for the sailing event watcher. Manages the wind
  * and the sailboat's response to it. Checks a semaphore which is also
@@ -65,7 +64,6 @@ void tumbler(EV_P_ ev_timer *w, int revents)
 {
         OO_time *bun = container_of(w, OO_time, w);
 
-        wrap_wave('r');
         mark_wind();
         seek_heading();
         seek_prevailing();
@@ -124,6 +122,8 @@ int main()
         nominate_boat(boatkey);
 
         load_noun_test();
+
+        wprintw(DIAGNOSTIC_WIN, "%u", three_name_hash("Jason", "David", "Linehan"));
 
         /* master off switch */
         sem_t master_off; 

@@ -1,3 +1,7 @@
+#pragma once
+#ifndef __SPRITE_H
+#define __SPRITE_H
+
 extern cchar_t   OCEAN[4], _OCEAN[4], __OCEAN[4];
 extern cchar_t     MTN[3],   _MTN[3],   __MTN[3];
 extern cchar_t    TREE[2],  _TREE[2],  __TREE[2];
@@ -25,3 +29,5 @@ enum tiletype {
 void init_gfx_colors(void);
 cchar_t *bg_tile(int type);
 cchar_t *get_tile(int type);
+
+#endif

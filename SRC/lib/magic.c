@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <stdint.h>
+#include <limits.h>
 #include <stdbool.h>
 
 // Returns true if word is even, returns false if word is odd.
@@ -62,11 +63,39 @@ uint32_t lzc(uint32_t v)
         return(WORDBITS - ones(v));
 }
 
+/******************************************************************************
+ * The following finds the the rank of a bit, meaning it returns the sum of     *
+ * bits that are set to 1 from the most-signficant bit down to the bit at the   *
+ * given position.                                                              *
+ *----------------------------------------------------------------------------
+ * Juha Järvi sent this to me on November 21, 2009 as an inverse operation to 
+ * the computing the bit position with the given rank, which follows.         
+ ******************************************************************************/
+uint64_t cbs(uint32_t v, unsigned int pos)
+{
+        //uint64_t v;       // Compute rank (bits set) in v from the MSB to pos.
+        //unsigned int pos; Bit position to count bits upto.
+        uint64_t r;       // Resulting rank of bit at pos goes here.
+
+        // Shift out bits after given position.
+        r = v >> (sizeof(v) * CHAR_BIT - pos);
+        // Count set bits in parallel.
+        // r = (r & 0x5555...) + ((r >> 1) & 0x5555...);
+        r = r - ((r >> 1) & ~0UL/3);
+        // r = (r & 0x3333...) + ((r >> 2) & 0x3333...);
+        r = (r & ~0UL/5) + ((r >> 2) & ~0UL/5);
+        // r = (r & 0x0f0f...) + ((r >> 4) & 0x0f0f...);
+        r = (r + (r >> 4)) & ~0UL/17;
+        // r = r % 255;
+        r = (r * (~0UL/255)) >> ((sizeof(v) - 1) * CHAR_BIT);
+
+        return (r);
+}
 
 
 uint32_t mask(int n)
 {
-        (~0 << n) >> n;
+        return (~0 << n) >> n;
 }
 
 
@@ -88,7 +117,7 @@ const char *dispel(uint32_t magic)
 };
 
 
-inline int disenchant(uint32_t *buf)
+int disenchant(uint32_t *buf)
 {
         static uint32_t read = 0x80000000;
         static uint32_t cpy;
@@ -99,4 +128,27 @@ inline int disenchant(uint32_t *buf)
         if (cpy == 0U) return -1;
         else
                 return ((read & cpy) != 0) ? 1 : 0;
+}
+
+
+int *bitind(uint32_t v, int n)
+{
+        #define WORDBITS 32
+        static uint32_t msb = 0x80000000;
+        int *buf;
+        int ind;
+        int i;
+
+        buf = calloc(n, sizeof(int));
+        ind = 0;
+
+        for (i=0; i<WORDBITS; i++) {
+                if ((v & msb) == 0) {
+                        buf[ind] = i;
+                        ind++;
+                        if (ind == n) break;
+                }
+                v <<= 1;
+        }
+        return (buf);
 }

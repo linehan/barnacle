@@ -18,72 +18,15 @@
 #define _XOPEN_SOURCE_EXTENDED = 1 
 #include <stdio.h>
 #include <stdlib.h>
-#include "../lib/fifo.h"
-#include "../gfx/palette.h"
 #include "../gfx/gfx.h"
 #include "../gfx/dock.h"
+#include "../lib/fifo.h"
 #include "../noun/noun_model.h"
 #include "../noun/noun_view.h"
 #include "verb_model.h"
+#include "verbs.h"
 ////////////////////////////////////////////////////////////////////////////////
-//                                                                            //
-//                                                                            //
-//                               verb functions                               //
-//                                                                            //
-//                                                                            //
-////////////////////////////////////////////////////////////////////////////////
-void hp_inc(uint32_t skey, uint32_t okey)
-{
-        inc_vital(okey, HP);
-}
-void hp_dec(uint32_t skey, uint32_t okey)
-{
-        dec_vital(okey, HP);
-}
-//----------------------------------------------------------------------------//
-void sp_inc(uint32_t skey, uint32_t okey)
-{
-        inc_vital(okey, SP);
-}
-void sp_dec(uint32_t skey, uint32_t okey)
-{
-        dec_vital(okey, SP);
-}
-//----------------------------------------------------------------------------//
-void lp_inc(uint32_t skey, uint32_t okey)
-{
-        inc_vital(okey, LP);
-}
-void lp_dec(uint32_t skey, uint32_t okey)
-{
-        dec_vital(okey, LP);
-}
-//----------------------------------------------------------------------------//
-void ep_inc(uint32_t skey, uint32_t okey)
-{
-        inc_vital(okey, EP);
-}
-void ep_dec(uint32_t skey, uint32_t okey)
-{
-        dec_vital(okey, EP);
-}
-////////////////////////////////////////////////////////////////////////////////
-//                                                                            //
-//                                                                            //
-//                               verb varieties                               //
-//                                                                            //
-//                                                                            //
-////////////////////////////////////////////////////////////////////////////////
-struct verb_info verbs[]={{L"⊕", PUR_EEN, hp_inc},
-                          {L"⊖", PUR_RED, hp_dec},
-                          {L"⊗", PUR_BLU, sp_inc},
-                          {L"⊘", PUR_YEL, sp_dec},
-                          {L"⊙", PUR_PUR, lp_inc},
-                          {L"⊛", PUR_GRE, lp_dec},
-                          {L"⊜", PUR_PUR, ep_inc},
-                          {L"⊝", PUR_GRE, ep_dec}};
-////////////////////////////////////////////////////////////////////////////////
-inline uint32_t update_mask(uint32_t key)
+uint32_t update_mask(uint32_t key)
 {
         focus(key);
         focused->verb.mask = (~0U >> vit_blocklen(key));
@@ -100,7 +43,7 @@ uint32_t verb_new(uint32_t sender, uint32_t recipient, uint32_t verb)
 {
         focus(sender);      
 
-        if (focused->verb.send != 0) return; // only one verb at a time
+        if (focused->verb.send != 0U) return; // only one verb at a time
 
         update_mask(sender);
 

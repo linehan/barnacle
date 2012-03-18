@@ -1,10 +1,15 @@
+/*//////////////////////////////////////////////////////////////////////////////
+verb_view.c
+///////////////////////////////////////////////////////////////////////////// */
 #define _XOPEN_SOURCE_EXTENDED = 1
+#include <assert.h>
 #include <stdbool.h>
 #include <menu.h>
 #include "../gfx/gfx.h"
 #include "../gfx/dock.h"
 #include "../gfx/palette.h"
 #include "../gfx/sprite.h"
+#include "../gfx/stdpan.h"
 #include "../pan/test.h"
 #include "verb_model.h"
 #include "verb_control.h"
@@ -15,6 +20,116 @@
 
 #define MAX (VIT_MAXLEN)
 enum verb_elements { BASE, FUND, SEND, REC, CANC };
+////////////////////////////////////////////////////////////////////////////////
+inline void put_n(WINDOW *win, int y, int x, wchar_t *wch, short pair, int n)
+{
+        assert(wch != NULL);
+
+        static cchar_t cch;
+        setcchar(&cch, wch, 0, pair, NULL);
+        mvwhline_set(win, y, x, &cch, n);
+}
+////////////////////////////////////////////////////////////////////////////////
+//                                                                            //
+//                                                                            //
+//                                verb menu                                   //
+//                                                                            //
+//                                                                            //
+////////////////////////////////////////////////////////////////////////////////
+#define VERB_W 15 
+#define VERB_H 8 
+#define VERB_X 0 
+#define VERB_Y LINES-VERB_H-3
+
+WINDOW *verb_menu_win;
+WINDOW *verb_menu_sub;
+WINDOW *verb_menu_buf;
+PANEL  *verb_menu_pan;
+MENU   *verb_menu;
+
+
+inline void init_verb_view(void)
+{
+        verb_menu_win = newwin(VERB_H, VERB_W, VERB_Y, VERB_X);
+        stdpan(verb_menu_win, 
+               &verb_menu_sub, 
+               &verb_menu_buf, 
+               &verb_menu_pan);
+}
+////////////////////////////////////////////////////////////////////////////////
+//                                                                            //
+//                                                                            //
+//                     build a menu for a subset of verbs                     //
+//                                                                            //
+//                                                                            //
+////////////////////////////////////////////////////////////////////////////////
+void init_verb_menu(uint32_t bitmap)
+{
+        if (verb_menu_win == NULL) init_verb_view(); 
+
+        static char *name[100];
+        static char *desc[100];
+        static wchar_t *icon[100];
+        int i, n;
+        int *slice;
+
+        n = ones(bitmap);
+        slice = bitind(bitmap, n);
+
+        werase(DIAGNOSTIC_WIN);
+        for (i=0; i<n; i++) {
+                wprintw(DIAGNOSTIC_WIN, "%i\n", slice[i]);
+        }
+                wprintw(DIAGNOSTIC_WIN, "n: %i\n", n);
+        for (i=0; i<n; i++) {
+                name[i] = verbs[slice[i]].name;
+                desc[i] = verbs[slice[i]].desc;
+        }
+
+        verb_menu = make_new_menu(name, desc, NULL, n);
+
+        ITEM **item = menu_items(verb_menu);
+        for (i=0; i<n; i++) {
+                set_item_userptr(item[i], &verbs[slice[i]]);
+        }
+
+        menu_wins(verb_menu, verb_menu_win, verb_menu_sub);
+        menu_pair(verb_menu, PUR_DDP, PUR_GRE);
+        menu_look(verb_menu, DESC, true, NULL);
+        menu_look(verb_menu, MARK, false, NULL);
+        menu_look(verb_menu, POST, true, NULL);
+}
+
+
+void show_verb_menu(void)
+{
+        init_verb_menu(0x0000000F);
+        top_panel(verb_menu_pan);
+        verb_menu_control(verb_menu, 'z');
+        hide_panel(verb_menu_pan);
+        scr_refresh();
+}
+
+
+void post_verb_icon(ITEM *item)
+{
+        struct verb_info *verb;
+        int index;
+        int top;
+
+        top  = top_row(verb_menu);
+        item = current_item(verb_menu);
+
+        index = item_index(item);
+
+        verb = (struct verb_info *)item_userptr(item);
+
+        mvwdelch(verb_menu_sub, (index-top)-1, 10);
+        mvwdelch(verb_menu_sub, (index-top)+1, 10);
+        put_n(verb_menu_sub, (index-top), 10, verb->icon, verb->pair, 1);
+        win_refresh(verb_menu_sub);
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
 //                                                                            //
@@ -47,19 +162,12 @@ void do_pulse_test(struct verb_t *verb, int option)
 //                                                                            //
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
-inline void put_n(WINDOW *win, int y, int x, wchar_t *wch, short pair, int n)
-{
-        static cchar_t cch;
-        setcchar(&cch, wch, 0, pair, NULL);
-        mvwhline_set(win, y, x, &cch, n);
-}
-////////////////////////////////////////////////////////////////////////////////
 inline void verb_view_elem(int elem, struct verb_t *verb, WINDOW *win, int opt)
 {
         static wchar_t basics[]=L"ⲻⲺ";
         static wchar_t boom[]=L"✶";
         uint32_t xofs, xlen, vbid;
-        wchar_t *wch;
+        wchar_t *icon;
         short pair;
 
         if (opt == SUBJECT) goto subjects;
@@ -117,42 +225,47 @@ inline void verb_view_elem(int elem, struct verb_t *verb, WINDOW *win, int opt)
 
 
         gfx_base:
-                wch  = &basics[0];
+                icon = &basics[0];
                 pair = TITLE_SCREEN;
                 goto drawing;
         gfx_fund:
-                wch  = &basics[1];
+                icon = &basics[1];
                 pair = TITLE_SCREEN;
                 goto drawing;
         gfx_send:
-                wch  = verbs[fifo_peek(&verb->give, 0)].wch;
-                pair = verbs[fifo_peek(&verb->give, 0)].pair;
+                vbid = fifo_peek(&verb->give, 0);
+                icon = verbs[vbid].icon;
+                pair = verbs[vbid].pair;
                 goto drawing;
         gfx_rec:
-                wch  = verbs[fifo_peek(&verb->get, 0)].wch;
-                pair = verbs[fifo_peek(&verb->get, 0)].pair;
+                vbid = fifo_peek(&verb->get, 0);
+                icon = verbs[vbid].icon;
+                pair = verbs[vbid].pair;
                 goto drawing;
         gfx_canc:
                 if (verb->canc == 0) return; // Cancels are only drawn
                 else verb->canc = 0;         // for one frame.
-                wch  = &boom[0];
+                icon = &boom[0];
                 pair = PUR_YEL;
                 goto drawing;
 
 
         drawing:
-                put_n(win, 0, xofs, wch, pair, xlen); // draw it
+                put_n(win, 0, xofs, icon, pair, xlen); // draw it
 }
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
-//                                                                            //
-//                            master verb viewer                              //
-//                                                                            //
+//      (\.   \      ,/)                                                      //
+//       \(   |\     )/                                                       //
+//       //\  | \   /\\                                                       //
+//      (/ /\_#oo#_/\ \)      master verb viewer                              //
+//       \/\  ####  /\/                                                       //
+//            `##'                                                            //
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
 void verb_view(uint32_t key, int opt)
 {
-        #define TESTING 1
+        #define TESTING 0
         WINDOW *win; 
         opt %= 2;
 
@@ -163,9 +276,11 @@ void verb_view(uint32_t key, int opt)
 
         verb_view_elem(BASE, &focused->verb, win, opt);
         verb_view_elem(FUND, &focused->verb, win, opt);
-        verb_view_elem(SEND, &focused->verb, win, opt);
         verb_view_elem(CANC, &focused->verb, win, opt);
-        verb_view_elem(REC, &focused->verb, win, opt);
+        if (&focused->verb.send != 0)
+                verb_view_elem(SEND, &focused->verb, win, opt);
+        if (&focused->verb.rec != 0)
+                verb_view_elem(REC, &focused->verb, win, opt);
 
         win_refresh(win);
 

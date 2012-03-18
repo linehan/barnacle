@@ -1,3 +1,31 @@
+/*//////////////////////////////////////////////////////////////////////////////
+ 
+                      _..--.._       _..--.      _..--..
+                    ,'      ,'`.   ,','.--.\   ,' \   `.`.
+                   /  /    /  /|  : : /  _ \:  |\  \    \ \
+                  /  :    :  /`.  | |:<o  \o;  ,`\  \    : \
+                 /   '__ '| :,.-' ;'\:  _`'/`.`--,:  : __'  \
+                :   ,'_ ``' |._) /  :\`..__)  \  >| ,'' _``. \
+                | ,;,   .  `:\ _:   | `,/_\.   :`/;'  ,   .:\ )
+                `'/'   _ \   \:\(  _|__`>_/`' /(:/   /     .\` 
+                 /:  .'  ,`.._|_\\'  ( _=`;._//_|_..'`      \\
+                 :: /   '|    (__=`, :`||| `,.__)     \      :
+                 | \           \`.\\__\;|| //`|/       :     |
+                 |  `.._____.-,`'| \\___||// /`-._           |
+                 :         | : ,<''_\\,.|//_`>.  :`._       ;:
+                 \         ; ; )`-..______..-'(  :\  `-.__.' /
+                 ;        / /|:                : | `.._____.':
+                :      _.' / ||                | |   `.       :
+                :  _.-'   /  ::                ; :     `-.____;
+                 \;     ,'   ( \              /  )\          /
+                ,'    ,'____,' ,`-,.______..-') (__\        _`.
+               (___..'>_>____`.`.'._)_\_>._)-' ,'___`._________) SSt
+
+
+                                 verb_control.c
+
+
+///////////////////////////////////////////////////////////////////////////// */
 #define _XOPEN_SOURCE_EXTENDED = 1 
 #include <stdio.h>
 #include <stdlib.h>
@@ -109,4 +137,48 @@ void verb_cancel(uint32_t key)
         focus(key);
         focused->verb.canc  = focused->verb.send;
         focused->verb.send ^= focused->verb.send;
+}
+////////////////////////////////////////////////////////////////////////////////
+//                                                                            //
+//                                                                            //
+//                         cancel the verb being sent                         //
+//                                                                            //
+//                                                                            //
+////////////////////////////////////////////////////////////////////////////////
+void verb_menu_control(MENU *menu, int esc)
+{
+        struct verb_info *verb;
+        ITEM *item;
+        int h;
+
+        menu_driver(menu, REQ_FIRST_ITEM);
+        verb = (struct verb_info *)item_userptr(item);
+        item = current_item(menu);
+        post_verb_icon(item);
+
+        while ((h = getch()), (h != esc)) {
+                switch (h) {
+                case 'k':
+                        menu_driver(menu, REQ_PREV_ITEM);
+                        break;
+                case 'j':
+                        menu_driver(menu, REQ_NEXT_ITEM);
+                        break;
+                case 'n':
+                        menu_driver(menu, REQ_PREV_MATCH);
+                        break;
+                case 'p':
+                        menu_driver(menu, REQ_NEXT_MATCH);
+                        break;
+                case '\n':
+                        verb_new(request_key(SUBJECT), 
+                                 request_key(OBJECT), 
+                                 (uint32_t)verb->id);
+                        break;
+                }
+                item = current_item(menu);
+                verb = (struct verb_info *)item_userptr(item);
+                post_verb_icon(item);
+                scr_refresh();
+        }
 }

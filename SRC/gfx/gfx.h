@@ -10,6 +10,8 @@
 #include <locale.h>
 #include <pthread.h>
 #include <semaphore.h>
+#include "sprite.h"
+#include "palette.h"
 #include "../lib/llist/list.h"
 #include "../pan/test.h"
 #include "../geo/map.h"
