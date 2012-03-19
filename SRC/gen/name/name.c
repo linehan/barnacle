@@ -19,7 +19,7 @@ void init_surnames(void)
         char **namelist;      // Dynamic string array.
 
         // Open the file and count the number of strings it contains.
-        fp = fopen("/home/hubert/arawak/SRC/gen/name/surnames-english", "r");
+        fp = fopen("/home/hubert/src/arawak/SRC/gen/name/surnames-english", "r");
 
         for (n=0; fscanf(fp, "%s", buf) != EOF; n++);
 

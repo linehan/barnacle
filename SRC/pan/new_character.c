@@ -278,13 +278,13 @@ void new_character(void)
 
         ok_pressed: /* The user has decided to confirm and end the menu. */
 
-                firname = strstrip(field_buffer(field[0], 0));
-                midname = strstrip(field_buffer(field[1], 0));
-                lasname = strstrip(field_buffer(field[2], 0));
-                birthpl = strstrip(field_buffer(field[3], 0));
+                /*firname = strstrip(field_buffer(field[0], 0));*/
+                /*midname = strstrip(field_buffer(field[1], 0));*/
+                /*lasname = strstrip(field_buffer(field[2], 0));*/
+                /*birthpl = strstrip(field_buffer(field[3], 0));*/
 
                 /* Register a new player character. */
-                new_noun(firname, midname, lasname, birthpl, 0, 0, 0, 0, 0);
+                /*new_noun(firname, midname, lasname, birthpl, 0, 0, 0, 0, 0);*/
 
                 wprintw(DIAGNOSTIC_WIN, "key: %u\n", nnouns());
         

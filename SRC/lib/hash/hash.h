@@ -78,7 +78,7 @@
                        +(uint32_t)(((const uint8_t *)(d))[0]) )
 #endif
 
-static inline uint32_t fasthash(const char *data, int len) 
+static inline uint32_t fasthash(const char *data, size_t len) 
 {
         uint32_t hash = len, tmp;
         int rem;

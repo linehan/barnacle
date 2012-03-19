@@ -123,8 +123,6 @@ int main()
 
         load_noun_test();
 
-        wprintw(DIAGNOSTIC_WIN, "%u", three_name_hash("Jason", "David", "Linehan"));
-
         /* master off switch */
         sem_t master_off; 
         sem_init(&master_off, 0, 1);
