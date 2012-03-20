@@ -63,7 +63,8 @@ am_arawak_OBJECTS = arawak.$(OBJEXT) init/init.$(OBJEXT) \
 	pan/ctrlpanels.$(OBJEXT) pan/new_character.$(OBJEXT) \
 	pan/instruments.$(OBJEXT) pan/button.$(OBJEXT) \
 	pan/dialog.$(OBJEXT) pan/test.$(OBJEXT) pan/crewgen.$(OBJEXT) \
-	loop/loop.$(OBJEXT) txt/rk.$(OBJEXT) txt/psh.$(OBJEXT)
+	loop/fsm.$(OBJEXT) loop/loop.$(OBJEXT) txt/rk.$(OBJEXT) \
+	txt/psh.$(OBJEXT)
 arawak_OBJECTS = $(am_arawak_OBJECTS)
 arawak_LDADD = $(LDADD)
 DEFAULT_INCLUDES = -I.@am__isrc@
@@ -212,6 +213,7 @@ arawak_SOURCES = arawak.c \
                    pan/dialog.c         \
                    pan/test.c           \
                    pan/crewgen.c        \
+                   loop/fsm.c\
                    loop/loop.c\
                    txt/rk.c             \
                    txt/psh.c
@@ -451,6 +453,8 @@ loop/$(am__dirstamp):
 loop/$(DEPDIR)/$(am__dirstamp):
 	@$(MKDIR_P) loop/$(DEPDIR)
 	@: > loop/$(DEPDIR)/$(am__dirstamp)
+loop/fsm.$(OBJEXT): loop/$(am__dirstamp) \
+	loop/$(DEPDIR)/$(am__dirstamp)
 loop/loop.$(OBJEXT): loop/$(am__dirstamp) \
 	loop/$(DEPDIR)/$(am__dirstamp)
 txt/$(am__dirstamp):
@@ -491,6 +495,7 @@ mostlyclean-compile:
 	-rm -f lib/redblack/rb.$(OBJEXT)
 	-rm -f lib/sort/mergesort.$(OBJEXT)
 	-rm -f lib/sort/quicksort.$(OBJEXT)
+	-rm -f loop/fsm.$(OBJEXT)
 	-rm -f loop/loop.$(OBJEXT)
 	-rm -f mob/boat.$(OBJEXT)
 	-rm -f mob/mob.$(OBJEXT)
@@ -539,6 +544,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@lib/redblack/$(DEPDIR)/rb.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@lib/sort/$(DEPDIR)/mergesort.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@lib/sort/$(DEPDIR)/quicksort.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@loop/$(DEPDIR)/fsm.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@loop/$(DEPDIR)/loop.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@mob/$(DEPDIR)/boat.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@mob/$(DEPDIR)/mob.Po@am__quote@

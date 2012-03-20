@@ -53,6 +53,7 @@ arawak_SOURCES = arawak.c \
                    pan/dialog.c         \
                    pan/test.c           \
                    pan/crewgen.c        \
+                   loop/fsm.c\
                    loop/loop.c\
                    txt/rk.c             \
                    txt/psh.c

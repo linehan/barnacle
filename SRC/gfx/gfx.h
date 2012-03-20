@@ -30,27 +30,20 @@ extern sem_t *REFRESH_LOCK; // keeps things from going crazy in the i/o thread
 //# thread.                                                                    #
 //##############################################################################
 #define vrt_refresh()           \
-        sem_wait(REFRESH_LOCK); \
         update_panels();        \
-        sem_post(REFRESH_LOCK)
 
 #define scr_refresh()           \
-        sem_wait(REFRESH_LOCK); \
         update_panels();        \
         doupdate();             \
-        sem_post(REFRESH_LOCK)
 
 #define win_refresh(win)        \
-        sem_wait(REFRESH_LOCK); \
         wrefresh(win);          \
-        sem_post(REFRESH_LOCK)
 
 #define map_refresh(map) \
-        sem_wait(REFRESH_LOCK); \
         copywin(PEEK(map->W), map->win, ufo_y(map->ufo), ufo_x(map->ufo), 0, 0, LINES-1, COLS-1, 0); \
         update_panels(); \
-        doupdate(); \
-        sem_post(REFRESH_LOCK)
+        doupdate(); 
+
 
 //##############################################################################
 //# Toggles a PANEL, hiding it if it is not hidden, and showing it if it is.   #

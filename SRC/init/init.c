@@ -12,21 +12,22 @@
 int arawak_init(void)
 {
         /* UTF-8 and font settings 
-        ***************************************************/
+        ***********************************************************/
         setlocale(LC_ALL,""); // UTF-8
 
         /* Start ncurses 
-        ***************************************************/
+        ***********************************************************/
         initscr();            // Start ncurses
         start_color();        // Initialize color display 
         cbreak();	      // Disable line buffering
         noecho();             // Do not echo input
+        nodelay(stdscr, true);// Calls to getch() are non-blocking 
         keypad(stdscr, TRUE); // Enable special keys
         curs_set(0);          // hide cursor
 
         /* Start the GeoJug engine
-        ***************************************************/
-        geojug_start();       // Start the graphics engine
+        ***********************************************************/
+        geojug_start();     // Start the graphics engine
 
         init_random();      // Mersenne twister
         init_simplex();     // Perlin simplex noise generator

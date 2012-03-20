@@ -4,6 +4,7 @@
 #include <ev.h>
 
 #include "../gfx/gfx.h"
+#include "fsm.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 static void
@@ -31,9 +32,9 @@ weather_cb(EV_P_ ev_timer *w, int revents)
         mark_wind();
         seek_heading();
         seek_prevailing();
-        draw_compass();
         view_dock();
         do_pulse();
+        draw_compass();
 
         ev_timer_again(EV_DEFAULT, w);
 }
@@ -57,80 +58,14 @@ static void
 {
         ev_io_stop (EV_A, w);
 
-        int ch, hdg, layer;
+        int ch = getch();
 
-        nodelay(0, true);
-        ch = getch();
-
-        switch (ch) { 
-        case '@':
-                order_boat('f', 0);
-                break;
-        case 'j':
-                order_boat('p', 0);
-                break;
-        case 'k':
-                order_boat('s', 0);
-                break;
-        case 'i':
-                toggle_instrument_panel();
-                break;
-        case 'g':
-                order_boat('r', 0);
-                break;
-        case 'f':
-                order_boat('R', 0);
-                break;
-        case 'c':
-                crewgen(8);
-                scr_refresh();
-                break;
-        case 'n':
-                new_character();
-                scr_refresh();
-                break;
-        case '?':
-                TOGPAN(MARQUEEP);
-                vrt_refresh();
-                break;
-        case KEY_UP:
-                move_inspector('u');
-                break;
-        case KEY_DOWN:
-                move_inspector('d');
-                break;
-        case KEY_LEFT:
-                move_inspector('l');
-                break;
-        case KEY_RIGHT:
-                move_inspector('r');
-                break;
-        case '\n':
-                view_dock();
-                choose_noun();
-                break;
-        case 'w':
-                roll_map(GLOBE, 'u');
-                break;
-        case 'a':
-                roll_map(GLOBE, 'l');
-                break;
-        case 's':
-                roll_map(GLOBE, 'd');
-                break;
-        case 'd':
-                roll_map(GLOBE, 'r');
-                break;
-        case '`':
-                toggle_mm();
-                break;
-        case '~':
-                toggle_workbox();
-                break;
-        case 'q':
+        if (ch == 'q') {
                 ev_break(EV_A_ EVBREAK_ALL);
                 return NULL;
         }
+
+        director(ch);
         ev_io_start(EV_A, w);
 }
 
@@ -157,9 +92,9 @@ int start_event_watchers(void)
         sail.repeat    = .12;
         weather.repeat = .1;
         animate.repeat = 2.5;
-        refresh.repeat = 0.4;
+        refresh.repeat = .01;
 
-        ev_io_start (readloop, &read);
+        ev_io_start(readloop, &read);
         ev_timer_again(execloop, &sail);
         ev_timer_again(execloop, &weather);
         ev_timer_again(execloop, &animate);

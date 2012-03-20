@@ -46,13 +46,12 @@ int main()
         roll_map(pad, 0);
         roll_map(pad, 0);
 
-        wprintw(DIAGNOSTIC_WIN, "%u\n", (LINES*COLS)*3);
-        wprintw(DIAGNOSTIC_WIN, "%i\n", init_surnames());
-
         uint32_t boatkey = new_boat(pad);
         nominate_boat(boatkey);
 
         load_noun_test();
+        view_dock();
+        choose_noun('*');
 
         set_wind(__pre__, 4);
 

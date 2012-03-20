@@ -11,8 +11,6 @@
 #include <wchar.h>
 #include <locale.h>
 #include <string.h>
-#include <pthread.h>
-#include <semaphore.h>
 
 #include "../lib/llist/list.h"
 
@@ -22,8 +20,6 @@
 #include "../gen/dice.h"
 #include "../gfx/gfx.h"
 #include "../geo/weather.h"
-#include "../gfx/palette.h"
-#include "../gfx/sprite.h"
 #include "../mob/mob.h"
 #include "../mob/boat.h"
 #include "../eng/state.h"
@@ -93,13 +89,13 @@ void init_instruments(void)
         int i;
 
         // Init all graphics and complex characters
-        setcchar(&CMPBG,      &(gfxCMPBG),   0, CMP_SHADOW, NULL);
-        setcchar(&(CMRK[DN]), &(gfxMRK[DN]), 0, CMP_GREEN,  NULL);
-        setcchar(&(CMRK[GH]), &(gfxMRK[DN]), 0, CMP_SHADOW, NULL);
+        setcchar(&CMPBG,      &(gfxCMPBG),   0, PUR_GRE, NULL);
+        setcchar(&(CMRK[DN]), &(gfxMRK[UP]), 0, CMP_GREEN,  NULL);
+        setcchar(&(CMRK[GH]), &(gfxMRK[UP]), 0, PUR_GRE, NULL);
         setcchar(&(CMRK[UP]), &(gfxMRK[UP]), 0, CMP_YELLOW, NULL);
 
-        cmpbox_win = newwin(3, box_wid, 0, ((COLS/2)-(box_hlf)));
-        cmprib_win = newwin(1, 13, 1, ((COLS/2)-(rib_hlf)));
+        cmpbox_win = newwin(3, box_wid, LINES-3, ((COLS/2)-(box_hlf)));
+        cmprib_win = newwin(1, 13, LINES-2, ((COLS/2)-(rib_hlf)));
         cmpbox_pan = new_panel(cmpbox_win);
         cmprib_pan = new_panel(cmprib_win);
 
@@ -113,8 +109,8 @@ void init_instruments(void)
 
         // Box and border characters
         for (i=0; i<5; i++) {
-                setcchar(&(CBOX[i]), &(gfxCBOX[i]), 0, CMP_ORANGE, NULL);
-                setcchar(&(CBOR[i]), &(gfxCBOR[i]), 0, CMP_ORANGE, NULL);
+                setcchar(&(CBOX[i]), &(gfxCBOX[i]), 0, PUR_GRE, NULL);
+                setcchar(&(CBOR[i]), &(gfxCBOR[i]), 0, PUR_GRE, NULL);
         }
         setcchar(&(CBOR[5]), &(gfxCBOR[BOTT]), 0, CMP_PINK, NULL); // extra
         wbkgrnd(inst_win, &CBOR[5]);
@@ -125,14 +121,14 @@ void init_instruments(void)
                
                 switch (i%4) {
                 case 0: // Cardinal directions
-                        setcchar(&(new->cch), &gfxCMP[i], 0, CMP_WHITE, NULL);
+                        setcchar(&(new->cch), &gfxCMP[i], 0, PUR_GRE, NULL);
                         break;
                 case 1: // Half winds (small dots)
                 case 3:
-                        setcchar(&(new->cch), &gfxCMP[i], 0, CMP_BEIGE, NULL);
+                        setcchar(&(new->cch), &gfxCMP[i], 0, PUR_PUR, NULL);
                         break;
                 case 2: // Ordinal directions (big dots)
-                        setcchar(&(new->cch), &gfxCMP[i], 0, CMP_ORANGE, NULL);
+                        setcchar(&(new->cch), &gfxCMP[i], 0, PUR_PUR, NULL);
                         break;
                }
                new->dir = i;
@@ -264,8 +260,8 @@ void draw_compass(void)
         werase(cmprib_win);
 
         /* LINE 0 */
-        mvwadd_wch(cmpbox_win, 0, offsgh, &(CMRK[GH]));
-        mvwadd_wch(cmpbox_win, 0, offsdn, &(CMRK[DN]));
+        mvwadd_wch(cmpbox_win, 2, offsgh, &(CMRK[GH]));
+        mvwadd_wch(cmpbox_win, 2, offsdn, &(CMRK[DN]));
         mvwadd_wch(cmpbox_win, 0, 0, &(CBOR[LSIDE]));
         mvwadd_wch(cmpbox_win, 0, (box_wid-1), &(CBOR[RSIDE]));
 
@@ -282,5 +278,5 @@ void draw_compass(void)
         mvwadd_wch(cmpbox_win, 2, (box_wid-1), &(CBOR[RSIDE]));
 
         vrt_refresh();
-        /*scr_refresh();*/
+        scr_refresh();
 }

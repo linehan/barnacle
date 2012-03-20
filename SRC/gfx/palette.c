@@ -164,9 +164,9 @@ void init_palette(int set)
         init_pair(CMP_RED, RED, ORANGE);
         init_pair(CMP_WHITE, WHITE, ORANGE);
         init_pair(CMP_ORANGE, BEIGE, ORANGE);
-        init_pair(CMP_GREEN, LGREEN, ORANGE);
+        init_pair(CMP_GREEN, LGREEN, __DGREY);
         init_pair(CMP_PINK, BEIGE, BEIGE);
-        init_pair(CMP_YELLOW, YELLOW, ORANGE);
+        init_pair(CMP_YELLOW, YELLOW, __DGREY);
         init_pair(CMP_SHADOW, DGREY, ORANGE);
         init_pair(WARNING, WHITE, RED);
         init_pair(WARNSHADOW, RED, DARK_RED);

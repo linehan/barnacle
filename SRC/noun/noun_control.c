@@ -20,6 +20,7 @@
 #include <panel.h>
 #include <menu.h>
 #include <stdbool.h>
+#include "../loop/fsm.h"
 #include "../gen/dice.h"
 #include "../gfx/gfx.h"
 #include "../gfx/palette.h"
@@ -91,7 +92,7 @@ inline int ismode(int somemode)
 //                                                                            //
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
-void operate_on(void *noun)
+static void operate_on(void *noun)
 {
         #define DEFAULT_MODE VITALS
 
@@ -122,7 +123,6 @@ void operate_on(void *noun)
                         setmode(LAST);
                         break;
                 }
-                /*verb_new(key, request_key(op^1), 1);*/
                 setmode(VITALS);
                 break;
         case CANCEL:
@@ -150,7 +150,7 @@ void operate_on(void *noun)
 //                                                                            //
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
-void choose_noun(void) 
+int choose_noun(int ch) 
 {
         /* ncurses sets the ESC key delay at 100ms by default, and this
          * is way too slow. According to Wolfram Alpha, 
@@ -161,7 +161,7 @@ void choose_noun(void)
         if (getenv ("ESCDELAY") == NULL) ESCDELAY = 25;
 
         MENU *menu[2]={get_noun_menu(SUBJECT), get_noun_menu(OBJECT)};
-        ITEM *item = NULL;
+        static ITEM *item;
         int c;  
 
         /* If called previously, the mode will be set to EXITING,
@@ -169,64 +169,61 @@ void choose_noun(void)
         if (mode==EXITING) setmode(LAST);
         else               setmode(STARTING);
 
+        switch (ch)
+        {
+        case MODE_STARTED:
+                setmode(STARTING);
+                break;
+        case '/': 
+                while (item = (ITEM *)get_pattern(), item!=NULL)
+                        operate_on(item_userptr(item));
+                break;
+        case '!':
+                setmode(ACTION);
+                break;
+        case 'x':
+                setmode(CANCEL);
+                break;
+        case 'k':
+                menu_driver(menu[op], REQ_PREV_ITEM);
+                break;
+        case 'j':
+                menu_driver(menu[op], REQ_NEXT_ITEM);
+                break;
+        case 'n':
+                menu_driver(menu[op], REQ_PREV_MATCH);
+                break;
+        case 'p':
+                menu_driver(menu[op], REQ_NEXT_MATCH);
+                break;
+        case 'P':
+                setmode(PROFESSION);
+                break;
+        case 'a':
+                setmode(ATTRIBUTES);
+                break;
+        case 'v':
+                setmode(VITALS);
+                break;
+        case 'z':
+                show_verb_menu();
+                break;
+        case 'o':
+                if (op == OBJECT) setmode(POPMENU);
+                else              setmode(OPOBJECT);
+                break;
+        case 's':
+                if (op == SUBJECT) setmode(POPMENU);
+                else               setmode(OPSUBJECT);
+                break;
+        case KEY_ESC:
+        case '\n':
+                setmode(EXITING);
+                operate_on(item_userptr(item));
+                return MODE_RESTORE;
+        }
         item=current_item(menu[op]);
         operate_on(item_userptr(item));
 
-        while ((c = getch())) 
-        {
-                switch (c)
-                {
-                case '/': 
-                        while (item = (ITEM *)get_pattern(), item!=NULL)
-                                operate_on(item_userptr(item));
-                        break;
-                case '!':
-                        setmode(ACTION);
-                        break;
-                case 'x':
-                        setmode(CANCEL);
-                        break;
-                case 'k':
-                        menu_driver(menu[op], REQ_PREV_ITEM);
-                        break;
-                case 'j':
-                        menu_driver(menu[op], REQ_NEXT_ITEM);
-                        break;
-                case 'n':
-                        menu_driver(menu[op], REQ_PREV_MATCH);
-                        break;
-                case 'p':
-                        menu_driver(menu[op], REQ_NEXT_MATCH);
-                        break;
-                case 'P':
-                        setmode(PROFESSION);
-                        break;
-                case 'a':
-                        setmode(ATTRIBUTES);
-                        break;
-                case 'v':
-                        setmode(VITALS);
-                        break;
-                case 'z':
-                        show_verb_menu();
-                        break;
-                case 'o':
-                        if (op == OBJECT) setmode(POPMENU);
-                        else              setmode(OPOBJECT);
-                        break;
-                case 's':
-                        if (op == SUBJECT) setmode(POPMENU);
-                        else               setmode(OPSUBJECT);
-                        break;
-                case KEY_ESC:
-                case '\n':
-                        setmode(EXITING);
-                        operate_on(item_userptr(item));
-                        return;
-                }
-                item=current_item(menu[op]);
-                operate_on(item_userptr(item));
-
-                scr_refresh();
-        }
+        return MODE_PERSIST;
 }

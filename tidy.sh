@@ -11,6 +11,8 @@ YELLOW="\033[1;33m"
 WHITE="\033[1;37m"
 DEFAULT="\033[0m"
 
+WORKING_DIR=${PWD##*/}
+
 echo -e "${LRED}T${LCYAN}I${LGREEN}G${LBLUE}T${YELLOW}E${LMAGENTA}N${LRED}'${WHITE}UP${DEFAULT}"
 
 make distclean       2>/dev/null
@@ -24,5 +26,6 @@ rm -r autom4te.cache 2>/dev/null
 
 git clean -X -d -f # Remove any files or directories indicated in .gitignore
 git gc # Clean junk files from repo, recompress and optimize
+gitstats ${PWD} ~/gitstats_${PWD##*/}
 
 echo -e "${LRED}L${LCYAN}O${LGREEN}O${LBLUE}K${YELLOW}I${LMAGENTA}N${LRED}'${WHITE}TIGHT${DEFAULT}"
