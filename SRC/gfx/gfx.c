@@ -1,11 +1,6 @@
 // vim:fdm=marker
 /******************************************************************************
  * FILENAME:  gfx.c
- * This module makes extensive use of the "famous" doubly linked list 
- * routines written by Rusty Russell <rusty@rustcorp.com.au> for use in 
- * the Linux kernel. He later modified them to an even more general form, 
- * which is implemented here. For more information, see the CCAN entry 
- * at <http://ccodearchive.net/info/list.html>.
  ******************************************************************************/
 #define _XOPEN_SOURCE_EXTENDED = 1  /* extended character sets */
 #include <stdio.h>
@@ -25,7 +20,6 @@
 
 #include "../pan/test.h"
 #include "../gen/dice.h"
-#include "../gen/wave.h"
 #include "../lib/llist/list.h"
 #include "../gen/perlin.h"
 #include "palette.h"
@@ -50,17 +44,6 @@ void geojug_start(void)
 {
         REFRESH_LOCK = (sem_t *)malloc(sizeof(sem_t)); // keeps things honest
         sem_init(REFRESH_LOCK, 0, 1);
-
-        init_random();      // Mersenne twister
-        init_simplex();     // Perlin simplex noise generator
-        init_palette(0);    // Set color palette
-        init_gfx_colors();  // Apply palette to character set
-        init_boats();       // Initialize boat MOBs
-        init_wave();
-        init_weather();     // Start weather engine
-        init_instruments(); // Various meters (compass)
-        init_menus();       // psh menu and commands
-        init_test();        // Start test structures
 
         GLOBE = malloc(sizeof(struct map_t)); // initialize the global map
 }

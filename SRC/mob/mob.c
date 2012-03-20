@@ -21,7 +21,6 @@
 #include "mob.h"
 #include "../gfx/palette.h"
 #include "../gfx/sprite.h"
-#include "../cmd/control.h"
 #include "../geo/terrain.h"
 #include "../lib/ufo.h"
 #include "../geo/map.h"

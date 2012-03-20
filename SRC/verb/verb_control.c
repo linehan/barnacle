@@ -151,7 +151,6 @@ void verb_menu_control(MENU *menu, int esc)
         ITEM *item;
         int h;
 
-        menu_driver(menu, REQ_FIRST_ITEM);
         verb = (struct verb_info *)item_userptr(item);
         item = current_item(menu);
         post_verb_icon(item);

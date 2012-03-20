@@ -16,21 +16,24 @@ struct noun_t {
         struct verb_t verb;
 };
 
+
 struct noun_t *focused;
+void focus(uint32_t key);
+void unfocus(void);
+
 
 // Holds keys of all creatures
 uint32_t keyring[100];
-enum install_key_opts {SUBJECT, OBJECT};
-void install_key(uint32_t key, int option);
+void     install_key(uint32_t key, int option);
 uint32_t request_key(int option);
+enum install_key_opts {SUBJECT, OBJECT};
 
-void focus(uint32_t key);
+
 int nnouns(void);
 
+
 void load_noun_test(void);
-
 void new_noun(char *name, uint8_t job);
-
 
 
 // Support modules

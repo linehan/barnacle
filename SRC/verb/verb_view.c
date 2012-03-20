@@ -114,19 +114,20 @@ void show_verb_menu(void)
 void post_verb_icon(ITEM *item)
 {
         struct verb_info *verb;
+        static int y;
         int index;
         int top;
 
         top  = top_row(verb_menu);
         item = current_item(verb_menu);
-
         index = item_index(item);
 
         verb = (struct verb_info *)item_userptr(item);
 
-        mvwdelch(verb_menu_sub, (index-top)-1, 10);
-        mvwdelch(verb_menu_sub, (index-top)+1, 10);
-        put_n(verb_menu_sub, (index-top), 10, verb->icon, verb->pair, 1);
+        mvwdelch(verb_menu_sub, y, 10);
+
+        y = (index-top);
+        put_n(verb_menu_sub, y, 10, verb->icon, verb->pair, 1);
         win_refresh(verb_menu_sub);
 }
 

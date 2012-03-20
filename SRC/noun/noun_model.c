@@ -25,14 +25,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "../lib/hash.h"
-#include "../lib/mph.h"
 #include "noun_model.h"
 
 #define MAXNOUN 1000
 
 struct rb_tree *NOUNTREE;
 int NNOUNS;
-
 
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
@@ -173,5 +171,4 @@ void load_noun_test(void)
                 focused->verb.fund = 0x80000000>>vit_blocklen(keyring[i]);
         }
 }
-
 

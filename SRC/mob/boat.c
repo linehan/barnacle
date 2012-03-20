@@ -16,7 +16,6 @@ display and navigation of a BOAT.
 #include <stdint.h>
 
 #include "../gfx/gfx.h"
-#include "../cmd/control.h"
 #include "../gfx/sprite.h"
 #include "../gfx/palette.h"
 #include "../geo/terrain.h"

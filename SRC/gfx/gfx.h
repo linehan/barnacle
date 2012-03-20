@@ -15,6 +15,7 @@
 #include "../lib/llist/list.h"
 #include "../pan/test.h"
 #include "../geo/map.h"
+#include "../lib/ufo.h"
 
 extern sem_t *REFRESH_LOCK; // keeps things from going crazy in the i/o thread
 
