@@ -204,6 +204,17 @@ void wwrapstr(WINDOW *win, const char *string)
         }
 }
 
+short cuco(WINDOW *win)
+{
+        attr_t attrs;
+        short color_pair;
+
+        wattr_get(win, &attrs, &color_pair, NULL);
+
+        return (color_pair);
+}
+
+
 /******************************************************************************
  * DESPAIR, THE ROOST OF WRETCHED FUNCS DEPORTED TO THIS PENULT BARE
  * OF DOCUMENTS OR COMMENTS, YEA, OF HOPE, TO WASTE, UNTIL REPAIR'D.

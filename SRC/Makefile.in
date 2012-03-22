@@ -48,23 +48,25 @@ am__dirstamp = $(am__leading_dot)dirstamp
 am_arawak_OBJECTS = arawak.$(OBJEXT) init/init.$(OBJEXT) \
 	lib/redblack/rb.$(OBJEXT) lib/sort/mergesort.$(OBJEXT) \
 	lib/sort/quicksort.$(OBJEXT) lib/magic.$(OBJEXT) \
-	lib/fifo.$(OBJEXT) lib/queue.$(OBJEXT) eng/state.$(OBJEXT) \
-	eng/model/bytes.$(OBJEXT) gen/dice.$(OBJEXT) \
-	gen/mtwist.$(OBJEXT) gen/name/name.$(OBJEXT) \
-	geo/weather.$(OBJEXT) geo/terrain.$(OBJEXT) geo/map.$(OBJEXT) \
-	gfx/palette.$(OBJEXT) gfx/sprite.$(OBJEXT) gfx/gfx.$(OBJEXT) \
-	gfx/dock.$(OBJEXT) gfx/wselect.$(OBJEXT) \
-	gfx/fancy_menus.$(OBJEXT) gfx/textfx.$(OBJEXT) \
+	lib/fifo.$(OBJEXT) lib/queue.$(OBJEXT) lib/textutils.$(OBJEXT) \
+	eng/state.$(OBJEXT) eng/model/bytes.$(OBJEXT) \
+	gen/dice.$(OBJEXT) gen/mtwist.$(OBJEXT) \
+	gen/name/name.$(OBJEXT) geo/weather.$(OBJEXT) \
+	geo/terrain.$(OBJEXT) geo/map.$(OBJEXT) gfx/palette.$(OBJEXT) \
+	gfx/sprite.$(OBJEXT) gfx/gfx.$(OBJEXT) gfx/dock.$(OBJEXT) \
+	gfx/wselect.$(OBJEXT) gfx/fancy_menus.$(OBJEXT) \
 	gen/perlin.$(OBJEXT) gfx/term.$(OBJEXT) gfx/stdpan.$(OBJEXT) \
-	env/cloud.$(OBJEXT) mob/mob.$(OBJEXT) mob/boat.$(OBJEXT) \
-	noun/noun_model.$(OBJEXT) noun/noun_view.$(OBJEXT) \
-	noun/noun_control.$(OBJEXT) verb/verb_model.$(OBJEXT) \
-	verb/verb_view.$(OBJEXT) verb/verb_control.$(OBJEXT) \
-	verb/verbs.$(OBJEXT) pan/ctrlpanels.$(OBJEXT) \
-	pan/new_character.$(OBJEXT) pan/instruments.$(OBJEXT) \
-	pan/button.$(OBJEXT) pan/dialog.$(OBJEXT) pan/test.$(OBJEXT) \
-	pan/crewgen.$(OBJEXT) loop/fsm.$(OBJEXT) loop/loop.$(OBJEXT) \
-	txt/rk.$(OBJEXT) txt/psh.$(OBJEXT)
+	txt/gloss_m.$(OBJEXT) txt/gloss_v.$(OBJEXT) \
+	txt/gloss_c.$(OBJEXT) env/cloud.$(OBJEXT) mob/mob.$(OBJEXT) \
+	mob/boat.$(OBJEXT) noun/noun_model.$(OBJEXT) \
+	noun/noun_view.$(OBJEXT) noun/noun_control.$(OBJEXT) \
+	verb/verb_model.$(OBJEXT) verb/verb_view.$(OBJEXT) \
+	verb/verb_control.$(OBJEXT) verb/verbs.$(OBJEXT) \
+	pan/ctrlpanels.$(OBJEXT) pan/new_character.$(OBJEXT) \
+	pan/instruments.$(OBJEXT) pan/button.$(OBJEXT) \
+	pan/dialog.$(OBJEXT) pan/test.$(OBJEXT) pan/crewgen.$(OBJEXT) \
+	loop/fsm.$(OBJEXT) loop/loop.$(OBJEXT) txt/rk.$(OBJEXT) \
+	txt/psh.$(OBJEXT)
 arawak_OBJECTS = $(am_arawak_OBJECTS)
 arawak_LDADD = $(LDADD)
 DEFAULT_INCLUDES = -I.@am__isrc@
@@ -180,6 +182,7 @@ arawak_SOURCES = arawak.c \
                    lib/magic.c          \
                    lib/fifo.c           \
                    lib/queue.c \
+                   lib/textutils.c\
                    eng/state.c          \
                    eng/model/bytes.c    \
                    gen/dice.c           \
@@ -194,10 +197,12 @@ arawak_SOURCES = arawak.c \
                    gfx/dock.c           \
                    gfx/wselect.c        \
                    gfx/fancy_menus.c    \
-                   gfx/textfx.c\
                    gen/perlin.c         \
                    gfx/term.c           \
                    gfx/stdpan.c         \
+                   txt/gloss_m.c\
+                   txt/gloss_v.c\
+                   txt/gloss_c.c\
                    env/cloud.c          \
                    mob/mob.c            \
                    mob/boat.c           \
@@ -326,6 +331,8 @@ lib/$(DEPDIR)/$(am__dirstamp):
 lib/magic.$(OBJEXT): lib/$(am__dirstamp) lib/$(DEPDIR)/$(am__dirstamp)
 lib/fifo.$(OBJEXT): lib/$(am__dirstamp) lib/$(DEPDIR)/$(am__dirstamp)
 lib/queue.$(OBJEXT): lib/$(am__dirstamp) lib/$(DEPDIR)/$(am__dirstamp)
+lib/textutils.$(OBJEXT): lib/$(am__dirstamp) \
+	lib/$(DEPDIR)/$(am__dirstamp)
 eng/$(am__dirstamp):
 	@$(MKDIR_P) eng
 	@: > eng/$(am__dirstamp)
@@ -385,13 +392,23 @@ gfx/wselect.$(OBJEXT): gfx/$(am__dirstamp) \
 	gfx/$(DEPDIR)/$(am__dirstamp)
 gfx/fancy_menus.$(OBJEXT): gfx/$(am__dirstamp) \
 	gfx/$(DEPDIR)/$(am__dirstamp)
-gfx/textfx.$(OBJEXT): gfx/$(am__dirstamp) \
-	gfx/$(DEPDIR)/$(am__dirstamp)
 gen/perlin.$(OBJEXT): gen/$(am__dirstamp) \
 	gen/$(DEPDIR)/$(am__dirstamp)
 gfx/term.$(OBJEXT): gfx/$(am__dirstamp) gfx/$(DEPDIR)/$(am__dirstamp)
 gfx/stdpan.$(OBJEXT): gfx/$(am__dirstamp) \
 	gfx/$(DEPDIR)/$(am__dirstamp)
+txt/$(am__dirstamp):
+	@$(MKDIR_P) txt
+	@: > txt/$(am__dirstamp)
+txt/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) txt/$(DEPDIR)
+	@: > txt/$(DEPDIR)/$(am__dirstamp)
+txt/gloss_m.$(OBJEXT): txt/$(am__dirstamp) \
+	txt/$(DEPDIR)/$(am__dirstamp)
+txt/gloss_v.$(OBJEXT): txt/$(am__dirstamp) \
+	txt/$(DEPDIR)/$(am__dirstamp)
+txt/gloss_c.$(OBJEXT): txt/$(am__dirstamp) \
+	txt/$(DEPDIR)/$(am__dirstamp)
 env/$(am__dirstamp):
 	@$(MKDIR_P) env
 	@: > env/$(am__dirstamp)
@@ -462,12 +479,6 @@ loop/fsm.$(OBJEXT): loop/$(am__dirstamp) \
 	loop/$(DEPDIR)/$(am__dirstamp)
 loop/loop.$(OBJEXT): loop/$(am__dirstamp) \
 	loop/$(DEPDIR)/$(am__dirstamp)
-txt/$(am__dirstamp):
-	@$(MKDIR_P) txt
-	@: > txt/$(am__dirstamp)
-txt/$(DEPDIR)/$(am__dirstamp):
-	@$(MKDIR_P) txt/$(DEPDIR)
-	@: > txt/$(DEPDIR)/$(am__dirstamp)
 txt/rk.$(OBJEXT): txt/$(am__dirstamp) txt/$(DEPDIR)/$(am__dirstamp)
 txt/psh.$(OBJEXT): txt/$(am__dirstamp) txt/$(DEPDIR)/$(am__dirstamp)
 arawak$(EXEEXT): $(arawak_OBJECTS) $(arawak_DEPENDENCIES) $(EXTRA_arawak_DEPENDENCIES) 
@@ -493,7 +504,6 @@ mostlyclean-compile:
 	-rm -f gfx/sprite.$(OBJEXT)
 	-rm -f gfx/stdpan.$(OBJEXT)
 	-rm -f gfx/term.$(OBJEXT)
-	-rm -f gfx/textfx.$(OBJEXT)
 	-rm -f gfx/wselect.$(OBJEXT)
 	-rm -f init/init.$(OBJEXT)
 	-rm -f lib/fifo.$(OBJEXT)
@@ -502,6 +512,7 @@ mostlyclean-compile:
 	-rm -f lib/redblack/rb.$(OBJEXT)
 	-rm -f lib/sort/mergesort.$(OBJEXT)
 	-rm -f lib/sort/quicksort.$(OBJEXT)
+	-rm -f lib/textutils.$(OBJEXT)
 	-rm -f loop/fsm.$(OBJEXT)
 	-rm -f loop/loop.$(OBJEXT)
 	-rm -f mob/boat.$(OBJEXT)
@@ -516,6 +527,9 @@ mostlyclean-compile:
 	-rm -f pan/instruments.$(OBJEXT)
 	-rm -f pan/new_character.$(OBJEXT)
 	-rm -f pan/test.$(OBJEXT)
+	-rm -f txt/gloss_c.$(OBJEXT)
+	-rm -f txt/gloss_m.$(OBJEXT)
+	-rm -f txt/gloss_v.$(OBJEXT)
 	-rm -f txt/psh.$(OBJEXT)
 	-rm -f txt/rk.$(OBJEXT)
 	-rm -f verb/verb_control.$(OBJEXT)
@@ -544,12 +558,12 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@gfx/$(DEPDIR)/sprite.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@gfx/$(DEPDIR)/stdpan.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@gfx/$(DEPDIR)/term.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@gfx/$(DEPDIR)/textfx.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@gfx/$(DEPDIR)/wselect.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@init/$(DEPDIR)/init.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@lib/$(DEPDIR)/fifo.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@lib/$(DEPDIR)/magic.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@lib/$(DEPDIR)/queue.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@lib/$(DEPDIR)/textutils.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@lib/redblack/$(DEPDIR)/rb.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@lib/sort/$(DEPDIR)/mergesort.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@lib/sort/$(DEPDIR)/quicksort.Po@am__quote@
@@ -567,6 +581,9 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@pan/$(DEPDIR)/instruments.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@pan/$(DEPDIR)/new_character.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@pan/$(DEPDIR)/test.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@txt/$(DEPDIR)/gloss_c.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@txt/$(DEPDIR)/gloss_m.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@txt/$(DEPDIR)/gloss_v.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@txt/$(DEPDIR)/psh.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@txt/$(DEPDIR)/rk.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@verb/$(DEPDIR)/verb_control.Po@am__quote@

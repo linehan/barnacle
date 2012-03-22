@@ -54,7 +54,7 @@ extern sem_t *REFRESH_LOCK; // keeps things from going crazy in the i/o thread
         else                     \
                 hide_panel(pan)  
 
-static inline void reveal(PANEL *pan)
+static inline void _reveal(PANEL *pan)
 {
         if (panel_hidden(pan)) {
                 show_panel(pan);
@@ -161,4 +161,5 @@ int                hit_test(struct map_t *map, int y, int x);
 
 void center_text(WINDOW *win, int y0, int x0, int w, char *string);
 void wwrapstr(WINDOW *win, const char *string);
+short cuco(WINDOW *win);
 #endif

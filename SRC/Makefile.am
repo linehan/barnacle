@@ -20,6 +20,7 @@ arawak_SOURCES = arawak.c \
                    lib/magic.c          \
                    lib/fifo.c           \
                    lib/queue.c \
+                   lib/textutils.c\
                    eng/state.c          \
                    eng/model/bytes.c    \
                    gen/dice.c           \
@@ -34,10 +35,12 @@ arawak_SOURCES = arawak.c \
                    gfx/dock.c           \
                    gfx/wselect.c        \
                    gfx/fancy_menus.c    \
-                   gfx/textfx.c\
                    gen/perlin.c         \
                    gfx/term.c           \
                    gfx/stdpan.c         \
+                   txt/gloss_m.c\
+                   txt/gloss_v.c\
+                   txt/gloss_c.c\
                    env/cloud.c          \
                    mob/mob.c            \
                    mob/boat.c           \

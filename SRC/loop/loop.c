@@ -20,16 +20,19 @@ refresh_cb(EV_P_ ev_timer *w, int revents)
 static void
 print_cb(EV_P_ ev_timer *w, int revents)
 {
-        #include "gfx/textfx.h"
+        #include "txt/gloss.h"
+#include "gfx/dock.h"
         static bool status;
         static bool locked;
         static int msg;
+        struct gloss_t *test;
+        if (test == NULL) test = new_gloss(dock_window(SUBJ_TX_WIN), "Fuck you!", NULL, PUR_SKY, PUR_BLU);
 
         if (status == true) {
                 msg = roll_fair(17);
                 locked = (roll_fair(30) == 5) ? false : true;
         }
-        if (!locked) status = say(msg);
+        if (!locked) status = say(test);
 
         scr_refresh();
 

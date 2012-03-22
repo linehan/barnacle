@@ -26,6 +26,7 @@
 #include <stdlib.h>
 #include "../lib/hash.h"
 #include "noun_model.h"
+#include "../lib/textutils.h"
 
 #define MAXNOUN 1000
 
@@ -39,14 +40,6 @@ int NNOUNS;
 //                                                                            //
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
-inline char *mydup(const char *s)
-{
-        size_t len = 1+strlen(s);
-        char *p = malloc(len);
-
-        return p ? memcpy(p, s, len) : NULL;
-}
-
 
 void focus(uint32_t key)
 {
