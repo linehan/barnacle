@@ -48,7 +48,7 @@ am__dirstamp = $(am__leading_dot)dirstamp
 am_arawak_OBJECTS = arawak.$(OBJEXT) init/init.$(OBJEXT) \
 	lib/redblack/rb.$(OBJEXT) lib/sort/mergesort.$(OBJEXT) \
 	lib/sort/quicksort.$(OBJEXT) lib/magic.$(OBJEXT) \
-	lib/fifo.$(OBJEXT) eng/state.$(OBJEXT) \
+	lib/fifo.$(OBJEXT) lib/queue.$(OBJEXT) eng/state.$(OBJEXT) \
 	eng/model/bytes.$(OBJEXT) gen/dice.$(OBJEXT) \
 	gen/mtwist.$(OBJEXT) gen/name/name.$(OBJEXT) \
 	geo/weather.$(OBJEXT) geo/terrain.$(OBJEXT) geo/map.$(OBJEXT) \
@@ -179,6 +179,7 @@ arawak_SOURCES = arawak.c \
                    lib/sort/quicksort.c \
                    lib/magic.c          \
                    lib/fifo.c           \
+                   lib/queue.c \
                    eng/state.c          \
                    eng/model/bytes.c    \
                    gen/dice.c           \
@@ -323,6 +324,7 @@ lib/$(DEPDIR)/$(am__dirstamp):
 	@: > lib/$(DEPDIR)/$(am__dirstamp)
 lib/magic.$(OBJEXT): lib/$(am__dirstamp) lib/$(DEPDIR)/$(am__dirstamp)
 lib/fifo.$(OBJEXT): lib/$(am__dirstamp) lib/$(DEPDIR)/$(am__dirstamp)
+lib/queue.$(OBJEXT): lib/$(am__dirstamp) lib/$(DEPDIR)/$(am__dirstamp)
 eng/$(am__dirstamp):
 	@$(MKDIR_P) eng
 	@: > eng/$(am__dirstamp)
@@ -492,6 +494,7 @@ mostlyclean-compile:
 	-rm -f init/init.$(OBJEXT)
 	-rm -f lib/fifo.$(OBJEXT)
 	-rm -f lib/magic.$(OBJEXT)
+	-rm -f lib/queue.$(OBJEXT)
 	-rm -f lib/redblack/rb.$(OBJEXT)
 	-rm -f lib/sort/mergesort.$(OBJEXT)
 	-rm -f lib/sort/quicksort.$(OBJEXT)
@@ -541,6 +544,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@init/$(DEPDIR)/init.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@lib/$(DEPDIR)/fifo.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@lib/$(DEPDIR)/magic.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@lib/$(DEPDIR)/queue.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@lib/redblack/$(DEPDIR)/rb.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@lib/sort/$(DEPDIR)/mergesort.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@lib/sort/$(DEPDIR)/quicksort.Po@am__quote@

@@ -227,6 +227,11 @@ void init_palette(int set)
         init_pair(PUR_RED, RED, __DGREY);
         init_pair(PUR_EEN, LGREEN, __DGREY);
         init_pair(PUR_BRZ, BLASTOFFBRONZE, __DGREY);
+        init_pair(PUR_PIN, PINK, __DGREY);
+        init_pair(PUR_ORA, ORANGE, __DGREY);
+        init_pair(PUR_BEI, BEIGE, __DGREY);
+        init_pair(PUR_WOO, WOOD, __DGREY);
+        init_pair(PUR_SKY, WILDBLUEYONDER, __DGREY);
         init_pair(TITLE_SCREEN, DGREY, __DGREY);
 
         /* IN-GAME COLOR PAIRS */

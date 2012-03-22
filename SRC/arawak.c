@@ -49,11 +49,13 @@ int main()
         uint32_t boatkey = new_boat(pad);
         nominate_boat(boatkey);
 
+        toggle_instrument_panel();
         load_noun_test();
         view_dock();
         choose_noun('*');
 
         set_wind(__pre__, 4);
+        werase(DIAGNOSTIC_WIN);
 
         start_event_watchers();
 

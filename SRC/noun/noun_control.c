@@ -68,10 +68,10 @@ void setmode(int newmode)
                 return;
         case OPOBJECT:
                 op = OBJECT;
-                return;
+                break;
         case OPSUBJECT:
                 op = SUBJECT;
-                return;
+                break;
         default:
                 if (newmode==STARTING) oldmode = newmode;
                 else                   oldmode = mode;
@@ -115,8 +115,11 @@ static void operate_on(void *noun)
                 close_nouns(OBJECT);
                 return;
         case POPMENU:
+                werase(DIAGNOSTIC_WIN);
+                wprintw(DIAGNOSTIC_WIN, "op: %u\n", op);
                 open_nouns(op);
                 setmode(LAST);
+                wprintw(DIAGNOSTIC_WIN, "op: %u", op);
                 break;
         case ACTION:
                 if (op != SUBJECT) {
@@ -164,15 +167,11 @@ int choose_noun(int ch)
         static ITEM *item;
         int c;  
 
-        /* If called previously, the mode will be set to EXITING,
-         * where the last call left it. */
-        if (mode==EXITING) setmode(LAST);
-        else               setmode(STARTING);
-
         switch (ch)
         {
         case MODE_STARTED:
-                setmode(STARTING);
+                if (mode == EXITING) setmode(LAST);
+                else                 setmode(STARTING);
                 break;
         case '/': 
                 while (item = (ITEM *)get_pattern(), item!=NULL)
@@ -205,9 +204,6 @@ int choose_noun(int ch)
         case 'v':
                 setmode(VITALS);
                 break;
-        case 'z':
-                show_verb_menu();
-                break;
         case 'o':
                 if (op == OBJECT) setmode(POPMENU);
                 else              setmode(OPOBJECT);
@@ -217,13 +213,14 @@ int choose_noun(int ch)
                 else               setmode(OPSUBJECT);
                 break;
         case KEY_ESC:
-        case '\n':
+        case 'c':
                 setmode(EXITING);
                 operate_on(item_userptr(item));
                 return MODE_RESTORE;
         }
         item=current_item(menu[op]);
         operate_on(item_userptr(item));
+
 
         return MODE_PERSIST;
 }

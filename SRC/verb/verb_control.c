@@ -36,6 +36,7 @@
 #include "../noun/noun_model.h"
 #include "../noun/noun_view.h"
 #include "verb_model.h"
+#include "../loop/fsm.h"
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
 //                                                                            //
@@ -74,7 +75,8 @@ inline void verb_tick_send(uint32_t key)
                 else    send <<= 1;
         }
 
-        focused->verb.send = (send==0U) ? verb_send(key) : send;
+        if (send==0U) verb_send(key);
+        else focused->verb.send = send;
 }
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
@@ -119,7 +121,7 @@ void verb_tick(uint32_t key)
 
         if ((focused->verb.fund == 0x00000001))
                         focused->verb.forw=false;
-        if (focused->verb.fund == focused->verb.bump) 
+        if (lzc(focused->verb.fund) <= lzc(focused->verb.bump)) 
                         focused->verb.forw=true;
 
         verb_tick_send(key);
@@ -145,39 +147,50 @@ void verb_cancel(uint32_t key)
 //                                                                            //
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
-void verb_menu_control(MENU *menu, int esc)
+int choose_verb(int input)
 {
-        struct verb_info *verb;
+        static struct verb_info *verb;
+        MENU *menu;
+        PANEL *pan;
         ITEM *item;
         int h;
 
-        verb = (struct verb_info *)item_userptr(item);
+        if (input == MODE_STARTED) init_verb_menu(0x000000FF);
+
+        menu = get_verb_menu();
+        pan  = get_verb_panel();
+
+        switch (input) {
+        case MODE_STARTED:
+                top_panel(pan);
+                break;
+        case 'k':
+                menu_driver(menu, REQ_PREV_ITEM);
+                break;
+        case 'j':
+                menu_driver(menu, REQ_NEXT_ITEM);
+                break;
+        case 'n':
+                menu_driver(menu, REQ_PREV_MATCH);
+                break;
+        case 'p':
+                menu_driver(menu, REQ_NEXT_MATCH);
+                break;
+        case ' ':
+                verb_new(request_key(SUBJECT), 
+                         request_key(OBJECT), 
+                         (uint32_t)verb->id);
+                break;
+        case 'x':
+                verb_cancel(request_key(SUBJECT));
+                break;
+        case 'v':
+                hide_panel(pan);
+                return MODE_RESTORE;
+        }
         item = current_item(menu);
+        verb = (struct verb_info *)item_userptr(item);
         post_verb_icon(item);
 
-        while ((h = getch()), (h != esc)) {
-                switch (h) {
-                case 'k':
-                        menu_driver(menu, REQ_PREV_ITEM);
-                        break;
-                case 'j':
-                        menu_driver(menu, REQ_NEXT_ITEM);
-                        break;
-                case 'n':
-                        menu_driver(menu, REQ_PREV_MATCH);
-                        break;
-                case 'p':
-                        menu_driver(menu, REQ_NEXT_MATCH);
-                        break;
-                case '\n':
-                        verb_new(request_key(SUBJECT), 
-                                 request_key(OBJECT), 
-                                 (uint32_t)verb->id);
-                        break;
-                }
-                item = current_item(menu);
-                verb = (struct verb_info *)item_userptr(item);
-                post_verb_icon(item);
-                scr_refresh();
-        }
+        return MODE_PERSIST;
 }

@@ -19,6 +19,7 @@ arawak_SOURCES = arawak.c \
                    lib/sort/quicksort.c \
                    lib/magic.c          \
                    lib/fifo.c           \
+                   lib/queue.c \
                    eng/state.c          \
                    eng/model/bytes.c    \
                    gen/dice.c           \

@@ -1,6 +1,6 @@
 
 enum dockw_enum { DOCK_WIN, SUBJECT_WIN, SUBJ_ID_WIN, SUBJ_WI_WIN,
-                            OBJECT_WIN,  OBJ_ID_WIN,  OBJ_WI_WIN  };
+                            OBJECT_WIN,  OBJ_ID_WIN,  OBJ_WI_WIN, SUBJ_TX_WIN, OBJ_TX_WIN };
 
 
 #define DOCK_H 2 

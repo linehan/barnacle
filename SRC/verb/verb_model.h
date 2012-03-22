@@ -15,9 +15,21 @@ struct verb_t {
         uint32_t fund;
         uint32_t send;
         uint32_t canc;
+        uint32_t take;
         uint32_t rec;
         bool forw;
         bool empty;
+};
+
+
+#define BARLEN 30
+struct verb_aux {
+        uint32_t vec[BARLEN];   // bar
+        uint32_t send;          // to be sent
+        uint32_t rec;           // to be received
+        uint32_t buf;           // waiting to be moved
+        uint32_t mv;            // shuttle
+        uint32_t rd;
 };
 
 struct verb_t *verb_alloc(void);

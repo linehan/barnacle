@@ -10,7 +10,29 @@
 static void
 refresh_cb(EV_P_ ev_timer *w, int revents)
 {
+        vrt_refresh();
         scr_refresh();
+        ev_timer_again(EV_DEFAULT, w);
+}
+
+
+////////////////////////////////////////////////////////////////////////////////
+static void
+print_cb(EV_P_ ev_timer *w, int revents)
+{
+        #include "verb/verbs.h"
+        static bool status;
+        static bool locked;
+        static int msg;
+
+        if (status == true) {
+                msg = roll_fair(17);
+                locked = (roll_fair(30) == 5) ? false : true;
+        }
+        if (!locked) status = say(msg);
+
+        scr_refresh();
+
         ev_timer_again(EV_DEFAULT, w);
 }
 
@@ -81,23 +103,27 @@ int start_event_watchers(void)
         ev_timer sail;      // boat state shift 
         ev_timer weather;   // weather state shift
         ev_timer animate;   // map state shift
+        ev_timer print;     // prints text effects
         ev_timer refresh;   // write the new state to the screen
 
         ev_io_init(&read, &iolisten, 0, EV_READ);
         ev_init(&sail, &sail_cb);
         ev_init(&weather, &weather_cb);
         ev_init(&animate, &animate_cb);
+        ev_init(&print, &print_cb);
         ev_init(&refresh, &refresh_cb);
 
         sail.repeat    = .12;
         weather.repeat = .1;
         animate.repeat = 2.5;
+        print.repeat   = .02;
         refresh.repeat = .01;
 
         ev_io_start(readloop, &read);
         ev_timer_again(execloop, &sail);
         ev_timer_again(execloop, &weather);
         ev_timer_again(execloop, &animate);
+        ev_timer_again(drawloop, &print);
         ev_timer_again(drawloop, &refresh);
 
         ev_run(execloop, 0);

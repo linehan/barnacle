@@ -19,7 +19,7 @@ verb_view.c
 #include "../lib/magic.h"
 
 #define MAX (VIT_MAXLEN)
-enum verb_elements { BASE, FUND, SEND, REC, CANC };
+enum verb_elements { BASE, FUND, SEND, REC, CANC, TAKE };
 ////////////////////////////////////////////////////////////////////////////////
 inline void put_n(WINDOW *win, int y, int x, wchar_t *wch, short pair, int n)
 {
@@ -36,7 +36,7 @@ inline void put_n(WINDOW *win, int y, int x, wchar_t *wch, short pair, int n)
 //                                                                            //
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
-#define VERB_W 15 
+#define VERB_W 18
 #define VERB_H 8 
 #define VERB_X 0 
 #define VERB_Y LINES-VERB_H-3
@@ -97,22 +97,24 @@ void init_verb_menu(uint32_t bitmap)
         menu_pair(verb_menu, PUR_DDP, PUR_GRE);
         menu_look(verb_menu, DESC, true, NULL);
         menu_look(verb_menu, MARK, false, NULL);
+        set_menu_format(verb_menu, VERB_H-2, 1);
         menu_look(verb_menu, POST, true, NULL);
+
 }
 
-
-void show_verb_menu(void)
+MENU *get_verb_menu(void)
 {
-        init_verb_menu(0x0000000F);
-        top_panel(verb_menu_pan);
-        verb_menu_control(verb_menu, 'z');
-        hide_panel(verb_menu_pan);
-        scr_refresh();
+        return (verb_menu);
 }
 
+PANEL *get_verb_panel(void)
+{
+        return (verb_menu_pan);
+}
 
 void post_verb_icon(ITEM *item)
 {
+        #define XPOS VERB_W-6
         struct verb_info *verb;
         static int y;
         int index;
@@ -124,10 +126,10 @@ void post_verb_icon(ITEM *item)
 
         verb = (struct verb_info *)item_userptr(item);
 
-        mvwdelch(verb_menu_sub, y, 10);
+        mvwdelch(verb_menu_sub, y, XPOS);
 
         y = (index-top);
-        put_n(verb_menu_sub, y, 10, verb->icon, verb->pair, 1);
+        put_n(verb_menu_sub, y, XPOS, verb->icon, verb->pair, 1);
         win_refresh(verb_menu_sub);
 }
 
@@ -140,10 +142,13 @@ void post_verb_icon(ITEM *item)
 ////////////////////////////////////////////////////////////////////////////////
 void do_pulse_test(struct verb_t *verb, int option)
 {
-        if (verb == NULL) {
+        static int refresh;
+
+        if (option == refresh) {
                 werase(DIAGNOSTIC_WIN);
-                return;
+                refresh = option;
         }
+
         if (option == SUBJECT)
                 wprintw(DIAGNOSTIC_WIN, "subject\n");
         else    wprintw(DIAGNOSTIC_WIN, "object\n");
@@ -165,11 +170,14 @@ void do_pulse_test(struct verb_t *verb, int option)
 ////////////////////////////////////////////////////////////////////////////////
 inline void verb_view_elem(int elem, struct verb_t *verb, WINDOW *win, int opt)
 {
-        static wchar_t basics[]=L"ⲻⲺ";
-        static wchar_t boom[]=L"✶";
+        static wchar_t basics[]=L"ⲻⲺⲿⲾ";
+        static wchar_t boom[]=L"✶✺";
         uint32_t xofs, xlen, vbid;
         wchar_t *icon;
         short pair;
+
+        assert(verb != NULL);
+        assert(win != NULL);
 
         if (opt == SUBJECT) goto subjects;
         else                goto objects;
@@ -197,6 +205,10 @@ inline void verb_view_elem(int elem, struct verb_t *verb, WINDOW *win, int opt)
                 xofs = lzc(verb->canc);
                 xlen = 1;
                 goto gfx_canc;
+        case TAKE:
+                xofs = lzc(verb->take);
+                xlen = 1;
+                goto gfx_take;
         }
 
         objects:
@@ -222,6 +234,10 @@ inline void verb_view_elem(int elem, struct verb_t *verb, WINDOW *win, int opt)
                 xofs = ((MAX-1)-lzc(verb->canc));
                 xlen = 1;
                 goto gfx_canc;
+        case TAKE:
+                xofs = ((MAX-1)-lzc(verb->take));
+                xlen = 1;
+                goto gfx_take;
         }
 
 
@@ -249,7 +265,14 @@ inline void verb_view_elem(int elem, struct verb_t *verb, WINDOW *win, int opt)
                 icon = &boom[0];
                 pair = PUR_YEL;
                 goto drawing;
+        gfx_take:
+                if (verb->take == 0) return; // Cancels are only drawn
+                else verb->take = 0;         // for one frame.
+                icon = &boom[0];
+                pair = PUR_YEL;
+                goto drawing;
 
+        return; // prevent non-matches from falling into drawing
 
         drawing:
                 put_n(win, 0, xofs, icon, pair, xlen); // draw it
@@ -278,6 +301,7 @@ void verb_view(uint32_t key, int opt)
         verb_view_elem(BASE, &focused->verb, win, opt);
         verb_view_elem(FUND, &focused->verb, win, opt);
         verb_view_elem(CANC, &focused->verb, win, opt);
+        verb_view_elem(TAKE, &focused->verb, win, opt);
         if (&focused->verb.send != 0)
                 verb_view_elem(SEND, &focused->verb, win, opt);
         if (&focused->verb.rec != 0)
@@ -286,8 +310,7 @@ void verb_view(uint32_t key, int opt)
         win_refresh(win);
 
         if (TESTING) {
-                do_pulse_test(NULL, SUBJECT);
-                do_pulse_test(&focused->verb, SUBJECT);
+                do_pulse_test(&focused->verb, opt);
         }
 }
 ////////////////////////////////////////////////////////////////////////////////
@@ -305,11 +328,15 @@ void do_pulse(void)
         max = nnouns();
         for (i=0; i<max; i++) {
 
-                if (keyring[i] == request_key(SUBJECT)) 
+                if (keyring[i] == request_key(SUBJECT)) {
+                        view_vitals(SUBJECT);
                         verb_view(keyring[i], SUBJECT);
+                }
 
-                if (keyring[i] == request_key(OBJECT)) 
+                if (keyring[i] == request_key(OBJECT)) {
+                        view_vitals(OBJECT);
                         verb_view(keyring[i], OBJECT);
+                }
 
                 verb_tick(keyring[i]);
         }

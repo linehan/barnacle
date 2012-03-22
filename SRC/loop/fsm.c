@@ -66,28 +66,11 @@ void operate_on(int input)
 {
         setmode(MODE_RELEASE);
 
-        switch (mode) {
-        case UI_COMPASS:
-                switch (input) {
-                case '@':
-                        order_boat('f', 0);
-                        break;
-                case 'j':
-                        order_boat('p', 0);
-                        break;
-                case 'k':
-                        order_boat('s', 0);
-                        break;
-                case 'g':
-                        order_boat('r', 0);
-                        break;
-                case 'f':
-                        order_boat('R', 0);
-                        break;
-                }
-                break;
+        switch (mode) 
+        {
         case UI_INSPECTOR:
-                switch (input) {
+                switch (input) 
+                {
                 case KEY_UP:
                         move_inspector('u');
                         break;
@@ -105,8 +88,12 @@ void operate_on(int input)
         case UI_NOUN:
                 setmode(choose_noun(input));
                 break;
+        case UI_VERB:
+                setmode(choose_verb(input));
+                break;
         case UI_WORLDMAP:
-                switch(input) {
+                switch(input) 
+                {
                 case 'w':
                         roll_map(GLOBE, 'u');
                         break;
@@ -119,11 +106,25 @@ void operate_on(int input)
                 case 'd':
                         roll_map(GLOBE, 'r');
                         break;
+                case '@':
+                        order_boat('f', 0);
+                        break;
+                case 'j':
+                        order_boat('p', 0);
+                        break;
+                case 'k':
+                        order_boat('s', 0);
+                        break;
+                case 'g':
+                        order_boat('r', 0);
+                        break;
+                case 'f':
+                        order_boat('R', 0);
+                        break;
                 }
                 break;
         }
 }
-
 
 ////////////////////////////////////////////////////////////////////////////////
 void director(int input)
@@ -134,13 +135,14 @@ void director(int input)
 
         if (mode_locked == true) return;
         else {
-                switch (input) { 
-                case 'i':
-                        setmode(UI_COMPASS);
-                        toggle_instrument_panel();
-                        break;
-                case '\n':
+                switch (input) 
+                { 
+                case 'c':
                         setmode(UI_NOUN);
+                        setmode(MODE_STARTED);
+                        break;
+                case 'v':
+                        setmode(UI_VERB);
                         setmode(MODE_STARTED);
                         break;
                 case '`':

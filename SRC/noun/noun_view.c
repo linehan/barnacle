@@ -105,7 +105,7 @@ void build_nouns(void)
         set_menu_format(subj_menu, NROWS, NCOLS);
 
         menu_wins(obj_menu, obj_menu_win, obj_menu_sub);
-        menu_pair(obj_menu, PUR_RED, ORIGINAL);
+        menu_pair(obj_menu, PUR_DYE, ORIGINAL);
         menu_look(obj_menu, DESC, false, NULL);
         menu_look(obj_menu, MARK, false, NULL);
         set_menu_format(obj_menu, NROWS, NCOLS);
@@ -295,7 +295,7 @@ void view_noun(int op)
                 wprintw(NOUNWIN(op), "%-*s", ID_W,  fullname(request_key(op)));
         }
         if (op==OBJECT) {
-                wcolor_set(NOUNWIN(op), PUR_RED, NULL);
+                wcolor_set(NOUNWIN(op), PUR_YEL, NULL);
                 wprintw(NOUNWIN(op), "%*s", ID_W, fullname(request_key(op)));
         }
         win_refresh(NOUNWIN(op));

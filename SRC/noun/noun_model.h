@@ -14,6 +14,7 @@ struct noun_t {
         uint32_t vitals;     // Byte-oriented
         uint32_t attributes; // Nibble-oriented
         struct verb_t verb;
+        struct verb_aux aux;
 };
 
 

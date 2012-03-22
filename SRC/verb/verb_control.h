@@ -10,3 +10,4 @@ verb_control.h
 ///////////////////////////////////////////////////////////////////////////// */
 void verb_tick(uint32_t key);
 void verb_cancel(uint32_t key);
+int choose_verb(int input);

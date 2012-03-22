@@ -21,10 +21,28 @@
 #include "../gfx/gfx.h"
 #include "../gfx/dock.h"
 #include "../lib/fifo.h"
+#include "../lib/magic.h"
 #include "../noun/noun_model.h"
 #include "../noun/noun_view.h"
 #include "verb_model.h"
 #include "verbs.h"
+////////////////////////////////////////////////////////////////////////////////
+
+/*struct verbpkg {*/
+        /*uint32_t to;*/
+        /*uint32_t from;*/
+        /*struct verb_info *verb;*/
+/*};*/
+
+/*static const uint32_t RECEIVE = 0x80000000; */
+/*static const uint32_t TRANSMIT = 0x80000000;*/
+/*static const uint32_t SHUTTLE = 0x80000000;*/
+
+/*#define COMBINE(a, b) (a) ^= (b); \*/
+                      /*(b) ^= (a)*/
+
+
+
 ////////////////////////////////////////////////////////////////////////////////
 uint32_t update_mask(uint32_t key)
 {
@@ -45,8 +63,6 @@ uint32_t verb_new(uint32_t sender, uint32_t recipient, uint32_t verb)
 
         if (focused->verb.send != 0U) return; // only one verb at a time
 
-        update_mask(sender);
-
         fifo_push(&focused->verb.to, recipient);
         fifo_push(&focused->verb.give, verb);
 
@@ -63,13 +79,12 @@ uint32_t verb_send(uint32_t sender)
 {
         uint32_t recipient;
         uint32_t verb;
-        uint32_t sendvalue;
 
         focus(sender);
 
         recipient = fifo_pop(&focused->verb.to);
         verb      = fifo_pop(&focused->verb.give);
-        sendvalue = (focused->verb.send ^ 0x00000001);
+        focused->verb.send ^= 0x00000001;
 
         focus(recipient);
 
@@ -77,7 +92,7 @@ uint32_t verb_send(uint32_t sender)
         fifo_push(&focused->verb.get, verb);
         focused->verb.rec |= 0x00000001;
 
-        return (sendvalue);
+        return (0);
 }
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
@@ -98,5 +113,8 @@ uint32_t verb_do(uint32_t to)
 
         verbs[verb].say(from, to);
 
-        return ((focused->verb.rec<<1) ^ focused->verb.bump);
+        /*return ((focused->verb.rec<<1) ^ focused->verb.bump);*/
+        /*return ((focused->verb.rec<<1) & (focused->verb.mask));*/
+        /*BITCLEAR(focused->verb.rec, lzc(focused->verb.rec));*/
+        return (0U);
 }

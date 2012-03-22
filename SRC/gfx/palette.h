@@ -90,6 +90,8 @@ enum arne_shadow2 {
         BLASTOFFBRONZE = 95,
         METALYELLOW    = 96,
         ZEN_BG = 97,
+        TESTFG = 98,
+        TESTBG = 99,
 };
 
 /* FG_BG color pairs; odd ones are swaps of even ones. */
@@ -107,6 +109,7 @@ enum ramp_pairs {
         WARNSHADOW    = 110,
         GUN_FLASH     = 111,
         GUN_SMOKE     = 112,
+
 
         BEI_SKY = 113,
         BEI_SEA = 114,
@@ -160,7 +163,13 @@ enum ramp_pairs {
         PUR_RED = 158,
         PUR_EEN = 159,
         PUR_BRZ = 160,
-        TITLE_SCREEN = 161,
+        PUR_PIN = 161,
+        PUR_ORA = 162,
+        PUR_BEI = 163,
+        PUR_WOO = 164,
+        PUR_SKY = 165,
+        TITLE_SCREEN = 166,
+        TESTING = 167,
 
         SEA_DARK      = 17,     /* SHADE0 colors for environment */
         SEA_MED       = 18,

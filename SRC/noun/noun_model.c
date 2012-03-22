@@ -100,7 +100,7 @@ void new_noun(char *name, uint8_t job)
 //                                                                            //
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
-
+static int loaded;
 uint32_t active_key[2];
 
 void install_key(uint32_t key, int option)
@@ -113,7 +113,12 @@ void install_key(uint32_t key, int option)
 
 uint32_t request_key(int option)
 {
-        if (option!=OBJECT && option!=SUBJECT) return 0;
+        if (!loaded) {
+                active_key[0] = keyring[0];
+                active_key[1] = keyring[0];
+                loaded = 1;
+        }
+        if (option!=OBJECT && option!=SUBJECT) return active_key[0];
         else
                 return (active_key[option]);
 }
