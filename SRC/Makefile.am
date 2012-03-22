@@ -34,6 +34,7 @@ arawak_SOURCES = arawak.c \
                    gfx/dock.c           \
                    gfx/wselect.c        \
                    gfx/fancy_menus.c    \
+                   gfx/textfx.c\
                    gen/perlin.c         \
                    gfx/term.c           \
                    gfx/stdpan.c         \

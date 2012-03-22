@@ -20,7 +20,7 @@ refresh_cb(EV_P_ ev_timer *w, int revents)
 static void
 print_cb(EV_P_ ev_timer *w, int revents)
 {
-        #include "verb/verbs.h"
+        #include "gfx/textfx.h"
         static bool status;
         static bool locked;
         static int msg;

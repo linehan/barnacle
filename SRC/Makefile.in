@@ -54,17 +54,17 @@ am_arawak_OBJECTS = arawak.$(OBJEXT) init/init.$(OBJEXT) \
 	geo/weather.$(OBJEXT) geo/terrain.$(OBJEXT) geo/map.$(OBJEXT) \
 	gfx/palette.$(OBJEXT) gfx/sprite.$(OBJEXT) gfx/gfx.$(OBJEXT) \
 	gfx/dock.$(OBJEXT) gfx/wselect.$(OBJEXT) \
-	gfx/fancy_menus.$(OBJEXT) gen/perlin.$(OBJEXT) \
-	gfx/term.$(OBJEXT) gfx/stdpan.$(OBJEXT) env/cloud.$(OBJEXT) \
-	mob/mob.$(OBJEXT) mob/boat.$(OBJEXT) noun/noun_model.$(OBJEXT) \
-	noun/noun_view.$(OBJEXT) noun/noun_control.$(OBJEXT) \
-	verb/verb_model.$(OBJEXT) verb/verb_view.$(OBJEXT) \
-	verb/verb_control.$(OBJEXT) verb/verbs.$(OBJEXT) \
-	pan/ctrlpanels.$(OBJEXT) pan/new_character.$(OBJEXT) \
-	pan/instruments.$(OBJEXT) pan/button.$(OBJEXT) \
-	pan/dialog.$(OBJEXT) pan/test.$(OBJEXT) pan/crewgen.$(OBJEXT) \
-	loop/fsm.$(OBJEXT) loop/loop.$(OBJEXT) txt/rk.$(OBJEXT) \
-	txt/psh.$(OBJEXT)
+	gfx/fancy_menus.$(OBJEXT) gfx/textfx.$(OBJEXT) \
+	gen/perlin.$(OBJEXT) gfx/term.$(OBJEXT) gfx/stdpan.$(OBJEXT) \
+	env/cloud.$(OBJEXT) mob/mob.$(OBJEXT) mob/boat.$(OBJEXT) \
+	noun/noun_model.$(OBJEXT) noun/noun_view.$(OBJEXT) \
+	noun/noun_control.$(OBJEXT) verb/verb_model.$(OBJEXT) \
+	verb/verb_view.$(OBJEXT) verb/verb_control.$(OBJEXT) \
+	verb/verbs.$(OBJEXT) pan/ctrlpanels.$(OBJEXT) \
+	pan/new_character.$(OBJEXT) pan/instruments.$(OBJEXT) \
+	pan/button.$(OBJEXT) pan/dialog.$(OBJEXT) pan/test.$(OBJEXT) \
+	pan/crewgen.$(OBJEXT) loop/fsm.$(OBJEXT) loop/loop.$(OBJEXT) \
+	txt/rk.$(OBJEXT) txt/psh.$(OBJEXT)
 arawak_OBJECTS = $(am_arawak_OBJECTS)
 arawak_LDADD = $(LDADD)
 DEFAULT_INCLUDES = -I.@am__isrc@
@@ -194,6 +194,7 @@ arawak_SOURCES = arawak.c \
                    gfx/dock.c           \
                    gfx/wselect.c        \
                    gfx/fancy_menus.c    \
+                   gfx/textfx.c\
                    gen/perlin.c         \
                    gfx/term.c           \
                    gfx/stdpan.c         \
@@ -384,6 +385,8 @@ gfx/wselect.$(OBJEXT): gfx/$(am__dirstamp) \
 	gfx/$(DEPDIR)/$(am__dirstamp)
 gfx/fancy_menus.$(OBJEXT): gfx/$(am__dirstamp) \
 	gfx/$(DEPDIR)/$(am__dirstamp)
+gfx/textfx.$(OBJEXT): gfx/$(am__dirstamp) \
+	gfx/$(DEPDIR)/$(am__dirstamp)
 gen/perlin.$(OBJEXT): gen/$(am__dirstamp) \
 	gen/$(DEPDIR)/$(am__dirstamp)
 gfx/term.$(OBJEXT): gfx/$(am__dirstamp) gfx/$(DEPDIR)/$(am__dirstamp)
@@ -490,6 +493,7 @@ mostlyclean-compile:
 	-rm -f gfx/sprite.$(OBJEXT)
 	-rm -f gfx/stdpan.$(OBJEXT)
 	-rm -f gfx/term.$(OBJEXT)
+	-rm -f gfx/textfx.$(OBJEXT)
 	-rm -f gfx/wselect.$(OBJEXT)
 	-rm -f init/init.$(OBJEXT)
 	-rm -f lib/fifo.$(OBJEXT)
@@ -540,6 +544,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@gfx/$(DEPDIR)/sprite.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@gfx/$(DEPDIR)/stdpan.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@gfx/$(DEPDIR)/term.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@gfx/$(DEPDIR)/textfx.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@gfx/$(DEPDIR)/wselect.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@init/$(DEPDIR)/init.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@lib/$(DEPDIR)/fifo.Po@am__quote@
