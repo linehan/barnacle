@@ -21,18 +21,16 @@ static void
 print_cb(EV_P_ ev_timer *w, int revents)
 {
         #include "txt/gloss.h"
-#include "gfx/dock.h"
-        static bool status;
+        #include "gfx/dock.h"
+        static bool loop_ready;
         static bool locked;
-        static int msg;
-        struct gloss_t *test;
-        if (test == NULL) test = new_gloss(dock_window(SUBJ_TX_WIN), "Fuck you!", NULL, GLOSS_BLUE);
 
-        if (status == true) {
-                msg = roll_fair(17);
-                locked = (roll_fair(30) == 5) ? false : true;
-        }
-        if (!locked) status = say(test);
+        static struct gloss_t *test;
+
+        if (test == NULL || loop_ready == true)
+                test = rand_gloss(dock_window(SUBJ_TX_WIN));
+
+        loop_ready = say(test);
 
         scr_refresh();
 

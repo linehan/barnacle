@@ -157,7 +157,7 @@ enum ramp_pairs {
         //PUR_DDP = 152,
         //PUR_PUR = 153,
 #define PUR_WHI PUR_WHITE
-#define PUR_BLU PUR_CERULEAN
+#define PUR_BLU PUR_CELESTIAL
 #define PUR_GRE PUR_GREY
 #define PUR_PUR PUR_PURPLE
         //PUR_YEL = 154,
@@ -347,6 +347,7 @@ enum purpairs {
         PUR_WHITE       = 234, 
         PUR_PURPLE      = 235, 
         _PUR_PURPLE     = 236, 
+        PUR_ARSENIC = 237,
 };
 
 

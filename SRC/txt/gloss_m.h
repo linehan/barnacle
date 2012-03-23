@@ -4,13 +4,14 @@
 
 #include "../gfx/palette.h"
 
-#define NSTYLES 5
+#define NSTYLES 6
 enum glosses { 
         REVEAL, 
         UNREVEAL, 
         SHINE, 
         PUSH_R, 
-        PUSH_L 
+        PUSH_L,
+        DROPOUT
 };
 
 
@@ -30,9 +31,10 @@ struct gloss_t {
 
 
 
-struct gloss_t *
-new_gloss(WINDOW *win, const char *str, wchar_t *wcs, int colorfam);
+struct gloss_t *new_gloss(WINDOW *win, wchar_t *wcs, short co, short hi);
+struct gloss_t *str_gloss(WINDOW *win, const char *str, short co, short hi);
 
+struct gloss_t *rand_gloss(WINDOW *win);
 
 /////////////////////////////////// COLORS
 

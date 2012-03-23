@@ -110,6 +110,74 @@ void init_palette(int set)
         init_color(METALYELLOW, 972, 972, 576);
         init_color(ZEN_BG, 247, 247, 247);
 
+/*struct triplet { short r; short g; short b; };*/
+/*struct triplet _SHADE[]={*/
+        /*{172,  153,  180},  // DGREY*/
+        /*{490,  490,  490},  // GREY*/
+        /*{831,  827,  796},  // LGREY*/
+        /*{220,  251,  561},  // DBLUE*/
+        /*{251,  533,  839},  // BLUE*/
+        /*{537,  784,  878},  // LBLUE*/
+        /*{82,   251,  149},  // DGREEN*/
+        /*{172,  388,  318},  // GREEN*/
+        /*{521,  678,  286},  // LGREEN*/
+        /*{929,  819,  306},  // YELLOW*/
+        /*{470,  321,  137},  // BROWN*/
+        /*{749,  451,  239},  // ORANGE*/
+        /*{568,  192,  239},  // RED*/
+        /*{659,  376,  439},  // PINK*/
+        /*{819 , 686 , 525},  // BEIGE*/
+        /*{153 , 220 , 196},  // DSEA*/
+        /*{314 , 427 , 396},  // SEA*/
+        /*{368 , 490 , 478},  // LSEA*/
+        /*{721 , 521 , 325},  // WOOD*/
+        /*{721 , 521 , 325}   // LWOOD*/
+/*};*/
+
+/*struct triplet __SHADE[]={*/
+        /*{78 , 71 , 78 },  // DGREY*/
+        /*{74 , 74 , 74 },  // GREY*/
+        /*{388, 388, 388},  // LGREY*/
+        /*{729, 729, 729},  // DBLUE*/
+        /*{204, 227, 459},  // BLUE*/
+        /*{259, 490, 741},  // LBLUE*/
+        /*{514, 706, 780},  // DGREEN*/
+        /*{59 , 149, 94 },  // GREEN*/
+        /*{141, 290, 243},  // LGREEN*/
+        /*{459, 580, 274},  // YELLOW*/
+        /*{831, 741, 314},  // BROWN*/
+        /*{368, 263, 125},  // ORANGE*/
+        /*{651, 412, 239},  // RED*/
+        /*{470, 184, 220},  // PINK*/
+        /*{561, 349, 396},  // BEIGE*/
+        /*{721, 619, 498},  // DSEA*/
+        /*{55 , 71 , 67 },  // SEA*/
+        /*{196, 259, 243},  // LSEA*/
+        /*{314, 388, 384}   // WOOD*/
+/*};*/
+
+        init_color(__DGREY,     78,   71,   78);
+        init_color(__BG,     74, 74, 74);
+        init_color(__GREY,     388,  388,  388);
+        init_color(__LGREY,    729,  729,  729);
+        init_color(__DBLUE,    204,  227,  459);
+        init_color(__BLUE,     259,  490,  741);
+        init_color(__LBLUE,    514,  706,  780);
+        init_color(__DGREEN,    59,  149,   94);
+        init_color(__GREEN,    141,  290,  243);
+        init_color(__LGREEN,   459,  580,  274);
+        init_color(__YELLOW,   831,  741,  314);
+        init_color(__BROWN,    368,  263,  125);
+        init_color(__ORANGE,   651,  412,  239);
+        init_color(__RED,      470,  184,  220);
+        init_color(__PINK,     561,  349,  396);
+        init_color(__BEIGE,    721,  619,  498);
+        init_color(__DSEA,      55,   71,   67);
+        init_color(__SEA,      196,  259,  243);
+        init_color(__LSEA,     314,  388,  384);
+
+
+
         init_color(_DGREY,     172,  153,  180);
         init_color(_GREY,      490,  490,  490);
         init_color(_LGREY,     831,  827,  796);

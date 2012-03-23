@@ -9,6 +9,8 @@ inline void wcs_reveal(WINDOW *win, wchar_t *wcs, short color, int L)
         cchar_t cch;
         int i;
 
+        wcolor_set(win, color, NULL);
+
         for (i=0; i<L; i++) {
                 setcchar(&cch, &wcs[i], 0, color, NULL);
                 wadd_wch(win, &cch);
@@ -71,6 +73,8 @@ void unreveal(void *self, int L)
 inline void wcs_shine(WINDOW *win, wchar_t *wcs, int len, short color, int L)
 {
         cchar_t cch;
+
+        wcolor_set(win, color, NULL);
 
         setcchar(&cch, &wcs[L-1], 0, color, NULL);
         mvwadd_wch(win, 0, L-1, &cch);
@@ -152,46 +156,62 @@ void pushl(void *self, int L)
 
         doupdate();
 }
+
+
+
 ////////////////////////////////////////////////////////////////////////////////
-
-
-
-
-
-
-
-inline bool fadeout(WINDOW *win, const char *str)
+inline void wcs_dropout(WINDOW *win, wchar_t *wcs, int len, short color, int L)
 {
-        #define CHECK_BIT(var,pos) ((var) & (1<<(pos)))
-        static uint32_t mask = 0x00000001;
-        static uint32_t card;
-        static int len;
-        static bool ready;
-        int i, tmp;
-        char c;
+        #define BUFMAX 100
+        static wchar_t buf[BUFMAX];
+        static int count;
+        cchar_t cch;
+        int steps;
+        int i;
 
-        if (ready == false) {
-                len = strlen(str);
-                card = (~0<<len);
-                ready = true;
+        /* Copy a new string to the buffer on the first loop */
+        if (L==0) {
+                wmemcpy(buf, wcs, len * sizeof(wchar_t));
+                for (i=0, count=len; i<len; i++) {
+                        if (iswspace(buf[i])) count--;
+                }
         }
 
-        if (card == ~(0)) ready = false;
-
-        tmp = ones(card);
-
-        while (tmp == ones(card) && ready == true)
-                card |= (mask<<(roll_fair(len)));
-
-        werase(win);
-        wrefresh(win);
-        for (i=0; i<10; i++) {
-                c = (CHECK_BIT(card, i)!=0) ? ' ' : str[i];
-                wprintw(win, "%c", c);
+        /* Roll how many chars to skip before removing one */
+        steps = roll_fair(--count);
+ 
+        for (i=0;;) {                           ///
+                if (!iswspace(buf[i])) steps--;  //
+                if (steps>=0) i++;               // 
+                else {                           // forgive me
+                        buf[i]=L' ';             //
+                        break;                   // 
+                }                               ///
         }
-        wrefresh(win);
 
-        return (ready);
+        /* Print the perforated buffer */
+        for (i=0; i<len; i++) {
+                setcchar(&cch, &buf[i], 0, color, NULL);
+                wadd_wch(win, &cch);
+                wrefresh(win);
+        }
 }
+/*
+ *
+ * 
+ */
+void dropout(void *self, int L)
+{
+        struct gloss_t *msg = (struct gloss_t *)self;
+
+        werase(msg->win);
+        wrefresh(msg->win);
+
+        wcs_dropout(msg->win, msg->wcs, msg->len, cuco(msg->win), L);
+
+        doupdate();
+}
+
+
 
 
