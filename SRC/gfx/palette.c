@@ -216,23 +216,85 @@ void init_palette(int set)
         init_pair(BRZ_BRO, BLASTOFFBRONZE, BROWN);
         init_pair(WHI_SKY, WHITE, WILDBLUEYONDER);
         init_pair(GRE_SKY, CELESTIALBLUE, WILDBLUEYONDER);
-        init_pair(PUR_WHI, WHITE, DGREY);
-        init_pair(PUR_PUR, DGREY, __DGREY);
-        init_pair(PUR_DPU, WHITE, _DGREY);
-        init_pair(PUR_DDP, WHITE, __DGREY);
-        init_pair(PUR_YEL, YELLOW, __DGREY);
-        init_pair(PUR_DYE, __YELLOW, __DGREY);
-        init_pair(PUR_GRE, _GREY, __DGREY);
-        init_pair(PUR_BLU, CELESTIALBLUE, __DGREY);
-        init_pair(PUR_RED, RED, __DGREY);
-        init_pair(PUR_EEN, LGREEN, __DGREY);
-        init_pair(PUR_BRZ, BLASTOFFBRONZE, __DGREY);
-        init_pair(PUR_PIN, PINK, __DGREY);
-        init_pair(PUR_ORA, ORANGE, __DGREY);
-        init_pair(PUR_BEI, BEIGE, __DGREY);
-        init_pair(PUR_WOO, WOOD, __DGREY);
-        init_pair(PUR_SKY, WILDBLUEYONDER, __DGREY);
-        init_pair(TITLE_SCREEN, DGREY, __DGREY);
+
+
+
+
+        init_pair(PUR_BLACK       , BLACK          , __DGREY);
+        init_pair(PUR_GREY        , GREY           , __DGREY);
+        init_pair(_PUR_GREY       , _GREY          , __DGREY);
+        init_pair(__PUR_GREY      , __GREY         , __DGREY);
+        init_pair(PUR_WHITE       , WHITE          , __DGREY);
+        init_pair(PUR_PURPLE      , DGREY          , __DGREY);
+        init_pair(_PUR_PURPLE     , _DGREY         , __DGREY);
+//-----
+        init_pair(PUR_YELLOW      , YELLOW         , __DGREY);
+        init_pair(PUR_ORANGE      , ORANGE         , __DGREY);
+        init_pair(_PUR_YELLOW     , _YELLOW        , __DGREY);
+        init_pair(_PUR_ORANGE     , _ORANGE        , __DGREY);
+        init_pair(__PUR_YELLOW    , __YELLOW       , __DGREY);
+        init_pair(__PUR_ORANGE    , __ORANGE       , __DGREY);
+//-----
+        init_pair(PUR_BEIGE       , BEIGE          , __DGREY);
+        init_pair(PUR_BROWN       , BROWN          , __DGREY);
+        init_pair(_PUR_BEIGE      , _BEIGE         , __DGREY);
+        init_pair(_PUR_BROWN      , _BROWN         , __DGREY);
+        init_pair(__PUR_BEIGE     , __BEIGE        , __DGREY);
+        init_pair(__PUR_BROWN     , __BROWN        , __DGREY);
+//-----
+        init_pair(PUR_LBLUE       , LBLUE          , __DGREY);
+        init_pair(PUR_BLUE        , BLUE           , __DGREY);
+        init_pair(PUR_DBLUE       , DBLUE          , __DGREY);
+        init_pair(_PUR_LBLUE      , _LBLUE         , __DGREY);
+        init_pair(_PUR_BLUE       , _BLUE          , __DGREY);
+        init_pair(_PUR_DBLUE      , _DBLUE         , __DGREY);
+        init_pair(__PUR_LBLUE     , __LBLUE        , __DGREY);
+        init_pair(__PUR_BLUE      , __BLUE         , __DGREY);
+        init_pair(__PUR_DBLUE     , __DBLUE        , __DGREY);
+//-----
+        init_pair(PUR_LGREEN      , LGREEN         , __DGREY);
+        init_pair(PUR_GREEN       , GREEN          , __DGREY);
+        init_pair(PUR_DGREEN      , DGREEN         , __DGREY);
+        init_pair(_PUR_LGREEN     , _LGREEN        , __DGREY);
+        init_pair(_PUR_GREEN      , _GREEN         , __DGREY);
+        init_pair(_PUR_DGREEN     , _DGREEN        , __DGREY);
+        init_pair(__PUR_LGREEN    , __LGREEN       , __DGREY);
+        init_pair(__PUR_GREEN     , __GREEN        , __DGREY);
+        init_pair(__PUR_DGREEN    , __DGREEN       , __DGREY);
+//-----
+        init_pair(PUR_LRED        , PINK           , __DGREY);
+        init_pair(PUR_RED         , RED            , __DGREY);
+        init_pair(PUR_DRED        , DARK_RED       , __DGREY);
+        init_pair(_PUR_LRED       , _PINK          , __DGREY);
+        init_pair(_PUR_RED        , _RED           , __DGREY);
+        init_pair(_PUR_DRED       , _DARK_RED      , __DGREY);
+        init_pair(__PUR_LRED      , __PINK         , __DGREY);
+        init_pair(__PUR_RED       , __RED          , __DGREY);
+        init_pair(__PUR_DRED      , __DARK_RED     , __DGREY);
+//-----
+        init_pair(PUR_LSEA        , LSEA           , __DGREY);
+        init_pair(PUR_SEA         , SEA            , __DGREY);
+        init_pair(PUR_DSEA        , DSEA           , __DGREY);
+        init_pair(_PUR_LSEA       , _LSEA          , __DGREY);
+        init_pair(_PUR_SEA        , _SEA           , __DGREY);
+        init_pair(_PUR_DSEA       , _DSEA          , __DGREY);
+        init_pair(__PUR_LSEA      , __LSEA         , __DGREY);
+        init_pair(__PUR_SEA       , __SEA          , __DGREY);
+        init_pair(__PUR_DSEA      , __DSEA         , __DGREY);
+//-----
+        init_pair(PUR_LWOOD       , LWOOD          , __DGREY);
+        init_pair(PUR_WOOD        , WOOD           , __DGREY);
+        init_pair(_PUR_LWOOD      , _LWOOD         , __DGREY);
+        init_pair(_PUR_WOOD       , _WOOD          , __DGREY);
+        init_pair(__PUR_LWOOD     , __LWOOD        , __DGREY);
+        init_pair(__PUR_WOOD      , __WOOD         , __DGREY);
+//-----
+        init_pair(PUR_SKY         , WILDBLUEYONDER , __DGREY);
+        init_pair(PUR_BRONZE      , BLASTOFFBRONZE , __DGREY);
+        init_pair(PUR_METALYELLOW , METALYELLOW    , __DGREY);
+        init_pair(PUR_CELESTIAL   , CELESTIALBLUE  , __DGREY);
+        init_pair(PUR_CERULEAN    , CERULEAN       , __DGREY);
+
 
         /* IN-GAME COLOR PAIRS */
         init_pair(BOAT_WHITE, WHITE, DSEA);

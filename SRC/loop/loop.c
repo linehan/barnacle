@@ -26,7 +26,7 @@ print_cb(EV_P_ ev_timer *w, int revents)
         static bool locked;
         static int msg;
         struct gloss_t *test;
-        if (test == NULL) test = new_gloss(dock_window(SUBJ_TX_WIN), "Fuck you!", NULL, PUR_SKY, PUR_BLU);
+        if (test == NULL) test = new_gloss(dock_window(SUBJ_TX_WIN), "Fuck you!", NULL, GLOSS_BLUE);
 
         if (status == true) {
                 msg = roll_fair(17);

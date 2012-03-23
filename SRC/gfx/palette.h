@@ -152,24 +152,40 @@ enum ramp_pairs {
         BRZ_BRO = 147,
         GRE_SKY = 148,
         WHI_SKY = 149,
-        PUR_WHI = 150,
-        PUR_DPU = 151,
-        PUR_DDP = 152,
-        PUR_PUR = 153,
-        PUR_YEL = 154,
-        PUR_GRE = 155,
-        PUR_DYE = 156,
-        PUR_BLU = 157,
-        PUR_RED = 158,
-        PUR_EEN = 159,
-        PUR_BRZ = 160,
-        PUR_PIN = 161,
-        PUR_ORA = 162,
-        PUR_BEI = 163,
-        PUR_WOO = 164,
-        PUR_SKY = 165,
-        TITLE_SCREEN = 166,
+        //PUR_WHI = 150,
+        //PUR_DPU = 151,
+        //PUR_DDP = 152,
+        //PUR_PUR = 153,
+#define PUR_WHI PUR_WHITE
+#define PUR_BLU PUR_CERULEAN
+#define PUR_GRE PUR_GREY
+#define PUR_PUR PUR_PURPLE
+        //PUR_YEL = 154,
+        //PUR_GRE = 155,
+        //PUR_DYE = 156,
+        //PUR_BLU = 157,
+        //PUR_EEN = 159,
+        //PUR_BRZ = 160,
+        //PUR_PIN = 161,
+        //PUR_ORA = 162,
+        //PUR_BEI = 163,
+        //PUR_WOO = 164,
+        //TITLE_SCREEN = 166,
         TESTING = 167,
+
+#define PUR_DPU PUR_WHITE
+#define PUR_DDP PUR_WHITE
+#define PUR_YEL PUR_YELLOW
+#define PUR_DYE __PUR_YELLOW
+#define PUR_EEN PUR_LGREEN
+#define PUR_BRZ PUR_BRONZE
+#define PUR_PIN PUR_LRED
+#define PUR_ORA PUR_ORANGE
+#define PUR_BEI PUR_BEIGE
+#define PUR_WOO PUR_WOOD
+#define TITLE_SCREEN PUR_PURPLE
+
+
 
         SEA_DARK      = 17,     /* SHADE0 colors for environment */
         SEA_MED       = 18,
@@ -210,6 +226,8 @@ enum ramp_pairs {
         __SOILGRASS     = 51,
         __SEA_LIG       = 52 
 };
+
+
 
 /* These are the first values of each shade level in the enum; they can be
  * used for boundary-checking to determine which shade level we're in. */
@@ -255,4 +273,83 @@ static inline short to_shade(short pair, int lvl)
 
 void init_palette(int);
 
+enum purpairs {
+        PUR_YELLOW      = 168,
+        PUR_ORANGE      = 169,
+        _PUR_YELLOW     = 170,
+        _PUR_ORANGE     = 171,
+        __PUR_YELLOW    = 172,
+        __PUR_ORANGE    = 173,
+//-----
+        PUR_BEIGE       = 174,
+        PUR_BROWN       = 175,
+        _PUR_BEIGE      = 177,
+        _PUR_BROWN      = 178,
+        __PUR_BEIGE     = 180,
+        __PUR_BROWN     = 181,
+//-----
+        PUR_LBLUE       = 183,
+        PUR_BLUE        = 184,
+        PUR_DBLUE       = 185,
+        _PUR_LBLUE      = 186,
+        _PUR_BLUE       = 187,
+        _PUR_DBLUE      = 188,
+        __PUR_LBLUE     = 189,
+        __PUR_BLUE      = 190,
+        __PUR_DBLUE     = 191,
+//-----
+        PUR_LGREEN      = 192,
+        PUR_GREEN       = 193,
+        PUR_DGREEN      = 194,
+        _PUR_LGREEN     = 195,
+        _PUR_GREEN      = 196,
+        _PUR_DGREEN     = 197,
+        __PUR_LGREEN    = 198,
+        __PUR_GREEN     = 199,
+        __PUR_DGREEN    = 200,
+//-----
+        PUR_LRED        = 201,
+        PUR_RED         = 202,
+        PUR_DRED        = 203,
+        _PUR_LRED       = 204,
+        _PUR_RED        = 205,
+        _PUR_DRED       = 206,
+        __PUR_LRED      = 207,
+        __PUR_RED       = 208,
+        __PUR_DRED      = 209,
+//-----
+        PUR_LSEA        = 210,
+        PUR_SEA         = 211,
+        PUR_DSEA        = 212,
+        _PUR_LSEA       = 213,
+        _PUR_SEA        = 214,
+        _PUR_DSEA       = 215,
+        __PUR_LSEA      = 216,
+        __PUR_SEA       = 217,
+        __PUR_DSEA      = 218,
+//-----
+        PUR_LWOOD       = 219,
+        PUR_WOOD        = 220,
+        _PUR_LWOOD      = 221,
+        _PUR_WOOD       = 222,
+        __PUR_LWOOD     = 223,
+        __PUR_WOOD      = 224,
+//-----
+        PUR_SKY         = 225,
+        PUR_BRONZE      = 226,
+        PUR_METALYELLOW = 227,
+        PUR_CELESTIAL   = 228,
+        PUR_CERULEAN    = 229,
+        PUR_BLACK       = 230,
+        PUR_GREY        = 231, 
+        _PUR_GREY       = 232, 
+        __PUR_GREY      = 233, 
+        PUR_WHITE       = 234, 
+        PUR_PURPLE      = 235, 
+        _PUR_PURPLE     = 236, 
+};
+
+
 #endif
+
+

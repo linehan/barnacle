@@ -1,19 +1,10 @@
 #define _XOPEN_SOURCE_EXTENDED = 1  /* extended character sets */
 #include "gloss.h"
 
+
+
 ////////////////////////////////////////////////////////////////////////////////
-inline void revealc(WINDOW *win, char *str, short color, int L)
-{
-        int i;
-
-        wcolor_set(win, color, NULL);
-
-        for (i=0; i<L; i++) {
-                wprintw(win, "%c", str[i]);
-                wrefresh(win);
-        }
-}
-inline void revealw(WINDOW *win, wchar_t *wcs, short color, int L)
+inline void wcs_reveal(WINDOW *win, wchar_t *wcs, short color, int L)
 {
         cchar_t cch;
         int i;
@@ -24,7 +15,10 @@ inline void revealw(WINDOW *win, wchar_t *wcs, short color, int L)
                 wrefresh(win);
         }
 }
-////////////////////////////////////////////////////////////////////////////////
+/*
+ *
+ *
+ */
 void reveal(void *self, int L)
 {
         struct gloss_t *msg = (struct gloss_t *)self;
@@ -32,32 +26,17 @@ void reveal(void *self, int L)
         werase(msg->win);
         wrefresh(msg->win);
 
-        if (msg->wcs!=NULL) revealw(msg->win, msg->wcs, msg->co, L);
-        /*else                revealc(msg->win, msg->str, msg->co, L);*/
+        wcs_reveal(msg->win, msg->wcs, msg->co, L);
 
         doupdate();
 }
-////////////////////////////////////////////////////////////////////////////////
 
 
 
 
 
 ////////////////////////////////////////////////////////////////////////////////
-inline void unrevealc(WINDOW *win, char *str, int len, short color, int L)
-{
-        int i;
-
-        wcolor_set(win, color, NULL);
-
-        wmove(win, 0, L);
-
-        for (i=L; i<len; i++) {
-                wprintw(win, "%c", str[i]);
-                wrefresh(win);
-        }
-}
-inline void unrevealw(WINDOW *win, wchar_t *wcs, int len, short color, int L)
+inline void wcs_unreveal(WINDOW *win, wchar_t *wcs, int len, short color, int L)
 {
         cchar_t cch;
         int i;
@@ -70,7 +49,10 @@ inline void unrevealw(WINDOW *win, wchar_t *wcs, int len, short color, int L)
                 wrefresh(win);
         }
 }
-////////////////////////////////////////////////////////////////////////////////
+/*
+ *
+ *
+ */
 void unreveal(void *self, int L)
 {
         struct gloss_t *msg = (struct gloss_t *)self;
@@ -78,24 +60,15 @@ void unreveal(void *self, int L)
         werase(msg->win);
         wrefresh(msg->win);
 
-        if (msg->wcs!=NULL) unrevealw(msg->win, msg->wcs, msg->len, cuco(msg->win), L);
-        /*else                unrevealc(msg->win, msg->str, msg->len, cuco(msg->win), L);*/
+        wcs_unreveal(msg->win, msg->wcs, msg->len, cuco(msg->win), L);
 
         doupdate();
 }
-////////////////////////////////////////////////////////////////////////////////
 
 
 
 ////////////////////////////////////////////////////////////////////////////////
-inline void shinec(WINDOW *win, char *str, int len, short color, int L)
-{
-        wcolor_set(win, color, NULL);
-
-        mvwprintw(win, 0, L-1, "%c", str[L-1]);
-        wrefresh(win);
-}
-inline void shinew(WINDOW *win, wchar_t *wcs, int len, short color, int L)
+inline void wcs_shine(WINDOW *win, wchar_t *wcs, int len, short color, int L)
 {
         cchar_t cch;
 
@@ -103,32 +76,22 @@ inline void shinew(WINDOW *win, wchar_t *wcs, int len, short color, int L)
         mvwadd_wch(win, 0, L-1, &cch);
         wrefresh(win);
 }
-////////////////////////////////////////////////////////////////////////////////
+/*
+ *
+ *
+ */
 void shine(void *self, int L)
 {
         struct gloss_t *msg = (struct gloss_t *)self;
 
-        if (msg->wcs!=NULL) shinew(msg->win, msg->wcs, msg->len, msg->hi, L);
-        /*else                shinec(msg->win, msg->str, msg->len, msg->hi, L);*/
+        wcs_shine(msg->win, msg->wcs, msg->len, msg->hi, L);
 }
+
+
+
+
 ////////////////////////////////////////////////////////////////////////////////
-
-
-
-////////////////////////////////////////////////////////////////////////////////
-inline void pushrc(WINDOW *win, char *str, int len, short color, int L)
-{
-        int i;
-
-        wmove(win, 0, L);
-        wcolor_set(win, color, NULL);
-
-        for (i=0; i<(len-L); i++) {
-                wprintw(win, "%c", str[i]);
-                wrefresh(win);
-        }
-}
-inline void pushrw(WINDOW *win, wchar_t *wcs, int len, short color, int L)
+inline void wcs_pushr(WINDOW *win, wchar_t *wcs, int len, short color, int L)
 {
         cchar_t cch;
         int i;
@@ -141,7 +104,10 @@ inline void pushrw(WINDOW *win, wchar_t *wcs, int len, short color, int L)
                 wrefresh(win);
         }
 }
-////////////////////////////////////////////////////////////////////////////////
+/*
+ *
+ *
+ */
 void pushr(void *self, int L)
 {
         struct gloss_t *msg = (struct gloss_t *)self;
@@ -149,12 +115,10 @@ void pushr(void *self, int L)
         werase(msg->win);
         wrefresh(msg->win);
 
-        if (msg->wcs!=NULL) pushrw(msg->win, msg->wcs, msg->len, cuco(msg->win), L);
-        /*else                pushrc(msg->win, msg->str, msg->len, cuco(msg->win), L);*/
+        wcs_pushr(msg->win, msg->wcs, msg->len, cuco(msg->win), L);
 
         doupdate();
 }
-////////////////////////////////////////////////////////////////////////////////
 
 
 
@@ -162,18 +126,7 @@ void pushr(void *self, int L)
 
 
 ////////////////////////////////////////////////////////////////////////////////
-inline void pushlc(WINDOW *win, char *str, int len, short color, int L)
-{
-        int i;
-
-        wcolor_set(win, color, NULL);
-
-        for (i=L; i<len; i++) {
-                wprintw(win, "%c", str[i]);
-                wrefresh(win);
-        }
-}
-inline void pushlw(WINDOW *win, wchar_t *wcs, int len, short color, int L)
+inline void wcs_pushl(WINDOW *win, wchar_t *wcs, int len, short color, int L)
 {
         cchar_t cch;
         int i;
@@ -184,7 +137,10 @@ inline void pushlw(WINDOW *win, wchar_t *wcs, int len, short color, int L)
                 wrefresh(win);
         }
 }
-////////////////////////////////////////////////////////////////////////////////
+/*
+ *
+ *
+ */
 void pushl(void *self, int L)
 {
         struct gloss_t *msg = (struct gloss_t *)self;
@@ -192,8 +148,7 @@ void pushl(void *self, int L)
         werase(msg->win);
         wrefresh(msg->win);
 
-        if (msg->wcs!=NULL) pushlw(msg->win, msg->wcs, msg->len, cuco(msg->win), L);
-        /*else                pushlc(msg->win, msg->str, msg->len, cuco(msg->win), L);*/
+        wcs_pushl(msg->win, msg->wcs, msg->len, cuco(msg->win), L);
 
         doupdate();
 }
