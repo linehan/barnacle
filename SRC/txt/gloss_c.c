@@ -20,7 +20,7 @@ bool say(struct gloss_t *test)
         #define ON_LOOP(x)      if ((LOOP++) == (x))
         #define  REPORT(x)      STATUS=(x); break
         #define   YIELD(x)      LOOP=0, STAGE=(x)
-        #define     UNLOOP      STAGE=LOOP=0; return true
+        #define     UNLOOP      STAGE=LOOP=0; return false
 
         #define LOOPVAR(v) v = (LOOP)
 
@@ -36,21 +36,21 @@ bool say(struct gloss_t *test)
         {
         case 0: ON_LOOP(test->len) YIELD(1);
                 test->put[REVEAL](test, L);
-                REPORT(false);
+                REPORT(true);
 
         case 1: ON_LOOP(test->len) YIELD(2);
                 test->put[SHINE](test, L);
-                REPORT(false);
+                REPORT(true);
 
         case 2: ON_LOOP(30) YIELD(3);
-                REPORT(false);
+                REPORT(true);
 
         case 3: ON_LOOP(test->len) YIELD(4);
                 test->put[PUSH_R](test, L);
-                REPORT(false);
+                REPORT(true);
 
         case 4: ON_LOOP(10) UNLOOP;
-                REPORT(false);
+                REPORT(true);
 
         }
         doupdate();

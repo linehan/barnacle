@@ -106,9 +106,9 @@ static struct glossbox_t warnings[]={
         {L"En garde!"          , __WARN } ,
         {L"Interrupt!"         , __WARN } ,
         {L"Interruptus!"       , __WARN } ,
-        {L"NULL!"              , __WARN }
+        {L"NULL!"              , __WARN } ,
         {L"On your guard!"     , __WARN } ,
-        {L"Parry!"             , __WARN } ,
+        {L"Parry!"             , __WARN } 
 };
 
 
