@@ -46,6 +46,8 @@ static void
 sail_cb(EV_P_ ev_timer *w, int revents)
 {
         sail_boat(NULL);
+        restack_map(GLOBE);
+        map_refresh(GLOBE);
 
         ev_timer_again(EV_DEFAULT, w);
 }
@@ -117,8 +119,8 @@ int start_event_watchers(void)
         ev_init(&print, &print_cb);
         ev_init(&refresh, &refresh_cb);
 
-        sail.repeat    = .12;
-        weather.repeat = .1;
+        sail.repeat    = .084;
+        weather.repeat = .08;
         animate.repeat = 2.5;
         print.repeat   = .02;
         refresh.repeat = .01;

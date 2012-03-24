@@ -106,6 +106,9 @@ void operate_on(int input)
                 case 'd':
                         roll_map(GLOBE, 'r');
                         break;
+                case ' ':
+                        order_boat('h', 0);
+                        break;
                 case '@':
                         order_boat('f', 0);
                         break;

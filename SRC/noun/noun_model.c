@@ -73,6 +73,11 @@ void new_noun(char *name, uint8_t job)
         new->verb.empty = true;
         new->verb.forw  = true;
 
+        new->verb.give = FIFO_INIT;
+        new->verb.get  = FIFO_INIT;
+        new->verb.from = FIFO_INIT;
+        new->verb.to   = FIFO_INIT;
+
         key = fasthash(name, strlen(name));
 
         if (NOUNTREE == NULL) {

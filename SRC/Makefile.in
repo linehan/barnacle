@@ -56,17 +56,17 @@ am_arawak_OBJECTS = arawak.$(OBJEXT) init/init.$(OBJEXT) \
 	gfx/sprite.$(OBJEXT) gfx/gfx.$(OBJEXT) gfx/dock.$(OBJEXT) \
 	gfx/wselect.$(OBJEXT) gfx/fancy_menus.$(OBJEXT) \
 	gen/perlin.$(OBJEXT) gfx/term.$(OBJEXT) gfx/stdpan.$(OBJEXT) \
-	txt/gloss_m.$(OBJEXT) txt/gloss_v.$(OBJEXT) \
-	txt/gloss_c.$(OBJEXT) env/cloud.$(OBJEXT) mob/mob.$(OBJEXT) \
-	mob/boat.$(OBJEXT) noun/noun_model.$(OBJEXT) \
-	noun/noun_view.$(OBJEXT) noun/noun_control.$(OBJEXT) \
-	verb/verb_model.$(OBJEXT) verb/verb_view.$(OBJEXT) \
-	verb/verb_control.$(OBJEXT) verb/verbs.$(OBJEXT) \
-	pan/ctrlpanels.$(OBJEXT) pan/new_character.$(OBJEXT) \
-	pan/instruments.$(OBJEXT) pan/button.$(OBJEXT) \
-	pan/dialog.$(OBJEXT) pan/test.$(OBJEXT) pan/crewgen.$(OBJEXT) \
-	loop/fsm.$(OBJEXT) loop/loop.$(OBJEXT) txt/rk.$(OBJEXT) \
-	txt/psh.$(OBJEXT)
+	geo/path_mvc.$(OBJEXT) txt/gloss_m.$(OBJEXT) \
+	txt/gloss_v.$(OBJEXT) txt/gloss_c.$(OBJEXT) \
+	env/cloud.$(OBJEXT) mob/mob.$(OBJEXT) mob/boat.$(OBJEXT) \
+	noun/noun_model.$(OBJEXT) noun/noun_view.$(OBJEXT) \
+	noun/noun_control.$(OBJEXT) verb/verb_model.$(OBJEXT) \
+	verb/verb_view.$(OBJEXT) verb/verb_control.$(OBJEXT) \
+	verb/verbs.$(OBJEXT) pan/ctrlpanels.$(OBJEXT) \
+	pan/new_character.$(OBJEXT) pan/instruments.$(OBJEXT) \
+	pan/button.$(OBJEXT) pan/dialog.$(OBJEXT) pan/test.$(OBJEXT) \
+	pan/crewgen.$(OBJEXT) loop/fsm.$(OBJEXT) loop/loop.$(OBJEXT) \
+	txt/rk.$(OBJEXT) txt/psh.$(OBJEXT)
 arawak_OBJECTS = $(am_arawak_OBJECTS)
 arawak_LDADD = $(LDADD)
 DEFAULT_INCLUDES = -I.@am__isrc@
@@ -200,6 +200,7 @@ arawak_SOURCES = arawak.c \
                    gen/perlin.c         \
                    gfx/term.c           \
                    gfx/stdpan.c         \
+                   geo/path_mvc.c\
                    txt/gloss_m.c\
                    txt/gloss_v.c\
                    txt/gloss_c.c\
@@ -397,6 +398,8 @@ gen/perlin.$(OBJEXT): gen/$(am__dirstamp) \
 gfx/term.$(OBJEXT): gfx/$(am__dirstamp) gfx/$(DEPDIR)/$(am__dirstamp)
 gfx/stdpan.$(OBJEXT): gfx/$(am__dirstamp) \
 	gfx/$(DEPDIR)/$(am__dirstamp)
+geo/path_mvc.$(OBJEXT): geo/$(am__dirstamp) \
+	geo/$(DEPDIR)/$(am__dirstamp)
 txt/$(am__dirstamp):
 	@$(MKDIR_P) txt
 	@: > txt/$(am__dirstamp)
@@ -495,6 +498,7 @@ mostlyclean-compile:
 	-rm -f gen/name/name.$(OBJEXT)
 	-rm -f gen/perlin.$(OBJEXT)
 	-rm -f geo/map.$(OBJEXT)
+	-rm -f geo/path_mvc.$(OBJEXT)
 	-rm -f geo/terrain.$(OBJEXT)
 	-rm -f geo/weather.$(OBJEXT)
 	-rm -f gfx/dock.$(OBJEXT)
@@ -549,6 +553,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@gen/$(DEPDIR)/perlin.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@gen/name/$(DEPDIR)/name.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@geo/$(DEPDIR)/map.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@geo/$(DEPDIR)/path_mvc.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@geo/$(DEPDIR)/terrain.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@geo/$(DEPDIR)/weather.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@gfx/$(DEPDIR)/dock.Po@am__quote@

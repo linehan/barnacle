@@ -53,3 +53,25 @@ inline static int highest_bit_set(uint32_t v)
 
         return (MultiplyDeBruijnBitPosition[(uint32_t)(v * 0x07C4ACDDU) >> 27]);
 }
+
+
+// Inverse of Part1By1 - "delete" all odd-indexed bits
+inline static uint32_t trom(uint32_t x)
+{
+  x &= 0x55555555;                  // x = -f-e -d-c -b-a -9-8 -7-6 -5-4 -3-2 -1-0
+  x = (x ^ (x >>  1)) & 0x33333333; // x = --fe --dc --ba --98 --76 --54 --32 --10
+  x = (x ^ (x >>  2)) & 0x0f0f0f0f; // x = ---- fedc ---- ba98 ---- 7654 ---- 3210
+  x = (x ^ (x >>  4)) & 0x00ff00ff; // x = ---- ---- fedc ba98 ---- ---- 7654 3210
+  x = (x ^ (x >>  8)) & 0x0000ffff; // x = ---- ---- ---- ---- fedc ba98 7654 3210
+  return x;
+}
+
+inline static uint32_t trom_x(uint32_t mort)
+{
+  return trom(mort>> 0);
+}
+
+inline static uint32_t trom_y(uint32_t mort)
+{
+  return trom(mort >> 1);
+}

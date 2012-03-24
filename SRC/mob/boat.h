@@ -96,9 +96,10 @@ char *ROT_tag[16] = {"XXX", "FRE", "WRM", "TER", "BAR", "XXX", "XXX", "XXX",
 //{{{1 FLG -- flags and signals
 enum FLG_state_tags {                                                   
         //XXX = 0,
-        SUR = 1,
-        HAI = 2,
-        PIR = 3
+        EXE = 1, // execute order
+        SUR = 2,
+        HAI = 3,
+        PIR = 4
 };
 static const 
 char *FLG_tag[16] = {"XXX", "SUR", "HAI", "PIR", "XXX", "XXX", "XXX", "XXX",

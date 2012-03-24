@@ -38,6 +38,7 @@ arawak_SOURCES = arawak.c \
                    gen/perlin.c         \
                    gfx/term.c           \
                    gfx/stdpan.c         \
+                   geo/path_mvc.c\
                    txt/gloss_m.c\
                    txt/gloss_v.c\
                    txt/gloss_c.c\

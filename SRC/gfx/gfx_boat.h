@@ -89,14 +89,14 @@ static unsigned char stbl[16][16] = {
 {  SAI_SW, SAI_SW, SAI_WL, SAI_DL, SAI_DL, SAI_DL, SAI_WL, SAI_PI,  /*SW*/
    SAI_PI, SAI_PI, SAI_WR, SAI_DR, SAI_DR, SAI_DR, SAI_WR, SAI_SW  },
 /* -------------------------------------------------------------              */
-{  SAI_WR, SAI_WR, SAI_WR, SAI_WR, SAI_WR, SAI_WR, SAI_WR, SAI_WR,  /*WSW*/
-   SAI_WR, SAI_WR, SAI_WR, SAI_WR, SAI_WR, SAI_WR, SAI_WR, SAI_WR  },
-{  SAI_WR, SAI_WR, SAI_WR, SAI_WR, SAI_WR, SAI_WR, SAI_WR, SAI_WR,  /*W*/
-   SAI_WR, SAI_WR, SAI_WR, SAI_WR, SAI_WR, SAI_WR, SAI_WR, SAI_WR  },
-{  SAI_WR, SAI_WR, SAI_WR, SAI_WR, SAI_WR, SAI_WR, SAI_WR, SAI_WR,  /*WNW*/
-   SAI_WR, SAI_WR, SAI_WR, SAI_WR, SAI_WR, SAI_WR, SAI_WR, SAI_WR  },
-{  SAI_WR, SAI_WR, SAI_WR, SAI_WR, SAI_WR, SAI_WR, SAI_WR, SAI_WR,  /*NW*/
-   SAI_WR, SAI_WR, SAI_WR, SAI_WR, SAI_WR, SAI_WR, SAI_WR, SAI_WR  },
+{  SAI_DL, SAI_DL, SAI_DL, SAI_DL, SAI_DL, SAI_DL, SAI_DL, SAI_DL,  /*WSW*/
+   SAI_DL, SAI_DL, SAI_DL, SAI_DL, SAI_DL, SAI_DL, SAI_DL, SAI_DL  },
+{  SAI_DL, SAI_DL, SAI_DL, SAI_DL, SAI_DL, SAI_DL, SAI_DL, SAI_DL,  /*W*/
+   SAI_DL, SAI_DL, SAI_DL, SAI_DL, SAI_DL, SAI_DL, SAI_DL, SAI_DL  },
+{  SAI_DL, SAI_DL, SAI_DL, SAI_DL, SAI_DL, SAI_DL, SAI_DL, SAI_DL,  /*WNW*/
+   SAI_DL, SAI_DL, SAI_DL, SAI_DL, SAI_DL, SAI_DL, SAI_DL, SAI_DL  },
+{  SAI_DL, SAI_DL, SAI_DL, SAI_DL, SAI_DL, SAI_DL, SAI_DL, SAI_DL,  /*NW*/
+   SAI_DL, SAI_DL, SAI_DL, SAI_DL, SAI_DL, SAI_DL, SAI_DL, SAI_DL  },
 /* -------------------------------------------------------------              */
 {  SAI_PI, SAI_PI, SAI_WL, SAI_DL, SAI_DL, SAI_DL, SAI_WL, SAI_SW,  /*NNW*/
    SAI_SW, SAI_SW, SAI_WR, SAI_DR, SAI_DR, SAI_DR, SAI_WR, SAI_PI}};

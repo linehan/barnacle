@@ -1,7 +1,10 @@
+#include "../geo/path_mvc.h"
+
 
 /* A mobile data type containing some object */
 struct mob_t {
         struct ufo_t *ufo;
+        struct path_t path;
         PANEL *pan;
         sem_t sem;
 };

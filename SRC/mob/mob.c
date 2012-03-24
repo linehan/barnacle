@@ -15,6 +15,7 @@
 #include <stdint.h>
 
 #include "../lib/llist/list.h"
+#include "../lib/morton.h"
 
 #include "../gen/perlin.h"
 #include "../gfx/gfx.h"
@@ -35,14 +36,40 @@ struct mob_t *new_mob(struct map_t *map, int h, int w, int y0, int x0)
         struct mob_t *mob = malloc(sizeof(*mob));
 
         mob->ufo = new_ufo(h, w, y0, x0, map->h, map->w, 0, 0);
+
+        init_path(&mob->path, 1, 0, 13);
+
         sem_init(&mob->sem, 0, 1);
 
         return (mob);
 }
 
+
+
+void mob_drawpath(struct mob_t *mob)
+{
+        #include "../gfx/brnoise.h"
+
+        WINDOW *win;
+        bool spool;
+        int y, x;
+        uint32_t coord;
+        int i=0;
+
+        win = PEEK(GLOBE->L[HIG]);
+        werase(win);
+
+        draw_path(win, &mob->path);
+        wrefresh(win);
+        doupdate();
+}
+
+
 void move_mob(struct mob_t *mob, int dir)
 {
         sem_wait(&mob->sem);
+
+        if (dir != 'u' && dir != 'd' && dir != 'l' && dir != 'r') return;
 
         int y = ufo_y(mob->ufo);
         int x = ufo_x(mob->ufo);
@@ -72,8 +99,12 @@ void move_mob(struct mob_t *mob, int dir)
                 ufo_l(mob->ufo);
         }
         move_panel(mob->pan, ufo_y(mob->ufo), ufo_x(mob->ufo));
+        update_panels();
+        path_push(&mob->path, y, x);
+
         /*top_panel(mob->pan);*/
-        scr_refresh();
+        /*scr_refresh();*/
+        doupdate();
 
 
         sem_post(&mob->sem);

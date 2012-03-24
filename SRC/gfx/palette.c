@@ -394,4 +394,6 @@ void init_palette(int set)
         init_pair(__SEA_DARK,   __GREEN,  __DSEA);
         init_pair(__SEA_MED,    __SEA,    __DSEA);
         init_pair(__SEA_LIG,    __LSEA,   __DSEA);
+        init_pair(SEA__MED, _SEA, DSEA);
+        init_pair(SEA___MED, __LSEA, DSEA);
 }

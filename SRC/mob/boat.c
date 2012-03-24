@@ -102,6 +102,7 @@ uint32_t new_boat(struct map_t *map)
         WINDOW *win = newwin(2, 4, 3, 3);
         wbkgrnd(win, &OCEAN[0]);
         new->pan = new_panel(win);
+        /*mob_setpath(new, 1, 0, 13);*/
 
         // Register the mob_t as an item and return the key.
         /*keys[0] = register_itm(BOAT_KIND, new);*/
@@ -131,7 +132,7 @@ void sync_boat(void)
         unsigned char H, R, G, W;                       // States
         cchar_t **sail, **mast, **hull, **gunf, **guns; // Shorter nicknames
 
-        seek_heading(); // Tumble the compass (see "../pan/instruments.h")
+        /*seek_heading(); // Tumble the compass (see "../pan/instruments.h")*/
 
         // Point nicknames at appropriate graphics arrays.
         sail = tester->sail->cch; 
@@ -201,6 +202,9 @@ void *sail_boat(void *ptr)
                 else if SOUTHING(H)     move_mob(_BOAT, 'd');
                 else if WESTING(H)      move_mob(_BOAT, 'l');
         }
+        else path_pop(&_BOAT->path);
+
+        mob_drawpath(_BOAT);
         scr_refresh();
         return NULL;
 } 
@@ -222,14 +226,17 @@ void order_boat(int order, int val)
         H = get_state(BOAT_TREE, TEMPKEY, 0, HDG);
 
                 switch(order) { 
+                case 'h':
+                        take_hdg();
+                        break;
                 case 'p':
                         H = (H>0) ? H-1 : NNW;
-                        set_state(BOAT_TREE, TEMPKEY, 0, HDG, H);
+                        /*set_state(BOAT_TREE, TEMPKEY, 0, HDG, H);*/
                         mark_hdg('L');
                         break;
                 case 's':
                         H = (H < NNW) ? H+1 : NORTH;
-                        set_state(BOAT_TREE, TEMPKEY, 0, HDG, H);
+                        /*set_state(BOAT_TREE, TEMPKEY, 0, HDG, H);*/
                         mark_hdg('R');
                         break;
                 case 'f':

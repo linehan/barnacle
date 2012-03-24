@@ -224,7 +224,10 @@ enum ramp_pairs {
         __TREETRUNK     = 49,
         __GRASSY        = 50,
         __SOILGRASS     = 51,
-        __SEA_LIG       = 52 
+        __SEA_LIG       = 52,
+
+        SEA__MED = 53,
+        SEA___MED = 54,
 };
 
 
