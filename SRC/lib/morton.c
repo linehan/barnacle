@@ -7,7 +7,7 @@
          /  /  /        by G.M. Morton, in a report titled "A computer
         ---'  ---       Oriented Geodetic Data Base; and a New Technique
             ,-'`        in File Sequencing."
-        ,-'``           
+        ,-'`           
        ---   ---        The ordering is easily described once the idea of
          /  /  /        binary encoding has been grasped, as it is simply
         /  /  /         the interleave of the binary representations of 2

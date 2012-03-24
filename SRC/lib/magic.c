@@ -1,56 +1,115 @@
-#include <stdlib.h>
-#include <stdint.h>
-#include <limits.h>
-#include <stdbool.h>
+/*
 
-// Returns true if word is even, returns false if word is odd.
-bool par(uint32_t v)
+
+      (\.   \      ,/)        Magical algorithms -- magic.c
+       \(   |\     )/
+       //\  | \   /\\         Commonly useful, occasionally priceless
+      (/ /\_#oo#_/\ \)        algorithms for "bit-twiddling"; not as
+       \/\  ####  /\/         indecipherable as they seem at first, and 
+            `##'              downright joyful after close study. 
+ 
+
+*/
+
+
+
+#include "magic.h"
+
+
+
+/*
+ * par32 -- Compute parity of 32-bit int in 8 operations
+ * @v: unsigned 32-bit integer value
+ * re: 1 if even, 0 if odd
+ */
+uint32_t par32(uint32_t v)
 {
-        static const bool ParityTable256[256] = {
-        #define P2(n) n, n^1, n^1, n
-        #define P4(n) P2(n), P2(n^1), P2(n^1), P2(n)
-        #define P6(n) P4(n), P4(n^1), P4(n^1), P4(n) P6(0), P6(1), P6(1), P6(0)
-        };
+        v ^= v >> 1;
+        v ^= v >> 2;
+        v = (v & 0x11111111U) * 0x11111111U;
 
-        v ^= v >> 16;
-        v ^= v >> 8;
+        return (v >> 28) & 1;
+} 
 
-        return (ParityTable256[v & 0xff]);
 
-/******************************************************************************
- * Bruce Rawles found a typo in an 
- * instance of the table variable's name on September 27, 2005, and he 
- * received a $10 bug bounty. 
- *
- * On October 9, 2006, Fabrice Bellard suggested the 32-bit variations above, 
- * which require only one table lookup; the previous version had four lookups 
- * (one per byte) and were slower. 
- *
- * On July 14, 2009 Hallvard Furuseth suggested the macro compacted table.    
- ******************************************************************************/
+
+
+/*
+ * par64 -- Compute parity of 64-bit int in 8 operations
+ * @v: unsigned 64-bit integer value
+ * re: 1 if even, 0 if odd
+ */
+uint64_t par64(uint64_t v)
+{
+        v ^= v >> 1;
+        v ^= v >> 2;
+        v = (v & 0x1111111111111111UL) * 0x1111111111111111UL;
+
+        return (v >> 60) & 1;
 }
 
 
-// The best method for counting bits in a 32-bit integer v is the following:
-uint32_t ones(uint32_t v)
-{
-        v = v - ((v>>1) & 0x55555555);                    
-        v = (v & 0x33333333) + ((v>>2) & 0x33333333);  
 
-        return (((v + (v>>4) & 0xF0F0F0F) * 0x1010101) >> 24);
-/******************************************************************************
- * The best bit counting method takes only 12 operations, which is the same 
- * as the lookup-table method, but avoids the memory and potential cache 
- * misses of a table. It is a hybrid between the purely parallel method above 
- * and the earlier methods using multiplies (in the section on counting bits 
- * with 64-bit instructions), though it doesn't use 64-bit instructions. The 
- * counts of bits set in the bytes is done in parallel, and the sum total of 
- * the bits set in the bytes is computed by multiplying by 0x1010101 and 
- * shifting right 24 bits. 
- ******************************************************************************/
+
+/*
+ * ones32 -- Compute the number of set bits (ones) in a 32-bit integer v
+ * @v: unsigned 32-bit integer value
+ *
+ *
+ * Henry Gordon Dietz
+ * The Aggregate Magic Algorithms
+ * University of Kentucky
+ * Aggregate.Org online technical report
+ * http://aggregate.org/MAGIC/
+ *
+ * The population count of a binary integer value x is the number of one 
+ * bits in the value. Although many machines have single instructions for 
+ * this, the single instructions are usually microcoded loops that test a 
+ * bit per cycle; a log-time algorithm coded in C is often faster. 
+ *
+ * The following code uses a variable-precision SWAR algorithm to perform 
+ * a tree reduction adding the bits in a 32-bit value:
+ *
+ * It is worthwhile noting that the SWAR population count algorithm given 
+ * above can be improved upon for the case of counting the population of 
+ * multi-word bit sets. How? The last few steps in the reduction are using 
+ * only a portion of the SWAR width to produce their results; thus, it 
+ * would be possible to combine these steps across multiple words being 
+ * reduced.
+ *
+ * One additional note: the AMD Athlon optimization guidelines suggest a 
+ * very similar algorithm that replaces the last three lines with 
+ *
+ *      return((x * 0x01010101) >> 24);
+ *
+ * For the Athlon (which has a very fast integer multiply), I would have 
+ * expected AMD's code to be faster... but it is actually 6% slower 
+ * according to my benchmarks using a 1.2GHz Athlon (a Thunderbird). Why? 
+ * Well, it so happens that GCC doesn't use a multiply instruction - it 
+ * writes out the equivalent shift and add sequence! 
+ *
+ */
+uint32_t ones32(register uint32_t x)
+{
+        /* 32-bit recursive reduction using SWAR...
+	 * but first step is mapping 2-bit values
+	 * into sum of 2 1-bit values in sneaky way
+	 */
+        x -= ((x >> 1) & 0x55555555);
+        x  = (((x >> 2) & 0x33333333) + (x & 0x33333333));
+        x  = (((x >> 4) + x) & 0x0f0f0f0f);
+        x += (x >> 8);
+        x += (x >> 16);
+        return(x & 0x0000003f);
 }
 
-// Count leading zeroes in a word
+
+
+
+/* 
+ * lzc -- Return the number of leading zeroes in a 32-bit value v 
+ *  @v: unsigned 32-bit integer value
+ */
 uint32_t lzc(uint32_t v)
 {
         #define WORDBITS 32
@@ -60,43 +119,12 @@ uint32_t lzc(uint32_t v)
         v |= (v >> 4);
         v |= (v >> 8);
         v |= (v >> 16);
-        return(WORDBITS - ones(v));
-}
 
-/******************************************************************************
- * The following finds the the rank of a bit, meaning it returns the sum of     *
- * bits that are set to 1 from the most-signficant bit down to the bit at the   *
- * given position.                                                              *
- *----------------------------------------------------------------------------
- * Juha Järvi sent this to me on November 21, 2009 as an inverse operation to 
- * the computing the bit position with the given rank, which follows.         
- ******************************************************************************/
-uint64_t cbs(uint32_t v, unsigned int pos)
-{
-        //uint64_t v;       // Compute rank (bits set) in v from the MSB to pos.
-        //unsigned int pos; Bit position to count bits upto.
-        uint64_t r;       // Resulting rank of bit at pos goes here.
-
-        // Shift out bits after given position.
-        r = v >> (sizeof(v) * CHAR_BIT - pos);
-        // Count set bits in parallel.
-        // r = (r & 0x5555...) + ((r >> 1) & 0x5555...);
-        r = r - ((r >> 1) & ~0UL/3);
-        // r = (r & 0x3333...) + ((r >> 2) & 0x3333...);
-        r = (r & ~0UL/5) + ((r >> 2) & ~0UL/5);
-        // r = (r & 0x0f0f...) + ((r >> 4) & 0x0f0f...);
-        r = (r + (r >> 4)) & ~0UL/17;
-        // r = r % 255;
-        r = (r * (~0UL/255)) >> ((sizeof(v) - 1) * CHAR_BIT);
-
-        return (r);
+        return (WORDBITS - ones32(v));
 }
 
 
-uint32_t mask(int n)
-{
-        return (~0 << n) >> n;
-}
+
 
 
 const char *dispel(uint32_t magic)

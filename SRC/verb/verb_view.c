@@ -73,7 +73,7 @@ void init_verb_menu(uint32_t bitmap)
         int i, n;
         int *slice;
 
-        n = ones(bitmap);
+        n = ones32(bitmap);
         slice = bitind(bitmap, n);
 
         werase(DIAGNOSTIC_WIN);
