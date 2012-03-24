@@ -114,7 +114,7 @@ void draw_layers(struct map_t *map, double **pmap)
                                 // Draw the ground box
                                 for (i=y0; i<=imax; i++) {
                                         for (j=x0; j<jmax; j++) {
-                                                MORT(i, j, &z);
+                                                z = MORT(i, j);
                                                 if (i == imax) {
                                                         mvwadd_wch(PEEK(map->L[DRP]), i, j, &MTN[2]);
                                                         set_state(map->tree, z, 0, LAY, DRP);
@@ -138,7 +138,7 @@ void draw_layers(struct map_t *map, double **pmap)
                                 jmax = tx0+tw; // recalculation
                                 for (i=ty0; i<=imax; i++) {
                                         for (j=tx0; j<jmax; j++) {
-                                                MORT(i, j, &z);
+                                                z = MORT(i, j);
                                                 if (i == imax) {
                                                         set_state(map->tree, z, 0, LAY, VEG);
                                                         set_state(map->tree, z, 0, SED, LIME);
@@ -176,7 +176,7 @@ void draw_water_rim(struct map_t *map)
         for (i=1; i<(map->h); i++) {
                 for (j=1; j<(map->w); j++) {
 
-                        MORT(i, j, &z);
+                        z = MORT(i, j);
 
                         // Draw nothing is the cursor is on land.
                         if ((is_state(map->tree, z, 0, LAY, TOP))) continue;
@@ -188,11 +188,11 @@ void draw_water_rim(struct map_t *map)
                         jr = (j+1);
 
                         // Compute Morton codes
-                        MORT(iu, j, &zu);
-                        MORT(i, jr, &zr);
-                        MORT(i, jl, &zl);
-                        MORT(iu, jl, &zul);
-                        MORT(iu, jr, &zur);
+                        zu  = MORT(iu, j);
+                        zr  = MORT(i, jr);
+                        zl  = MORT(i, jl);
+                        zul = MORT(iu, jl);
+                        zur = MORT(iu, jr);
 
                         // Draw nothing if the cursor is at a top corner.
                         if (  (is_state(map->tree, zul, 0, LAY, XXX))

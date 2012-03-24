@@ -75,7 +75,7 @@ void build_rb_tree(struct rb_tree *tree, int rows, int cols, int total)
 
         for (i=0; i<rows; i++) {
                 for (j=0; j<cols; j++) {
-                        MORT(i, j, &z);
+                        z = MORT(i, j);
                         m[n++] = z; // Collect each coordinate's Morton code
                 }
         }

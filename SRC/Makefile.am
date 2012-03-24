@@ -17,10 +17,11 @@ arawak_SOURCES = arawak.c \
                    lib/redblack/rb.c    \
                    lib/sort/mergesort.c \
                    lib/sort/quicksort.c \
+                   lib/morton.c         \
                    lib/magic.c          \
                    lib/fifo.c           \
-                   lib/queue.c \
-                   lib/textutils.c\
+                   lib/queue.c          \
+                   lib/textutils.c      \
                    eng/state.c          \
                    eng/model/bytes.c    \
                    gen/dice.c           \

@@ -47,26 +47,27 @@ PROGRAMS = $(bin_PROGRAMS)
 am__dirstamp = $(am__leading_dot)dirstamp
 am_arawak_OBJECTS = arawak.$(OBJEXT) init/init.$(OBJEXT) \
 	lib/redblack/rb.$(OBJEXT) lib/sort/mergesort.$(OBJEXT) \
-	lib/sort/quicksort.$(OBJEXT) lib/magic.$(OBJEXT) \
-	lib/fifo.$(OBJEXT) lib/queue.$(OBJEXT) lib/textutils.$(OBJEXT) \
-	eng/state.$(OBJEXT) eng/model/bytes.$(OBJEXT) \
-	gen/dice.$(OBJEXT) gen/mtwist.$(OBJEXT) \
-	gen/name/name.$(OBJEXT) geo/weather.$(OBJEXT) \
-	geo/terrain.$(OBJEXT) geo/map.$(OBJEXT) gfx/palette.$(OBJEXT) \
-	gfx/sprite.$(OBJEXT) gfx/gfx.$(OBJEXT) gfx/dock.$(OBJEXT) \
-	gfx/wselect.$(OBJEXT) gfx/fancy_menus.$(OBJEXT) \
-	gen/perlin.$(OBJEXT) gfx/term.$(OBJEXT) gfx/stdpan.$(OBJEXT) \
-	geo/path_mvc.$(OBJEXT) txt/gloss_m.$(OBJEXT) \
-	txt/gloss_v.$(OBJEXT) txt/gloss_c.$(OBJEXT) \
-	env/cloud.$(OBJEXT) mob/mob.$(OBJEXT) mob/boat.$(OBJEXT) \
-	noun/noun_model.$(OBJEXT) noun/noun_view.$(OBJEXT) \
-	noun/noun_control.$(OBJEXT) verb/verb_model.$(OBJEXT) \
-	verb/verb_view.$(OBJEXT) verb/verb_control.$(OBJEXT) \
-	verb/verbs.$(OBJEXT) pan/ctrlpanels.$(OBJEXT) \
-	pan/new_character.$(OBJEXT) pan/instruments.$(OBJEXT) \
-	pan/button.$(OBJEXT) pan/dialog.$(OBJEXT) pan/test.$(OBJEXT) \
-	pan/crewgen.$(OBJEXT) loop/fsm.$(OBJEXT) loop/loop.$(OBJEXT) \
-	txt/rk.$(OBJEXT) txt/psh.$(OBJEXT)
+	lib/sort/quicksort.$(OBJEXT) lib/morton.$(OBJEXT) \
+	lib/magic.$(OBJEXT) lib/fifo.$(OBJEXT) lib/queue.$(OBJEXT) \
+	lib/textutils.$(OBJEXT) eng/state.$(OBJEXT) \
+	eng/model/bytes.$(OBJEXT) gen/dice.$(OBJEXT) \
+	gen/mtwist.$(OBJEXT) gen/name/name.$(OBJEXT) \
+	geo/weather.$(OBJEXT) geo/terrain.$(OBJEXT) geo/map.$(OBJEXT) \
+	gfx/palette.$(OBJEXT) gfx/sprite.$(OBJEXT) gfx/gfx.$(OBJEXT) \
+	gfx/dock.$(OBJEXT) gfx/wselect.$(OBJEXT) \
+	gfx/fancy_menus.$(OBJEXT) gen/perlin.$(OBJEXT) \
+	gfx/term.$(OBJEXT) gfx/stdpan.$(OBJEXT) geo/path_mvc.$(OBJEXT) \
+	txt/gloss_m.$(OBJEXT) txt/gloss_v.$(OBJEXT) \
+	txt/gloss_c.$(OBJEXT) env/cloud.$(OBJEXT) mob/mob.$(OBJEXT) \
+	mob/boat.$(OBJEXT) noun/noun_model.$(OBJEXT) \
+	noun/noun_view.$(OBJEXT) noun/noun_control.$(OBJEXT) \
+	verb/verb_model.$(OBJEXT) verb/verb_view.$(OBJEXT) \
+	verb/verb_control.$(OBJEXT) verb/verbs.$(OBJEXT) \
+	pan/ctrlpanels.$(OBJEXT) pan/new_character.$(OBJEXT) \
+	pan/instruments.$(OBJEXT) pan/button.$(OBJEXT) \
+	pan/dialog.$(OBJEXT) pan/test.$(OBJEXT) pan/crewgen.$(OBJEXT) \
+	loop/fsm.$(OBJEXT) loop/loop.$(OBJEXT) txt/rk.$(OBJEXT) \
+	txt/psh.$(OBJEXT)
 arawak_OBJECTS = $(am_arawak_OBJECTS)
 arawak_LDADD = $(LDADD)
 DEFAULT_INCLUDES = -I.@am__isrc@
@@ -179,10 +180,11 @@ arawak_SOURCES = arawak.c \
                    lib/redblack/rb.c    \
                    lib/sort/mergesort.c \
                    lib/sort/quicksort.c \
+                   lib/morton.c         \
                    lib/magic.c          \
                    lib/fifo.c           \
-                   lib/queue.c \
-                   lib/textutils.c\
+                   lib/queue.c          \
+                   lib/textutils.c      \
                    eng/state.c          \
                    eng/model/bytes.c    \
                    gen/dice.c           \
@@ -329,6 +331,8 @@ lib/$(am__dirstamp):
 lib/$(DEPDIR)/$(am__dirstamp):
 	@$(MKDIR_P) lib/$(DEPDIR)
 	@: > lib/$(DEPDIR)/$(am__dirstamp)
+lib/morton.$(OBJEXT): lib/$(am__dirstamp) \
+	lib/$(DEPDIR)/$(am__dirstamp)
 lib/magic.$(OBJEXT): lib/$(am__dirstamp) lib/$(DEPDIR)/$(am__dirstamp)
 lib/fifo.$(OBJEXT): lib/$(am__dirstamp) lib/$(DEPDIR)/$(am__dirstamp)
 lib/queue.$(OBJEXT): lib/$(am__dirstamp) lib/$(DEPDIR)/$(am__dirstamp)
@@ -512,6 +516,7 @@ mostlyclean-compile:
 	-rm -f init/init.$(OBJEXT)
 	-rm -f lib/fifo.$(OBJEXT)
 	-rm -f lib/magic.$(OBJEXT)
+	-rm -f lib/morton.$(OBJEXT)
 	-rm -f lib/queue.$(OBJEXT)
 	-rm -f lib/redblack/rb.$(OBJEXT)
 	-rm -f lib/sort/mergesort.$(OBJEXT)
@@ -567,6 +572,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@init/$(DEPDIR)/init.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@lib/$(DEPDIR)/fifo.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@lib/$(DEPDIR)/magic.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@lib/$(DEPDIR)/morton.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@lib/$(DEPDIR)/queue.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@lib/$(DEPDIR)/textutils.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@lib/redblack/$(DEPDIR)/rb.Po@am__quote@

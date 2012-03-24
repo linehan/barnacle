@@ -84,7 +84,7 @@ int hit_test(struct map_t *map, int y, int x)
 {
         uint32_t z; // Stores Morton code.
 
-        MORT(y, x, &z);
+        z = MORT(y, x);
 
         if (is_state(map->tree, z, 1, LAY, TOP) || is_state(map->tree, z, 1, LAY, DRP))
                 return (0);
