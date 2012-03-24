@@ -63,8 +63,8 @@ uint32_t verb_new(uint32_t sender, uint32_t recipient, uint32_t verb)
 
         if (focused->verb.send != 0U) return; // only one verb at a time
 
-        fifo_push(&focused->verb.to, recipient);
-        fifo_push(&focused->verb.give, verb);
+        fifo_enq(&focused->verb.to, recipient);
+        fifo_enq(&focused->verb.give, verb);
 
         return (focused->verb.send |= (focused->verb.bump));
 }
@@ -82,14 +82,14 @@ uint32_t verb_send(uint32_t sender)
 
         focus(sender);
 
-        recipient = fifo_pop(&focused->verb.to);
-        verb      = fifo_pop(&focused->verb.give);
+        recipient = fifo_deq(&focused->verb.to);
+        verb      = fifo_deq(&focused->verb.give);
         focused->verb.send ^= 0x00000001;
 
         focus(recipient);
 
-        fifo_push(&focused->verb.from, sender);
-        fifo_push(&focused->verb.get, verb);
+        fifo_enq(&focused->verb.from, sender);
+        fifo_enq(&focused->verb.get, verb);
         focused->verb.rec |= 0x00000001;
 
         return (0);
@@ -108,8 +108,8 @@ uint32_t verb_do(uint32_t to)
 
         focus(to);
 
-        from = fifo_pop(&focused->verb.from);
-        verb = fifo_pop(&focused->verb.get);
+        from = fifo_deq(&focused->verb.from);
+        verb = fifo_deq(&focused->verb.get);
 
         verbs[verb].say(from, to);
 

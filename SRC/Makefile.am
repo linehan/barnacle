@@ -38,10 +38,10 @@ arawak_SOURCES = arawak.c \
                    gen/perlin.c         \
                    gfx/term.c           \
                    gfx/stdpan.c         \
-                   geo/path_mvc.c\
-                   txt/gloss_m.c\
-                   txt/gloss_v.c\
-                   txt/gloss_c.c\
+                   geo/path_mvc.c       \
+                   txt/gloss_m.c        \
+                   txt/gloss_v.c        \
+                   txt/gloss_c.c        \
                    env/cloud.c          \
                    mob/mob.c            \
                    mob/boat.c           \
@@ -59,7 +59,7 @@ arawak_SOURCES = arawak.c \
                    pan/dialog.c         \
                    pan/test.c           \
                    pan/crewgen.c        \
-                   loop/fsm.c\
-                   loop/loop.c\
+                   loop/fsm.c           \
+                   loop/loop.c          \
                    txt/rk.c             \
                    txt/psh.c

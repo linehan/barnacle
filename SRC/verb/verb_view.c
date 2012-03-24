@@ -250,12 +250,12 @@ inline void verb_view_elem(int elem, struct verb_t *verb, WINDOW *win, int opt)
                 pair = TITLE_SCREEN;
                 goto drawing;
         gfx_send:
-                vbid = fifo_peek(&verb->give, 0);
+                vbid = fifo_rdn(&verb->give, 0);
                 icon = verbs[vbid].icon;
                 pair = verbs[vbid].pair;
                 goto drawing;
         gfx_rec:
-                vbid = fifo_peek(&verb->get, 0);
+                vbid = fifo_rdn(&verb->get, 0);
                 icon = verbs[vbid].icon;
                 pair = verbs[vbid].pair;
                 goto drawing;

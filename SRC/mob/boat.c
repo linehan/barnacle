@@ -102,7 +102,6 @@ uint32_t new_boat(struct map_t *map)
         WINDOW *win = newwin(2, 4, 3, 3);
         wbkgrnd(win, &OCEAN[0]);
         new->pan = new_panel(win);
-        /*mob_setpath(new, 1, 0, 13);*/
 
         // Register the mob_t as an item and return the key.
         /*keys[0] = register_itm(BOAT_KIND, new);*/
@@ -116,6 +115,7 @@ void nominate_boat(uint32_t key)
         BOAT_NODE = rb_retreive(BOAT_TREE, key);
         _BOAT = (struct mob_t *)BOAT_NODE->extra;
 }
+        static char turn;
 /*
   The boat's state is checked and any changes of state result in some action
   being taken. For example, if the state indicates the guns are in a state
@@ -132,7 +132,7 @@ void sync_boat(void)
         unsigned char H, R, G, W;                       // States
         cchar_t **sail, **mast, **hull, **gunf, **guns; // Shorter nicknames
 
-        /*seek_heading(); // Tumble the compass (see "../pan/instruments.h")*/
+        seek_heading(); // Tumble the compass (see "../pan/instruments.h")
 
         // Point nicknames at appropriate graphics arrays.
         sail = tester->sail->cch; 
@@ -231,12 +231,14 @@ void order_boat(int order, int val)
                         break;
                 case 'p':
                         H = (H>0) ? H-1 : NNW;
-                        /*set_state(BOAT_TREE, TEMPKEY, 0, HDG, H);*/
+                        turn = (turn=='s') ? 'o' : 'p';
+                        set_state(BOAT_TREE, TEMPKEY, 0, HDG, H);
                         mark_hdg('L');
                         break;
                 case 's':
                         H = (H < NNW) ? H+1 : NORTH;
-                        /*set_state(BOAT_TREE, TEMPKEY, 0, HDG, H);*/
+                        turn = (turn=='p') ? 'o' : 's';
+                        set_state(BOAT_TREE, TEMPKEY, 0, HDG, H);
                         mark_hdg('R');
                         break;
                 case 'f':
@@ -249,6 +251,8 @@ void order_boat(int order, int val)
                         set_state(BOAT_TREE, TEMPKEY, 0, SAI, POL); // Run with bare poles 
                         break;
                 }
+                /*if (turn=='p') mark_hdg('L');*/
+                /*if (turn=='s') mark_hdg('R');*/
         sync_boat();
 }
 
