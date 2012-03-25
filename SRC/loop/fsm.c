@@ -152,6 +152,9 @@ void director(int input)
         else {
                 switch (input) 
                 { 
+                case 'n':
+                        new_character();
+                        break;
                 case 'c':
                         setmode(UI_NOUN);
                         setmode(MODE_STARTED);
