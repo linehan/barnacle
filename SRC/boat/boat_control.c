@@ -29,7 +29,8 @@ void sail_boat(struct boat_t *boat)
         }
         else path_pop(&boat->path);
 
-        boat_path(boat);
+        boat_path(boat); // If it's down here, after draw_boat(), it makes
+                         // a neat "tugging" effect as the boat moves
         scr_refresh();
 } 
 

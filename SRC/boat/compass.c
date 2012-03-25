@@ -70,7 +70,7 @@ void init_instruments(void)
         setcchar(&(CMRK[UP]), &(gfxMRK[UP]), 0, CMP_YELLOW, NULL);
 
         for (i=0; i<RIBLEN; i++) {
-                if (gfxRIB[i] == L'⋅')
+                if (gfxRIB[i] == L'⋅' || gfxRIB[i] == L'∙')
                         setcchar(&RIB[i], &gfxRIB[i], 0, PUR_PURPLE, NULL);
                 else
                         setcchar(&RIB[i], &gfxRIB[i], 0, PUR_GRE, NULL);
@@ -104,28 +104,6 @@ void toggle_instrument_panel(void)
         }
 }
 
-/* Moves the heading marker (top arrow) on the compass, to indicate what the
- * player's orders might be, were he to commit them. Allows the "selection"
- * of a new heading. Accepts a directional parameter */
-void mark_hdg(int dir)
-{
-        switch (dir) {
-        case 'L':       if (current_heading > 1) current_heading--;
-                        break;
-        case 'R':       if (current_heading < rib_wid) current_heading++;
-                        break;
-        case 'l':       if (offsgh > 1) offsgh--;
-                        return;
-        case 'r':       if (offsgh < rib_wid) offsgh++;
-                        return;
-        case 2:         break;
-        }
-        /*int origin = tmp->dir;*/
-        offsgh = current_heading;
-}
-
-
-
 
 /* Calculate the offset of the wind arrow. This is not under the control of
  * the player; the mark will move to indicate the current wind direction on
@@ -148,50 +126,13 @@ void mark_wind(void)
 }
 
 
-
-
-/*[> Tumble the compass ribbon left or right <]*/
-/*int seek_heading(void)*/
-/*{*/
-        /*struct compass_char *tmp;*/
-        /*[>int req = get_state(BOAT_TREE, BOAT_NODE->key, 0, HDG);<]*/
-        /*int origin; // direction at origin*/
-        /*int mid;    // direction at midpoint*/
-
-        /*tmp = list_top(&CMP, struct compass_char, node);*/
-
-        /*origin = tmp->dir; // value of first printed direction*/
-        /*mid    = ((origin+6)%cmp_num); // compute direction @ midpoint*/
-
-        /*[> Set the current heading to the midpoint <]*/
-        /*[>set_state(BOAT_TREE, BOAT_NODE->key, 0, HDG, mid);<]*/
-
-        /* If the midpoint is not the required heading, tumble the compass, 
-         * which will cause the value of the midpoint to be shifted one way 
-         * or another. */
-        /*[>if (req != mid) {<]*/
-                /* If the offset of the heading command arrow is on the
-                 * left side of the compass, tumble toward the right; if
-                 * it's on the right side, tumble toward the left. Cheats. */
-                /*[>if (current_heading < 7) {<]*/
-                        /*[>tumble_compass('R');<]*/
-                        /*[>mark_hdg('R');<]*/
-                /*[>} else {<]*/
-                        /*[>tumble_compass('L');<]*/
-                        /*[>mark_hdg('L');<]*/
-                /*[>}<]*/
-        /*[>}<]*/
-        /*return 0;*/
-/*}*/
-
-
 void approach_helm(float *delay)
 {
         #define DELAY_FACTOR 0.02
         #define DELAY_MAX 0.04
-        #define BUF_FULL 4.0 
+        #define BUF_FULL 3.0 
         #define BUF_STEP 0.8 
-        #define BUF_REST 0.6
+        #define BUF_REST 0.5
         #define BUF_MIN 0.5
 
         static bool domove;
@@ -228,8 +169,8 @@ void approach_helm(float *delay)
 
 
                 if (buffer < BUF_MIN && offset != 0 ) {
-                        turn_helm(get_boat("Afarensis"), dir);
                         change_course(get_boat("Afarensis"), dir^1);
+                        turn_helm(get_boat("Afarensis"), dir);
                 }
 }
 
