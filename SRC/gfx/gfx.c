@@ -163,6 +163,12 @@ void illuminate(struct recipe *R)
         vrt_refresh();
 }
 
+
+void build_gpack(struct gpack *g)
+{
+        setcchar(&g->cch, &g->wcs, 0, g->pair, NULL);
+}
+
 void center_text(WINDOW *win, int y0, int x0, int w, char *string)
 {
 	int len, x, y;

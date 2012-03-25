@@ -106,24 +106,30 @@ void operate_on(int input)
                 case 'd':
                         roll_map(GLOBE, 'r');
                         break;
-                case ' ':
-                        order_boat('h', 0);
-                        break;
-                case '@':
-                        order_boat('f', 0);
-                        break;
                 case 'j':
-                        order_boat('p', 0);
+                        boat_control(get_boat("Afarensis"), input, 0);
                         break;
                 case 'k':
-                        order_boat('s', 0);
+                        boat_control(get_boat("Afarensis"), input, 0);
                         break;
-                case 'g':
-                        order_boat('r', 0);
-                        break;
-                case 'f':
-                        order_boat('R', 0);
-                        break;
+                /*case ' ':*/
+                        /*order_boat('h', 0);*/
+                        /*break;*/
+                /*case '@':*/
+                        /*order_boat('f', 0);*/
+                        /*break;*/
+                /*case 'j':*/
+                        /*order_boat('p', 0);*/
+                        /*break;*/
+                /*case 'k':*/
+                        /*order_boat('s', 0);*/
+                        /*break;*/
+                /*case 'g':*/
+                        /*order_boat('r', 0);*/
+                        /*break;*/
+                /*case 'f':*/
+                        /*order_boat('R', 0);*/
+                        /*break;*/
                 }
                 break;
         }

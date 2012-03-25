@@ -1,56 +1,35 @@
 
-#define GUN_ENUM gun_enum
-#define GUN_CHAR gun_char
-#define GUN_LIST           \
-        TWINDEX(ROU_F,  0) \
-        TWINDEX(CAN_F,  1) \
-        TWINDEX(GRA_F,  2) \
-        TWINDEX(CHA_F,  3) \
-        TWINDEX(LAN_F,  4) \
-        TWINDEX(HOT_F,  5) \
-        TWINDEX(DBL_F,  6) \
-        TWINDEX(EXP_F,  7) \
-        TWINDEX(ROU_S,  8) \
-        TWINDEX(CAN_S,  9) \
-        TWINDEX(GRA_S, 10) \
-        TWINDEX(CHA_S, 11) \
-        TWINDEX(LAN_S, 12) \
-        TWINDEX(HOT_S, 13) \
-        TWINDEX(DBL_S, 14) \
-        TWINDEX(EXP_S, 15) 
+enum boat_guns {
+        ROU_F,
+        CAN_F,
+        GRA_F,
+        CHA_F,
+        LAN_F,
+        HOT_F,
+        DBL_F,
+        EXP_F,
+        ROU_S,
+        CAN_S,
+        GRA_S,
+        CHA_S,
+        LAN_S,
+        HOT_S,
+        DBL_S,
+        EXP_S
+}
 
-#define HULL_ENUM hull_enum
-#define HULL_CHAR hull_char
-#define HULL_LIST                                  \
-        TWINDEX(HUL_N, 0)  /* Up-facing hull    */ \
-        TWINDEX(HUL_E, 1)  /* Right-facing hull */ \
-        TWINDEX(HUL_S, 2)  /* Down-facing hull  */ \
-        TWINDEX(HUL_W, 3)  /* Left-facing hull  */ 
+enum boat_hull { HUL_N, HUL_E, HUL_S, HUL_W };
 
-#define ANCHOR_ENUM anchor_enum
-#define ANCHOR_CHAR anchor_char
-#define ANCHOR_LIST                                 \
-        TWINDEX(ANC_D, 0)  /* Anchor dropped     */ \
-        TWINDEX(ANC_S, 1)  /* Sea anchor dropped */ 
+enum boat_mast { MAS_I, MAS_J, MAS_L };
 
-#define MAST_ENUM mast_enum
-#define MAST_CHAR mast_char
-#define MAST_LIST                                \
-        TWINDEX(MAS_I, 0)  /* "I" shaped mast */ \
-        TWINDEX(MAS_J, 1)  /* "J" shaped mast */ \
-        TWINDEX(MAS_L, 2)  /* "L" shaped mast */ 
+enum boat_sail {
+        SAI_DR, /* Down-right facing sail */ 
+        SAI_DL, /* Down-left facing sail  */ 
+        SAI_UR, /* Up-right facing sail   */ 
+        SAI_UL, /* Up-left facing sail    */ 
+        SAI_PI, /* Pinched sail           */ 
+        SAI_SW, /* Swelling sail          */ 
+        SAI_WL, /* Left-swelling sail     */ 
+        SAI_WR  /* Right-swelling sail    */ 
+}
 
-#define SAIL_ENUM sail_enum
-#define SAIL_CHAR sail_char
-#define SAIL_LIST                                       \
-        TWINDEX(SAI_DR, 0) /* Down-right facing sail */ \
-        TWINDEX(SAI_DL, 1) /* Down-left facing sail  */ \
-        TWINDEX(SAI_UR, 2) /* Up-right facing sail   */ \
-        TWINDEX(SAI_UL, 3) /* Up-left facing sail    */ \
-        TWINDEX(SAI_PI, 4) /* Pinched sail           */ \
-        TWINDEX(SAI_SW, 5) /* Swelling sail          */ \
-        TWINDEX(SAI_WL, 6) /* Left-swelling sail     */ \
-        TWINDEX(SAI_WR, 7) /* Right-swelling sail    */ 
-
-#define GLOSS \
-        gun_char, hull_char, anchor_char, mast_char, sail_char

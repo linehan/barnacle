@@ -44,8 +44,10 @@ arawak_SOURCES = arawak.c \
                    txt/gloss_v.c        \
                    txt/gloss_c.c        \
                    env/cloud.c          \
-                   mob/mob.c            \
-                   mob/boat.c           \
+                   boat/boat_model.c           \
+                   boat/boat_view.c           \
+                   boat/boat_control.c           \
+                   boat/compass.c\
                    noun/noun_model.c    \
                    noun/noun_view.c     \
                    noun/noun_control.c  \
@@ -55,7 +57,6 @@ arawak_SOURCES = arawak.c \
                    verb/verbs.c         \
                    pan/ctrlpanels.c     \
                    pan/new_character.c  \
-                   pan/instruments.c    \
                    pan/button.c         \
                    pan/dialog.c         \
                    pan/test.c           \

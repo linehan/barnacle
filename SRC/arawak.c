@@ -18,7 +18,6 @@
 #include "geo/terrain.h"
 #include "geo/weather.h"
 #include "mob/mob.h"
-#include "mob/boat.h"
 #include "pan/instruments.h"
 #include "pan/test.h"
 #include "lib/ufo.h"
@@ -30,8 +29,11 @@
 #include "noun/noun_model.h"
 #include "noun/noun_control.h"
 
+
 #include "init/init.h"
 #include "loop/loop.h"
+
+#include "boat/boat.h"
 
 
 /* Day-toh-nah */
@@ -46,19 +48,29 @@ int main()
         roll_map(pad, 0);
         roll_map(pad, 0);
 
-        uint32_t boatkey = new_boat(pad);
-        nominate_boat(boatkey);
+        uint32_t key;
+        key = new_boat(pad, FUNBOAT, "Afarensis");
+        wprintw(DIAGNOSTIC_WIN, "%u\n", key);
+
+        if (get_boat("Afarensis") == NULL)
+                wprintw(DIAGNOSTIC_WIN, "NULL");
+        else
+                wprintw(DIAGNOSTIC_WIN, "NOT NULL");
+
+        draw_boat(get_boat("Afarensis"));
 
         toggle_instrument_panel();
+        toggle_instrument_panel();
+        draw_compass();
         load_noun_test();
         view_dock();
         choose_noun('*');
 
         set_wind(__pre__, 4);
-        werase(DIAGNOSTIC_WIN);
 
         start_event_watchers();
 
         endwin(); /* end curses mode */
         return 0;
-   }
+}
+

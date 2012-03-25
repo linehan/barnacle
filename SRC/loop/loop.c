@@ -45,10 +45,15 @@ print_cb(EV_P_ ev_timer *w, int revents)
 static void 
 sail_cb(EV_P_ ev_timer *w, int revents)
 {
-        sail_boat(NULL);
-        restack_map(GLOBE);
-        map_refresh(GLOBE);
+        float wait = w->repeat;
+        /*sail_boat(NULL);*/
 
+        approach_helm(&wait);
+        /*restack_map(GLOBE);*/
+        /*map_refresh(GLOBE);*/
+        draw_compass();
+
+        w->repeat = wait;
         ev_timer_again(EV_DEFAULT, w);
 }
 
@@ -58,7 +63,8 @@ static void
 weather_cb(EV_P_ ev_timer *w, int revents)
 {
         mark_wind();
-        seek_heading();
+        /*seek_heading();*/
+        /*approach_helm();*/
         seek_prevailing();
         view_dock();
         do_pulse();
@@ -119,7 +125,7 @@ int start_event_watchers(void)
         ev_init(&print, &print_cb);
         ev_init(&refresh, &refresh_cb);
 
-        sail.repeat    = .084;
+        sail.repeat    = .02;
         weather.repeat = .08;
         animate.repeat = 2.5;
         print.repeat   = .02;

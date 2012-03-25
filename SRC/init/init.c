@@ -33,9 +33,9 @@ int arawak_init(void)
         init_simplex();     // Perlin simplex noise generator
         init_palette(0);    // Set color palette
         init_gfx_colors();  // Apply palette to character set
-        init_boats();       // Initialize boat MOBs
+        /*init_boats();       // Initialize boat MOBs*/
         init_weather();     // Start weather engine
-        init_instruments(); // Various meters (compass)
+        /*init_instruments(); // Various meters (compass)*/
         init_menus();       // psh menu and commands
         init_test();        // Start test structures
 

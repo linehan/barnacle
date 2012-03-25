@@ -130,6 +130,12 @@ struct gpkg {
         cchar_t *cch[16];
 };
 
+struct gpack {
+        wchar_t *wcs;
+        short pair;
+        cchar_t cch;
+};
+
 struct recipe {
         int n;
         int xof;
@@ -150,6 +156,7 @@ struct cbar {
         const char *bar;
 };
 
+void build_gpack(struct gpack *g);
 void illuminate(struct recipe *R);
 void build_gpkg(struct gpkg *g);
 void build_gpkg_cbar(struct gpkg *g, struct cbar *c);

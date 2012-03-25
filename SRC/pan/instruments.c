@@ -21,14 +21,13 @@
 #include "../gfx/gfx.h"
 #include "../geo/weather.h"
 #include "../mob/mob.h"
-#include "../mob/boat.h"
+#include "../boat/boat.h"
 #include "../eng/state.h"
 //##############################################################################
 enum boat_options {
         __now__ = 0, 
         __req__ = 1, 
         __buf__ = 2, 
-
         __hdg__ = 3
 };
 
@@ -138,6 +137,9 @@ void init_instruments(void)
         }
         toggle_instrument_panel();
 }
+
+
+
 /* Moves the heading marker (top arrow) on the compass, to indicate what the
  * player's orders might be, were he to commit them. Allows the "selection"
  * of a new heading. Accepts a directional parameter */
@@ -161,10 +163,16 @@ void mark_hdg(int dir)
         /*HDG_FOR_DA_BOAT = ((origin+(offsdn-1))%16);*/
         set_state(BOAT_TREE, BOAT_NODE->key, 0, HDG, (origin+(offsdn-1))%16);
 }
+
+
+
 void take_hdg(void)
 {
         set_state(BOAT_TREE, BOAT_NODE->key, 0, HDG, HDG_FOR_DA_BOAT);
 }
+
+
+
 /* Calculate the offset of the wind arrow. This is not under the control of
  * the player; the mark will move to indicate the current wind direction on
  * the compass, and so requires no additional parameters */
@@ -186,6 +194,9 @@ void mark_wind(void)
                 else if ((offsup<delta) && (offsup<rib_wid)) offsup++;
         }
 }
+
+
+
 /* Tumble the compass ribbon left or right */
 void tumble_compass(int dir)
 {
@@ -204,6 +215,9 @@ void tumble_compass(int dir)
                 break;
         }
 }
+
+
+
 /* Tumble the compass ribbon left or right */
 int seek_heading(void)
 {
@@ -237,6 +251,9 @@ int seek_heading(void)
         }
         return 0;
 }
+
+
+
 /* Allow the current wind direction to seek the prevailing wind direction. */
 int seek_prevailing(void)
 {
@@ -251,6 +268,9 @@ int seek_prevailing(void)
         }
         return 0;
 }
+
+
+
 /* Draw the compass panel */
 void draw_compass(void)
 {
@@ -287,3 +307,4 @@ void draw_compass(void)
         vrt_refresh();
         scr_refresh();
 }
+

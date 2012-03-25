@@ -76,11 +76,11 @@ void init_verb_menu(uint32_t bitmap)
         n = ones32(bitmap);
         slice = bitind(bitmap, n);
 
-        werase(DIAGNOSTIC_WIN);
+        /*werase(DIAGNOSTIC_WIN);*/
         for (i=0; i<n; i++) {
-                wprintw(DIAGNOSTIC_WIN, "%i\n", slice[i]);
+                /*wprintw(DIAGNOSTIC_WIN, "%i\n", slice[i]);*/
         }
-                wprintw(DIAGNOSTIC_WIN, "n: %i\n", n);
+                /*wprintw(DIAGNOSTIC_WIN, "n: %i\n", n);*/
         for (i=0; i<n; i++) {
                 name[i] = verbs[slice[i]].name;
                 desc[i] = verbs[slice[i]].desc;
