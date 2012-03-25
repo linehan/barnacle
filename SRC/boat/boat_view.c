@@ -14,7 +14,7 @@
 #define GUNCOUNT  2 
 
 struct gpkg _hull[HULLCOUNT]={
-{ 4 , {0 , 1 , 0 , 1} , BOAT_WOOD , {L"◥◤"  , L"◥■◤"   , L"◥◤"  , L"◥■◤"}}   ,
+{ 4 , {1 , 1 , 1 , 1} , BOAT_WOOD , {L"◥◤"  , L"◥■◤"   , L"◥◤"  , L"◥■◤"}}   ,
 { 4 , {1 , 1 , 1 , 2} , BOAT_WOOD , {L"▗▅▖" , L"▃▂▃▖"  , L"▗▅▖" , L"▗▃▂▃"}}  ,
 { 4 , {1 , 2 , 1 , 2} , BOAT_WOOD , {L"▜▛"  , L"▜▄▂▃▖" , L"▗▃▖" , L"▗▃▂▄▛"}}
 };
@@ -139,18 +139,18 @@ void draw_boat(struct boat_t *boat)
 //                                                               mast lookup
         mvwadd_wchstr(win, 1, 0, _hull[id].cch[h]);
 
-        /*switch (G) {*/
-        /*case FIR:*/
-                /*mvwadd_wch(win, 1, xo, gunf[ROU_F]);*/
-                /*if (roll_fair(2))*/
-                        /*set_state(BOAT_TREE, key, 0, GUN, LD0);*/
-                /*break;*/
-        /*case LD0:*/
-                /*mvwadd_wch(win, 1, xo, guns[ROU_F]);*/
-                /*if (roll_fair(5))*/
-                        /*set_state(BOAT_TREE, key, 0, GUN, RDY);*/
-                /*break;*/
-        /*}*/
+        switch (G) {
+        case FIR:
+                mvwadd_wch(win, 1, xo, _cann[0].cch[0]);
+                if (roll_fair(2))
+                        set_nibble(&boat->state, GUN, LD0);
+                break;
+        case LD0:
+                mvwadd_wch(win, 1, xo, _cann[1].cch[0]);
+                if (roll_fair(5))
+                        set_nibble(&boat->state, GUN, RDY);
+                break;
+        }
         scr_refresh();
 }
 
