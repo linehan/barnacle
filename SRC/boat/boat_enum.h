@@ -52,3 +52,5 @@ enum boat_sail_gfx {
         SAI_WL, /* Left-swelling sail     */ 
         SAI_WR  /* Right-swelling sail    */ 
 };
+
+enum helm_commands { TURN_L, TURN_R, TURN_HR, TURN_HL, COME_ABOUT };

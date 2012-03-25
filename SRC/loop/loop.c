@@ -43,15 +43,24 @@ print_cb(EV_P_ ev_timer *w, int revents)
 
 ////////////////////////////////////////////////////////////////////////////////
 static void 
+move_cb(EV_P_ ev_timer *w, int revents)
+{
+        sail_boat(get_boat("Afarensis"));
+        restack_map(GLOBE);
+        map_refresh(GLOBE);
+
+        ev_timer_again(EV_DEFAULT, w);
+}
+
+
+////////////////////////////////////////////////////////////////////////////////
+static void 
 sail_cb(EV_P_ ev_timer *w, int revents)
 {
         float wait = w->repeat;
-        /*sail_boat(NULL);*/
 
-        approach_helm(&wait);
-        /*restack_map(GLOBE);*/
-        /*map_refresh(GLOBE);*/
         draw_compass();
+        approach_helm(&wait);
 
         w->repeat = wait;
         ev_timer_again(EV_DEFAULT, w);
@@ -63,8 +72,6 @@ static void
 weather_cb(EV_P_ ev_timer *w, int revents)
 {
         mark_wind();
-        /*seek_heading();*/
-        /*approach_helm();*/
         seek_prevailing();
         view_dock();
         do_pulse();
@@ -117,6 +124,7 @@ int start_event_watchers(void)
         ev_timer animate;   // map state shift
         ev_timer print;     // prints text effects
         ev_timer refresh;   // write the new state to the screen
+        ev_timer move;
 
         ev_io_init(&read, &iolisten, 0, EV_READ);
         ev_init(&sail, &sail_cb);
@@ -124,7 +132,9 @@ int start_event_watchers(void)
         ev_init(&animate, &animate_cb);
         ev_init(&print, &print_cb);
         ev_init(&refresh, &refresh_cb);
+        ev_init(&move, &move_cb);
 
+        move.repeat    = .08;
         sail.repeat    = .02;
         weather.repeat = .08;
         animate.repeat = 2.5;
@@ -137,6 +147,7 @@ int start_event_watchers(void)
         ev_timer_again(execloop, &animate);
         ev_timer_again(drawloop, &print);
         ev_timer_again(drawloop, &refresh);
+        ev_timer_again(drawloop, &move);
 
         ev_run(execloop, 0);
         ev_run(drawloop, 0);

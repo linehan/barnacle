@@ -112,6 +112,12 @@ void operate_on(int input)
                 case 'k':
                         boat_control(get_boat("Afarensis"), input, 0);
                         break;
+                case 'h':
+                        boat_control(get_boat("Afarensis"), input, 0);
+                        break;
+                case 'l':
+                        boat_control(get_boat("Afarensis"), input, 0);
+                        break;
                 /*case ' ':*/
                         /*order_boat('h', 0);*/
                         /*break;*/
@@ -124,12 +130,12 @@ void operate_on(int input)
                 /*case 'k':*/
                         /*order_boat('s', 0);*/
                         /*break;*/
-                /*case 'g':*/
-                        /*order_boat('r', 0);*/
-                        /*break;*/
-                /*case 'f':*/
-                        /*order_boat('R', 0);*/
-                        /*break;*/
+                case 'g':
+                        boat_control(get_boat("Afarensis"), 'r', 0);
+                        break;
+                case 'f':
+                        boat_control(get_boat("Afarensis"), 'R', 0);
+                        break;
                 }
                 break;
         }

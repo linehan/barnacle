@@ -92,6 +92,7 @@ void boat_path(struct boat_t *boat)
 {
         #include "../gfx/brnoise.h"
 
+        werase(PEEK(GLOBE->L[HIG]));
         draw_path((PEEK(GLOBE->L[HIG])), &boat->path);
         wrefresh((PEEK(GLOBE->L[HIG])));
         doupdate();

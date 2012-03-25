@@ -16,10 +16,13 @@ enum compass_window_dims {
         cmp_hlf = 8   // half the number of ribbon elements
 };
 
-#define RIBLEN 67
+/*#define RIBLEN 67*/
+#define RIBLEN 16 
 #define RIB_WIN_WID 15
 #define RIB_CENTER 7
-static wchar_t gfxRIB[] = L"N⋅⋅⋅∙⋅⋅⋅ne⋅⋅⋅∙⋅⋅⋅E⋅⋅⋅∙⋅⋅⋅se⋅⋅⋅∙⋅⋅⋅S⋅⋅⋅∙⋅⋅⋅sw⋅⋅⋅∙⋅⋅⋅W⋅⋅⋅∙⋅⋅⋅nw⋅⋅⋅∙⋅⋅⋅";
+/*static wchar_t gfxRIB[] = L"N⋅⋅⋅∙⋅⋅⋅ne⋅⋅⋅∙⋅⋅⋅E⋅⋅⋅∙⋅⋅⋅se⋅⋅⋅∙⋅⋅⋅S⋅⋅⋅∙⋅⋅⋅sw⋅⋅⋅∙⋅⋅⋅W⋅⋅⋅∙⋅⋅⋅nw⋅⋅⋅∙⋅⋅⋅";*/
+/*static wchar_t gfxRIB[] = L"N⋅⋅∙⋅⋅E⋅⋅∙⋅⋅S⋅⋅∙⋅⋅W⋅⋅∙⋅⋅";*/
+static wchar_t gfxRIB[] = L"N⋅∙⋅E⋅∙⋅S⋅∙⋅W⋅∙⋅";
 static cchar_t RIB[RIBLEN];
 static wchar_t gfxCBOR[] = L"▌▐";
 static wchar_t gfxMRK[] = L"▾▴";
@@ -39,14 +42,10 @@ static int offsup; // Offset of the wind marker
 static uint32_t current_heading;
 static uint32_t middle_heading;
 static uint32_t current_helm;
+static uint32_t make_helm;
 static uint32_t middle_helm;
-static uint32_t current_target;
 
-
-void set_compass_target(uint32_t target)
-{
-        current_target = target;
-}
+static uint32_t helm_change;
 
 void set_compass_heading(uint32_t hdg)
 {
@@ -55,9 +54,7 @@ void set_compass_heading(uint32_t hdg)
 }
 void set_compass_helm(uint32_t helm)
 {
-        current_helm = helm;
-        if (helm > RIB_CENTER)
-                current_target = (helm+3) % RIB_WIN_WID ;
+        make_helm = helm;
 }
 
 
@@ -192,7 +189,7 @@ void approach_helm(float *delay)
 {
         #define DELAY_FACTOR 0.02
         #define DELAY_MAX 0.04
-        #define BUF_FULL 13.0 
+        #define BUF_FULL 4.0 
         #define BUF_STEP 0.8 
         #define BUF_REST 0.6
         #define BUF_MIN 0.5
@@ -208,26 +205,32 @@ void approach_helm(float *delay)
         wprintw(DIAGNOSTIC_WIN, "buffr: %f\n", buffer);
         wprintw(DIAGNOSTIC_WIN, "helm:  %u, %u\n", current_helm, middle_helm);
 
+
+        if (make_helm > current_helm) current_helm++;
+        if (make_helm < current_helm) current_helm--;
+
         if (current_helm>RIB_CENTER) {
                 offset = current_helm - RIB_CENTER;
-                dir = 1;
+                dir = TURN_L;
         }
         if (current_helm<RIB_CENTER) {
                 offset = RIB_CENTER - current_helm;
-                dir = 0;
+                dir = TURN_R;
         }
 
         if (offset!=0) buffer -= (buffer > BUF_MIN) ? BUF_STEP : 0;
 
         if (buffer < BUF_FULL) buffer = (buffer+BUF_REST);
 
-                if (buffer < BUF_MIN) {
-                        change_course(get_boat("Afarensis"), dir);
+                /*if (buffer < BUF_MIN) {*/
+                        /*change_course(get_boat("Afarensis"), dir);*/
                         /**delay = DELAY_MAX - ((float)buffer * DELAY_FACTOR);*/
-                }
-                if (buffer < BUF_MIN && offset !=0)
-                        turn_helm(get_boat("Afarensis"), dir);
 
+
+                if (buffer < BUF_MIN && offset != 0 ) {
+                        turn_helm(get_boat("Afarensis"), dir);
+                        change_course(get_boat("Afarensis"), dir^1);
+                }
 }
 
         

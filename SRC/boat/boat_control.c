@@ -36,15 +36,27 @@ void sail_boat(struct boat_t *boat)
 
 uint32_t turn_helm(struct boat_t *boat, int opt) 
 {
-        #define POINTS 14
+        #define POINTS 15
+        #define HARD 4
        
-        if (opt==0) {
-                if (boat->helm!=(POINTS-1))
-                        boat->helm = boat->helm+1;
-        }
-        if (opt==1) {
-                if (boat->helm > 1)
+        switch (opt)
+        {
+        case TURN_L:
+                if (boat->helm > 0)
                         boat->helm = (boat->helm-1);
+                break;
+        case TURN_R:
+                if (boat->helm < POINTS)
+                        boat->helm = boat->helm+1;
+                break;
+        case TURN_HL:
+                if (boat->helm > HARD)
+                        boat->helm = (boat->helm-HARD);
+                break;
+        case TURN_HR:
+                if (boat->helm < (POINTS-HARD))
+                        boat->helm = (boat->helm+HARD);
+                break;
         }
 
         set_compass_helm(boat->helm);
@@ -54,14 +66,19 @@ uint32_t turn_helm(struct boat_t *boat, int opt)
 
 uint32_t change_course(struct boat_t *boat, int opt)
 {
-        #define SAILPOINTS 67
+        #define SAILPOINTS 15
        
-        if (opt==0) 
-                boat->hdg = (boat->hdg==0) ? (SAILPOINTS-1) : (boat->hdg-1);
-        else 
-                boat->hdg = (boat->hdg==(SAILPOINTS-1)) ? 0 : (boat->hdg+1);
+        switch (opt)
+        {
+        case TURN_L:
+                boat->hdg = (boat->hdg > 0) ? (boat->hdg-1) : SAILPOINTS;
+                break;
+        case TURN_R:
+                boat->hdg = (boat->hdg < SAILPOINTS) ? (boat->hdg+1) : 0;
+                break;
+        }
 
-
+        set_nibble(&boat->state, HDG, boat->hdg);
         set_compass_heading(boat->hdg);
 
         return (boat->hdg);
@@ -77,12 +94,16 @@ void boat_control(struct boat_t *boat, int order, int val)
         switch(order) 
         { 
         case 'j':
-                turn_helm(boat, 1);
-                /*change_course(boat, 1);*/
+                turn_helm(boat, TURN_L);
                 break;
         case 'k':
-                turn_helm(boat, 0);
-                /*change_course(boat, 0);*/
+                turn_helm(boat, TURN_R);
+                break;
+        case 'h':
+                turn_helm(boat, TURN_HL);
+                break;
+        case 'l':
+                turn_helm(boat, TURN_HR);
                 break;
         case 'f':
                 set_nibble(&boat->state, GUN, FIR);

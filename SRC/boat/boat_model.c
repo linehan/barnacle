@@ -61,7 +61,7 @@ uint32_t new_boat(struct map_t *map, int type, const char *name)
 
         new->state = 0;
 
-        WINDOW *win = newwin(2, 4, 3, 3);
+        WINDOW *win = newwin(2, 4, 0, 0);
         new->pan    = new_panel(win);
         wbkgrnd(win, &OCEAN[0]);
 
