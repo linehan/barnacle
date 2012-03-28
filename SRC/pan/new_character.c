@@ -77,7 +77,7 @@ void new_character(void)
 
 
         /* Select a character portrait. */
-        sel = new_wselect(L"餮鸎愚寫亶䴎戀念鑍嶏愈", 11, PUR_YEL, PUR_DYE, PUR_GRE, PUR_YEL);
+        sel = new_wselect(L"餮鸎愚寫亶䴎戀念鑍嶏愈", 11, PUR_DYE, PUR_YEL, PUR_GRE, PUR_YEL);
         wselect_set_win(sel, INFOW[BODY]);
         wselect_set_ofs(sel, 0, 15);
         wselect_paint(sel);

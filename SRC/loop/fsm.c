@@ -118,18 +118,9 @@ void operate_on(int input)
                 case 'l':
                         boat_control(get_boat("Afarensis"), input, 0);
                         break;
-                /*case ' ':*/
-                        /*order_boat('h', 0);*/
-                        /*break;*/
                 case '@':
                         boat_control(get_boat("Afarensis"), 'f', 0);
                         break;
-                /*case 'j':*/
-                        /*order_boat('p', 0);*/
-                        /*break;*/
-                /*case 'k':*/
-                        /*order_boat('s', 0);*/
-                        /*break;*/
                 case 'g':
                         boat_control(get_boat("Afarensis"), 'r', 0);
                         break;

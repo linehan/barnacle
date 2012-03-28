@@ -50,17 +50,12 @@ int main()
 
         uint32_t key;
         key = new_boat(pad, FUNBOAT, "Afarensis");
-        wprintw(DIAGNOSTIC_WIN, "%u\n", key);
-
-        if (get_boat("Afarensis") == NULL)
-                wprintw(DIAGNOSTIC_WIN, "NULL");
-        else
-                wprintw(DIAGNOSTIC_WIN, "NOT NULL");
 
         draw_boat(get_boat("Afarensis"));
 
         toggle_instrument_panel();
         toggle_instrument_panel();
+
         draw_compass();
         load_noun_test();
         view_dock();
