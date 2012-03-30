@@ -56,33 +56,43 @@
 //##############################################################################
 
 
+
+
+
 /*
- * Initialize and construct the red-black tree structure. Generates the 
- * Morton code keys for each grid square, quicksorts them, and then inserts 
- * them into the red-black tree in their sorted order.
+ * Given a rectangle struct rec_t, computes Morton codes for each coordinate
+ * pair in the rectangle, sorts them, and inserts them into a red-black tree,
+ * which is then returned. 
  */
-void build_rb_tree(struct rb_tree *tree, int rows, int cols, int total)
+struct rb_tree *grid_to_tree(int rows, int cols)
 {
-        uint32_t *m;   // Morton code for each node
-        uint32_t z;    // Stores computed Morton code
-        int n;         // Total number of nodes
+        uint32_t *m;          // Array of Morton codes, one per grid square
+        int n;                // Total number of grid squares 
         int i;
         int j;
 
-        m = malloc(total * sizeof(uint32_t));
+        struct rb_tree *tree = new_tree(1);
+        m = malloc((rows*cols) * sizeof(uint32_t));
         n = 0;
 
         for (i=0; i<rows; i++) {
                 for (j=0; j<cols; j++) {
-                        z = MORT(i, j);
-                        m[n++] = z; // Collect each coordinate's Morton code
+                        m[n++] = MORT(i, j);
                 }
         }
-        quicksort(m, n); // Sort them
-        while (n-->0) {
-                rb_insert(tree, m[n]); // Insert them into the rb-tree
-        }
+
+        quicksort(m, n);
+
+        while (n-->0) 
+                rb_insert(tree, m[n]);
+
+        free(m); // The sorted Morton codes have been copied into the tree
+
+        return (tree);
 }
+
+
+
 
 
 
@@ -90,61 +100,70 @@ void build_rb_tree(struct rb_tree *tree, int rows, int cols, int total)
  * Allocate memory for a new struct map_t, and initialize certain
  * of its members.
  */
-struct map_t *new_map(int rows, int cols)
+struct map_t *new_map(int h, int w, int scr_h, int scr_w, int scr_y, int scr_x)
 {
         struct map_t *new = malloc(sizeof *new);
 
-        new->h    = rows;
-        new->w    = cols;
-        new->a    = rows*cols;
-        new->padx = 1;
-        new->pady = 1;
-
-        new->W    = malloc(sizeof new->W);
         new->pan  = malloc(sizeof new->pan);
         new->win  = malloc(sizeof new->win);
 
-        set_ufo(&new->ufo, rows, cols, 0, 0, (2*rows), (2*cols), 0, 0);
+        set_ufo(&new->ufo, scr_h, scr_w, scr_y, scr_x, h, w, 0, 0);
 
-        new->tree = new_tree(1);
-        build_rb_tree(new->tree, new->h, new->w, new->a);
+        new->tree = grid_to_tree(h, w);
 
         return (new);
 }
 
 
+
+
+
+
+
 /*
-  Generates terrain using a Perlin simplex noise map, which is passed to
-  draw_layers();. Once draw_layers(); returns, the layers in *L[16] are
-  flattened into *W.
-*/
+ * Generates terrain using a Perlin simplex noise map, which is passed to
+ * draw_layers();. Once draw_layers(); returns, the layers in *L[16] are
+ * flattened into *W.
+ */
 void gen_map(struct map_t *map)
 {
         int i;
-        double **pmap = gen_perlin_map(map->h, map->w); // 2D Perlin map
+        int h;
+        int w;
+
+        h = map->ufo.box.h;
+        w = map->ufo.box.w;
+
+        double **pmap = gen_perlin_map(h, w); // 2D Perlin map
 
         map->win = newwin(LINES, COLS, 0, 0); // Fullscreen
         map->pan = new_panel(map->win);
 
-        for (i=0; i<16; i++) {
-                if (i == RIM) map->L[i] = new_winring(map->h, map->w, 0, 0, 2);
-                else          map->L[i] = new_winring(map->h, map->w, 0, 0, 1);
+        for (i=0; i<NLAYERS; i++) {
+                if (i == RIM) map->L[i] = new_multiwin(h, w, 0, 0, 2);
+                else          map->L[i] = new_multiwin(h, w, 0, 0, 1);
         }
 
-        map->W = new_winring(map->h, map->w, 0, 0, 2);
+        map->W = new_multiwin(h, w, 0, 0, 2);
 
         draw_layers(map, pmap);
         draw_water_rim(map);
         restack_map(map);
 }
 
+
+
+
 void restack_map(struct map_t *map)
 {
         int i;
-        for (i=0; i<16; i++) {
+        for (i=0; i<NLAYERS; i++) {
                 overlay(PEEK(map->L[i]), PEEK(map->W));
         }
 }
+
+
+
 
 void roll_map(struct map_t *map, int dir)
 {

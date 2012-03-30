@@ -54,11 +54,11 @@ am_arawak_OBJECTS = arawak.$(OBJEXT) init/init.$(OBJEXT) \
 	gen/mtwist.$(OBJEXT) gen/name/name.$(OBJEXT) \
 	geo/weather.$(OBJEXT) geo/terrain.$(OBJEXT) geo/map.$(OBJEXT) \
 	gfx/palette.$(OBJEXT) gfx/sprite.$(OBJEXT) gfx/gfx.$(OBJEXT) \
-	gfx/dock.$(OBJEXT) gfx/wselect.$(OBJEXT) \
-	gfx/fancy_menus.$(OBJEXT) gen/perlin.$(OBJEXT) \
-	gfx/term.$(OBJEXT) gfx/stdpan.$(OBJEXT) geo/path_mvc.$(OBJEXT) \
-	txt/gloss_m.$(OBJEXT) txt/gloss_v.$(OBJEXT) \
-	txt/gloss_c.$(OBJEXT) env/cloud.$(OBJEXT) \
+	gfx/multiwin.$(OBJEXT) gfx/dock.$(OBJEXT) \
+	gfx/wselect.$(OBJEXT) gfx/fancy_menus.$(OBJEXT) \
+	gen/perlin.$(OBJEXT) gfx/term.$(OBJEXT) gfx/stdpan.$(OBJEXT) \
+	geo/path_mvc.$(OBJEXT) txt/gloss_m.$(OBJEXT) \
+	txt/gloss_v.$(OBJEXT) txt/gloss_c.$(OBJEXT) \
 	boat/boat_model.$(OBJEXT) boat/boat_view.$(OBJEXT) \
 	boat/boat_control.$(OBJEXT) boat/compass.$(OBJEXT) \
 	noun/noun_model.$(OBJEXT) noun/noun_view.$(OBJEXT) \
@@ -198,6 +198,7 @@ arawak_SOURCES = arawak.c \
                    gfx/palette.c        \
                    gfx/sprite.c         \
                    gfx/gfx.c            \
+                   gfx/multiwin.c       \
                    gfx/dock.c           \
                    gfx/wselect.c        \
                    gfx/fancy_menus.c    \
@@ -208,7 +209,6 @@ arawak_SOURCES = arawak.c \
                    txt/gloss_m.c        \
                    txt/gloss_v.c        \
                    txt/gloss_c.c        \
-                   env/cloud.c          \
                    boat/boat_model.c           \
                    boat/boat_view.c           \
                    boat/boat_control.c           \
@@ -396,6 +396,8 @@ gfx/palette.$(OBJEXT): gfx/$(am__dirstamp) \
 gfx/sprite.$(OBJEXT): gfx/$(am__dirstamp) \
 	gfx/$(DEPDIR)/$(am__dirstamp)
 gfx/gfx.$(OBJEXT): gfx/$(am__dirstamp) gfx/$(DEPDIR)/$(am__dirstamp)
+gfx/multiwin.$(OBJEXT): gfx/$(am__dirstamp) \
+	gfx/$(DEPDIR)/$(am__dirstamp)
 gfx/dock.$(OBJEXT): gfx/$(am__dirstamp) gfx/$(DEPDIR)/$(am__dirstamp)
 gfx/wselect.$(OBJEXT): gfx/$(am__dirstamp) \
 	gfx/$(DEPDIR)/$(am__dirstamp)
@@ -420,13 +422,6 @@ txt/gloss_v.$(OBJEXT): txt/$(am__dirstamp) \
 	txt/$(DEPDIR)/$(am__dirstamp)
 txt/gloss_c.$(OBJEXT): txt/$(am__dirstamp) \
 	txt/$(DEPDIR)/$(am__dirstamp)
-env/$(am__dirstamp):
-	@$(MKDIR_P) env
-	@: > env/$(am__dirstamp)
-env/$(DEPDIR)/$(am__dirstamp):
-	@$(MKDIR_P) env/$(DEPDIR)
-	@: > env/$(DEPDIR)/$(am__dirstamp)
-env/cloud.$(OBJEXT): env/$(am__dirstamp) env/$(DEPDIR)/$(am__dirstamp)
 boat/$(am__dirstamp):
 	@$(MKDIR_P) boat
 	@: > boat/$(am__dirstamp)
@@ -508,7 +503,6 @@ mostlyclean-compile:
 	-rm -f boat/compass.$(OBJEXT)
 	-rm -f eng/model/bytes.$(OBJEXT)
 	-rm -f eng/state.$(OBJEXT)
-	-rm -f env/cloud.$(OBJEXT)
 	-rm -f gen/dice.$(OBJEXT)
 	-rm -f gen/mtwist.$(OBJEXT)
 	-rm -f gen/name/name.$(OBJEXT)
@@ -520,6 +514,7 @@ mostlyclean-compile:
 	-rm -f gfx/dock.$(OBJEXT)
 	-rm -f gfx/fancy_menus.$(OBJEXT)
 	-rm -f gfx/gfx.$(OBJEXT)
+	-rm -f gfx/multiwin.$(OBJEXT)
 	-rm -f gfx/palette.$(OBJEXT)
 	-rm -f gfx/sprite.$(OBJEXT)
 	-rm -f gfx/stdpan.$(OBJEXT)
@@ -566,7 +561,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@boat/$(DEPDIR)/compass.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@eng/$(DEPDIR)/state.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@eng/model/$(DEPDIR)/bytes.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@env/$(DEPDIR)/cloud.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@gen/$(DEPDIR)/dice.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@gen/$(DEPDIR)/mtwist.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@gen/$(DEPDIR)/perlin.Po@am__quote@
@@ -578,6 +572,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@gfx/$(DEPDIR)/dock.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@gfx/$(DEPDIR)/fancy_menus.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@gfx/$(DEPDIR)/gfx.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@gfx/$(DEPDIR)/multiwin.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@gfx/$(DEPDIR)/palette.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@gfx/$(DEPDIR)/sprite.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@gfx/$(DEPDIR)/stdpan.Po@am__quote@
@@ -751,8 +746,6 @@ distclean-generic:
 	-rm -f eng/$(am__dirstamp)
 	-rm -f eng/model/$(DEPDIR)/$(am__dirstamp)
 	-rm -f eng/model/$(am__dirstamp)
-	-rm -f env/$(DEPDIR)/$(am__dirstamp)
-	-rm -f env/$(am__dirstamp)
 	-rm -f gen/$(DEPDIR)/$(am__dirstamp)
 	-rm -f gen/$(am__dirstamp)
 	-rm -f gen/name/$(DEPDIR)/$(am__dirstamp)
@@ -788,7 +781,7 @@ clean: clean-am
 clean-am: clean-binPROGRAMS clean-generic mostlyclean-am
 
 distclean: distclean-am
-	-rm -rf ./$(DEPDIR) boat/$(DEPDIR) eng/$(DEPDIR) eng/model/$(DEPDIR) env/$(DEPDIR) gen/$(DEPDIR) gen/name/$(DEPDIR) geo/$(DEPDIR) gfx/$(DEPDIR) init/$(DEPDIR) lib/$(DEPDIR) lib/redblack/$(DEPDIR) lib/sort/$(DEPDIR) loop/$(DEPDIR) noun/$(DEPDIR) pan/$(DEPDIR) txt/$(DEPDIR) verb/$(DEPDIR)
+	-rm -rf ./$(DEPDIR) boat/$(DEPDIR) eng/$(DEPDIR) eng/model/$(DEPDIR) gen/$(DEPDIR) gen/name/$(DEPDIR) geo/$(DEPDIR) gfx/$(DEPDIR) init/$(DEPDIR) lib/$(DEPDIR) lib/redblack/$(DEPDIR) lib/sort/$(DEPDIR) loop/$(DEPDIR) noun/$(DEPDIR) pan/$(DEPDIR) txt/$(DEPDIR) verb/$(DEPDIR)
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
 	distclean-tags
@@ -834,7 +827,7 @@ install-ps-am:
 installcheck-am:
 
 maintainer-clean: maintainer-clean-am
-	-rm -rf ./$(DEPDIR) boat/$(DEPDIR) eng/$(DEPDIR) eng/model/$(DEPDIR) env/$(DEPDIR) gen/$(DEPDIR) gen/name/$(DEPDIR) geo/$(DEPDIR) gfx/$(DEPDIR) init/$(DEPDIR) lib/$(DEPDIR) lib/redblack/$(DEPDIR) lib/sort/$(DEPDIR) loop/$(DEPDIR) noun/$(DEPDIR) pan/$(DEPDIR) txt/$(DEPDIR) verb/$(DEPDIR)
+	-rm -rf ./$(DEPDIR) boat/$(DEPDIR) eng/$(DEPDIR) eng/model/$(DEPDIR) gen/$(DEPDIR) gen/name/$(DEPDIR) geo/$(DEPDIR) gfx/$(DEPDIR) init/$(DEPDIR) lib/$(DEPDIR) lib/redblack/$(DEPDIR) lib/sort/$(DEPDIR) loop/$(DEPDIR) noun/$(DEPDIR) pan/$(DEPDIR) txt/$(DEPDIR) verb/$(DEPDIR)
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 

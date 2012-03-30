@@ -66,95 +66,115 @@
         /*}*/
         /*scr_refresh();*/
 /*}*/
-//##############################################################################
-//# Where the magic happens - draw the graphics layers based on generated
-//# Perlin simplex noise and some coin flips. 
-//##############################################################################
+/*
+ * Holdunter yer buttz... 
+ *
+ * Using the Perlin simplex noise at 'pmap', generate and then draw the 
+ * terrain layers for the struct map_t pointed to by the 'map' argument.
+ */
 void draw_layers(struct map_t *map, double **pmap)
 {
-        int i, j;
-        uint32_t z;           // For computing Morton codes
-        int imax, jmax;       // loop boundaries for ground box
-        int ymax, xmax;       // window boundaries
-        int x0, y0, tx0, ty0; // initial position of ground and tree boxes
-        int w, h, tw, th;     // width and height of ground and tree boxes
-        int chunk, chunkmin;  // unit of land to draw at a time
-        int lastchunk;        // value of the previous chunk
-        double seed;          // perlin noise (elevation) values
+        #define CHUNK_INITIAL 6
+        #define CHUNK_MIN 3
+        #define THRESHOLD 0.95
 
-        seed     = 0.95; // threshold value to determine whether to draw
-        chunk    = 6;
-        chunkmin = 3;
-        ymax     = ((map->h)-1)-chunkmin; // beware the fencepost error
-        xmax     = ((map->w)-1)-chunkmin;
+        int ymax;    // loop boundaries for map cursor
+        int xmax; 
+        int imax;    // loop boundaries for chunk drawing
+        int jmax; 
+        int map_h;   // Dimensions of entire map
+        int map_w; 
+        int map_y; 
+        int map_x;     
+        int tree_h;  // Dimensions of trees during drawing
+        int tree_w; 
+        int tree_y; 
+        int tree_x;   
+        int chunk;   // Square units to draw at a time 
+        int chunk_h; // Height of chunk
+        int chunk_w; // Width of chunk
+        uint32_t z;  // for computing Morton codes
+        int i;
+        int j;
 
-        cchar_t *bgtop;            // background sprite
+        map_h = map->ufo.box.h;
+        map_w = map->ufo.box.w;
+
+        chunk = CHUNK_INITIAL;
+        ymax  = (map_h-1)-CHUNK_MIN; // beware the fencepost
+        xmax  = (map_w-1)-CHUNK_MIN;
+
+        cchar_t *bgtop; // background tile 
         bgtop = get_tile(__Gra__);
 
-        for (y0=0; y0<ymax; y0++) {
-                for (x0=0; x0<xmax; x0++) {
+        for (map_y=0; map_y<ymax; map_y++) {
+        for (map_x=0; map_x<xmax; map_x++) {
 
-                        if (pmap[y0][x0] > seed) {
-
-                                lastchunk = chunk;
-
-                                if (flip_biased(0.57))   
-                                        chunk += 1;
-                                else    
-                                        chunk -= 1;
-
-                                chunk = (chunk < chunkmin) ? lastchunk : chunk;
-
-                                h = w = chunk; // square
-                                imax = y0+h;
-                                jmax = x0+w;
-                                if (imax > map->h) h = imax-map->h;
-                                if (jmax > map->w) w = jmax-map->w;
-
-                                // Draw the ground box
-                                for (i=y0; i<=imax; i++) {
-                                        for (j=x0; j<jmax; j++) {
-                                                z = MORT(i, j);
-                                                if (i == imax) {
-                                                        mvwadd_wch(PEEK(map->L[DRP]), i, j, &MTN[2]);
-                                                        set_state(map->tree, z, 0, LAY, DRP);
-                                                        set_state(map->tree, z, 0, SED, LIME);
-                                                        set_state(map->tree, z, 0, SOI, MOLL);
-                                                        continue;
-                                                }
-                                                mvwadd_wch(PEEK(map->L[TOP]), i, j, bgtop); // top
-                                                set_state(map->tree, z, 0, LAY, TOP);
-                                                set_state(map->tree, z, 0, SED, LIME);
-                                                set_state(map->tree, z, 0, SOI, MOLL);
-                                        }
-                                }
-                                // Draw the tree box
-                                if ((flip_biased(0.5))||(w < 4)) continue;
-                                tx0  = x0+1;
-                                ty0  = y0-1;
-                                th   = h-1;
-                                tw   = w-2;
-                                imax = ty0+th; // recalculation
-                                jmax = tx0+tw; // recalculation
-                                for (i=ty0; i<=imax; i++) {
-                                        for (j=tx0; j<jmax; j++) {
-                                                z = MORT(i, j);
-                                                if (i == imax) {
-                                                        set_state(map->tree, z, 0, LAY, VEG);
-                                                        set_state(map->tree, z, 0, SED, LIME);
-                                                        set_state(map->tree, z, 0, SOI, MOLL);
-                                                        mvwadd_wch(PEEK(map->L[VEG]), i, j, &TREE[0]);
-                                                        continue;
-                                                }
-                                                mvwadd_wch(PEEK(map->L[VEG]), i, j, &TREE[1]);
-                                                set_state(map->tree, z, 0, LAY, VEG);
-                                                set_state(map->tree, z, 0, SED, LIME);
-                                                set_state(map->tree, z, 0, SOI, SPOD);
-                                        }
-                                }
-                        }
-                        mvwadd_wch(PEEK(map->L[BGR]), y0, x0, &OCEAN[0]);
+                if (pmap[map_y][map_x] < THRESHOLD) {
+                        mvwadd_wch(PEEK(map->L[BGR]), map_y, map_x, &OCEAN[0]);
+                        continue;
                 }
+
+                chunk = (flip_biased(0.57)) ? (chunk+1) : (chunk-1);
+                chunk = (chunk < CHUNK_MIN) ? CHUNK_MIN : chunk;
+
+                chunk_h = chunk_w = chunk;
+
+                imax  = map_y + chunk_h;
+                jmax  = map_x + chunk_w;
+
+                if (imax > map_h) chunk_h = imax-(map_h);
+                if (jmax > map_w) chunk_w = jmax-(map_w);
+
+                // Draw the ground box
+                for (i=map_y; i<=imax; i++) {
+                for (j=map_x; j<jmax; j++) {
+                        z = MORT(i, j);
+                        if (i == imax) {
+                                mvwadd_wch(PEEK(map->L[DRP]), i, j, &MTN[2]);
+                                set_state(map->tree, z, 0, LAY, DRP);
+                                set_state(map->tree, z, 0, SED, LIME);
+                                set_state(map->tree, z, 0, SOI, MOLL);
+                        }
+                        else {
+                                mvwadd_wch(PEEK(map->L[TOP]), i, j, bgtop); // top
+                                set_state(map->tree, z, 0, LAY, TOP);
+                                set_state(map->tree, z, 0, SED, LIME);
+                                set_state(map->tree, z, 0, SOI, MOLL);
+                        }
+                }
+                }
+
+                // Decide whether to draw the tree box
+                if ((flip_biased(0.5))||(chunk_w < 4)) continue;
+                else {
+                        tree_x = (map_x+1);
+                        tree_y = (map_y-1);
+                        tree_h = (chunk_h-1);
+                        tree_w = (chunk_w-2);
+                        imax   = tree_y + tree_h; // recalculation
+                        jmax   = tree_x + tree_w; // recalculation
+                }
+
+                // Draw the tree box
+                for (i=tree_y; i<=imax; i++) {
+                for (j=tree_x; j<jmax; j++) {
+                        z = MORT(i, j);
+                        if (i == imax) {
+                                set_state(map->tree, z, 0, LAY, VEG);
+                                set_state(map->tree, z, 0, SED, LIME);
+                                set_state(map->tree, z, 0, SOI, MOLL);
+                                mvwadd_wch(PEEK(map->L[VEG]), i, j, &TREE[0]);
+                        }
+                        else {
+                                mvwadd_wch(PEEK(map->L[VEG]), i, j, &TREE[1]);
+                                set_state(map->tree, z, 0, LAY, VEG);
+                                set_state(map->tree, z, 0, SED, LIME);
+                                set_state(map->tree, z, 0, SOI, SPOD);
+                        }
+                }
+                }
+        }
         }
 
 }
@@ -173,8 +193,8 @@ void draw_water_rim(struct map_t *map)
                NEXT(map->L[RIM]);
         rim2 = PEEK(map->L[RIM]);
 
-        for (i=1; i<(map->h); i++) {
-                for (j=1; j<(map->w); j++) {
+        for (i=1; i<(map->ufo.box.h); i++) {
+                for (j=1; j<(map->ufo.box.w); j++) {
 
                         z = MORT(i, j);
 

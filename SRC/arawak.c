@@ -41,7 +41,7 @@ int main()
 {
         arawak_init();
 
-        struct map_t *pad = new_map((LINES*3), (COLS*3));
+        struct map_t *pad = new_map((LINES*3), (COLS*3), LINES, COLS, 0, 0);
         gen_map(pad);
         GLOBE = pad;
 

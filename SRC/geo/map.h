@@ -38,17 +38,12 @@
 #define NLAYERS 16  // Number of layers on the world map.
 
 struct map_t {
-        struct ring_t *L[NLAYERS];
-        struct ring_t *W;
+        struct multiwin_t *L[NLAYERS];
+        struct multiwin_t *W;
         WINDOW *win;
         PANEL  *pan;
         struct rb_tree *tree;
         struct ufo_t ufo;
-        int w;
-        int h;
-        int a;
-        int padx;
-        int pady;
 };
 
 extern struct map_t *GLOBE; // Global map.
@@ -193,7 +188,7 @@ char **map_opts[8] = {lay_tag,ALT_tag,BED_tag,SED_tag,SOI_tag,MOI_tag,grad_tag,h
 //}}}1
 
 
-struct map_t *new_map(int rows, int cols);
+struct map_t *new_map(int h, int w, int scr_h, int scr_w, int scr_y, int scr_x);
 void          gen_map(struct map_t *map);
 void         roll_map(struct map_t *map, int dir);
 

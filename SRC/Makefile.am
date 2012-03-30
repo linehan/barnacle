@@ -34,6 +34,7 @@ arawak_SOURCES = arawak.c \
                    gfx/palette.c        \
                    gfx/sprite.c         \
                    gfx/gfx.c            \
+                   gfx/multiwin.c       \
                    gfx/dock.c           \
                    gfx/wselect.c        \
                    gfx/fancy_menus.c    \
@@ -44,7 +45,6 @@ arawak_SOURCES = arawak.c \
                    txt/gloss_m.c        \
                    txt/gloss_v.c        \
                    txt/gloss_c.c        \
-                   env/cloud.c          \
                    boat/boat_model.c           \
                    boat/boat_view.c           \
                    boat/boat_control.c           \
