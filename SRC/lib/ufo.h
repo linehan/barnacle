@@ -70,6 +70,9 @@ bool mvufo_down(struct rec_t *obj, struct rec_t *box);
 #define ufo_y(ptr, member) ptr->member.obj.y
 #define ufo_x(ptr, member) ptr->member.obj.x
 
+#define ufo_obj(ptr, member) ptr->member.obj
+#define ufo_box(ptr, member) ptr->member.box
+
 
 
 

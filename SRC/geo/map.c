@@ -163,6 +163,25 @@ void restack_map(struct map_t *map)
 }
 
 
+/*
+ * Returns 1 (true) if collision detected, otherwise returns 0 (false).
+ */
+int map_hit(struct map_t *map, struct rec_t *rec)
+{
+        uint32_t z; // Stores Morton code.
+        uint32_t i;
+        uint32_t j;
+
+        for (i=rec->y; i<(rec->h+rec->y); i++) {
+                for (j=rec->x; j<(rec->x+rec->w); j++) {
+                        z = MORT(i, j);
+                        if (is_state(map->tree, z, 0, LAY, TOP)) return (1);
+                        if (is_state(map->tree, z, 0, LAY, DRP)) return (1);
+                }
+        }
+        return (0);
+}
+
 
 
 void roll_map(struct map_t *map, int dir)

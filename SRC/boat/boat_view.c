@@ -1,12 +1,7 @@
 #define _XOPEN_SOURCE_EXTENDED = 1  /* extended character sets */
-#include <stdint.h>
-#include "../gfx/gfx.h"
-#include "../pan/test.h"
-#include "../eng/model/bytes.h"
-#include "../lib/bitwise.h"
-#include "../lib/ufo.h"
 
-#include "boat.h"
+#include "boat_model.h"
+#include "../pan/test.h"
 
 #define HULLCOUNT 3 
 #define MASTCOUNT 3 
@@ -55,15 +50,23 @@ void move_boat(struct boat_t *boat, int dir)
         switch (dir) {
         case 'u':       
                 ufo_up(boat, ufo);
+                if (map_hit(GLOBE, &boat->ufo.obj))
+                        ufo_down(boat, ufo);
                 break;
         case 'd':       
                 ufo_down(boat, ufo);
+                if (map_hit(GLOBE, &boat->ufo.obj)) 
+                        ufo_up(boat, ufo);
                 break;
         case 'l':       
                 ufo_left(boat, ufo);
+                if (map_hit(GLOBE, &boat->ufo.obj))
+                        ufo_right(boat, ufo);
                 break;
         case 'r':      
                 ufo_right(boat, ufo);
+                if (map_hit(GLOBE, &boat->ufo.obj))
+                        ufo_left(boat, ufo);
                 break;
         }
 

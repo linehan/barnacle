@@ -45,21 +45,6 @@ void geojug_start(void)
 }
 
 
-/*
-  Returns 0 (false) if collision detected, otherwise returns 1.
-*/
-int hit_test(struct map_t *map, int y, int x)
-{
-        uint32_t z; // Stores Morton code.
-
-        z = MORT(y, x);
-
-        if (is_state(map->tree, z, 1, LAY, TOP) || is_state(map->tree, z, 1, LAY, DRP))
-                return (0);
-        else    
-                return (1);
-}
-
 void build_gpkg(struct gpkg *g)
 {
         int n, i;

@@ -1,12 +1,7 @@
 #define _XOPEN_SOURCE_EXTENDED = 1  /* extended character sets */
-#include <stdint.h>
-#include "../gfx/gfx.h"
+
+#include "boat_model.h"
 #include "../pan/test.h"
-
-#include "../lib/bitwise.h"
-#include "../lib/ufo.h"
-
-#include "boat.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 void sail_boat(struct boat_t *boat)

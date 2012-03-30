@@ -1,29 +1,19 @@
+#include "boat_model.h"
 #include "../geo/weather.h"
-#include "boat.h"
-
 
 
 enum gfxtags {DN=0,UP=1,GH=2,VR=0,HZ=1,TL=2,TR=3,BL=4,BR=5};
 enum bordertags {LSIDE=0,RSIDE=1,BOTL=2,BOTR=3,BOTT=4};
 
-enum compass_window_dims { 
-        box_wid = 15, // width of entire compass window
-        box_hlf = 8,  // "half" of the width of the compass window
-        rib_wid = 13, // width of the compass ribbon (dial)
-        rib_hlf = 7,  // "half" of the ribbon width
-        rib_off = 1,  // offset of the ribbon from the box edge
-        cmp_num = 16, // number of ribbon elements
-        cmp_hlf = 8   // half the number of ribbon elements
-};
+#define BOX_W      15 // width of entire compass window
+#define BOX_CENTER  8 // "half" of the width of the compass window
+#define RIB_W      13 // width of the compass ribbon (dial)
+#define RIB_CENTER  7 // "half" of the ribbon width
+#define RIB_LEN    16 
+#define RIB_WIN_W  15
 
-/*#define RIBLEN 67*/
-#define RIBLEN 16 
-#define RIB_WIN_WID 15
-#define RIB_CENTER 7
-/*static wchar_t gfxRIB[] = L"N⋅⋅⋅∙⋅⋅⋅ne⋅⋅⋅∙⋅⋅⋅E⋅⋅⋅∙⋅⋅⋅se⋅⋅⋅∙⋅⋅⋅S⋅⋅⋅∙⋅⋅⋅sw⋅⋅⋅∙⋅⋅⋅W⋅⋅⋅∙⋅⋅⋅nw⋅⋅⋅∙⋅⋅⋅";*/
-/*static wchar_t gfxRIB[] = L"N⋅⋅∙⋅⋅E⋅⋅∙⋅⋅S⋅⋅∙⋅⋅W⋅⋅∙⋅⋅";*/
 static wchar_t gfxRIB[] = L"N⋅∙⋅E⋅∙⋅S⋅∙⋅W⋅∙⋅";
-static cchar_t RIB[RIBLEN];
+static cchar_t RIB[RIB_LEN];
 static wchar_t gfxCBOR[] = L"▌▐";
 static wchar_t gfxMRK[] = L"▾▴";
 static wchar_t gfxCMPBG = L' ';
@@ -45,17 +35,25 @@ static uint32_t current_helm;
 static uint32_t make_helm;
 static uint32_t middle_helm;
 
-static uint32_t helm_change;
+
+
+
 
 void set_compass_heading(uint32_t hdg)
 {
         current_heading = hdg;
-        middle_heading = ((RIBLEN+hdg)-rib_hlf) % RIBLEN;
+        middle_heading = ((RIB_LEN+hdg)-RIB_CENTER) % RIB_LEN;
 }
+
+
+
+
 void set_compass_helm(uint32_t helm)
 {
         make_helm = helm;
 }
+
+
 
 
 void init_instruments(void)
@@ -69,15 +67,15 @@ void init_instruments(void)
         setcchar(&(CMRK[GH]), &(gfxMRK[UP]), 0, PUR_GRE, NULL);
         setcchar(&(CMRK[UP]), &(gfxMRK[UP]), 0, CMP_YELLOW, NULL);
 
-        for (i=0; i<RIBLEN; i++) {
+        for (i=0; i<RIB_LEN; i++) {
                 if (gfxRIB[i] == L'⋅' || gfxRIB[i] == L'∙')
                         setcchar(&RIB[i], &gfxRIB[i], 0, PUR_PURPLE, NULL);
                 else
                         setcchar(&RIB[i], &gfxRIB[i], 0, PUR_GRE, NULL);
         }
 
-        cmpbox_win = newwin(3, box_wid, LINES-3, ((COLS/2)-(box_hlf)));
-        cmprib_win = newwin(1, 13, LINES-2, ((COLS/2)-(rib_hlf)));
+        cmpbox_win = newwin(3, BOX_W, LINES-3, ((COLS/2)-(BOX_CENTER)));
+        cmprib_win = newwin(1, 13, LINES-2, ((COLS/2)-(RIB_CENTER)));
         cmpbox_pan = new_panel(cmpbox_win);
         cmprib_pan = new_panel(cmprib_win);
 
@@ -121,7 +119,7 @@ void mark_wind(void)
         // If the offset doesn't equal the delta, increment the marker offset
         if (offsup != delta) {
                 if      ((offsup>delta) && (offsup>1))       offsup--;
-                else if ((offsup<delta) && (offsup<rib_wid)) offsup++;
+                else if ((offsup<delta) && (offsup<RIB_W)) offsup++;
         }
 }
 
@@ -162,11 +160,6 @@ void approach_helm(float *delay)
         if (offset!=0) buffer -= (buffer > BUF_MIN) ? BUF_STEP : 0;
 
         if (buffer < BUF_FULL) buffer = (buffer+BUF_REST);
-
-                /*if (buffer < BUF_MIN) {*/
-                        /*change_course(get_boat("Afarensis"), dir);*/
-                        /**delay = DELAY_MAX - ((float)buffer * DELAY_FACTOR);*/
-
 
                 if (buffer < BUF_MIN && offset != 0 ) {
                         change_course(get_boat("Afarensis"), dir^1);
@@ -211,20 +204,20 @@ void draw_compass(void)
 
         /* LINE 0 */
         mvwadd_wch(cmpbox_win, 0, 0, &CBOR[LSIDE]);
-        mvwadd_wch(cmpbox_win, 0, box_wid-1, &CBOR[RSIDE]);
+        mvwadd_wch(cmpbox_win, 0, BOX_W-1, &CBOR[RSIDE]);
         mvwadd_wch(cmpbox_win, 2, offsup, &(CMRK[DN]));
 
         /* LINE 1 */
         mvwadd_wch(cmpbox_win, 1, 0, &CBOR[LSIDE]);
-        for (i=0; i<rib_wid; i++) {
-                wadd_wch(cmprib_win, &RIB[((middle_heading+i)%RIBLEN)]);
+        for (i=0; i<RIB_W; i++) {
+                wadd_wch(cmprib_win, &RIB[((middle_heading+i)%RIB_LEN)]);
         }
-        mvwadd_wch(cmpbox_win, 1, (box_wid-1), &CBOR[RSIDE]);
+        mvwadd_wch(cmpbox_win, 1, (BOX_W-1), &CBOR[RSIDE]);
 
         /* LINE 2 */
         mvwadd_wch(cmpbox_win, 2, current_helm, &CMRK[UP]);
         mvwadd_wch(cmpbox_win, 2, 0, &CBOR[LSIDE]);
-        mvwadd_wch(cmpbox_win, 2, (box_wid-1), &CBOR[RSIDE]);
+        mvwadd_wch(cmpbox_win, 2, (BOX_W-1), &CBOR[RSIDE]);
 
         vrt_refresh();
         scr_refresh();

@@ -33,7 +33,7 @@
 #include "init/init.h"
 #include "loop/loop.h"
 
-#include "boat/boat.h"
+#include "boat/boat_model.h"
 
 
 /* Day-toh-nah */
