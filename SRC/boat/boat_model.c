@@ -52,7 +52,7 @@ uint32_t new_boat(struct map_t *map, int type, const char *name)
 
         struct boat_t *new = malloc(sizeof(struct boat_t)); 
 
-        new->ufo = new_ufo(BOAT_H, BOAT_W, 0, 0, map->h, map->w, 0, 0);
+        set_ufo(&new->ufo, BOAT_H, BOAT_W, 0, 0, map->h, map->w, 0, 0);
         init_path(&new->path, 1, 0, 13);
 
         new->name = mydup(name);

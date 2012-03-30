@@ -40,7 +40,7 @@ extern sem_t *REFRESH_LOCK; // keeps things from going crazy in the i/o thread
         wrefresh(win);          \
 
 #define map_refresh(map) \
-        copywin(PEEK(map->W), map->win, ufo_y(map->ufo), ufo_x(map->ufo), 0, 0, LINES-1, COLS-1, 0); \
+        copywin(PEEK(map->W), map->win, ufo_y(map, ufo), ufo_x(map, ufo), 0, 0, LINES-1, COLS-1, 0); \
         update_panels(); \
         doupdate(); 
 

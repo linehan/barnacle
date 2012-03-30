@@ -22,6 +22,7 @@ arawak_SOURCES = arawak.c \
                    lib/fifo.c           \
                    lib/queue.c          \
                    lib/textutils.c      \
+                   lib/ufo.c            \
                    eng/state.c          \
                    eng/model/bytes.c    \
                    gen/dice.c           \

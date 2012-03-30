@@ -146,8 +146,8 @@ void move_inspector(int dir)
                 break;
         }
 
-        inspector_yy = ufo_y(GLOBE->ufo)+(inspector_y);
-        inspector_xx = ufo_x(GLOBE->ufo)+(inspector_x);
+        inspector_yy = ufo_y(GLOBE, ufo)+(inspector_y);
+        inspector_xx = ufo_x(GLOBE, ufo)+(inspector_x);
 
         z = mort(inspector_yy, inspector_xx);
         move_panel(INSPECTORPAN, inspector_y, inspector_x);

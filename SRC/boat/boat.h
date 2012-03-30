@@ -14,7 +14,7 @@ struct boat_t {
         int type;
         uint32_t id;
         PANEL *pan;
-        struct ufo_t *ufo;
+        struct ufo_t ufo;
         struct path_t path;
         struct boat_gfx *gfx;
         uint32_t state;

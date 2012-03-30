@@ -33,19 +33,17 @@
 #include <stdint.h>
 #include "../lib/redblack/rb.h"
 #include "../eng/state.h"
+#include "../lib/ufo.h"
 
 #define NLAYERS 16  // Number of layers on the world map.
 
-/*
-  The datatype for holding a world map.
-*/
 struct map_t {
         struct ring_t *L[NLAYERS];
         struct ring_t *W;
         WINDOW *win;
         PANEL  *pan;
         struct rb_tree *tree;
-        struct ufo_t *ufo;
+        struct ufo_t ufo;
         int w;
         int h;
         int a;
@@ -194,9 +192,7 @@ static const
 char **map_opts[8] = {lay_tag,ALT_tag,BED_tag,SED_tag,SOI_tag,MOI_tag,grad_tag,hdg_tag};
 //}}}1
 
-/*
-  Function prototypes
-*/
+
 struct map_t *new_map(int rows, int cols);
 void          gen_map(struct map_t *map);
 void         roll_map(struct map_t *map, int dir);

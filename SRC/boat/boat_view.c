@@ -49,36 +49,36 @@ void move_boat(struct boat_t *boat, int dir)
 {
         if (dir != 'u' && dir != 'd' && dir != 'l' && dir != 'r') return;
 
-        int y = ufo_y(boat->ufo);
-        int x = ufo_x(boat->ufo);
+        int y = ufo_y(boat, ufo);
+        int x = ufo_x(boat, ufo);
 
         switch (dir) {
         case 'u':       
-                        ufo_u(boat->ufo);
-                        break;
+                ufo_up(boat, ufo);
+                break;
         case 'd':       
-                        ufo_d(boat->ufo);
-                        break;
+                ufo_down(boat, ufo);
+                break;
         case 'l':       
-                        ufo_l(boat->ufo);
-                        break;
+                ufo_left(boat, ufo);
+                break;
         case 'r':      
-                        ufo_r(boat->ufo);
-                        break;
+                ufo_right(boat, ufo);
+                break;
         }
 
         // Scroll down at bottom boundary
-        if (ufo_y(boat->ufo) == LINES-10) {
+        if (ufo_y(boat, ufo) == LINES-10) {
                 roll_map(GLOBE, 'd');
-                ufo_u(boat->ufo);
+                ufo_up(boat, ufo);
         }
         // Scroll right at right boundary
-        if (ufo_x(boat->ufo) == COLS-10) {
+        if (ufo_x(boat, ufo) == COLS-10) {
                 roll_map(GLOBE, 'r');
-                ufo_l(boat->ufo);
+                ufo_left(boat, ufo);
         }
 
-        move_panel(boat->pan, ufo_y(boat->ufo), ufo_x(boat->ufo));
+        move_panel(boat->pan, ufo_y(boat, ufo), ufo_x(boat, ufo));
         update_panels();
 
         path_push(&boat->path, y, x);

@@ -42,11 +42,6 @@
 #define _XOPEN_SOURCE_EXTENDED = 1  /* extended character sets */
 #include <stdlib.h>
 #include <string.h>
-#include <ncurses.h>
-#include <wchar.h>
-#include <panel.h>
-#include <pthread.h>
-#include <semaphore.h>
 
 #include "../gfx/gfx.h"
 #include "../gen/perlin.h"
@@ -59,16 +54,20 @@
 #include "map.h"
 #include "terrain.h"
 //##############################################################################
+
+
 /*
-  Initialize and construct the red-black tree structure. Generates the 
-  Morton code keys and inserts them into the tree in sorted order.
-*/
+ * Initialize and construct the red-black tree structure. Generates the 
+ * Morton code keys for each grid square, quicksorts them, and then inserts 
+ * them into the red-black tree in their sorted order.
+ */
 void build_rb_tree(struct rb_tree *tree, int rows, int cols, int total)
 {
-        uint32_t i, j; // Iterators
         uint32_t *m;   // Morton code for each node
         uint32_t z;    // Stores computed Morton code
         int n;         // Total number of nodes
+        int i;
+        int j;
 
         m = malloc(total * sizeof(uint32_t));
         n = 0;
@@ -85,9 +84,12 @@ void build_rb_tree(struct rb_tree *tree, int rows, int cols, int total)
         }
 }
 
+
+
 /*
-  Allocate memory for a new struct map_t, and initialize some of its members.
-*/
+ * Allocate memory for a new struct map_t, and initialize certain
+ * of its members.
+ */
 struct map_t *new_map(int rows, int cols)
 {
         struct map_t *new = malloc(sizeof *new);
@@ -97,15 +99,20 @@ struct map_t *new_map(int rows, int cols)
         new->a    = rows*cols;
         new->padx = 1;
         new->pady = 1;
-        new->ufo  = new_ufo(rows, cols, 0, 0, (2*rows), (2*cols), 0, 0);
+
         new->W    = malloc(sizeof new->W);
         new->pan  = malloc(sizeof new->pan);
         new->win  = malloc(sizeof new->win);
+
+        set_ufo(&new->ufo, rows, cols, 0, 0, (2*rows), (2*cols), 0, 0);
+
         new->tree = new_tree(1);
         build_rb_tree(new->tree, new->h, new->w, new->a);
 
         return (new);
 }
+
+
 /*
   Generates terrain using a Perlin simplex noise map, which is passed to
   draw_layers();. Once draw_layers(); returns, the layers in *L[16] are
@@ -143,16 +150,16 @@ void roll_map(struct map_t *map, int dir)
 {
         switch (dir) {
         case 'l': 
-                ufo_l(map->ufo);
+                ufo_left(map, ufo);
                 break;
         case 'r': 
-                ufo_r(map->ufo);
+                ufo_right(map, ufo);
                 break;
         case 'u': 
-                ufo_u(map->ufo);
+                ufo_up(map, ufo);
                 break;
         case 'd': 
-                ufo_d(map->ufo);
+                ufo_down(map, ufo);
                 break;
         }
         map_refresh(map);
