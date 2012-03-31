@@ -12,6 +12,7 @@
 #include <locale.h>
 
 #include "../lib/llist/list.h"
+#include "brnoise.h"
 #include "sprite.h"
 #include "gfx.h"
 #include "palette.h"
@@ -39,6 +40,7 @@ cchar_t BLANK, PLAIN;
 cchar_t DIRT[2];
 cchar_t UNDERSEA;
 cchar_t DAYSKY;
+cchar_t LAGOON;
 cchar_t PURPLE[5];
 /******************************************************************************/
 void init_gfx_colors(void)
@@ -106,6 +108,7 @@ void init_gfx_colors(void)
 
         setcchar(&DIRT[0], &gfxBLANK, 0, LAND, NULL);
         setcchar(&SAND, &gfxSOLID, 0, SEA_SAND, NULL);
+        setcchar(&LAGOON, &BRDOT[2][2], 0, SEA_SHALLOW, NULL);
         setcchar(&BLANK, &gfxBLANK, 0, 0, NULL);
         setcchar(&PLAIN, &gfxBLANK, 0, COLOR_PAIR(WHITE), NULL);
         setcchar(&UNDERSEA, &gfxSOLID, 0, UND_SEA, NULL);

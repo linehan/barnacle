@@ -140,14 +140,14 @@ void gen_map(struct map_t *map)
         map->pan = new_panel(map->win);
 
         for (i=0; i<NLAYERS; i++) {
-                if (i == RIM) map->L[i] = new_multiwin(h, w, 0, 0, 2);
+                if (i == RIM) map->L[i] = new_multiwin(h, w, 0, 0, 4);
                 else          map->L[i] = new_multiwin(h, w, 0, 0, 1);
         }
 
         map->W = new_multiwin(h, w, 0, 0, 2);
 
         draw_layers(map, map->pmap);
-        erode_beach(map);
+        /*erode_beach(map);*/
         draw_water_rim(map);
         restack_map(map);
 }

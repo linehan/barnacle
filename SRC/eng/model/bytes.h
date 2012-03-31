@@ -6,6 +6,7 @@
   (8-bit) byte values stored in a single uint32_t, as well as (4-bit)
   nibble values stored in the same.
 */
+#include <assert.h>
 #include <stdint.h>
 
 static const int NBYTES=4;
@@ -29,21 +30,35 @@ void unpack_nibbles(uint32_t word, int *dest, size_t n);
 
 static inline void inc_byte(uint32_t *word, int b)
 {
+        assert(word != NULL);
         set_byte(word, b, (get_byte(*word, b))+1);
 }
 static inline void dec_byte(uint32_t *word, int b)
 {
-        set_byte(word, b, (get_byte(*word, b))-1);
+        assert(word != NULL);
+        int byte = get_byte(*word, b);
+
+        if (byte > 0) byte--;
+        else return;
+
+        set_byte(word, b, byte);
 }
 
 
 static inline void inc_nibble(uint32_t *word, int n)
 {
+        assert(word != NULL);
         set_nibble(word, n, (get_nibble(*word, n))+1);
 }
 static inline void dec_nibble(uint32_t *word, int n)
 {
-        set_nibble(word, n, (get_nibble(*word, n))-1);
+        assert(word != NULL);
+        int nib = get_nibble(*word, n);
+
+        if (nib > 0) nib--;
+        else return;
+
+        set_nibble(word, n, nib);
 }
 
 #endif

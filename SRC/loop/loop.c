@@ -137,7 +137,7 @@ int start_event_watchers(void)
         move.repeat    = .08;
         sail.repeat    = .02;
         weather.repeat = .08;
-        animate.repeat = 2.5;
+        animate.repeat = 3.5;
         print.repeat   = .02;
         refresh.repeat = .01;
 

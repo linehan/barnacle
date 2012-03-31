@@ -2,6 +2,8 @@
 #include <stdio.h>
 #include <stdarg.h>
 #include <stdint.h>
+#include <limits.h>
+#include "../../lib/common.h"
 #include "bytes.h"
 
 
@@ -71,6 +73,9 @@ static const uint32_t ngouge[]={0xF0000000,0x0F000000,0x00F00000,0x000F0000,
 // Bit offsets (little-endian)
 static const uint32_t boffset[]={24, 16, 8, 0};
 static const uint32_t noffset[]={28, 24, 20, 16, 12, 8, 4, 0};
+
+
+
 
 
 // Set byte 'b' of 'word' equal to state 's'.
