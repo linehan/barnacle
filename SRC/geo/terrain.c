@@ -18,6 +18,7 @@
 #include "weather.h"
 #include "map.h"
 
+#include "../eng/model/bytes.h"
 #include "../gfx/gfx.h"
 #include "../gfx/palette.h"
 #include "../gfx/sprite.h"
@@ -138,12 +139,14 @@ void draw_layers(struct map_t *map, double **pmap)
                                 set_state(map->tree, z, 0, LAY, DRP);
                                 set_state(map->tree, z, 0, SED, LIME);
                                 set_state(map->tree, z, 0, SOI, MOLL);
+                                set_state(map->tree, z, 0, ALT, 3);
                         }
                         else {
                                 mvwadd_wch(PEEK(map->L[TOP]), i, j, bgtop); // top
                                 set_state(map->tree, z, 0, LAY, TOP);
                                 set_state(map->tree, z, 0, SED, LIME);
                                 set_state(map->tree, z, 0, SOI, MOLL);
+                                set_state(map->tree, z, 0, ALT, 3);
                         }
                 }
                 }
@@ -183,13 +186,70 @@ void draw_layers(struct map_t *map, double **pmap)
 }
 
 
+enum { CUR, U, R, L, D, UL, UR };
+uint32_t z[7];
+
+inline void fill_codes(int i, int j)
+{
+        // Compute Morton codes
+        z[CUR] = MORT(i, j);
+
+        z[U]  = MORT(i-1, j);
+        z[D]  = MORT(i+1, j);
+        z[R]  = MORT(i, j+1);
+        z[L]  = MORT(i, j-1);
+        z[UL] = MORT(i-1, j-1);
+        z[UR] = MORT(i-1, j+1);
+}
+
+#define LAYER(mort, n, ...) or_nibble(rb_data(map->tree, (mort)), LAY, n, __VA_ARGS__)
+#define NIB(mort, tag, n, ...) or_nibble(rb_data(map->tree, (mort)), tag, n, __VA_ARGS__)
+
+void erode_beach(struct map_t *map)
+{
+        #define INV_EROSION_POTENTIAL 5
+        #define ELEV_SAND 2
+        #define ELEV_LAGOON 1
+        int i, j;
+
+        for (i=1; i<(map->ufo.box.h); i++) {
+        for (j=1; j<(map->ufo.box.w); j++) {
+
+                fill_codes(i, j);
+
+                if (LAYER(z[CUR], 1, XXX) || LAYER(z[U], 1, XXX)) continue;
+
+                if (roll_fair(INV_EROSION_POTENTIAL) != 0) continue;
+                else if (LAYER(z[R], 1, XXX) || LAYER(z[L], 1, XXX)) {
+                        set_state(map->tree, z[CUR], 0, LAY, GRO);
+                        dec_nibble(_rb_data(map->tree, z[CUR]), ALT);
+                }
+        }
+        }
+
+        for (i=1; i<(map->ufo.box.h); i++) {
+        for (j=1; j<(map->ufo.box.w); j++) {
+
+                fill_codes(i, j);
+
+                if (LAYER(z[CUR], 1, GRO)) {
+                        if (LAYER(z[D], 1, GRO) && !LAYER(z[U], 1, GRO)) {
+                                mvwadd_wch(PEEK(map->L[TOP]), i, j, &MTN[2]);
+                                set_state(map->tree, z[CUR], 0, LAY, GRO);
+                        }
+                        else if (LAYER(z[U], 1, GRO)) {
+                                mvwadd_wch(PEEK(map->L[TOP]), i, j, &SAND);
+                                if (LAYER(z[D], 1, DRP))
+                                        mvwadd_wch(PEEK(map->L[TOP]), i+1, j, &SAND);
+                        }
+                }
+        }
+        }
+}
+
 void draw_water_rim(struct map_t *map)
 {
         int i, j;             // Incrementors
-        int iu, jl, jr;       // Incrementors for up, left, and right.
-        uint32_t z;           // For computing current Morton code
-        uint32_t zu, zl, zr;  // Morton code for sws above, left, and right
-        uint32_t zul, zur;    // Check if at top corners
         WINDOW *rim1, *rim2;  // Where to draw seashore animation.
 
         rim1 = PEEK(map->L[RIM]);
@@ -199,41 +259,25 @@ void draw_water_rim(struct map_t *map)
         for (i=1; i<(map->ufo.box.h); i++) {
                 for (j=1; j<(map->ufo.box.w); j++) {
 
-                        z = MORT(i, j);
+                        fill_codes(i, j);
 
                         // Draw nothing is the cursor is on land.
-                        if ((is_state(map->tree, z, 0, LAY, TOP))) continue;
-                        if ((is_state(map->tree, z, 0, LAY, DRP))) continue;
-
-                        // Compute offsets
-                        iu = (i-1);
-                        jl = (j-1);
-                        jr = (j+1);
-
-                        // Compute Morton codes
-                        zu  = MORT(iu, j);
-                        zr  = MORT(i, jr);
-                        zl  = MORT(i, jl);
-                        zul = MORT(iu, jl);
-                        zur = MORT(iu, jr);
-
+                        if (LAYER(z[CUR], 3, TOP, DRP, GRO)) 
+                                continue;
                         // Draw nothing if the cursor is at a top corner.
-                        if (  (is_state(map->tree, zul, 0, LAY, XXX))
-                            &&(is_state(map->tree, zl,  0, LAY, TOP))) continue;
-                        if (  (is_state(map->tree, zur, 0, LAY, XXX))
-                            &&(is_state(map->tree, zr,  0, LAY, TOP))) continue;
+                        if (LAYER(z[UL], 1, XXX) && LAYER(z[L], 1, TOP))
+                                continue;
+                        if (LAYER(z[UR], 1, XXX) && LAYER(z[R], 1, TOP))
+                                continue;
 
                         // Draw an edge if there is an edge in the directions.
-                        if (  (is_state(map->tree, zu, 0, LAY, TOP))
-                            ||(is_state(map->tree, zu, 0, LAY, DRP))
-                            ||(is_state(map->tree, zr, 0, LAY, TOP))
-                            ||(is_state(map->tree, zr, 0, LAY, DRP))
-                            ||(is_state(map->tree, zl, 0, LAY, TOP))
-                            ||(is_state(map->tree, zl, 0, LAY, DRP)))
+                        if (LAYER(z[U], 3, TOP, DRP, GRO) ||
+                            LAYER(z[L], 3, TOP, DRP, GRO) ||
+                            LAYER(z[R], 3, TOP, DRP, GRO))
                         {
                                 mvwadd_wch(rim1, i, j, &OCEAN[3]);
                                 mvwadd_wch(rim2, i, j, &OCEAN[2]);
-                                set_state(map->tree, z, 0, LAY, RIM);
+                                set_state(map->tree, z[CUR], 0, LAY, RIM);
                         }
                 }
         }

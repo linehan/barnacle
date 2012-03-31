@@ -101,13 +101,13 @@ void boat_control(struct boat_t *boat, int order, int val)
         case 'l':
                 turn_helm(boat, TURN_HR);
                 break;
-        case 'f':
+        case '@':
                 set_nibble(&boat->state, GUN, FIR);
                 break;
-        case 'R':
+        case 'f':
                 set_nibble(&boat->state, SAI, MAI); // Set mainsail
                 break;
-        case 'r':
+        case 'g':
                 set_nibble(&boat->state, SAI, POL); // Run with bare poles 
                 break;
         }

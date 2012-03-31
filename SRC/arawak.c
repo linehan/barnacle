@@ -17,7 +17,6 @@
 #include "geo/map.h"
 #include "geo/terrain.h"
 #include "geo/weather.h"
-#include "mob/mob.h"
 #include "pan/instruments.h"
 #include "pan/test.h"
 #include "lib/ufo.h"
@@ -33,6 +32,7 @@
 #include "init/init.h"
 #include "loop/loop.h"
 
+#include "mob/mob_model.h"
 #include "boat/boat_model.h"
 
 
@@ -60,6 +60,9 @@ int main()
         load_noun_test();
         view_dock();
         choose_noun('*');
+
+        struct noun_t *noun = get_noun("Robert Aruga");
+        set_mob(&noun->mob, GLOBE, 1, 1, 4, 4);
 
         set_wind(__pre__, 4);
 

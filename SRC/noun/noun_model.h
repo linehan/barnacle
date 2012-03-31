@@ -7,6 +7,7 @@
 #include "../verb/verb_model.h"
 #include "../eng/model/bytes.h"
 #include "../lib/redblack/rb.h"
+#include "../mob/mob_model.h"
 
 struct noun_t {
         char *name;
@@ -15,6 +16,7 @@ struct noun_t {
         uint32_t attributes; // Nibble-oriented
         struct verb_t verb;
         struct verb_aux aux;
+        struct mob_t mob;
 };
 
 
@@ -27,6 +29,7 @@ void unfocus(void);
 uint32_t keyring[100];
 void     install_key(uint32_t key, int option);
 uint32_t request_key(int option);
+struct noun_t *get_noun(char *name);
 enum install_key_opts {SUBJECT, OBJECT};
 
 

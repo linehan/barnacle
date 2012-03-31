@@ -15,6 +15,8 @@ extern cchar_t UNDERSEA;
 extern cchar_t DAYSKY;
 extern cchar_t PURPLE[5];
 
+extern cchar_t SAND;
+
 enum tiletype { 
         __non__ = 0,
         __sea__ = 1,

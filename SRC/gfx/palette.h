@@ -92,6 +92,7 @@ enum arne_shadow2 {
         ZEN_BG = 97,
         TESTFG = 98,
         TESTBG = 99,
+        SANDY = 100
 };
 
 /* FG_BG color pairs; odd ones are swaps of even ones. */
@@ -172,6 +173,7 @@ enum ramp_pairs {
         //PUR_WOO = 164,
         //TITLE_SCREEN = 166,
         TESTING = 167,
+        SEA_SAND = 141,
 
 #define PUR_DPU PUR_WHITE
 #define PUR_DDP PUR_WHITE

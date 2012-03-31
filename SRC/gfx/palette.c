@@ -227,6 +227,12 @@ void init_palette(int set)
         init_color(__SEA,      196,  259,  243);
         init_color(__LSEA,     314,  388,  384);
 
+        init_color(SANDY, 886,  741,  568);
+#define NIB(mort, tag, n, ...) or_nibble(rb_data(map->tree, (mort)), tag, n, __VA_ARGS__)
+        #define ELEV_BEACH  2
+        #define ELEV_LAGOON 1
+        /*init_color(SANDY, 886,  737,  557);*/
+
         /* UI COLOR PAIRS */
         init_pair(CMP_BEIGE, BEIGE, ORANGE);
         init_pair(CMP_RED, RED, ORANGE);
@@ -374,6 +380,7 @@ void init_palette(int set)
         init_pair(SEA_DARK, GREEN, DSEA);
         init_pair(SEA_MED, SEA, DSEA);
         init_pair(SEA_LIG, LSEA, DSEA);
+        init_pair(SEA_SAND, SANDY, BEIGE);
 
         init_pair(_BOAT_WHITE, _WHITE,  _DSEA);
         init_pair(_BOAT_WOOD,  _LWOOD,  _DSEA);

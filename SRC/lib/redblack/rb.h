@@ -35,4 +35,23 @@ int rb_remove(struct rb_tree *tree, uint32_t key);
 int rb_insert(struct rb_tree *tree, uint32_t key);
 
 
+static inline uint32_t rb_data(struct rb_tree *tree, uint32_t key)
+{
+        rb_peek(tree, key);
+        if (tree->peek == NULL) 
+                return (0);
+        else
+                return (tree->peek->data[0]);
+}
+
+static inline uint32_t *_rb_data(struct rb_tree *tree, uint32_t key)
+{
+        rb_peek(tree, key);
+        if (tree->peek == NULL) 
+                return (NULL);
+        else
+                return (&tree->peek->data[0]);
+}
+
+
 #endif

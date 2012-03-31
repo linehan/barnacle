@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <stdarg.h>
 #include <stdint.h>
 #include "bytes.h"
 
@@ -105,6 +106,23 @@ inline int is_byte(uint32_t word, int b, int s)
 }
 
 
+// Returns 1 if byte 'b' of 'word' is equal to states 's0, s1...', else returns 0.
+int or_byte(uint32_t word, int b, int n, int s0,...)
+{
+        va_list states;
+        int s;
+     
+        va_start(states, s0);         /* Initialize the argument list. */
+        
+        s = s0;
+
+        while (n-->0 && ((word & ~(nscrub[b])) >> noffset[b]) != state[s])
+                s = va_arg(states, int);
+
+        va_end (states); 
+        return (n>=0) ? 1 : 0;
+}
+
 
 // Attempts to copy each of the 4 byte values of 'word' to the memory
 // at 'dest'. Expects 'dest' to be at least 4 ints.
@@ -147,6 +165,23 @@ inline int is_nibble(uint32_t word, int n, int s)
         word >>=  noffset[n];   
 
         return (word == state[s]) ? 1 : 0;
+}
+
+// Returns 1 if byte 'b' of 'word' is equal to states 's0, s1...', else returns 0.
+int or_nibble(uint32_t word, int b, int n, int s0,...)
+{
+        va_list states;
+        int s;
+     
+        va_start(states, s0);         /* Initialize the argument list. */
+        
+        s = s0;
+
+        while (n-->0 && ((word & ~(nscrub[b])) >> noffset[b]) != state[s])
+                s = va_arg(states, int);
+
+        va_end (states); 
+        return (n>=0) ? 1 : 0;
 }
 
 

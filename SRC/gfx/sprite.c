@@ -32,6 +32,7 @@ cchar_t   OCEAN[4], _OCEAN[4], __OCEAN[4];
 cchar_t     MTN[3],   _MTN[3],   __MTN[3];
 cchar_t    TREE[2],  _TREE[2],  __TREE[2];
 cchar_t   GRASS[5], _GRASS[5], __GRASS[5];
+cchar_t   SAND;
 
 cchar_t WARNBG, WARNSH, WARNPIP;
 cchar_t BLANK, PLAIN;
@@ -104,6 +105,7 @@ void init_gfx_colors(void)
 
 
         setcchar(&DIRT[0], &gfxBLANK, 0, LAND, NULL);
+        setcchar(&SAND, &gfxSOLID, 0, SEA_SAND, NULL);
         setcchar(&BLANK, &gfxBLANK, 0, 0, NULL);
         setcchar(&PLAIN, &gfxBLANK, 0, COLOR_PAIR(WHITE), NULL);
         setcchar(&UNDERSEA, &gfxSOLID, 0, UND_SEA, NULL);

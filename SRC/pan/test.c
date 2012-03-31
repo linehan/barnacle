@@ -14,11 +14,12 @@
 #include <locale.h>
 #include <string.h>
 
-#include "../gfx/sprite.h"
+#include "../eng/model/bytes.h"
 #include "../gfx/gfx.h"
 #include "../geo/terrain.h"
 #include "../lib/morton.h"
 #include "../lib/ufo.h"
+#include "../loop/fsm.h"
 /******************************************************************************/
 WINDOW *DIAGNOSTIC_WIN;
 PANEL  *DIAGNOSTIC_PAN;
@@ -39,6 +40,9 @@ WINDOW *INSPECTORWIN;
 PANEL  *INSPECTORPAN;
 WINDOW *INSPECTORMSGWIN;
 PANEL  *INSPECTORMSGPAN;
+
+#define i_yy inspector_yy
+#define i_xx inspector_xx
 
 static int inspector_y = 0;
 static int inspector_x = 0;
@@ -63,7 +67,7 @@ void init_test(void)
         INSPECTORPAN = new_panel(INSPECTORWIN);
         wbkgrnd(INSPECTORWIN, &PLAIN);
 
-        INSPECTORMSGWIN = newwin(1, COLS, LINES-1, 0);
+        INSPECTORMSGWIN = newwin(1, COLS, 0, 0);
         INSPECTORMSGPAN = new_panel(INSPECTORMSGWIN);
         wbkgrnd(INSPECTORMSGWIN, &WARNBG);
 
@@ -128,35 +132,46 @@ void speak_error_mono(const char *error)
         werase(ERROR_WIN);
 }
 
-void move_inspector(int dir)
+int inspect_control(int dir)
 {
         uint32_t z;
         switch (dir) {
-        case 'l':
+        case KEY_LEFT:
                 inspector_x -= (inspector_x > 0) ? 1 : 0;
                 break;
-        case 'r':
+        case KEY_RIGHT:
                 inspector_x += 1;
                 break;
-        case 'u':
+        case KEY_UP:
                 inspector_y -= (inspector_y > 0) ? 1: 0;
                 break;
-        case 'd':
+        case KEY_DOWN:
                 inspector_y += 1;
                 break;
+        case '?':
+                return MODE_RELEASE;
         }
 
-        inspector_yy = ufo_y(GLOBE, ufo)+(inspector_y);
-        inspector_xx = ufo_x(GLOBE, ufo)+(inspector_x);
+        i_yy = ufo_y(GLOBE, ufo)+(inspector_y);
+        i_xx = ufo_x(GLOBE, ufo)+(inspector_x);
 
-        z = mort(inspector_yy, inspector_xx);
+        z = MORT(i_yy, i_xx);
         move_panel(INSPECTORPAN, inspector_y, inspector_x);
         top_panel(INSPECTORPAN);
         top_panel(INSPECTORMSGPAN);
         vrt_refresh();
 
         werase(INSPECTORMSGWIN);
-        wprintw(INSPECTORMSGWIN, "MORT:%5u Y: %2u X: %2u | ", z, inspector_yy, inspector_xx);
-        /*stat_state(INSPECTORMSGWIN, GLOBE->dom, z);*/
+        wprintw(INSPECTORMSGWIN, "Y: %2u X: %2u M: %2u\t"
+                                 "LAYER: %s\t"
+                                 "ELEV: %2u\t"
+                                 "PERLIN: %+5f", 
+                        i_yy, 
+                        i_xx, 
+                        z,
+                        lay_tag[get_nibble(rb_data(GLOBE->tree, z), LAY)], 
+                        get_nibble(rb_data(GLOBE->tree, z), ALT), 
+                        GLOBE->pmap[i_yy][i_xx]);
         scr_refresh();
+        return MODE_PERSIST;
 }

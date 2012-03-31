@@ -91,6 +91,13 @@ void new_noun(char *name, uint8_t job)
         NNOUNS++;
 }
 
+
+struct noun_t *get_noun(char *name)
+{
+        focus(fasthash(name, strlen(name)));
+        return (focused);
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
 //                                                                            //

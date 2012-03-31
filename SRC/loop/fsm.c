@@ -4,6 +4,8 @@
 #include <ev.h>
 
 #include "../gfx/gfx.h"
+#include "../mob/mob_model.h"
+#include "../pan/test.h"
 #include "fsm.h"
 
 enum uimodes { 
@@ -12,7 +14,9 @@ enum uimodes {
         UI_NOUN,
         UI_VERB,
         UI_INSPECTOR,
-        UI_PROMPT
+        UI_PROMPT,
+        UI_MOB,
+        UI_BOAT
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -68,23 +72,6 @@ void operate_on(int input)
 
         switch (mode) 
         {
-        case UI_INSPECTOR:
-                switch (input) 
-                {
-                case KEY_UP:
-                        move_inspector('u');
-                        break;
-                case KEY_DOWN:
-                        move_inspector('d');
-                        break;
-                case KEY_LEFT:
-                        move_inspector('l');
-                        break;
-                case KEY_RIGHT:
-                        move_inspector('r');
-                        break;
-                }
-                break;
         case UI_NOUN:
                 setmode(choose_noun(input));
                 break;
@@ -106,28 +93,16 @@ void operate_on(int input)
                 case 'd':
                         roll_map(GLOBE, 'r');
                         break;
-                case 'j':
-                        boat_control(get_boat("Afarensis"), input, 0);
-                        break;
-                case 'k':
-                        boat_control(get_boat("Afarensis"), input, 0);
-                        break;
-                case 'h':
-                        boat_control(get_boat("Afarensis"), input, 0);
-                        break;
-                case 'l':
-                        boat_control(get_boat("Afarensis"), input, 0);
-                        break;
-                case '@':
-                        boat_control(get_boat("Afarensis"), 'f', 0);
-                        break;
-                case 'g':
-                        boat_control(get_boat("Afarensis"), 'r', 0);
-                        break;
-                case 'f':
-                        boat_control(get_boat("Afarensis"), 'R', 0);
-                        break;
                 }
+                break;
+        case UI_INSPECTOR:
+                inspect_control(input);
+                break;
+        case UI_BOAT:
+                boat_control(get_boat("Afarensis"), input, 0);
+                break;
+        case UI_MOB:
+                mob_control(get_mob("Robert Aruga"), input, 0);
                 break;
         }
 }
@@ -146,12 +121,24 @@ void director(int input)
                 case 'n':
                         new_character();
                         break;
+                case 'm':
+                        setmode(UI_MOB);
+                        setmode(MODE_STARTED);
+                        break;
+                case 'b':
+                        setmode(UI_BOAT);
+                        setmode(MODE_STARTED);
+                        break;
                 case 'c':
                         setmode(UI_NOUN);
                         setmode(MODE_STARTED);
                         break;
                 case 'v':
                         setmode(UI_VERB);
+                        setmode(MODE_STARTED);
+                        break;
+                case '?':
+                        setmode(UI_INSPECTOR);
                         setmode(MODE_STARTED);
                         break;
                 case '`':

@@ -19,4 +19,4 @@ void speak_error(const char *error);
 void toggle_syspan(void);
 void speak_error_mono(const char *error);
 void toggle_bigpan(void);
-void move_inspector(int dir);
+int inspect_control(int dir);

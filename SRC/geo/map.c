@@ -134,7 +134,7 @@ void gen_map(struct map_t *map)
         h = map->ufo.box.h;
         w = map->ufo.box.w;
 
-        double **pmap = gen_perlin_map(h, w); // 2D Perlin map
+        map->pmap = gen_perlin_map(h, w); // 2D Perlin map
 
         map->win = newwin(LINES, COLS, 0, 0); // Fullscreen
         map->pan = new_panel(map->win);
@@ -146,7 +146,8 @@ void gen_map(struct map_t *map)
 
         map->W = new_multiwin(h, w, 0, 0, 2);
 
-        draw_layers(map, pmap);
+        draw_layers(map, map->pmap);
+        erode_beach(map);
         draw_water_rim(map);
         restack_map(map);
 }
@@ -177,6 +178,7 @@ int map_hit(struct map_t *map, struct rec_t *rec)
                         z = MORT(i, j);
                         if (is_state(map->tree, z, 0, LAY, TOP)) return (1);
                         if (is_state(map->tree, z, 0, LAY, DRP)) return (1);
+                        if (is_state(map->tree, z, 0, LAY, VEG)) return (1);
                 }
         }
         return (0);

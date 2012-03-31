@@ -44,6 +44,7 @@ struct map_t {
         PANEL  *pan;
         struct rb_tree *tree;
         struct ufo_t ufo;
+        double **pmap;
 };
 
 extern struct map_t *GLOBE; // Global map.

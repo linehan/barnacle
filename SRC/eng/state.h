@@ -9,6 +9,7 @@
 void set_state(struct rb_tree *tree, uint32_t key, int w, int n, int s);
 int  get_state(struct rb_tree *tree, uint32_t key, int w, int n);
 int   is_state(struct rb_tree *tree, uint32_t key, int w, int n, int s);
+int   or_state(struct rb_tree *tree, uint32_t key, int w, int n, int s);
 
 
 

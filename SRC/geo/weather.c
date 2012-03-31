@@ -21,8 +21,6 @@
 #include "../gfx/gfx.h"
 #include "../gfx/palette.h"
 #include "../gfx/sprite.h"
-#include "../mob/mob.h"
-#include "../mob/boat.h"
 #include "../pan/test.h"
 /******************************************************************************/
 enum wind_options{

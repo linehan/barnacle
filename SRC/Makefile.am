@@ -45,10 +45,12 @@ arawak_SOURCES = arawak.c \
                    txt/gloss_m.c        \
                    txt/gloss_v.c        \
                    txt/gloss_c.c        \
-                   boat/boat_model.c           \
-                   boat/boat_view.c           \
-                   boat/boat_control.c           \
-                   boat/compass.c\
+                   mob/mob_model.c      \
+                   mob/mob_control.c    \
+                   boat/boat_model.c    \
+                   boat/boat_view.c     \
+                   boat/boat_control.c  \
+                   boat/compass.c       \
                    noun/noun_model.c    \
                    noun/noun_view.c     \
                    noun/noun_control.c  \
