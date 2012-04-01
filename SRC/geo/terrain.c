@@ -182,214 +182,152 @@ void perlin_boost(double **pmap, int h, int w, float persist, int octaves)
 
                 for (i=0; i<h; i++) {
                 for (j=0; j<w; j++) {
-                        pmap[i][j] += smooth[o][i][j] * amp;
+                        pmap[i][j] += (double)(smooth[o][i][j] * amp);
                 }
                 }
         }
 
-        for (i=0; i<h; i++) {
-        for (j=0; j<w; j++) {
-                /*pmap[i][j] -= 1.0;*/
-                pmap[i][j] /= tot;
-        }
-        }
+        /*for (i=0; i<h; i++) {*/
+        /*for (j=0; j<w; j++) {*/
+                /*[>pmap[i][j] -= 1.0;<]*/
+                /*pmap[i][j] /= (double)tot;*/
+        /*}*/
+        /*}*/
 }
 
+#define DEC(x, min) ((x) > (min)) ? ((x)-1) : (x)
+#define INC(x, max) ((x) < (max)) ? ((x)+1) : (x)
 
-inline void clean_singles_vrt(double **pmap, int h, int w, float limit)
+inline void smooth_lo_vrt(double **pmap, int h, int w, float limit, int span)
 {
-        int _y, y_;
+        int u, d;
         int i;
         int j;
-
-        for (i=0; i<h; i++) {
-        for (j=0; j<w; j++) {
-
-                _y = (i > 0) ? (i-1) : i;
-                y_ = (i < h) ? (i+1) : i;
-
-                if ((pmap[i][j]  <  limit) &&
-                    (pmap[_y][j] >= limit) &&
-                    (pmap[y_][j] >= limit)) 
-                { 
-                        pmap[i][j] = pmap[_y][j];
-                }
-                if ((pmap[i][j]  >= limit) &&
-                    (pmap[_y][j] <  limit) &&
-                    (pmap[y_][j] <  limit)) 
-                { 
-                        pmap[i][j] = pmap[_y][j];
-                }
-        }
-        }
-}
-
-inline void clean_singles_hoz(double **pmap, int h, int w, float limit)
-{
-        int _x, x_;
-        int i;
-        int j;
+        int n;
 
         for (i=0; i<h; i++) {
         for (j=0; j<w; j++) {
 
-                _x = (j > 0) ? (j-1) : j;
-                x_ = (j < w) ? (j+1) : j;
+                for (n=0; n<span; n++) {
+                        u = DEC(i+n, 0);
+                        d = INC(i+n, h);
 
-                if ((pmap[i][j]  <  limit) &&
-                    (pmap[i][_x] >= limit) &&
-                    (pmap[i][x_] >= limit)) 
-                { 
-                        pmap[i][j] = pmap[i][_x];
-                }
-                if ((pmap[i][j]  >= limit) &&
-                    (pmap[i][_x] <  limit) &&
-                    (pmap[i][x_] <  limit)) 
-                { 
-                        pmap[i][j] = pmap[i][_x];
+                        /* Cursor is lower than surroundings */
+                        if ((pmap[i][j] <  limit) &&
+                            (pmap[u][j] >= limit) &&
+                            (pmap[d][j] >= limit)) 
+                        { 
+                                pmap[i][j] = pmap[u][j];
+                                break;
+                        }
                 }
         }
         }
 }
-
-
-
-
- 
-
-/*
- * Holdunter yer buttz... 
- *
- * Using the Perlin simplex noise at 'pmap', generate and then draw the 
- * terrain layers for the struct map_t pointed to by the 'map' argument.
- */
-void draw_layers(struct map_t *map, double **pmap)
+inline void smooth_hi_vrt(double **pmap, int h, int w, float limit, int span)
 {
-        #define CHUNK_INITIAL 3
-        #define CHUNK_MIN 1
-        /*#define OCEAN_LEVEL 0.10*/
-        #define SHOAL_LEVEL 0.15
-        #define BEACH_LEVEL 0.25
-        #define TERRA_LEVEL 0.30
-        #define TREE_PROB 1.0 
-
-        int ymax;    // loop boundaries for map cursor
-        int xmax; 
-        int imax;    // loop boundaries for chunk drawing
-        int jmax; 
-        int map_h;   // Dimensions of entire map
-        int map_w; 
-        int map_y; 
-        int map_x;     
-        int tree_h;  // Dimensions of trees during drawing
-        int tree_w; 
-        int tree_y; 
-        int tree_x;   
-        int chunk;   // Square units to draw at a time 
-        int chunk_h; // Height of chunk
-        int chunk_w; // Width of chunk
-        uint32_t z;  // for computing Morton codes
+        int u, d;
         int i;
         int j;
+        int n;
 
-        map_h = map->ufo.box.h;
-        map_w = map->ufo.box.w;
+        for (i=0; i<h; i++) {
+        for (j=0; j<w; j++) {
 
-        chunk = CHUNK_INITIAL;
-        ymax  = (map_h-1)-CHUNK_MIN; // beware the fencepost
-        xmax  = (map_w-1)-CHUNK_MIN;
+                for (n=0; n<span; n++) {
+                        u = DEC(i+n, 0);
+                        d = INC(i+n, h);
 
-        cchar_t *bgtop; // background tile 
-        bgtop = get_tile(__Gra__);
-
-        perlin_boost(pmap, ymax, xmax, 0.9, 20);
-
-        clean_singles_vrt(pmap, ymax, xmax, SHOAL_LEVEL);
-        clean_singles_hoz(pmap, ymax, xmax, SHOAL_LEVEL);
-
-        for (map_y=0; map_y<ymax; map_y++) {
-        for (map_x=0; map_x<xmax; map_x++) {
-
-                if (pmap[map_y][map_x] < SHOAL_LEVEL) 
-                        mvwadd_wch(PEEK(map->L[BGR]), map_y, map_x, &OCEAN[0]);
-                else if (pmap[map_y][map_x] < BEACH_LEVEL) 
-                        mvwadd_wch(PEEK(map->L[TOP]), map_y, map_x, &__LAGOON[0]);
-                else if (pmap[map_y][map_x] < TERRA_LEVEL) 
-                        mvwadd_wch(PEEK(map->L[TOP]), map_y, map_x, &SAND);
-                /*else if (pmap[map_y][map_x] < TERRA_LEVEL) */
-                else
-                        mvwadd_wch(PEEK(map->L[TOP]), map_y, map_x, bgtop); // top
-
-                continue;
-
-
-
-                chunk = (flip_biased(0.57)) ? (chunk+1) : (chunk-1);
-                chunk = (chunk < CHUNK_MIN) ? CHUNK_MIN : chunk;
-
-                chunk_h = chunk_w = chunk;
-
-                imax  = map_y + chunk_h;
-                jmax  = map_x + chunk_w;
-
-                if (imax > map_h) chunk_h = imax-(map_h);
-                if (jmax > map_w) chunk_w = jmax-(map_w);
-
-                // Draw the ground box
-                for (i=map_y; i<=imax; i++) {
-                for (j=map_x; j<jmax; j++) {
-                        z = MORT(i, j);
-                        if (i == imax) {
-                                mvwadd_wch(PEEK(map->L[DRP]), i, j, &MTN[2]);
-                                set_state(map->tree, z, 0, LAY, DRP);
-                                set_state(map->tree, z, 0, SED, LIME);
-                                set_state(map->tree, z, 0, SOI, MOLL);
-                                set_state(map->tree, z, 0, ALT, 4);
+                        /* Cursor is higher than surroundings */
+                        if ((pmap[i][j] >= limit) &&
+                            (pmap[u][j] <  limit) &&
+                            (pmap[d][j] <  limit)) 
+                        { 
+                                pmap[i][j] = pmap[u][j];
+                                break;
                         }
-                        else {
-                                mvwadd_wch(PEEK(map->L[TOP]), i, j, bgtop); // top
-                                set_state(map->tree, z, 0, LAY, TOP);
-                                set_state(map->tree, z, 0, SED, LIME);
-                                set_state(map->tree, z, 0, SOI, MOLL);
-                                set_state(map->tree, z, 0, ALT, 4);
-                        }
-                }
-                }
-
-                // Decide whether to draw the tree box
-                if ((flip_biased(TREE_PROB))||(chunk_w < 4)) continue;
-                else {
-                        tree_x = (map_x+1);
-                        tree_y = (map_y-1);
-                        tree_h = (chunk_h-1);
-                        tree_w = (chunk_w-2);
-                        imax   = tree_y + tree_h; // recalculation
-                        jmax   = tree_x + tree_w; // recalculation
-                }
-
-                // Draw the tree box
-                for (i=tree_y; i<=imax; i++) {
-                for (j=tree_x; j<jmax; j++) {
-                        z = MORT(i, j);
-                        if (i == imax) {
-                                set_state(map->tree, z, 0, LAY, VEG);
-                                set_state(map->tree, z, 0, SED, LIME);
-                                set_state(map->tree, z, 0, SOI, MOLL);
-                                mvwadd_wch(PEEK(map->L[VEG]), i, j, &TREE[0]);
-                        }
-                        else {
-                                mvwadd_wch(PEEK(map->L[VEG]), i, j, &TREE[1]);
-                                set_state(map->tree, z, 0, LAY, VEG);
-                                set_state(map->tree, z, 0, SED, LIME);
-                                set_state(map->tree, z, 0, SOI, SPOD);
-                        }
-                }
                 }
         }
         }
-
 }
 
+inline void smooth_hi_hoz(double **pmap, int h, int w, float limit, int span)
+{
+        int l, r;
+        int i;
+        int j;
+        int n;
+
+        for (i=0; i<h; i++) {
+        for (j=0; j<w; j++) {
+
+                for (n=0; n<span; n++) {
+                        l = DEC(j+n, 0);
+                        r = INC(j+n, w);
+
+                        /* Cursor is higher than surroundings */
+                        if ((pmap[i][j] >= limit) &&
+                            (pmap[i][l] <  limit) &&
+                            (pmap[i][r] <  limit)) 
+                        { 
+                                pmap[i][j] = pmap[i][l];
+                                break;
+                        }
+                }
+        }
+        }
+}
+
+inline void smooth_lo_hoz(double **pmap, int h, int w, float limit, int span)
+{
+        int l, r;
+        int i;
+        int j;
+        int n;
+
+        for (i=0; i<h; i++) {
+        for (j=0; j<w; j++) {
+
+                for (n=0; n<span; n++) {
+                        l = DEC(j+n, 0);
+                        r = INC(j+n, w);
+
+                        /* Cursor is lower than surroundings */
+                        if ((pmap[i][j] <  limit) &&
+                            (pmap[i][l] >= limit) &&
+                            (pmap[i][r] >= limit)) 
+                        { 
+                                pmap[i][j] = pmap[i][l];
+                                break;
+                        }
+                }
+        }
+        }
+}
+
+inline void smooth_cycle(double **pmap, int h, int w, float limit, int cycle)
+{
+        while (cycle-->0) {
+                smooth_hi_vrt(pmap, h, w, limit, 1);
+                smooth_lo_vrt(pmap, h, w, limit, 1);
+                smooth_hi_hoz(pmap, h, w, limit, 1);
+                smooth_lo_hoz(pmap, h, w, limit, 1);
+        }
+}
+inline void smooth_hi_cycle(double **pmap, int h, int w, float limit, int cycle)
+{
+        while (cycle-->0) {
+                smooth_hi_vrt(pmap, h, w, limit, 1);
+                smooth_hi_hoz(pmap, h, w, limit, 1);
+        }
+} 
+inline void smooth_lo_cycle(double **pmap, int h, int w, float limit, int cycle)
+{
+        while (cycle-->0) {
+                smooth_lo_vrt(pmap, h, w, limit, 1);
+                smooth_lo_hoz(pmap, h, w, limit, 1);
+        }
+} 
 
 enum zcodes { CUR=0, U=1, D=2, L=3, R=4, UL=5, UR=6, BL=7, BR=8 };
 uint32_t z[9];
@@ -420,6 +358,175 @@ inline void fill_codes(int I, int J, int i, int j)
 
 #define LAYER(mort, n, ...) or_nibble(rb_data(map->tree, (mort)), LAY, n, __VA_ARGS__)
 #define ELEV(mort, n, ...) or_nibble(rb_data(map->tree, (mort)), ALT, n, __VA_ARGS__)
+
+
+
+
+/*
+ * Holdunter yer buttz... 
+ *
+ * Using the Perlin simplex noise at 'pmap', generate and then draw the 
+ * terrain layers for the struct map_t pointed to by the 'map' argument.
+ */
+void draw_layers(struct map_t *map, double **pmap)
+{
+        #define OCTAVES 6
+        #define SMOOTH 0.99
+        #define CHUNK_INITIAL 3
+        #define CHUNK_MIN 1
+        /*#define OCEAN_LEVEL 0.10*/
+        #define SHOAL_LEVEL 0.00
+        #define BEACH_LEVEL 0.30
+        #define TERRA_LEVEL 0.40
+        #define TREE_PROB 1.0 
+
+        int ymax;    // loop boundaries for map cursor
+        int xmax; 
+        int imax;    // loop boundaries for chunk drawing
+        int jmax; 
+        int map_h;   // Dimensions of entire map
+        int map_w; 
+        int map_y; 
+        int map_x;     
+        int tree_h;  // Dimensions of trees during drawing
+        int tree_w; 
+        int tree_y; 
+        int tree_x;   
+        int chunk;   // Square units to draw at a time 
+        int chunk_h; // Height of chunk
+        int chunk_w; // Width of chunk
+        /*uint32_t z;  // for computing Morton codes*/
+        int i;
+        int j;
+
+        map_h = map->ufo.box.h;
+        map_w = map->ufo.box.w;
+
+        chunk = CHUNK_INITIAL;
+        ymax  = (map_h-1)-CHUNK_MIN; // beware the fencepost
+        xmax  = (map_w-1)-CHUNK_MIN;
+
+        cchar_t *bgtop; // background tile 
+        bgtop = get_tile(__Gra__);
+
+        perlin_boost(pmap, ymax, xmax, SMOOTH, OCTAVES);
+
+        smooth_cycle(pmap, ymax, xmax, SHOAL_LEVEL, 4);
+        smooth_hi_cycle(pmap, ymax, xmax, TERRA_LEVEL, 4);
+        smooth_lo_cycle(pmap, ymax, xmax, TERRA_LEVEL, 1);
+        smooth_cycle(pmap, ymax, xmax, SHOAL_LEVEL, 4);
+
+
+        for (map_y=0; map_y<ymax; map_y++) {
+        for (map_x=0; map_x<xmax; map_x++) {
+
+                fill_codes(ymax, xmax, map_y, map_x);
+
+                if (pmap[map_y][map_x] < SHOAL_LEVEL) 
+                        mvwadd_wch(PEEK(map->L[BGR]), map_y, map_x, &OCEAN[0]);
+                else if (pmap[map_y][map_x] < BEACH_LEVEL) 
+                        mvwadd_wch(PEEK(map->L[TOP]), map_y, map_x, &__LAGOON[0]);
+                else if (pmap[map_y][map_x] < TERRA_LEVEL) 
+                        mvwadd_wch(PEEK(map->L[TOP]), map_y, map_x, &SAND);
+                /*else if (pmap[map_y][map_x] < TERRA_LEVEL) */
+                else {
+                        mvwadd_wch(PEEK(map->L[TOP]), map_y, map_x, bgtop); // top
+                        set_state(map->tree, z[CUR], 0, LAY, TOP);
+                        set_state(map->tree, z[CUR], 0, SED, LIME);
+                        set_state(map->tree, z[CUR], 0, SOI, MOLL);
+                        set_state(map->tree, z[CUR], 0, ALT, 4);
+                }
+        }
+        }
+
+        for (map_y=0; map_y<ymax; map_y++) {
+        for (map_x=0; map_x<xmax; map_x++) {
+
+                fill_codes(ymax, xmax, map_y, map_x);
+
+                if ((LAYER(z[CUR], 1, TOP)) &&
+                   !(LAYER(z[D]  , 1, TOP))) 
+                {
+                        mvwadd_wch(PEEK(map->L[TOP]), map_y, map_x, &MTN[2]);
+                        set_state(map->tree, z[CUR], 0, LAY, DRP);
+                        set_state(map->tree, z[CUR], 0, SED, LIME);
+                        set_state(map->tree, z[CUR], 0, SOI, MOLL);
+                        set_state(map->tree, z[CUR], 0, ALT, 4);
+                }
+        }
+        }
+
+        return;
+
+
+                /*chunk = (flip_biased(0.57)) ? (chunk+1) : (chunk-1);*/
+                /*chunk = (chunk < CHUNK_MIN) ? CHUNK_MIN : chunk;*/
+
+                /*chunk_h = chunk_w = chunk;*/
+
+                /*imax  = map_y + chunk_h;*/
+                /*jmax  = map_x + chunk_w;*/
+
+                /*if (imax > map_h) chunk_h = imax-(map_h);*/
+                /*if (jmax > map_w) chunk_w = jmax-(map_w);*/
+
+                /*// Draw the ground box*/
+                /*for (i=map_y; i<=imax; i++) {*/
+                /*for (j=map_x; j<jmax; j++) {*/
+                        /*z = MORT(i, j);*/
+                        /*if (i == imax) {*/
+                                /*mvwadd_wch(PEEK(map->L[DRP]), i, j, &MTN[2]);*/
+                                /*set_state(map->tree, z, 0, LAY, DRP);*/
+                                /*set_state(map->tree, z, 0, SED, LIME);*/
+                                /*set_state(map->tree, z, 0, SOI, MOLL);*/
+                                /*set_state(map->tree, z, 0, ALT, 4);*/
+                        /*}*/
+                        /*else {*/
+                                /*mvwadd_wch(PEEK(map->L[TOP]), i, j, bgtop); // top*/
+                                /*set_state(map->tree, z, 0, LAY, TOP);*/
+                                /*set_state(map->tree, z, 0, SED, LIME);*/
+                                /*set_state(map->tree, z, 0, SOI, MOLL);*/
+                                /*set_state(map->tree, z, 0, ALT, 4);*/
+                        /*}*/
+                /*}*/
+                /*}*/
+
+                /*// Decide whether to draw the tree box*/
+                /*if ((flip_biased(TREE_PROB))||(chunk_w < 4)) continue;*/
+                /*else {*/
+                        /*tree_x = (map_x+1);*/
+                        /*tree_y = (map_y-1);*/
+                        /*tree_h = (chunk_h-1);*/
+                        /*tree_w = (chunk_w-2);*/
+                        /*imax   = tree_y + tree_h; // recalculation*/
+                        /*jmax   = tree_x + tree_w; // recalculation*/
+                /*}*/
+
+                /*// Draw the tree box*/
+                /*for (i=tree_y; i<=imax; i++) {*/
+                /*for (j=tree_x; j<jmax; j++) {*/
+                        /*z = MORT(i, j);*/
+                        /*if (i == imax) {*/
+                                /*set_state(map->tree, z, 0, LAY, VEG);*/
+                                /*set_state(map->tree, z, 0, SED, LIME);*/
+                                /*set_state(map->tree, z, 0, SOI, MOLL);*/
+                                /*mvwadd_wch(PEEK(map->L[VEG]), i, j, &TREE[0]);*/
+                        /*}*/
+                        /*else {*/
+                                /*mvwadd_wch(PEEK(map->L[VEG]), i, j, &TREE[1]);*/
+                                /*set_state(map->tree, z, 0, LAY, VEG);*/
+                                /*set_state(map->tree, z, 0, SED, LIME);*/
+                                /*set_state(map->tree, z, 0, SOI, SPOD);*/
+                        /*}*/
+                /*}*/
+                /*}*/
+        /*}*/
+        /*}*/
+
+}
+
+
+
 
 #define MAKE_TILE_BGR                                \
         set_state(map->tree, z[CUR], 0, LAY, XXX);   \

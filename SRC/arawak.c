@@ -61,8 +61,8 @@ int main()
         view_dock();
         choose_noun('*');
 
-        struct noun_t *noun = get_noun("Robert Aruga");
-        set_mob(&noun->mob, GLOBE, 1, 1, 4, 4);
+        /*struct noun_t *noun = get_noun("Robert Aruga");*/
+        /*set_mob(&noun->mob, GLOBE, 1, 1, 4, 4);*/
 
         set_wind(__pre__, 4);
 
