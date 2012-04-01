@@ -69,8 +69,193 @@
         /*}*/
         /*scr_refresh();*/
 /*}*/
+        /*for (int octave = octaveCount - 1; octave >= 0; octave--) {*/
+        /*for (i = i - 1; i >= 0; i--) {*/ //him
+        /*while (i-->0)*/                  // me
+
+float **float2D(int h, int w)
+{
+        float **new;
+
+        new = malloc(h * sizeof(float *));
+        while (h-->0)
+                new[h] = malloc(w * sizeof(float));
+
+        return (new);
+}
+
+/*
+ * Returns a linear interpolation between two values. The closer alpha 
+ * is to 0, the closer the resulting value will be to x0; the closer 
+ * alpha is to 1, the closer the resulting value will be to x1.
+ */
+inline float interpolate(float x0, float x1, float alpha)
+{
+   return x0 * (1 - alpha) + alpha * x1;
+}
 
 
+float **gen_smooth(double **base, int h, int w, int octave)
+{
+        float **smooth;
+        float samp_freq;
+        int samp_period;
+        int samp_i[2];
+        int samp_j[2];
+        float blend_hoz;
+        float blend_vrt;
+        float top;
+        float bot;
+        int i;
+        int j;
+                
+        smooth = float2D(h, w); 
+ 
+        samp_period = 1 << octave; // calculates 2 ^ k
+        samp_freq = 1.0/samp_period;
+ 
+        for (i=0; i<h; i++) 
+        {
+                //calculate the vertical sampling indices
+                samp_i[0] = (i/samp_period) * samp_period;
+                samp_i[1] = (samp_i[0]+samp_period) % h; //wrap around
+                blend_vrt = (i - samp_i[0]) * samp_freq;
+         
+                for (j=0; j<w; j++) 
+                {
+                        //calculate the horizontal sampling indices
+                        samp_j[0] = (j / samp_period) * samp_period;
+                        samp_j[1] = (samp_j[0] + samp_period) % w; //wrap around
+                        blend_hoz = (j - samp_j[0]) * samp_freq;
+
+                 
+                        //blend the top two corners
+                        top = interpolate(base[samp_i[0]][samp_j[0]],
+                                          base[samp_i[1]][samp_j[0]], 
+                                          blend_hoz);
+                 
+                        //blend the bottom two corners
+                        bot = interpolate(base[samp_i[0]][samp_j[1]],
+                                          base[samp_i[1]][samp_j[1]], 
+                                          blend_hoz);
+                 
+                        //final blend
+                        smooth[i][j] = interpolate(top, bot, blend_vrt);
+                }
+        }
+        return smooth;
+}
+
+
+
+
+float fscale_factor(float max, float min)
+{
+        return (float)2.0/(max-min);
+}
+
+
+
+
+void perlin_boost(double **pmap, int h, int w, float persist, int octaves)
+{
+        float ***smooth;
+        float scale;
+        float amp;
+        float tot;
+        int i;
+        int j;
+        int o;
+
+        smooth = malloc(octaves * sizeof(float **));
+
+        for (o=0; o<octaves; o++) {
+                smooth[o] = gen_smooth(pmap, h, w, o);
+        }
+
+        tot = 0.0;
+        amp = 1.0;
+
+        for (o=0; o<octaves; o++) {
+                amp *= persist;
+                tot += amp;
+
+                for (i=0; i<h; i++) {
+                for (j=0; j<w; j++) {
+                        pmap[i][j] += smooth[o][i][j] * amp;
+                }
+                }
+        }
+
+        for (i=0; i<h; i++) {
+        for (j=0; j<w; j++) {
+                /*pmap[i][j] -= 1.0;*/
+                pmap[i][j] /= tot;
+        }
+        }
+}
+
+
+inline void clean_singles_vrt(double **pmap, int h, int w, float limit)
+{
+        int _y, y_;
+        int i;
+        int j;
+
+        for (i=0; i<h; i++) {
+        for (j=0; j<w; j++) {
+
+                _y = (i > 0) ? (i-1) : i;
+                y_ = (i < h) ? (i+1) : i;
+
+                if ((pmap[i][j]  <  limit) &&
+                    (pmap[_y][j] >= limit) &&
+                    (pmap[y_][j] >= limit)) 
+                { 
+                        pmap[i][j] = pmap[_y][j];
+                }
+                if ((pmap[i][j]  >= limit) &&
+                    (pmap[_y][j] <  limit) &&
+                    (pmap[y_][j] <  limit)) 
+                { 
+                        pmap[i][j] = pmap[_y][j];
+                }
+        }
+        }
+}
+
+inline void clean_singles_hoz(double **pmap, int h, int w, float limit)
+{
+        int _x, x_;
+        int i;
+        int j;
+
+        for (i=0; i<h; i++) {
+        for (j=0; j<w; j++) {
+
+                _x = (j > 0) ? (j-1) : j;
+                x_ = (j < w) ? (j+1) : j;
+
+                if ((pmap[i][j]  <  limit) &&
+                    (pmap[i][_x] >= limit) &&
+                    (pmap[i][x_] >= limit)) 
+                { 
+                        pmap[i][j] = pmap[i][_x];
+                }
+                if ((pmap[i][j]  >= limit) &&
+                    (pmap[i][_x] <  limit) &&
+                    (pmap[i][x_] <  limit)) 
+                { 
+                        pmap[i][j] = pmap[i][_x];
+                }
+        }
+        }
+}
+
+
+
+
+ 
 
 /*
  * Holdunter yer buttz... 
@@ -80,9 +265,12 @@
  */
 void draw_layers(struct map_t *map, double **pmap)
 {
-        #define CHUNK_INITIAL 6
-        #define CHUNK_MIN 3
-        #define THRESHOLD 0.95
+        #define CHUNK_INITIAL 3
+        #define CHUNK_MIN 1
+        /*#define OCEAN_LEVEL 0.10*/
+        #define SHOAL_LEVEL 0.15
+        #define BEACH_LEVEL 0.25
+        #define TERRA_LEVEL 0.30
         #define TREE_PROB 1.0 
 
         int ymax;    // loop boundaries for map cursor
@@ -114,13 +302,27 @@ void draw_layers(struct map_t *map, double **pmap)
         cchar_t *bgtop; // background tile 
         bgtop = get_tile(__Gra__);
 
+        perlin_boost(pmap, ymax, xmax, 0.9, 20);
+
+        clean_singles_vrt(pmap, ymax, xmax, SHOAL_LEVEL);
+        clean_singles_hoz(pmap, ymax, xmax, SHOAL_LEVEL);
+
         for (map_y=0; map_y<ymax; map_y++) {
         for (map_x=0; map_x<xmax; map_x++) {
 
-                if (pmap[map_y][map_x] < THRESHOLD) {
+                if (pmap[map_y][map_x] < SHOAL_LEVEL) 
                         mvwadd_wch(PEEK(map->L[BGR]), map_y, map_x, &OCEAN[0]);
-                        continue;
-                }
+                else if (pmap[map_y][map_x] < BEACH_LEVEL) 
+                        mvwadd_wch(PEEK(map->L[TOP]), map_y, map_x, &__LAGOON[0]);
+                else if (pmap[map_y][map_x] < TERRA_LEVEL) 
+                        mvwadd_wch(PEEK(map->L[TOP]), map_y, map_x, &SAND);
+                /*else if (pmap[map_y][map_x] < TERRA_LEVEL) */
+                else
+                        mvwadd_wch(PEEK(map->L[TOP]), map_y, map_x, bgtop); // top
+
+                continue;
+
+
 
                 chunk = (flip_biased(0.57)) ? (chunk+1) : (chunk-1);
                 chunk = (chunk < CHUNK_MIN) ? CHUNK_MIN : chunk;
@@ -219,10 +421,19 @@ inline void fill_codes(int I, int J, int i, int j)
 #define LAYER(mort, n, ...) or_nibble(rb_data(map->tree, (mort)), LAY, n, __VA_ARGS__)
 #define ELEV(mort, n, ...) or_nibble(rb_data(map->tree, (mort)), ALT, n, __VA_ARGS__)
 
+#define MAKE_TILE_BGR                                \
+        set_state(map->tree, z[CUR], 0, LAY, XXX);   \
+        mvwadd_wch(PEEK(map->L[TOP]), i, j, &BLANK)  \
+
+#define ERODE(z)                                    \
+        dec_nibble(_rb_data(map->tree, (z)), ALT); \
+        set_state(map->tree, (z), 0, LAY, GRO);    \
+        mvwadd_wch(PEEK(map->L[TOP]), i, j, &BLANK)
+
 void erode_beach(struct map_t *map)
 {
-        #define INV_EROSION_POTENTIAL 5
-        #define GENERATIONS 2
+        #define INV_EROSION_POTENTIAL 7
+        #define GENERATIONS 2 
         #define HIGROUND 4
         #define BEACH 3 
         #define SHALLOW 2
@@ -237,25 +448,26 @@ void erode_beach(struct map_t *map)
         jmax = map->ufo.box.w;
 
         /* Seed */
-        for (i=0; i<imax; i++) {
-        for (j=0; j<jmax; j++) {
+        /*for (i=0; i<imax; i++) {*/
+        /*for (j=0; j<jmax; j++) {*/
 
-                fill_codes(imax, jmax, i, j);
+                /*fill_codes(imax, jmax, i, j);*/
 
-                if (LAYER(z[CUR], 1, XXX) || 
-                    LAYER(z[U],   1, XXX)) 
-                        continue;
+                /*if (LAYER(z[CUR], 1, XXX)) continue;*/
+                /*[>if (LAYER(z[U],   1, XXX)) continue;<]*/
 
-                if (roll_fair(INV_EROSION_POTENTIAL) != 0) 
-                        continue;
+                /*if (roll_fair(INV_EROSION_POTENTIAL) != 0) */
+                        /*continue;*/
 
-                if (LAYER(z[R], 1, XXX) || 
-                    LAYER(z[L], 1, XXX)) {
-                        set_state(map->tree, z[CUR], 0, LAY, GRO);
-                        dec_nibble(_rb_data(map->tree, z[CUR]), ALT);
-                }
-        }
-        }
+                /*if (LAYER(z[R], 1, XXX) || */
+                    /*LAYER(z[L], 1, XXX) ||*/
+                    /*LAYER(z[U], 1, XXX) || // NO TOUCH*/
+                    /*LAYER(z[D], 1, XXX)) {*/
+                        /*set_state(map->tree, z[CUR], 0, LAY, GRO);*/
+                        /*dec_nibble(_rb_data(map->tree, z[CUR]), ALT);*/
+                /*}*/
+        /*}*/
+        /*}*/
 
         g = GENERATIONS;
 
@@ -265,16 +477,22 @@ void erode_beach(struct map_t *map)
 
                         fill_codes(imax, jmax, i, j);
 
-                        if (ELEV(z[CUR], 2, HIGROUND, SEALEVEL)) 
-                                continue;
+                        /*if (ELEV(z[CUR], 2, HIGROUND, SEALEVEL)) */
+                                /*continue;*/
+                        if (LAYER(z[CUR], 1, XXX)) continue;
+
 
                         if (roll_fair(INV_EROSION_POTENTIAL) != 0)
                                 continue;
 
-                        set_state(map->tree, z[CUR], 0, LAY, GRO);
-                        for (x=0; x<9; x++) {
-                                dec_nibble(_rb_data(map->tree, z[x]), ALT);
-                                set_state(map->tree, z[x], 0, LAY, GRO);
+                        if (LAYER(z[R], 1, XXX) ||
+                            LAYER(z[L], 1, XXX) ||
+                            LAYER(z[U], 1, XXX) || // NO TOUCH
+                            LAYER(z[D], 1, XXX)) {
+                                for (x=0; x<9; x++) {
+                                        if (flip_biased(0.7))
+                                                ERODE(z[x]);
+                                }
                         }
                 }
                 }
@@ -284,37 +502,74 @@ void erode_beach(struct map_t *map)
 
                 fill_codes(imax, jmax, i, j);
 
-                if (ELEV(z[CUR], 1, HIGROUND) && 
-                    ELEV(z[D],   3, BEACH, SHALLOW))
+                if (ELEV(z[CUR], 1, HIGROUND) &&
+                    ELEV(z[D], 4, BEACH, SHALLOW, SHELF, SEALEVEL))
                 {
-                        mvwadd_wch(PEEK(map->L[TOP]), i-1, j, &GRASS[1]);
-                        mvwadd_wch(PEEK(map->L[TOP]), i, j, &MTN[2]);
+                        /*if (ELEV(z[U], 1, HIGROUND))*/
+                        /*{*/
+                                /*mvwadd_wch(PEEK(map->L[TOP]), i, j, &MTN[2]);*/
+                                /*set_state(map->tree, z, 0, LAY, DRP);*/
+                                mvwadd_wch(PEEK(map->L[TOP]), i-1, j, &GRASS[1]);
+                                /*mvwadd_wch(PEEK(map->L[TOP]), i, j, &MTN[2]);*/
+                                /*continue;*/
+                        /*}*/
+                        /*else*/
+                        /*{*/
+                                /*set_state(map->tree, z[CUR], 0, LAY, GRO);*/
+                                /*dec_nibble(_rb_data(map->tree, z[CUR]), ALT);*/
+                        /*}*/
                 }
-                else {
-                        if (!LAYER(z[CUR], 1, GRO)) continue;
-                        if (ELEV(z[CUR], 1, SEALEVEL)) {
-                                        set_state(map->tree, z[CUR], 0, LAY, XXX);
-                                        mvwadd_wch(PEEK(map->L[TOP]), i, j, &BLANK);
-                        }
-                        if (ELEV(z[CUR], 1, SHELF)) {
-                                setcchar(&cch, &BRDOT[2][roll_fair(DOT2)], A_REVERSE, A_SEA_LAGOON, NULL);
-                                if (ELEV(z[D], 1, SEALEVEL))
-                                        mvwadd_wch(PEEK(map->L[TOP]), i+1, j, &cch);
-                                else if (ELEV(z[U], 1, SEALEVEL))
-                                        mvwadd_wch(PEEK(map->L[TOP]), i-1, j, &cch);
-                                else if (ELEV(z[L], 1, SEALEVEL))
-                                        mvwadd_wch(PEEK(map->L[TOP]), i, j-1, &cch);
-                                else if (ELEV(z[R], 1, SEALEVEL))
-                                        mvwadd_wch(PEEK(map->L[TOP]), i, j+1, &cch);
 
-                                mvwadd_wch(PEEK(map->L[TOP]), i, j, &__LAGOON[0]);
-                        }
+                if (!LAYER(z[CUR], 1, GRO)) continue;
 
-                        if (ELEV(z[CUR], 1, SHALLOW))
-                                mvwadd_wch(PEEK(map->L[TOP]), i, j, &__LAGOON[0]);
-                        if (ELEV(z[CUR], 1, BEACH))
-                                mvwadd_wch(PEEK(map->L[TOP]), i, j, &SAND);
+                if (ELEV(z[CUR], 1, SEALEVEL)) {
+                        MAKE_TILE_BGR;
+                        continue;
                 }
+
+
+                if (ELEV(z[L], 1, HIGROUND) &&
+                    ELEV(z[R], 1, HIGROUND))
+                {
+                        set_state(map->tree, z[CUR], 0, LAY, TOP);
+                        set_state(map->tree, z[CUR], 0, ALT, HIGROUND);
+                        if (LAYER(z[U], 1, XXX))
+                                mvwadd_wch(PEEK(map->L[TOP]), i, j, &GRASS[1]);
+                        else if (LAYER(z[D], 1, XXX)) {
+                                mvwadd_wch(PEEK(map->L[TOP]), i, j, &MTN[2]);
+                                mvwadd_wch(PEEK(map->L[TOP]), i-1, j, &GRASS[1]);
+                        }
+                        continue;
+                }
+                if (ELEV(z[CUR], 1, SHELF)) {
+                        setcchar(&cch, &BRDOT[2][roll_fair(DOT2)], A_REVERSE, A_SEA_LAGOON, NULL);
+                        /*if (ELEV(z[D], 1, SEALEVEL))*/
+                                /*mvwadd_wch(PEEK(map->L[TOP]), i+1, j, &cch);*/
+                        /*else if (ELEV(z[U], 1, SEALEVEL))*/
+                                /*mvwadd_wch(PEEK(map->L[TOP]), i-1, j, &cch);*/
+                        /*else if (ELEV(z[L], 1, SEALEVEL))*/
+                                /*mvwadd_wch(PEEK(map->L[TOP]), i, j-1, &cch);*/
+                        /*else if (ELEV(z[R], 1, SEALEVEL))*/
+                                /*mvwadd_wch(PEEK(map->L[TOP]), i, j+1, &cch);*/
+
+                        if (flip_biased(0.7))
+                                mvwadd_wch(PEEK(map->L[TOP]), i, j, &__LAGOON[0]);
+                        else
+                                mvwadd_wch(PEEK(map->L[TOP]), i, j, &cch);
+                }
+
+                if (ELEV(z[CUR], 1, SHALLOW))
+                        mvwadd_wch(PEEK(map->L[TOP]), i, j, &__LAGOON[0]);
+                if (ELEV(z[CUR], 1, BEACH)) {
+                        if (LAYER(z[U], 1, XXX) &&
+                            LAYER(z[UR], 1, XXX) &&
+                            LAYER(z[UL], 1, XXX)) {
+                                MAKE_TILE_BGR;
+                                continue;
+                        }
+                        mvwadd_wch(PEEK(map->L[TOP]), i, j, &SAND);
+                }
+                /*}*/
         }
         }
 }
@@ -409,28 +664,22 @@ void draw_water_rim(struct map_t *map)
                             LAYER(z[UR], 1, GRO)||
                             LAYER(z[BL], 1, GRO)||
                             LAYER(z[BR], 1, GRO)) {
-                                /*for (k=0; k<SURF_FRAMES; k++) {*/
-                                        /*mvwadd_wch(PEEK(map->L[RIM]), i, j, &__LAGOON[1]);*/
-                                        /*NEXT(map->L[RIM]);*/
-                                /*}*/
-                                /*set_state(map->tree, z[CUR], 0, LAY, RIM);*/
-                                /*continue;*/
                                 wch = shore[0];
                                 color = D_SEA_LAGOON;
                                 attr = 0;
                         }
 
-                        else if (LAYER(z[U], 2, TOP, DRP)) {
+                        if (LAYER(z[U], 2, TOP, DRP)) {
                                 wch = shore[0];
                                 color = _SEA_SHALLOW;
                                 attr = 0;
                         }
-                        else if (LAYER(z[L], 2, TOP, DRP)) {
+                        if (LAYER(z[L], 2, TOP, DRP)) {
                                 wch = shore[2];
                                 color = SEA_SHALLOW;
                                 attr = 0;
                         }
-                        else if (LAYER(z[R], 2, TOP, DRP)) {
+                        if (LAYER(z[R], 2, TOP, DRP)) {
                                 wch = shore[2];
                                 color = SEA_SHALLOW;
                                 attr = 0;

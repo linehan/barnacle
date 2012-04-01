@@ -378,7 +378,7 @@ void init_palette(int set)
         /* IN-GAME COLOR PAIRS */
         init_pair(BOAT_WHITE, WHITE, DSEA);
         init_pair(BOAT_WOOD, LWOOD, DSEA);
-        init_pair(LAND, BROWN, BEIGE);
+        init_pair(LAND, BROWN, LWOOD);
         init_pair(TREETOP, LGREEN, GREEN);
         init_pair(TREETRUNK, WOOD, DGREY);
         init_pair(GRASSY, LGREEN, GREEN);
