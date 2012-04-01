@@ -147,7 +147,8 @@ void gen_map(struct map_t *map)
         map->W = new_multiwin(h, w, 0, 0, 2);
 
         draw_layers(map, map->pmap);
-        /*erode_beach(map);*/
+        erode_beach(map);
+        restack_map(map);
         draw_water_rim(map);
         restack_map(map);
 }

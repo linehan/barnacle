@@ -40,7 +40,11 @@ cchar_t BLANK, PLAIN;
 cchar_t DIRT[2];
 cchar_t UNDERSEA;
 cchar_t DAYSKY;
-cchar_t LAGOON;
+cchar_t L_LAGOON[4];
+cchar_t R_LAGOON[4];
+cchar_t T_LAGOON[4];
+cchar_t B_LAGOON[4];
+cchar_t __LAGOON[8];
 cchar_t PURPLE[5];
 /******************************************************************************/
 void init_gfx_colors(void)
@@ -106,9 +110,41 @@ void init_gfx_colors(void)
         // ------------------------------------------------
 
 
+
         setcchar(&DIRT[0], &gfxBLANK, 0, LAND, NULL);
         setcchar(&SAND, &gfxSOLID, 0, SEA_SAND, NULL);
-        setcchar(&LAGOON, &BRDOT[2][2], 0, SEA_SHALLOW, NULL);
+
+        setcchar(&__LAGOON[0], L"█", 0, A_SEA_LAGOON, NULL);
+        setcchar(&__LAGOON[1], L"█", A_REVERSE, A_SEA_LAGOON, NULL);
+        setcchar(&__LAGOON[2], L"█", 0, B_SEA_LAGOON, NULL);
+        setcchar(&__LAGOON[3], L"█", A_REVERSE, B_SEA_LAGOON, NULL);
+        setcchar(&__LAGOON[4], L"█", 0, C_SEA_LAGOON, NULL);
+        setcchar(&__LAGOON[5], L"█", A_REVERSE, C_SEA_LAGOON, NULL);
+        setcchar(&__LAGOON[6], L"█", 0, D_SEA_LAGOON, NULL);
+        setcchar(&__LAGOON[7], L"█", A_REVERSE, D_SEA_LAGOON, NULL);
+
+
+        setcchar(&L_LAGOON[0], L"▐", 0, A_SEA_LAGOON, NULL);
+        setcchar(&L_LAGOON[1], L"▐", 0, B_SEA_LAGOON, NULL);
+        setcchar(&L_LAGOON[2], L"▐", 0, C_SEA_LAGOON, NULL);
+        setcchar(&L_LAGOON[3], L"▐", 0, D_SEA_LAGOON, NULL);
+
+
+        setcchar(&R_LAGOON[0], L"▌", 0, A_SEA_LAGOON, NULL);
+        setcchar(&R_LAGOON[1], L"▌", 0, B_SEA_LAGOON, NULL);
+        setcchar(&R_LAGOON[2], L"▌", 0, C_SEA_LAGOON, NULL);
+        setcchar(&R_LAGOON[3], L"▌", 0, D_SEA_LAGOON, NULL);
+
+        setcchar(&T_LAGOON[0], L"▁", 0, A_SEA_LAGOON, NULL);
+        setcchar(&T_LAGOON[1], L"▁", 0, B_SEA_LAGOON, NULL);
+        setcchar(&T_LAGOON[2], L"▁", 0, C_SEA_LAGOON, NULL);
+        setcchar(&T_LAGOON[3], L"▁", 0, D_SEA_LAGOON, NULL);
+
+        setcchar(&B_LAGOON[0], L"▔", 0, A_SEA_LAGOON, NULL);
+        setcchar(&B_LAGOON[1], L"▔", 0, B_SEA_LAGOON, NULL);
+        setcchar(&B_LAGOON[2], L"▔", 0, C_SEA_LAGOON, NULL);
+        setcchar(&B_LAGOON[3], L"▔", 0, D_SEA_LAGOON, NULL);
+
         setcchar(&BLANK, &gfxBLANK, 0, 0, NULL);
         setcchar(&PLAIN, &gfxBLANK, 0, COLOR_PAIR(WHITE), NULL);
         setcchar(&UNDERSEA, &gfxSOLID, 0, UND_SEA, NULL);

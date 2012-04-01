@@ -81,6 +81,8 @@ void operate_on(int input)
         case UI_WORLDMAP:
                 switch(input) 
                 {
+                case '$':
+
                 case 'w':
                         roll_map(GLOBE, 'u');
                         break;

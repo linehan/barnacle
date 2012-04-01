@@ -142,14 +142,14 @@ void draw_layers(struct map_t *map, double **pmap)
                                 set_state(map->tree, z, 0, LAY, DRP);
                                 set_state(map->tree, z, 0, SED, LIME);
                                 set_state(map->tree, z, 0, SOI, MOLL);
-                                set_state(map->tree, z, 0, ALT, 3);
+                                set_state(map->tree, z, 0, ALT, 4);
                         }
                         else {
                                 mvwadd_wch(PEEK(map->L[TOP]), i, j, bgtop); // top
                                 set_state(map->tree, z, 0, LAY, TOP);
                                 set_state(map->tree, z, 0, SED, LIME);
                                 set_state(map->tree, z, 0, SOI, MOLL);
-                                set_state(map->tree, z, 0, ALT, 3);
+                                set_state(map->tree, z, 0, ALT, 4);
                         }
                 }
                 }
@@ -223,10 +223,12 @@ void erode_beach(struct map_t *map)
 {
         #define INV_EROSION_POTENTIAL 5
         #define GENERATIONS 2
-        #define HIGROUND 3
-        #define BEACH  2
-        #define SHALLOW 1
+        #define HIGROUND 4
+        #define BEACH 3 
+        #define SHALLOW 2
+        #define SHELF 1 
         #define SEALEVEL 0
+        cchar_t cch;
         int i, j, g, x;
         int imax;
         int jmax;
@@ -282,30 +284,36 @@ void erode_beach(struct map_t *map)
 
                 fill_codes(imax, jmax, i, j);
 
-                /*if (ELEV(z[CUR], 1, BEACH)) {*/
-                        /*[>if (ELEV(z[D], 1, BEACH) && !ELEV(z[U], 1, BEACH)) {<]*/
-                                /*[>mvwadd_wch(PEEK(map->L[TOP]), i, j, &MTN[2]);<]*/
-                                /*[>set_state(map->tree, z[CUR], 0, LAY, GRO);<]*/
-                        /*[>}<]*/
-                        /*[>else if (ELEV(z[U], 1, BEACH)) {<]*/
-                                /*mvwadd_wch(PEEK(map->L[TOP]), i, j, &SAND);*/
-                                /*if (ELEV(z[D], 1, 3))*/
-                                        /*mvwadd_wch(PEEK(map->L[TOP]), i+1, j, &SAND);*/
-                        /*}*/
-                /*}*/
                 if (ELEV(z[CUR], 1, HIGROUND) && 
-                    ELEV(z[D],   3, BEACH, SHALLOW, SEALEVEL))
+                    ELEV(z[D],   3, BEACH, SHALLOW))
                 {
                         mvwadd_wch(PEEK(map->L[TOP]), i-1, j, &GRASS[1]);
                         mvwadd_wch(PEEK(map->L[TOP]), i, j, &MTN[2]);
                 }
                 else {
+                        if (!LAYER(z[CUR], 1, GRO)) continue;
+                        if (ELEV(z[CUR], 1, SEALEVEL)) {
+                                        set_state(map->tree, z[CUR], 0, LAY, XXX);
+                                        mvwadd_wch(PEEK(map->L[TOP]), i, j, &BLANK);
+                        }
+                        if (ELEV(z[CUR], 1, SHELF)) {
+                                setcchar(&cch, &BRDOT[2][roll_fair(DOT2)], A_REVERSE, A_SEA_LAGOON, NULL);
+                                if (ELEV(z[D], 1, SEALEVEL))
+                                        mvwadd_wch(PEEK(map->L[TOP]), i+1, j, &cch);
+                                else if (ELEV(z[U], 1, SEALEVEL))
+                                        mvwadd_wch(PEEK(map->L[TOP]), i-1, j, &cch);
+                                else if (ELEV(z[L], 1, SEALEVEL))
+                                        mvwadd_wch(PEEK(map->L[TOP]), i, j-1, &cch);
+                                else if (ELEV(z[R], 1, SEALEVEL))
+                                        mvwadd_wch(PEEK(map->L[TOP]), i, j+1, &cch);
+
+                                mvwadd_wch(PEEK(map->L[TOP]), i, j, &__LAGOON[0]);
+                        }
+
+                        if (ELEV(z[CUR], 1, SHALLOW))
+                                mvwadd_wch(PEEK(map->L[TOP]), i, j, &__LAGOON[0]);
                         if (ELEV(z[CUR], 1, BEACH))
                                 mvwadd_wch(PEEK(map->L[TOP]), i, j, &SAND);
-                        if (ELEV(z[CUR], 1, SHALLOW))
-                                mvwadd_wch(PEEK(map->L[TOP]), i, j, &LAGOON);
-                        if (ELEV(z[CUR], 1, SEALEVEL))
-                                mvwadd_wch(PEEK(map->L[TOP]), i, j, &OCEAN[0]);
                 }
         }
         }
@@ -373,13 +381,10 @@ void draw_water_rim(struct map_t *map)
         WINDOW *rim1, *rim2;  // Where to draw seashore animation.
         wchar_t *wch;
         short color;
+        attr_t attr;
         
         imax = map->ufo.box.h;
         jmax = map->ufo.box.w;
-
-        rim1 = PEEK(map->L[RIM]);
-               NEXT(map->L[RIM]);
-        rim2 = PEEK(map->L[RIM]);
 
         for (i=0; i<imax; i++) {
         for (j=0; j<jmax; j++) {
@@ -396,24 +401,55 @@ void draw_water_rim(struct map_t *map)
                                 continue;
 
                         // Draw an edge if there is an edge in the directions.
-                        if (LAYER(z[U], 3, TOP, DRP, GRO)) {
+                        if (LAYER(z[U], 1, GRO) ||
+                            LAYER(z[D], 1, GRO) ||
+                            LAYER(z[L], 1, GRO) ||
+                            LAYER(z[R], 1, GRO) ||
+                            LAYER(z[UL], 1, GRO)||
+                            LAYER(z[UR], 1, GRO)||
+                            LAYER(z[BL], 1, GRO)||
+                            LAYER(z[BR], 1, GRO)) {
+                                /*for (k=0; k<SURF_FRAMES; k++) {*/
+                                        /*mvwadd_wch(PEEK(map->L[RIM]), i, j, &__LAGOON[1]);*/
+                                        /*NEXT(map->L[RIM]);*/
+                                /*}*/
+                                /*set_state(map->tree, z[CUR], 0, LAY, RIM);*/
+                                /*continue;*/
+                                wch = shore[0];
+                                color = D_SEA_LAGOON;
+                                attr = 0;
+                        }
+
+                        else if (LAYER(z[U], 2, TOP, DRP)) {
                                 wch = shore[0];
                                 color = _SEA_SHALLOW;
+                                attr = 0;
                         }
-
-                        if (LAYER(z[L], 3, TOP, DRP, GRO)) {
+                        else if (LAYER(z[L], 2, TOP, DRP)) {
                                 wch = shore[2];
                                 color = SEA_SHALLOW;
+                                attr = 0;
                         }
-
-                        if (LAYER(z[R], 3, TOP, DRP, GRO)) {
+                        else if (LAYER(z[R], 2, TOP, DRP)) {
                                 wch = shore[2];
                                 color = SEA_SHALLOW;
+                                attr = 0;
                         }
-
+                        /*if (LAYER(z[U], 3, TOP, DRP, GRO)) {*/
+                                /*wch = shore[0];*/
+                                /*color = _SEA_SHALLOW;*/
+                        /*}*/
+                        /*if (LAYER(z[L], 3, TOP, DRP, GRO)) {*/
+                                /*wch = shore[2];*/
+                                /*color = SEA_SHALLOW;*/
+                        /*}*/
+                        /*if (LAYER(z[R], 3, TOP, DRP, GRO)) {*/
+                                /*wch = shore[2];*/
+                                /*color = SEA_SHALLOW;*/
+                        /*}*/
                         if (wch != NULL) {
                                 for (k=0; k<SURF_FRAMES; k++) {
-                                        setcchar(&cch, &wch[roll_fair(19)], 0, color, NULL);
+                                        setcchar(&cch, &wch[roll_fair(19)], attr, color, NULL);
                                         mvwadd_wch(PEEK(map->L[RIM]), i, j, &cch);
                                         NEXT(map->L[RIM]);
                                 }

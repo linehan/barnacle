@@ -230,6 +230,12 @@ void init_palette(int set)
         init_color(SANDY, 886,  741,  568);
         init_color(SHALLOW, 188,  270,  243);
         init_color(LSHALLOW, 400,  526,  472);
+        /*init_color(SAND_LAGOON, 141, 184, 133);*/
+        /*init_color(SAND_LAGOON, 372, 380, 314);*/
+        init_color(A_SAND_LAGOON, 800, 694, 541);
+        init_color(B_SAND_LAGOON, 635, 623, 506);
+        init_color(C_SAND_LAGOON, 259, 361, 318);
+        init_color(D_SAND_LAGOON, 188, 267, 235);
         /*init_color(SANDY, 886,  737,  557);*/
 
         /* UI COLOR PAIRS */
@@ -380,8 +386,14 @@ void init_palette(int set)
         init_pair(SEA_MED, SEA, DSEA);
         init_pair(SEA_LIG, LSEA, DSEA);
         init_pair(SEA_SAND, SANDY, BEIGE);
-        init_pair(SEA_SHALLOW, LSHALLOW, DSEA);
-        init_pair(_SEA_SHALLOW, LSHALLOW, _DSEA);
+        init_pair(A_SEA_LAGOON, A_SAND_LAGOON, B_SAND_LAGOON);
+        init_pair(B_SEA_LAGOON, C_SAND_LAGOON, D_SAND_LAGOON);
+        init_pair(C_SEA_LAGOON, C_SAND_LAGOON, C_SAND_LAGOON);
+        init_pair(D_SEA_LAGOON, C_SAND_LAGOON, D_SAND_LAGOON);
+        /*init_pair(SEA_SHALLOW, LSHALLOW, DSEA);*/
+        /*init_pair(_SEA_SHALLOW, LSHALLOW, _DSEA);*/
+        init_pair(SEA_SHALLOW, C_SAND_LAGOON, DSEA);
+        init_pair(_SEA_SHALLOW, C_SAND_LAGOON, _DSEA);
         /*init_pair(_SEA_SHALLOW, _SEA, DSEA);*/
 
         init_pair(_BOAT_WHITE, _WHITE,  _DSEA);

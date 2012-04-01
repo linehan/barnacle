@@ -16,7 +16,11 @@ extern cchar_t DAYSKY;
 extern cchar_t PURPLE[5];
 
 extern cchar_t SAND;
-extern cchar_t LAGOON;
+extern cchar_t L_LAGOON[4];
+extern cchar_t R_LAGOON[4];
+extern cchar_t T_LAGOON[4];
+extern cchar_t B_LAGOON[4];
+extern cchar_t __LAGOON[8];
 
 enum tiletype { 
         __non__ = 0,

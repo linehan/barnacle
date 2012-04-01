@@ -94,7 +94,11 @@ enum arne_shadow2 {
         TESTBG = 99,
         SANDY = 100,
         SHALLOW = 101,
-        LSHALLOW= 102
+        LSHALLOW= 102,
+        A_SAND_LAGOON = 103,
+        B_SAND_LAGOON = 104,
+        C_SAND_LAGOON = 105,
+        D_SAND_LAGOON = 106,
 };
 
 /* FG_BG color pairs; odd ones are swaps of even ones. */
@@ -178,6 +182,10 @@ enum ramp_pairs {
         SEA_SAND = 141,
         SEA_SHALLOW = 142,
         _SEA_SHALLOW = 143,
+        A_SEA_LAGOON = 144,
+        B_SEA_LAGOON = 145,
+        C_SEA_LAGOON = 146,
+        D_SEA_LAGOON = 147,
 
 #define PUR_DPU PUR_WHITE
 #define PUR_DDP PUR_WHITE
