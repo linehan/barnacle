@@ -54,8 +54,8 @@ void init_path(struct path_t *path, int yofs, int xofs, int len)
  */
 void path_push(struct path_t *path, int y, int x)
 {
-        y += (int)tromy(path->origin);
-        x += (int)tromx(path->origin);
+        y += (int)trom_y(path->origin);
+        x += (int)trom_x(path->origin);
 
         fifo_enq(&path->fifo, mort(y, x));
 }
@@ -101,8 +101,8 @@ void draw_path(WINDOW *win, struct path_t *path)
                 setcchar(&cch[1], &BRDOT[1][roll_fair(DOT1)], 0, SEA_MED, NULL);
                 setcchar(&cch[0], &BRDOT[1][roll_fair(DOT1)], 0, SEA__MED, NULL);
 
-                y=(int)tromy(pos);
-                x=(int)tromx(pos);
+                y=(int)trom_y(pos);
+                x=(int)trom_x(pos);
 
                 if (path->seg[j] < i++) j++;
                             

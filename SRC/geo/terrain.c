@@ -18,6 +18,8 @@
 #include "weather.h"
 #include "map.h"
 
+#include "../gen/smooth.h"
+
 #include "../lib/common.h"
 #include "../eng/model/bytes.h"
 #include "../gfx/gfx.h"
@@ -72,262 +74,52 @@
         /*for (int octave = octaveCount - 1; octave >= 0; octave--) {*/
         /*for (i = i - 1; i >= 0; i--) {*/ //him
         /*while (i-->0)*/                  // me
+#define __y__(z) trom_y((z))
+#define __x__(z) trom_x((z))
+#define putwch mvwadd_wch
 
-float **float2D(int h, int w)
-{
-        float **new;
+#define PLACE_OCEAN_TILE(map, z)                                           \
+do {                                                                       \
+        putwch(PLATE((map), BGR), __y__(z), __x__(z), &OCEAN[0]);    \
+        set_state(map->tree, (z), 0, LAY, BGR);                            \
+        set_state(map->tree, (z), 0, ALT, 0);                              \
+} while (0)
 
-        new = malloc(h * sizeof(float *));
-        while (h-->0)
-                new[h] = malloc(w * sizeof(float));
+#define PLACE_SHOAL_TILE(map, z)                                           \
+do {                                                                       \
+        if (flip_biased(0.7))                                              \
+                putwch(PLATE((map), GRO), __y__(z), __x__(z), BRCCH(2, D_SEA_LAGOON)); \
+        else    putwch(PLATE((map), GRO), __y__(z), __x__(z), &__LAGOON[0]); \
+                                                                           \
+        set_state(map->tree, (z), 0, LAY, GRO);                            \
+        set_state(map->tree, (z), 0, ALT, 1);                              \
+} while (0)
 
-        return (new);
-}
+#define PLACE_BEACH_TILE(map, z)                                           \
+do {                                                                       \
+        putwch(PLATE((map), GRO), __y__(z), __x__(z), &SAND);        \
+        set_state(map->tree, (z), 0, LAY, GRO);                            \
+        set_state(map->tree, (z), 0, ALT, 2);                              \
+} while (0)
 
-/*
- * Returns a linear interpolation between two values. The closer alpha 
- * is to 0, the closer the resulting value will be to x0; the closer 
- * alpha is to 1, the closer the resulting value will be to x1.
- */
-inline float interpolate(float x0, float x1, float alpha)
-{
-   return x0 * (1 - alpha) + alpha * x1;
-}
+#define PLACE_TERRA_TILE(map, z)                                           \
+do {                                                                       \
+        putwch(PLATE((map), TOP), __y__(z), __x__(z), &GRASS[1]);    \
+        set_state(map->tree, (z), 0, LAY, TOP);                            \
+        set_state(map->tree, (z), 0, ALT, 4);                              \
+} while (0)
 
-
-float **gen_smooth(double **base, int h, int w, int octave)
-{
-        float **smooth;
-        float samp_freq;
-        int samp_period;
-        int samp_i[2];
-        int samp_j[2];
-        float blend_hoz;
-        float blend_vrt;
-        float top;
-        float bot;
-        int i;
-        int j;
-                
-        smooth = float2D(h, w); 
- 
-        samp_period = 1 << octave; // calculates 2 ^ k
-        samp_freq = 1.0/samp_period;
- 
-        for (i=0; i<h; i++) 
-        {
-                //calculate the vertical sampling indices
-                samp_i[0] = (i/samp_period) * samp_period;
-                samp_i[1] = (samp_i[0]+samp_period) % h; //wrap around
-                blend_vrt = (i - samp_i[0]) * samp_freq;
-         
-                for (j=0; j<w; j++) 
-                {
-                        //calculate the horizontal sampling indices
-                        samp_j[0] = (j / samp_period) * samp_period;
-                        samp_j[1] = (samp_j[0] + samp_period) % w; //wrap around
-                        blend_hoz = (j - samp_j[0]) * samp_freq;
-
-                 
-                        //blend the top two corners
-                        top = interpolate(base[samp_i[0]][samp_j[0]],
-                                          base[samp_i[1]][samp_j[0]], 
-                                          blend_hoz);
-                 
-                        //blend the bottom two corners
-                        bot = interpolate(base[samp_i[0]][samp_j[1]],
-                                          base[samp_i[1]][samp_j[1]], 
-                                          blend_hoz);
-                 
-                        //final blend
-                        smooth[i][j] = interpolate(top, bot, blend_vrt);
-                }
-        }
-        return smooth;
-}
+#define PLACE_CLIFF_TILE(map, z)                                           \
+do {                                                                       \
+        putwch(PLATE((map), TOP), __y__(z), __x__(z), &BLANK);      \
+        putwch(PLATE((map), DRP), __y__(z), __x__(z), &MTN[2]);      \
+        set_state(map->tree, (z), 0, LAY, DRP);                            \
+        set_state(map->tree, (z), 0, ALT, 4);                              \
+} while (0)
 
 
 
 
-float fscale_factor(float max, float min)
-{
-        return (float)2.0/(max-min);
-}
-
-
-
-
-void perlin_boost(double **pmap, int h, int w, float persist, int octaves)
-{
-        float ***smooth;
-        float scale;
-        float amp;
-        float tot;
-        int i;
-        int j;
-        int o;
-
-        smooth = malloc(octaves * sizeof(float **));
-
-        for (o=0; o<octaves; o++) {
-                smooth[o] = gen_smooth(pmap, h, w, o);
-        }
-
-        tot = 0.0;
-        amp = 1.0;
-
-        for (o=0; o<octaves; o++) {
-                amp *= persist;
-                tot += amp;
-
-                for (i=0; i<h; i++) {
-                for (j=0; j<w; j++) {
-                        pmap[i][j] += (double)(smooth[o][i][j] * amp);
-                }
-                }
-        }
-
-        /*for (i=0; i<h; i++) {*/
-        /*for (j=0; j<w; j++) {*/
-                /*[>pmap[i][j] -= 1.0;<]*/
-                /*pmap[i][j] /= (double)tot;*/
-        /*}*/
-        /*}*/
-}
-
-#define DEC(x, min) ((x) > (min)) ? ((x)-1) : (x)
-#define INC(x, max) ((x) < (max)) ? ((x)+1) : (x)
-
-inline void smooth_lo_vrt(double **pmap, int h, int w, float limit, int span)
-{
-        int u, d;
-        int i;
-        int j;
-        int n;
-
-        for (i=0; i<h; i++) {
-        for (j=0; j<w; j++) {
-
-                for (n=0; n<span; n++) {
-                        u = DEC(i+n, 0);
-                        d = INC(i+n, h);
-
-                        /* Cursor is lower than surroundings */
-                        if ((pmap[i][j] <  limit) &&
-                            (pmap[u][j] >= limit) &&
-                            (pmap[d][j] >= limit)) 
-                        { 
-                                pmap[i][j] = pmap[u][j];
-                                break;
-                        }
-                }
-        }
-        }
-}
-inline void smooth_hi_vrt(double **pmap, int h, int w, float limit, int span)
-{
-        int u, d;
-        int i;
-        int j;
-        int n;
-
-        for (i=0; i<h; i++) {
-        for (j=0; j<w; j++) {
-
-                for (n=0; n<span; n++) {
-                        u = DEC(i+n, 0);
-                        d = INC(i+n, h);
-
-                        /* Cursor is higher than surroundings */
-                        if ((pmap[i][j] >= limit) &&
-                            (pmap[u][j] <  limit) &&
-                            (pmap[d][j] <  limit)) 
-                        { 
-                                pmap[i][j] = pmap[u][j];
-                                break;
-                        }
-                }
-        }
-        }
-}
-
-inline void smooth_hi_hoz(double **pmap, int h, int w, float limit, int span)
-{
-        int l, r;
-        int i;
-        int j;
-        int n;
-
-        for (i=0; i<h; i++) {
-        for (j=0; j<w; j++) {
-
-                for (n=0; n<span; n++) {
-                        l = DEC(j+n, 0);
-                        r = INC(j+n, w);
-
-                        /* Cursor is higher than surroundings */
-                        if ((pmap[i][j] >= limit) &&
-                            (pmap[i][l] <  limit) &&
-                            (pmap[i][r] <  limit)) 
-                        { 
-                                pmap[i][j] = pmap[i][l];
-                                break;
-                        }
-                }
-        }
-        }
-}
-
-inline void smooth_lo_hoz(double **pmap, int h, int w, float limit, int span)
-{
-        int l, r;
-        int i;
-        int j;
-        int n;
-
-        for (i=0; i<h; i++) {
-        for (j=0; j<w; j++) {
-
-                for (n=0; n<span; n++) {
-                        l = DEC(j+n, 0);
-                        r = INC(j+n, w);
-
-                        /* Cursor is lower than surroundings */
-                        if ((pmap[i][j] <  limit) &&
-                            (pmap[i][l] >= limit) &&
-                            (pmap[i][r] >= limit)) 
-                        { 
-                                pmap[i][j] = pmap[i][l];
-                                break;
-                        }
-                }
-        }
-        }
-}
-
-inline void smooth_cycle(double **pmap, int h, int w, float limit, int cycle)
-{
-        while (cycle-->0) {
-                smooth_hi_vrt(pmap, h, w, limit, 1);
-                smooth_lo_vrt(pmap, h, w, limit, 1);
-                smooth_hi_hoz(pmap, h, w, limit, 1);
-                smooth_lo_hoz(pmap, h, w, limit, 1);
-        }
-}
-inline void smooth_hi_cycle(double **pmap, int h, int w, float limit, int cycle)
-{
-        while (cycle-->0) {
-                smooth_hi_vrt(pmap, h, w, limit, 1);
-                smooth_hi_hoz(pmap, h, w, limit, 1);
-        }
-} 
-inline void smooth_lo_cycle(double **pmap, int h, int w, float limit, int cycle)
-{
-        while (cycle-->0) {
-                smooth_lo_vrt(pmap, h, w, limit, 1);
-                smooth_lo_hoz(pmap, h, w, limit, 1);
-        }
-} 
 
 enum zcodes { CUR=0, U=1, D=2, L=3, R=4, UL=5, UR=6, BL=7, BR=8 };
 uint32_t z[9];
@@ -359,6 +151,43 @@ inline void fill_codes(int I, int J, int i, int j)
 #define LAYER(mort, n, ...) or_nibble(rb_data(map->tree, (mort)), LAY, n, __VA_ARGS__)
 #define ELEV(mort, n, ...) or_nibble(rb_data(map->tree, (mort)), ALT, n, __VA_ARGS__)
 
+#define DEC(x, min) x = ((x) > (min)) ? ((x)-1) : (x)
+#define INC(x, max) x = ((x) < (max)) ? ((x)+1) : (x)
+
+
+void sss(double **pmap, int h, int w, float lim, int span)
+{
+        bool possible_hole;
+        int count;
+        int y, x, n;
+
+        count = 0;
+        possible_hole = true;
+
+        for (y=0; y<h; y++) {
+        for (x=0; x<w; x++) {
+
+                if (pmap[y][x] >= lim) {
+                        possible_hole = true;
+                        /* If count isn't at zero, fill in the previous
+                           squares with the current value. (Also, set count
+                           to zero, as a side effect.) */
+                        while (count-->0)
+                                pmap[y][x-(count+1)] = pmap[y][x];
+                }
+
+                if (pmap[y][x] < lim) {
+                        if (possible_hole) { /* This is the first non-top tile */
+                                if (count++ > span) { /* If hole outspans the span */
+                                        possible_hole = false; /* not a hole */
+                                        count = 0;             /* reset the count */
+                                }
+                        }
+                }
+
+        }
+        }
+}
 
 
 
@@ -372,124 +201,54 @@ void draw_layers(struct map_t *map, double **pmap)
 {
         #define OCTAVES 6
         #define SMOOTH 0.99
-        #define CHUNK_INITIAL 3
-        #define CHUNK_MIN 1
-        /*#define OCEAN_LEVEL 0.10*/
-        #define SHOAL_LEVEL 0.00
-        #define BEACH_LEVEL 0.30
-        #define TERRA_LEVEL 0.40
-        #define TREE_PROB 1.0 
 
-        int ymax;    // loop boundaries for map cursor
+        #define SHOAL -0.10
+        #define BEACH 0.00
+        #define TERRA 0.40
+
+        int ymax;
         int xmax; 
-        int imax;    // loop boundaries for chunk drawing
-        int jmax; 
-        int map_h;   // Dimensions of entire map
-        int map_w; 
-        int map_y; 
-        int map_x;     
-        int tree_h;  // Dimensions of trees during drawing
-        int tree_w; 
-        int tree_y; 
-        int tree_x;   
-        int chunk;   // Square units to draw at a time 
-        int chunk_h; // Height of chunk
-        int chunk_w; // Width of chunk
-        /*uint32_t z;  // for computing Morton codes*/
-        int i;
-        int j;
+        int y; 
+        int x;     
 
-        map_h = map->ufo.box.h;
-        map_w = map->ufo.box.w;
+        ymax = map->ufo.box.h - 1;
+        xmax = map->ufo.box.w - 1;
 
-        chunk = CHUNK_INITIAL;
-        ymax  = (map_h-1)-CHUNK_MIN; // beware the fencepost
-        xmax  = (map_w-1)-CHUNK_MIN;
+        werase(DIAGNOSTIC_WIN);
+        wprintw(DIAGNOSTIC_WIN, "avg: %f", avg(pmap, ymax, xmax));
 
-        cchar_t *bgtop; // background tile 
-        bgtop = get_tile(__Gra__);
+        perlin_smooth(pmap, ymax, xmax, SMOOTH, OCTAVES);
 
-        perlin_boost(pmap, ymax, xmax, SMOOTH, OCTAVES);
+        smooth_cycle(pmap, ymax, xmax, SHOAL, SMOOTH_BO, 4);
+        smooth_cycle(pmap, ymax, xmax, TERRA, SMOOTH_HI, 4);
+        smooth_cycle(pmap, ymax, xmax, TERRA, SMOOTH_LO, 1);
+        smooth_cycle(pmap, ymax, xmax, BEACH, SMOOTH_BO, 1);
+        smooth_cycle(pmap, ymax, xmax, SHOAL, SMOOTH_BO, 1);
+        /*smooth_cycle(pmap, ymax, xmax, TERRA, SMOOTH_BO, 4);*/
 
-        smooth_cycle(pmap, ymax, xmax, SHOAL_LEVEL, 4);
-        smooth_hi_cycle(pmap, ymax, xmax, TERRA_LEVEL, 4);
-        smooth_lo_cycle(pmap, ymax, xmax, TERRA_LEVEL, 1);
-        smooth_cycle(pmap, ymax, xmax, SHOAL_LEVEL, 4);
+        /*sss(pmap, ymax, xmax, TERRA, 4);*/
 
+        for (y=0; y<ymax; y++) {
+        for (x=0; x<xmax; x++) {
 
-        for (map_y=0; map_y<ymax; map_y++) {
-        for (map_x=0; map_x<xmax; map_x++) {
+                fill_codes(ymax, xmax, y, x);
 
-                fill_codes(ymax, xmax, map_y, map_x);
-
-                if (pmap[map_y][map_x] < SHOAL_LEVEL) 
-                        mvwadd_wch(PEEK(map->L[BGR]), map_y, map_x, &OCEAN[0]);
-                else if (pmap[map_y][map_x] < BEACH_LEVEL) 
-                        mvwadd_wch(PEEK(map->L[TOP]), map_y, map_x, &__LAGOON[0]);
-                else if (pmap[map_y][map_x] < TERRA_LEVEL) 
-                        mvwadd_wch(PEEK(map->L[TOP]), map_y, map_x, &SAND);
-                /*else if (pmap[map_y][map_x] < TERRA_LEVEL) */
-                else {
-                        mvwadd_wch(PEEK(map->L[TOP]), map_y, map_x, bgtop); // top
-                        set_state(map->tree, z[CUR], 0, LAY, TOP);
-                        set_state(map->tree, z[CUR], 0, SED, LIME);
-                        set_state(map->tree, z[CUR], 0, SOI, MOLL);
-                        set_state(map->tree, z[CUR], 0, ALT, 4);
-                }
+                if (pmap[y][x] < SHOAL) PLACE_OCEAN_TILE(map, z[CUR]); else
+                if (pmap[y][x] < BEACH) PLACE_SHOAL_TILE(map, z[CUR]); else
+                if (pmap[y][x] < TERRA) PLACE_BEACH_TILE(map, z[CUR]); else
+                                        PLACE_TERRA_TILE(map, z[CUR]);
         }
         }
 
-        for (map_y=0; map_y<ymax; map_y++) {
-        for (map_x=0; map_x<xmax; map_x++) {
+        for (y=0; y<ymax; y++) {
+        for (x=0; x<xmax; x++) {
 
-                fill_codes(ymax, xmax, map_y, map_x);
+                fill_codes(ymax, xmax, y, x);
 
-                if ((LAYER(z[CUR], 1, TOP)) &&
-                   !(LAYER(z[D]  , 1, TOP))) 
-                {
-                        mvwadd_wch(PEEK(map->L[TOP]), map_y, map_x, &MTN[2]);
-                        set_state(map->tree, z[CUR], 0, LAY, DRP);
-                        set_state(map->tree, z[CUR], 0, SED, LIME);
-                        set_state(map->tree, z[CUR], 0, SOI, MOLL);
-                        set_state(map->tree, z[CUR], 0, ALT, 4);
-                }
+                if ((LAYER(z[CUR], 1, TOP)) && !(LAYER(z[D], 1, TOP))) 
+                        PLACE_CLIFF_TILE(map, z[CUR]);
         }
         }
-
-        return;
-
-
-                /*chunk = (flip_biased(0.57)) ? (chunk+1) : (chunk-1);*/
-                /*chunk = (chunk < CHUNK_MIN) ? CHUNK_MIN : chunk;*/
-
-                /*chunk_h = chunk_w = chunk;*/
-
-                /*imax  = map_y + chunk_h;*/
-                /*jmax  = map_x + chunk_w;*/
-
-                /*if (imax > map_h) chunk_h = imax-(map_h);*/
-                /*if (jmax > map_w) chunk_w = jmax-(map_w);*/
-
-                /*// Draw the ground box*/
-                /*for (i=map_y; i<=imax; i++) {*/
-                /*for (j=map_x; j<jmax; j++) {*/
-                        /*z = MORT(i, j);*/
-                        /*if (i == imax) {*/
-                                /*mvwadd_wch(PEEK(map->L[DRP]), i, j, &MTN[2]);*/
-                                /*set_state(map->tree, z, 0, LAY, DRP);*/
-                                /*set_state(map->tree, z, 0, SED, LIME);*/
-                                /*set_state(map->tree, z, 0, SOI, MOLL);*/
-                                /*set_state(map->tree, z, 0, ALT, 4);*/
-                        /*}*/
-                        /*else {*/
-                                /*mvwadd_wch(PEEK(map->L[TOP]), i, j, bgtop); // top*/
-                                /*set_state(map->tree, z, 0, LAY, TOP);*/
-                                /*set_state(map->tree, z, 0, SED, LIME);*/
-                                /*set_state(map->tree, z, 0, SOI, MOLL);*/
-                                /*set_state(map->tree, z, 0, ALT, 4);*/
-                        /*}*/
-                /*}*/
-                /*}*/
 
                 /*// Decide whether to draw the tree box*/
                 /*if ((flip_biased(TREE_PROB))||(chunk_w < 4)) continue;*/
@@ -524,163 +283,6 @@ void draw_layers(struct map_t *map, double **pmap)
         /*}*/
 
 }
-
-
-
-
-#define MAKE_TILE_BGR                                \
-        set_state(map->tree, z[CUR], 0, LAY, XXX);   \
-        mvwadd_wch(PEEK(map->L[TOP]), i, j, &BLANK)  \
-
-#define ERODE(z)                                    \
-        dec_nibble(_rb_data(map->tree, (z)), ALT); \
-        set_state(map->tree, (z), 0, LAY, GRO);    \
-        mvwadd_wch(PEEK(map->L[TOP]), i, j, &BLANK)
-
-void erode_beach(struct map_t *map)
-{
-        #define INV_EROSION_POTENTIAL 7
-        #define GENERATIONS 2 
-        #define HIGROUND 4
-        #define BEACH 3 
-        #define SHALLOW 2
-        #define SHELF 1 
-        #define SEALEVEL 0
-        cchar_t cch;
-        int i, j, g, x;
-        int imax;
-        int jmax;
-
-        imax = map->ufo.box.h;
-        jmax = map->ufo.box.w;
-
-        /* Seed */
-        /*for (i=0; i<imax; i++) {*/
-        /*for (j=0; j<jmax; j++) {*/
-
-                /*fill_codes(imax, jmax, i, j);*/
-
-                /*if (LAYER(z[CUR], 1, XXX)) continue;*/
-                /*[>if (LAYER(z[U],   1, XXX)) continue;<]*/
-
-                /*if (roll_fair(INV_EROSION_POTENTIAL) != 0) */
-                        /*continue;*/
-
-                /*if (LAYER(z[R], 1, XXX) || */
-                    /*LAYER(z[L], 1, XXX) ||*/
-                    /*LAYER(z[U], 1, XXX) || // NO TOUCH*/
-                    /*LAYER(z[D], 1, XXX)) {*/
-                        /*set_state(map->tree, z[CUR], 0, LAY, GRO);*/
-                        /*dec_nibble(_rb_data(map->tree, z[CUR]), ALT);*/
-                /*}*/
-        /*}*/
-        /*}*/
-
-        g = GENERATIONS;
-
-        while (g-->0) {
-                for (i=0; i<imax; i++) {
-                for (j=0; j<jmax; j++) {
-
-                        fill_codes(imax, jmax, i, j);
-
-                        /*if (ELEV(z[CUR], 2, HIGROUND, SEALEVEL)) */
-                                /*continue;*/
-                        if (LAYER(z[CUR], 1, XXX)) continue;
-
-
-                        if (roll_fair(INV_EROSION_POTENTIAL) != 0)
-                                continue;
-
-                        if (LAYER(z[R], 1, XXX) ||
-                            LAYER(z[L], 1, XXX) ||
-                            LAYER(z[U], 1, XXX) || // NO TOUCH
-                            LAYER(z[D], 1, XXX)) {
-                                for (x=0; x<9; x++) {
-                                        if (flip_biased(0.7))
-                                                ERODE(z[x]);
-                                }
-                        }
-                }
-                }
-        }
-        for (i=0; i<imax; i++) {
-        for (j=0; j<jmax; j++) {
-
-                fill_codes(imax, jmax, i, j);
-
-                if (ELEV(z[CUR], 1, HIGROUND) &&
-                    ELEV(z[D], 4, BEACH, SHALLOW, SHELF, SEALEVEL))
-                {
-                        /*if (ELEV(z[U], 1, HIGROUND))*/
-                        /*{*/
-                                /*mvwadd_wch(PEEK(map->L[TOP]), i, j, &MTN[2]);*/
-                                /*set_state(map->tree, z, 0, LAY, DRP);*/
-                                mvwadd_wch(PEEK(map->L[TOP]), i-1, j, &GRASS[1]);
-                                /*mvwadd_wch(PEEK(map->L[TOP]), i, j, &MTN[2]);*/
-                                /*continue;*/
-                        /*}*/
-                        /*else*/
-                        /*{*/
-                                /*set_state(map->tree, z[CUR], 0, LAY, GRO);*/
-                                /*dec_nibble(_rb_data(map->tree, z[CUR]), ALT);*/
-                        /*}*/
-                }
-
-                if (!LAYER(z[CUR], 1, GRO)) continue;
-
-                if (ELEV(z[CUR], 1, SEALEVEL)) {
-                        MAKE_TILE_BGR;
-                        continue;
-                }
-
-
-                if (ELEV(z[L], 1, HIGROUND) &&
-                    ELEV(z[R], 1, HIGROUND))
-                {
-                        set_state(map->tree, z[CUR], 0, LAY, TOP);
-                        set_state(map->tree, z[CUR], 0, ALT, HIGROUND);
-                        if (LAYER(z[U], 1, XXX))
-                                mvwadd_wch(PEEK(map->L[TOP]), i, j, &GRASS[1]);
-                        else if (LAYER(z[D], 1, XXX)) {
-                                mvwadd_wch(PEEK(map->L[TOP]), i, j, &MTN[2]);
-                                mvwadd_wch(PEEK(map->L[TOP]), i-1, j, &GRASS[1]);
-                        }
-                        continue;
-                }
-                if (ELEV(z[CUR], 1, SHELF)) {
-                        setcchar(&cch, &BRDOT[2][roll_fair(DOT2)], A_REVERSE, A_SEA_LAGOON, NULL);
-                        /*if (ELEV(z[D], 1, SEALEVEL))*/
-                                /*mvwadd_wch(PEEK(map->L[TOP]), i+1, j, &cch);*/
-                        /*else if (ELEV(z[U], 1, SEALEVEL))*/
-                                /*mvwadd_wch(PEEK(map->L[TOP]), i-1, j, &cch);*/
-                        /*else if (ELEV(z[L], 1, SEALEVEL))*/
-                                /*mvwadd_wch(PEEK(map->L[TOP]), i, j-1, &cch);*/
-                        /*else if (ELEV(z[R], 1, SEALEVEL))*/
-                                /*mvwadd_wch(PEEK(map->L[TOP]), i, j+1, &cch);*/
-
-                        if (flip_biased(0.7))
-                                mvwadd_wch(PEEK(map->L[TOP]), i, j, &__LAGOON[0]);
-                        else
-                                mvwadd_wch(PEEK(map->L[TOP]), i, j, &cch);
-                }
-
-                if (ELEV(z[CUR], 1, SHALLOW))
-                        mvwadd_wch(PEEK(map->L[TOP]), i, j, &__LAGOON[0]);
-                if (ELEV(z[CUR], 1, BEACH)) {
-                        if (LAYER(z[U], 1, XXX) &&
-                            LAYER(z[UR], 1, XXX) &&
-                            LAYER(z[UL], 1, XXX)) {
-                                MAKE_TILE_BGR;
-                                continue;
-                        }
-                        mvwadd_wch(PEEK(map->L[TOP]), i, j, &SAND);
-                }
-                /*}*/
-        }
-        }
-}
-
 
 
 

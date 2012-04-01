@@ -85,7 +85,7 @@ uint32_t trom(uint32_t z)
  * tromx -- call trom() with no offset, to receive x-value 
  * @z: unsigned 32-bit integer z-index value
  */
-uint32_t tromx(uint32_t z)
+uint32_t trom_x(uint32_t z)
 {
   return trom(z >> 0);
 }
@@ -97,7 +97,7 @@ uint32_t tromx(uint32_t z)
  * tromy -- call trom() with offset of 1, to receive y-value 
  * @z: unsigned 32-bit integer z-index value
  */
-uint32_t tromy(uint32_t z)
+uint32_t trom_y(uint32_t z)
 {
   return trom(z >> 1);
 }

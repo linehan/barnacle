@@ -312,3 +312,42 @@ void test_simplex_noise(double sea_level)
         }
         wprintw(DIAGNOSTIC_WIN, "\n  Perlin map with sea level == %g", sea_level);
 }
+
+
+
+inline double avg(double **pmap, int h, int w)
+{
+        double sum;
+        int y, x;
+        
+        for (y=0; y<h; y++) {
+        for (x=0; x<w; x++) {
+               sum += pmap[y][x]; 
+        }
+        }
+        return (double)(sum / (double)(y*x));
+}
+
+inline void free2D(double **pmap, int h, int w)
+{
+        while (h-->0)
+               free(pmap[h]); 
+
+        free(pmap);
+}
+
+
+double **tuned_perlin_map(uint32_t h, uint32_t w, double mean)
+{
+        double **pmap;
+
+        /* Generate perlin maps until you have one that meets the mean. */
+        while (pmap=gen_perlin_map(h, w), avg(pmap, h, w) > mean)
+                free2D(pmap, h, w);
+
+        return (pmap);
+}
+
+
+
+

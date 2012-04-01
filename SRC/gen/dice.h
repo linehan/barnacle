@@ -1,3 +1,7 @@
+#pragma once
+#ifndef __DICE_H
+#define __DICE_H
+
 extern int MT_PRIMED;
 
 typedef struct dice_t {
@@ -13,3 +17,5 @@ int roll_fair(int sides);
 DICE *new_dice(const char *str, ...);
 int vose_alias(int n, double *prob_array);
 
+
+#endif

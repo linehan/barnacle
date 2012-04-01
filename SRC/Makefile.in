@@ -56,20 +56,20 @@ am_arawak_OBJECTS = arawak.$(OBJEXT) init/init.$(OBJEXT) \
 	gfx/palette.$(OBJEXT) gfx/sprite.$(OBJEXT) gfx/gfx.$(OBJEXT) \
 	gfx/multiwin.$(OBJEXT) gfx/dock.$(OBJEXT) \
 	gfx/wselect.$(OBJEXT) gfx/fancy_menus.$(OBJEXT) \
-	gen/perlin.$(OBJEXT) gfx/term.$(OBJEXT) gfx/stdpan.$(OBJEXT) \
-	geo/path_mvc.$(OBJEXT) txt/gloss_m.$(OBJEXT) \
-	txt/gloss_v.$(OBJEXT) txt/gloss_c.$(OBJEXT) \
-	mob/mob_model.$(OBJEXT) mob/mob_control.$(OBJEXT) \
-	boat/boat_model.$(OBJEXT) boat/boat_view.$(OBJEXT) \
-	boat/boat_control.$(OBJEXT) boat/compass.$(OBJEXT) \
-	noun/noun_model.$(OBJEXT) noun/noun_view.$(OBJEXT) \
-	noun/noun_control.$(OBJEXT) verb/verb_model.$(OBJEXT) \
-	verb/verb_view.$(OBJEXT) verb/verb_control.$(OBJEXT) \
-	verb/verbs.$(OBJEXT) pan/ctrlpanels.$(OBJEXT) \
-	pan/new_character.$(OBJEXT) pan/button.$(OBJEXT) \
-	pan/dialog.$(OBJEXT) pan/test.$(OBJEXT) pan/crewgen.$(OBJEXT) \
-	loop/fsm.$(OBJEXT) loop/loop.$(OBJEXT) txt/rk.$(OBJEXT) \
-	txt/psh.$(OBJEXT)
+	gen/perlin.$(OBJEXT) gen/smooth.$(OBJEXT) gfx/term.$(OBJEXT) \
+	gfx/stdpan.$(OBJEXT) geo/path_mvc.$(OBJEXT) \
+	txt/gloss_m.$(OBJEXT) txt/gloss_v.$(OBJEXT) \
+	txt/gloss_c.$(OBJEXT) mob/mob_model.$(OBJEXT) \
+	mob/mob_control.$(OBJEXT) boat/boat_model.$(OBJEXT) \
+	boat/boat_view.$(OBJEXT) boat/boat_control.$(OBJEXT) \
+	boat/compass.$(OBJEXT) noun/noun_model.$(OBJEXT) \
+	noun/noun_view.$(OBJEXT) noun/noun_control.$(OBJEXT) \
+	verb/verb_model.$(OBJEXT) verb/verb_view.$(OBJEXT) \
+	verb/verb_control.$(OBJEXT) verb/verbs.$(OBJEXT) \
+	pan/ctrlpanels.$(OBJEXT) pan/new_character.$(OBJEXT) \
+	pan/button.$(OBJEXT) pan/dialog.$(OBJEXT) pan/test.$(OBJEXT) \
+	pan/crewgen.$(OBJEXT) loop/fsm.$(OBJEXT) loop/loop.$(OBJEXT) \
+	txt/rk.$(OBJEXT) txt/psh.$(OBJEXT)
 arawak_OBJECTS = $(am_arawak_OBJECTS)
 arawak_LDADD = $(LDADD)
 DEFAULT_INCLUDES = -I.@am__isrc@
@@ -204,6 +204,7 @@ arawak_SOURCES = arawak.c \
                    gfx/wselect.c        \
                    gfx/fancy_menus.c    \
                    gen/perlin.c         \
+                   gen/smooth.c         \
                    gfx/term.c           \
                    gfx/stdpan.c         \
                    geo/path_mvc.c       \
@@ -408,6 +409,8 @@ gfx/fancy_menus.$(OBJEXT): gfx/$(am__dirstamp) \
 	gfx/$(DEPDIR)/$(am__dirstamp)
 gen/perlin.$(OBJEXT): gen/$(am__dirstamp) \
 	gen/$(DEPDIR)/$(am__dirstamp)
+gen/smooth.$(OBJEXT): gen/$(am__dirstamp) \
+	gen/$(DEPDIR)/$(am__dirstamp)
 gfx/term.$(OBJEXT): gfx/$(am__dirstamp) gfx/$(DEPDIR)/$(am__dirstamp)
 gfx/stdpan.$(OBJEXT): gfx/$(am__dirstamp) \
 	gfx/$(DEPDIR)/$(am__dirstamp)
@@ -520,6 +523,7 @@ mostlyclean-compile:
 	-rm -f gen/mtwist.$(OBJEXT)
 	-rm -f gen/name/name.$(OBJEXT)
 	-rm -f gen/perlin.$(OBJEXT)
+	-rm -f gen/smooth.$(OBJEXT)
 	-rm -f geo/map.$(OBJEXT)
 	-rm -f geo/path_mvc.$(OBJEXT)
 	-rm -f geo/terrain.$(OBJEXT)
@@ -579,6 +583,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@gen/$(DEPDIR)/dice.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@gen/$(DEPDIR)/mtwist.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@gen/$(DEPDIR)/perlin.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@gen/$(DEPDIR)/smooth.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@gen/name/$(DEPDIR)/name.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@geo/$(DEPDIR)/map.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@geo/$(DEPDIR)/path_mvc.Po@am__quote@

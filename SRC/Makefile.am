@@ -39,6 +39,7 @@ arawak_SOURCES = arawak.c \
                    gfx/wselect.c        \
                    gfx/fancy_menus.c    \
                    gen/perlin.c         \
+                   gen/smooth.c         \
                    gfx/term.c           \
                    gfx/stdpan.c         \
                    geo/path_mvc.c       \

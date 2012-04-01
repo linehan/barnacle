@@ -65,6 +65,14 @@ void build_gpack(struct gpack *g)
         setcchar(&g->cch, &g->wcs, 0, g->pair, NULL);
 }
 
+cchar_t shared_cch;
+
+cchar_t *mkcch(wchar_t *wch, attr_t attr, short co)
+{
+        setcchar(&shared_cch, wch, attr, co, NULL);
+        return (&shared_cch);
+}
+
 void center_text(WINDOW *win, int y0, int x0, int w, char *string)
 {
 	int len, x, y;

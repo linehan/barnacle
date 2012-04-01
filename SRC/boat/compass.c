@@ -139,10 +139,10 @@ void approach_helm(float *delay)
         int offset = 0;
         static int dir;
 
-        werase(DIAGNOSTIC_WIN);
-        wprintw(DIAGNOSTIC_WIN, "delay: %f\n", *delay);
-        wprintw(DIAGNOSTIC_WIN, "buffr: %f\n", buffer);
-        wprintw(DIAGNOSTIC_WIN, "helm:  %u, %u\n", current_helm, middle_helm);
+        /*werase(DIAGNOSTIC_WIN);*/
+        /*wprintw(DIAGNOSTIC_WIN, "delay: %f\n", *delay);*/
+        /*wprintw(DIAGNOSTIC_WIN, "buffr: %f\n", buffer);*/
+        /*wprintw(DIAGNOSTIC_WIN, "helm:  %u, %u\n", current_helm, middle_helm);*/
 
 
         if (make_helm > current_helm) current_helm++;

@@ -188,6 +188,7 @@ static const
 char **map_opts[8] = {lay_tag,ALT_tag,BED_tag,SED_tag,SOI_tag,MOI_tag,grad_tag,hdg_tag};
 //}}}1
 
+#define PLATE(map, tag) PEEK(((map)->L[(tag)]))
 
 struct map_t *new_map(int h, int w, int scr_h, int scr_w, int scr_y, int scr_x);
 int           map_hit(struct map_t *map, struct rec_t *rec);

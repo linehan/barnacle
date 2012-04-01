@@ -30,8 +30,6 @@ void stdpan(WINDOW *win, WINDOW **sub, WINDOW **buf, PANEL **pan)
         getmaxyx(win, h, w);
         getbegyx(win, y, x);
 
-        wprintw(DIAGNOSTIC_WIN, "h: %u w: %u\n y: %u x: %u", h, w, y, x);
-
         *pan = new_panel(win);
 
         *sub = derwin(win, SUB_H(h), SUB_W(w), SUB_Y, SUB_X);

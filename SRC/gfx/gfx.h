@@ -44,6 +44,8 @@ void center_text(WINDOW *win, int y0, int x0, int w, char *string);
 void wwrapstr(WINDOW *win, const char *string);
 short cuco(WINDOW *win);
 
+cchar_t *mkcch(wchar_t *wch, attr_t attr, short co);
+
 
 
 
@@ -60,8 +62,7 @@ short cuco(WINDOW *win);
 
 #define map_refresh(map) \
         copywin(PEEK(map->W), map->win, ufo_y(map, ufo), ufo_x(map, ufo), 0, 0, LINES-1, COLS-1, 0); \
-        update_panels(); \
-        doupdate(); 
+        doupdate();\
 
 #define TOGPAN(pan)              \
         if (panel_hidden(pan))   \

@@ -44,6 +44,8 @@ PANEL  *INSPECTORMSGPAN;
 #define i_yy inspector_yy
 #define i_xx inspector_xx
 
+static bool diagnostic_lock;
+
 static int inspector_y = 0;
 static int inspector_x = 0;
 static int inspector_yy = 0;
@@ -56,6 +58,8 @@ void init_test(void)
 {
 	DIAGNOSTIC_WIN = newwin((LINES-30), COLS, 0, 0);
         DIAGNOSTIC_PAN = new_panel(DIAGNOSTIC_WIN);
+
+        diagnostic_lock = false;
 
         BIGWIN = newwin(LINES, COLS, 0, 0);
         BIGPAN = new_panel(BIGWIN);
