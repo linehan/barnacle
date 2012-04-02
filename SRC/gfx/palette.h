@@ -186,6 +186,7 @@ enum ramp_pairs {
         B_SEA_LAGOON = 145,
         C_SEA_LAGOON = 146,
         D_SEA_LAGOON = 147,
+        //RED_PINK = 148,
 
 #define PUR_DPU PUR_WHITE
 #define PUR_DDP PUR_WHITE
@@ -198,6 +199,8 @@ enum ramp_pairs {
 #define PUR_BEI PUR_BEIGE
 #define PUR_WOO PUR_WOOD
 #define TITLE_SCREEN PUR_PURPLE
+
+
 
 
 
@@ -367,6 +370,7 @@ enum purpairs {
         PUR_ARSENIC = 237,
 };
 
+#define TITLE_COLOR PUR_BLACK
 
 #endif
 

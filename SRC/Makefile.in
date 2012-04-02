@@ -57,19 +57,20 @@ am_arawak_OBJECTS = arawak.$(OBJEXT) init/init.$(OBJEXT) \
 	gfx/multiwin.$(OBJEXT) gfx/dock.$(OBJEXT) \
 	gfx/wselect.$(OBJEXT) gfx/fancy_menus.$(OBJEXT) \
 	gen/perlin.$(OBJEXT) gen/smooth.$(OBJEXT) gfx/term.$(OBJEXT) \
-	gfx/stdpan.$(OBJEXT) geo/path_mvc.$(OBJEXT) \
-	txt/gloss_m.$(OBJEXT) txt/gloss_v.$(OBJEXT) \
-	txt/gloss_c.$(OBJEXT) mob/mob_model.$(OBJEXT) \
-	mob/mob_control.$(OBJEXT) boat/boat_model.$(OBJEXT) \
-	boat/boat_view.$(OBJEXT) boat/boat_control.$(OBJEXT) \
-	boat/compass.$(OBJEXT) noun/noun_model.$(OBJEXT) \
-	noun/noun_view.$(OBJEXT) noun/noun_control.$(OBJEXT) \
-	verb/verb_model.$(OBJEXT) verb/verb_view.$(OBJEXT) \
-	verb/verb_control.$(OBJEXT) verb/verbs.$(OBJEXT) \
-	pan/ctrlpanels.$(OBJEXT) pan/new_character.$(OBJEXT) \
-	pan/button.$(OBJEXT) pan/dialog.$(OBJEXT) pan/test.$(OBJEXT) \
-	pan/crewgen.$(OBJEXT) loop/fsm.$(OBJEXT) loop/loop.$(OBJEXT) \
-	txt/rk.$(OBJEXT) txt/psh.$(OBJEXT)
+	gfx/stdpan.$(OBJEXT) pan/titlecard.$(OBJEXT) \
+	geo/path_mvc.$(OBJEXT) txt/gloss_m.$(OBJEXT) \
+	txt/gloss_v.$(OBJEXT) txt/gloss_c.$(OBJEXT) \
+	mob/mob_model.$(OBJEXT) mob/mob_control.$(OBJEXT) \
+	boat/boat_model.$(OBJEXT) boat/boat_view.$(OBJEXT) \
+	boat/boat_control.$(OBJEXT) boat/compass.$(OBJEXT) \
+	noun/noun_model.$(OBJEXT) noun/noun_view.$(OBJEXT) \
+	noun/noun_control.$(OBJEXT) verb/verb_model.$(OBJEXT) \
+	verb/verb_view.$(OBJEXT) verb/verb_control.$(OBJEXT) \
+	verb/verbs.$(OBJEXT) pan/ctrlpanels.$(OBJEXT) \
+	pan/new_character.$(OBJEXT) pan/button.$(OBJEXT) \
+	pan/dialog.$(OBJEXT) pan/test.$(OBJEXT) pan/crewgen.$(OBJEXT) \
+	loop/fsm.$(OBJEXT) loop/loop.$(OBJEXT) txt/rk.$(OBJEXT) \
+	txt/psh.$(OBJEXT)
 arawak_OBJECTS = $(am_arawak_OBJECTS)
 arawak_LDADD = $(LDADD)
 DEFAULT_INCLUDES = -I.@am__isrc@
@@ -207,6 +208,7 @@ arawak_SOURCES = arawak.c \
                    gen/smooth.c         \
                    gfx/term.c           \
                    gfx/stdpan.c         \
+                   pan/titlecard.c      \
                    geo/path_mvc.c       \
                    txt/gloss_m.c        \
                    txt/gloss_v.c        \
@@ -414,6 +416,14 @@ gen/smooth.$(OBJEXT): gen/$(am__dirstamp) \
 gfx/term.$(OBJEXT): gfx/$(am__dirstamp) gfx/$(DEPDIR)/$(am__dirstamp)
 gfx/stdpan.$(OBJEXT): gfx/$(am__dirstamp) \
 	gfx/$(DEPDIR)/$(am__dirstamp)
+pan/$(am__dirstamp):
+	@$(MKDIR_P) pan
+	@: > pan/$(am__dirstamp)
+pan/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) pan/$(DEPDIR)
+	@: > pan/$(DEPDIR)/$(am__dirstamp)
+pan/titlecard.$(OBJEXT): pan/$(am__dirstamp) \
+	pan/$(DEPDIR)/$(am__dirstamp)
 geo/path_mvc.$(OBJEXT): geo/$(am__dirstamp) \
 	geo/$(DEPDIR)/$(am__dirstamp)
 txt/$(am__dirstamp):
@@ -478,12 +488,6 @@ verb/verb_control.$(OBJEXT): verb/$(am__dirstamp) \
 	verb/$(DEPDIR)/$(am__dirstamp)
 verb/verbs.$(OBJEXT): verb/$(am__dirstamp) \
 	verb/$(DEPDIR)/$(am__dirstamp)
-pan/$(am__dirstamp):
-	@$(MKDIR_P) pan
-	@: > pan/$(am__dirstamp)
-pan/$(DEPDIR)/$(am__dirstamp):
-	@$(MKDIR_P) pan/$(DEPDIR)
-	@: > pan/$(DEPDIR)/$(am__dirstamp)
 pan/ctrlpanels.$(OBJEXT): pan/$(am__dirstamp) \
 	pan/$(DEPDIR)/$(am__dirstamp)
 pan/new_character.$(OBJEXT): pan/$(am__dirstamp) \
@@ -560,6 +564,7 @@ mostlyclean-compile:
 	-rm -f pan/dialog.$(OBJEXT)
 	-rm -f pan/new_character.$(OBJEXT)
 	-rm -f pan/test.$(OBJEXT)
+	-rm -f pan/titlecard.$(OBJEXT)
 	-rm -f txt/gloss_c.$(OBJEXT)
 	-rm -f txt/gloss_m.$(OBJEXT)
 	-rm -f txt/gloss_v.$(OBJEXT)
@@ -621,6 +626,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@pan/$(DEPDIR)/dialog.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@pan/$(DEPDIR)/new_character.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@pan/$(DEPDIR)/test.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@pan/$(DEPDIR)/titlecard.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@txt/$(DEPDIR)/gloss_c.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@txt/$(DEPDIR)/gloss_m.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@txt/$(DEPDIR)/gloss_v.Po@am__quote@

@@ -34,12 +34,14 @@
 
 #include "mob/mob_model.h"
 #include "boat/boat_model.h"
-
+#include "pan/titlecard.h"
 
 /* Day-toh-nah */
 int main() 
 {
         arawak_init();
+
+        print_title("Welcome to Arawak!");
 
         struct map_t *pad = new_map((LINES*3), (COLS*3), LINES, COLS, 0, 0);
         gen_map(pad);
@@ -47,6 +49,8 @@ int main()
 
         roll_map(pad, 0);
         roll_map(pad, 0);
+
+        hide_title();
 
         uint32_t key;
         key = new_boat(pad, FUNBOAT, "Afarensis");

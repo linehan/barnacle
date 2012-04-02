@@ -42,6 +42,7 @@ arawak_SOURCES = arawak.c \
                    gen/smooth.c         \
                    gfx/term.c           \
                    gfx/stdpan.c         \
+                   pan/titlecard.c      \
                    geo/path_mvc.c       \
                    txt/gloss_m.c        \
                    txt/gloss_v.c        \

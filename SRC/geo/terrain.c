@@ -118,10 +118,32 @@ do {                                                                       \
 } while (0)
 
 
+#define PLACE_TREETOP_TILE(map, z)                                           \
+do {                                                                       \
+        putwch(PLATE((map), TOP), __y__(z), __x__(z), &BLANK);      \
+        putwch(PLATE((map), VEG), __y__(z), __x__(z), &TREE[1]);      \
+        set_state(map->tree, (z), 0, LAY, VEG);                         \
+        set_state(map->tree, (z), 0, ALT, 5);                              \
+} while (0)
+
+#define PLACE_TREETRUNK_TILE(map, z)                                           \
+do {                                                                       \
+        putwch(PLATE((map), TOP), __y__(z), __x__(z), &BLANK);      \
+        putwch(PLATE((map), VEG), __y__(z), __x__(z), &TREE[0]);      \
+        set_state(map->tree, (z), 0, LAY, VEG);                         \
+        set_state(map->tree, (z), 0, ALT, 4);                              \
+} while (0)
+
+#define WIPE_TILE(map, z, layer)\
+do {                                                            \
+        putwch(PLATE((map), layer), __y__(z), __x__(z), &BLANK);      \
+} while (0)
 
 
 
-enum zcodes { CUR=0, U=1, D=2, L=3, R=4, UL=5, UR=6, BL=7, BR=8 };
+
+/*enum zcodes { CUR=0, U=1, D=2, L=3, R=4, UL=5, UR=6, BL=7, BR=8 };*/
+enum zcodes { UL=0, U=1, UR=2, L=3, CUR=4, R=5, BL=6, D=7, BR=8};
 uint32_t z[9];
 
 inline void fill_codes(int I, int J, int i, int j)
@@ -145,6 +167,39 @@ inline void fill_codes(int I, int J, int i, int j)
         z[UR]  = MORT(_i  ,  j_);
         z[BL]  = MORT( i_ , _j );
         z[BR]  = MORT( i_ ,  j_);
+}
+
+
+#define ZMAX 5
+uint32_t Z[ZMAX][ZMAX];
+int __zi__;
+int __zj__;
+#define _Z_ Z[__zi__][__zj__]
+#define _I_ __zi__
+#define _J_ __zj__
+
+#define FOR_EACH_Z \
+        for (__zi__=0; __zi__<ZMAX; __zi__++) { \
+        for (__zj__=0; __zj__<ZMAX; __zj__++)  \
+
+#define END_EACH_Z }
+
+inline void FILL_Z(int y, int x, int ymax, int xmax)
+{
+        int i, j;
+        int yy, xx;
+
+        yy = xx = 0;
+
+        for (i=0; i<ZMAX; i++) {
+        for (j=0; j<ZMAX; j++) {
+
+                yy = (y+i < ymax) ? y+i : yy;
+                xx = (x+j < xmax) ? x+j : xx;
+                
+                Z[i][j] = MORT(yy, xx);
+        }
+        }
 }
 
 
@@ -261,24 +316,103 @@ void draw_layers(struct map_t *map, double **pmap)
                         /*jmax   = tree_x + tree_w; // recalculation*/
                 /*}*/
 
-                /*// Draw the tree box*/
-                /*for (i=tree_y; i<=imax; i++) {*/
-                /*for (j=tree_x; j<jmax; j++) {*/
-                        /*z = MORT(i, j);*/
-                        /*if (i == imax) {*/
+        int n;
+        bool trees;
+        for (y=0; y<ymax; y++) {
+        for (x=0; x<xmax; x++) {
+
+                FILL_Z(y, x, ymax, xmax);
+
+                trees = true;
+
+                FOR_EACH_Z 
+                {
+                        /*if (pmap[__y__(_Z_)][__x__(_Z_)] < TERRA)*/
+                        if (!LAYER(_Z_, 1, TOP)) trees = false;
+                } 
+                END_EACH_Z
+
+                if (trees == true) {
+                        FOR_EACH_Z 
+                        {
+                                /*if (_I_ == (ZMAX-1)) continue;*/
+                                /*if (_J_ == 0 || _J_ == (ZMAX-1)) continue;*/
+                                /*if (_I_ == (ZMAX-2))*/
+                                        /*PLACE_TREETRUNK_TILE(map, _Z_);*/
+                                /*else*/
+                                        PLACE_TREETOP_TILE(map, _Z_);
+
+                        } 
+                        END_EACH_Z
+                }
+        }
+        }
+
+        for (y=0; y<ymax; y++) {
+        for (x=0; x<xmax; x++) {
+
+                fill_codes(ymax, xmax, y, x);
+
+                /*if (LAYER(z[CUR], 1, VEG) &&*/
+                   /*!LAYER(z[L],   2, VEG, TOP)) {*/
+                        /*WIPE_TILE(map, z[CUR], VEG);*/
+                        /*PLACE_TERRA_TILE(map, z[CUR]);*/
+                        /*[>continue;<]*/
+                /*}*/
+                if (LAYER(z[CUR], 1, VEG) &&
+                   (!LAYER(z[L],  2, VEG, TOP) ||
+                    !LAYER(z[R],  2, VEG, TOP) ||
+                    !LAYER(z[U],  2, VEG, TOP) ||
+                    !LAYER(z[D],  2, VEG, TOP) ||
+                    !LAYER(z[BL], 2, VEG, TOP) ||
+                    !LAYER(z[BR], 2, VEG, TOP) ||
+                    !LAYER(z[UL], 2, VEG, TOP) ||
+                    !LAYER(z[UR], 2, VEG, TOP) ))
+                {
+                        WIPE_TILE(map, z[CUR], VEG);
+                        PLACE_TERRA_TILE(map, z[CUR]);
+                        /*continue;*/
+                }
+
+                /*if (LAYER(z[CUR], 1, VEG) &&*/
+                   /*!LAYER(z[R],   2, VEG, TOP)) {*/
+                        /*WIPE_TILE(map, z[CUR], VEG);*/
+                        /*PLACE_TERRA_TILE(map, z[CUR]);*/
+                        /*[>continue;<]*/
+                /*}*/
+
+                /*if (LAYER(z[CUR], 1, VEG) &&*/
+                   /*!LAYER(z[D],   2, VEG, TOP)) {*/
+                        /*WIPE_TILE(map, z[CUR], VEG);*/
+                        /*PLACE_TERRA_TILE(map, z[CUR]);*/
+                        /*[>continue;<]*/
+                        /*[>PLACE_TREETRUNK_TILE(map, z[U]);<]*/
+                /*}*/
+
+                if (LAYER(z[U],   1, VEG) &&
+                   !LAYER(z[CUR], 1, VEG)) {
+                        PLACE_TREETRUNK_TILE(map, z[U]);
+                }
+        }
+        }
+                        /*// Draw the tree box*/
+                        /*for (i=tree_y; i<=imax; i++) {*/
+                        /*for (j=tree_x; j<jmax; j++) {*/
+                                /*z = MORT(i, j);*/
+                                /*[>if (i == imax) {<]*/
                                 /*set_state(map->tree, z, 0, LAY, VEG);*/
                                 /*set_state(map->tree, z, 0, SED, LIME);*/
                                 /*set_state(map->tree, z, 0, SOI, MOLL);*/
                                 /*mvwadd_wch(PEEK(map->L[VEG]), i, j, &TREE[0]);*/
+                                /*}*/
+                                /*else {*/
+                                        /*mvwadd_wch(PEEK(map->L[VEG]), i, j, &TREE[1]);*/
+                                        /*set_state(map->tree, z, 0, LAY, VEG);*/
+                                        /*set_state(map->tree, z, 0, SED, LIME);*/
+                                        /*set_state(map->tree, z, 0, SOI, SPOD);*/
+                                /*}*/
                         /*}*/
-                        /*else {*/
-                                /*mvwadd_wch(PEEK(map->L[VEG]), i, j, &TREE[1]);*/
-                                /*set_state(map->tree, z, 0, LAY, VEG);*/
-                                /*set_state(map->tree, z, 0, SED, LIME);*/
-                                /*set_state(map->tree, z, 0, SOI, SPOD);*/
                         /*}*/
-                /*}*/
-                /*}*/
         /*}*/
         /*}*/
 

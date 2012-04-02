@@ -135,7 +135,9 @@ void gen_map(struct map_t *map)
         w = map->ufo.box.w;
 
         /*map->pmap = gen_perlin_map(h, w); // 2D Perlin map*/
+        print_status("Generating suitable simplex noise...");
         map->pmap = tuned_perlin_map(h, w, (double)(-0.004));
+        print_status("\tdone!");
 
         map->win = newwin(LINES, COLS, 0, 0); // Fullscreen
         map->pan = new_panel(map->win);
