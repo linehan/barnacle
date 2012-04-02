@@ -47,10 +47,10 @@ int main()
         gen_map(pad);
         GLOBE = pad;
 
-        roll_map(pad, 0);
-        roll_map(pad, 0);
+        print_hold("ALL OK -- Press any key to continue");
 
-        hide_title();
+        roll_map(pad, 0);
+        roll_map(pad, 0);
 
         uint32_t key;
         key = new_boat(pad, FUNBOAT, "Afarensis");

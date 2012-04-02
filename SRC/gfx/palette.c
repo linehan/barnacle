@@ -97,6 +97,8 @@ void init_palette(int set)
         init_color(DSEA,       165,  235,  211);
         init_color(LWOOD,      851,  647,  443);
         init_color(WOOD,       769,  545,  321);
+        /*{721 , 521 , 325},  // WOOD*/
+        init_color(__WOOD, 673, 497, 329);
         init_color(WHITE,      902,  894,  835);
         init_color(SHADOW,     372,  349,  376);
         init_color(DARK_RED,   416,  141,  176);
@@ -226,6 +228,7 @@ void init_palette(int set)
         init_color(__DSEA,      55,   71,   67);
         init_color(__SEA,      196,  259,  243);
         init_color(__LSEA,     314,  388,  384);
+        /*init_color(__WOOD,     314, 388, 384  );*/
 
         init_color(SANDY, 886,  741,  568);
         init_color(SHALLOW, 188,  270,  243);
@@ -236,6 +239,8 @@ void init_palette(int set)
         init_color(B_SAND_LAGOON, 635, 623, 506);
         init_color(C_SAND_LAGOON, 259, 361, 318);
         init_color(D_SAND_LAGOON, 188, 267, 235);
+
+
         /*init_color(SANDY, 886,  737,  557);*/
 
         /* UI COLOR PAIRS */

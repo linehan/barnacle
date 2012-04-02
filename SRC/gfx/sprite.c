@@ -89,11 +89,26 @@ void init_gfx_colors(void)
         setcchar(&__GRASS[2], &gfxSHADE[_3Q_], 0, __GRASSY, NULL);
         // -------------------------------------------------------
 
+        init_color(A_CLIFF, 196, 196, 196);
+        init_color(B_CLIFF, 423, 447, 345);
+        init_color(C_CLIFF, 635, 662, 529);
+        init_color(D_CLIFF, 835, 858, 733);
+        /*init_color(D_CLIFF, 596, 431, 392); // light*/
+        /*init_color(D_CLIFF, 647, 443, 392);*/ // lighter
+        /*init_color(D_CLIFF, 623, 427, 376); // brz-10%*/
+        /*init_color(D_CLIFF, 600, 408, 361); // brz-20%*/
+        init_pair(CLIFF_PAIR, __ORANGE, BEIGE);
+/*༕ᚠᚡᛈ*/
+
+/*ᚠᚡᚢᚣᚤᚥᚦᚧᚨᚩᚪᚫᚬᚭᚮᚯᚰᚱᚲᚳᚴᚵᚶᚷᚸᚹᚺᚻᚼᚽᚾᚿᛀᛁᛂᛃᛄᛅᛆᛇᛈᛉᛊᛋᛌᛍᛎᛏᛐᛑᛒᛓᛔᛕᛗᛘᛙᛚᛛᛜᛝᛞᛟᛠᛡᛢᛣᛤᛥᛦᛧᛨᛩᛪᛮᛯ*/
+/*░▒▓*/
 
         // Mountain colors --------------------------------        
         setcchar(  &MTN[0],   &gfxMTN[0], 0,   LAND, NULL);
         setcchar(  &MTN[1],   &gfxMTN[1], 0,   LAND, NULL);
+        /*setcchar(  &MTN[2], &gfxSHADE[2], 0,   CLIFF_PAIR, NULL);*/
         setcchar(  &MTN[2], &gfxSHADE[2], 0,   LAND, NULL);
+        /*setcchar(  &MTN[2],         L"▓", A_REVERSE,   CLIFF_PAIR, NULL);*/
         setcchar( &_MTN[0],   &gfxMTN[0], 0,  _LAND, NULL);
         setcchar( &_MTN[1],   &gfxMTN[1], 0,  _LAND, NULL);
         setcchar( &_MTN[2], &gfxSHADE[2], 0,  _LAND, NULL);

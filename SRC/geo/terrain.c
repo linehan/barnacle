@@ -32,6 +32,7 @@
 #include "../gfx/brnoise.h"
 
 #include "../eng/state.h"
+#include "../pan/titlecard.h"
 //##############################################################################
 /* Move terrain highlights in a direction determined by the current wind
  * direction. */
@@ -123,7 +124,7 @@ do {                                                                       \
         putwch(PLATE((map), TOP), __y__(z), __x__(z), &BLANK);      \
         putwch(PLATE((map), VEG), __y__(z), __x__(z), &TREE[1]);      \
         set_state(map->tree, (z), 0, LAY, VEG);                         \
-        set_state(map->tree, (z), 0, ALT, 5);                              \
+        set_state(map->tree, (z), 0, ALT, 4);                              \
 } while (0)
 
 #define PLACE_TREETRUNK_TILE(map, z)                                           \
@@ -254,12 +255,13 @@ void sss(double **pmap, int h, int w, float lim, int span)
  */
 void draw_layers(struct map_t *map, double **pmap)
 {
-        #define OCTAVES 6
-        #define SMOOTH 0.99
+        #define OCTAVES 18
+        #define SMOOTH 0.98
 
-        #define SHOAL -0.10
+        /*#define SHOAL -0.10*/
+        #define SHOAL -0.003
         #define BEACH 0.00
-        #define TERRA 0.40
+        #define TERRA 0.45
 
         int ymax;
         int xmax; 
@@ -269,19 +271,40 @@ void draw_layers(struct map_t *map, double **pmap)
         ymax = map->ufo.box.h - 1;
         xmax = map->ufo.box.w - 1;
 
-        werase(DIAGNOSTIC_WIN);
-        wprintw(DIAGNOSTIC_WIN, "avg: %f", avg(pmap, ymax, xmax));
+        print_status("Tuning noise...");
 
         perlin_smooth(pmap, ymax, xmax, SMOOTH, OCTAVES);
 
-        smooth_cycle(pmap, ymax, xmax, SHOAL, SMOOTH_BO, 4);
-        smooth_cycle(pmap, ymax, xmax, TERRA, SMOOTH_HI, 4);
-        smooth_cycle(pmap, ymax, xmax, TERRA, SMOOTH_LO, 1);
-        smooth_cycle(pmap, ymax, xmax, BEACH, SMOOTH_BO, 1);
-        smooth_cycle(pmap, ymax, xmax, SHOAL, SMOOTH_BO, 1);
-        /*smooth_cycle(pmap, ymax, xmax, TERRA, SMOOTH_BO, 4);*/
+        print_status(FINISHED);
+        print_status("Smoothing noise...");
 
-        /*sss(pmap, ymax, xmax, TERRA, 4);*/
+
+
+        /*smooth_cycle(pmap, ymax, xmax, TERRA, SMOOTH_BO, 3);*/
+        /*smooth_cycle(pmap, ymax, xmax, BEACH, SMOOTH_BO, 3);*/
+        /*smooth_cycle(pmap, ymax, xmax, SHOAL, SMOOTH_HI, 3);*/
+        /*smooth_cycle(pmap, ymax, xmax, BEACH, SMOOTH_HI, 3);*/
+
+        smooth_cycle(pmap, ymax, xmax, TERRA, SMOOTH_BO, 3);
+
+        smooth_cycle(pmap, ymax, xmax, BEACH, SMOOTH_BO, 3);
+        smooth_cycle(pmap, ymax, xmax, SHOAL, SMOOTH_BO, 3);
+        /*smooth_cycle(pmap, ymax, xmax, SHOAL, SMOOTH_BO, 1);*/
+        /*smooth_cycle(pmap, ymax, xmax, BEACH, SMOOTH_BO, 1);*/
+
+
+
+        /*smooth_cycle(pmap, ymax, xmax, TERRA, SMOOTH_BO, 1);*/
+        /*smooth_cycle(pmap, ymax, xmax, BEACH, SMOOTH_LO, 1);*/
+        /*smooth_cycle(pmap, ymax, xmax, TERRA, SMOOTH_LO, 1);*/
+
+
+        /*smooth_cycle(pmap, ymax, xmax, TERRA, SMOOTH_LO, 1);*/
+        /*smooth_cycle(pmap, ymax, xmax, BEACH, SMOOTH_BO, 1);*/
+        /*smooth_cycle(pmap, ymax, xmax, SHOAL, SMOOTH_BO, 1);*/
+
+        print_status(FINISHED);
+        print_status("Laying tiles...");
 
         for (y=0; y<ymax; y++) {
         for (x=0; x<xmax; x++) {
@@ -294,6 +317,8 @@ void draw_layers(struct map_t *map, double **pmap)
                                         PLACE_TERRA_TILE(map, z[CUR]);
         }
         }
+        print_status(FINISHED);
+        print_status("Drawing cliffs...");
 
         for (y=0; y<ymax; y++) {
         for (x=0; x<xmax; x++) {
@@ -305,17 +330,8 @@ void draw_layers(struct map_t *map, double **pmap)
         }
         }
 
-                /*// Decide whether to draw the tree box*/
-                /*if ((flip_biased(TREE_PROB))||(chunk_w < 4)) continue;*/
-                /*else {*/
-                        /*tree_x = (map_x+1);*/
-                        /*tree_y = (map_y-1);*/
-                        /*tree_h = (chunk_h-1);*/
-                        /*tree_w = (chunk_w-2);*/
-                        /*imax   = tree_y + tree_h; // recalculation*/
-                        /*jmax   = tree_x + tree_w; // recalculation*/
-                /*}*/
-
+        print_status(FINISHED);
+        print_status("Planting trees...");
         int n;
         bool trees;
         for (y=0; y<ymax; y++) {
@@ -327,38 +343,31 @@ void draw_layers(struct map_t *map, double **pmap)
 
                 FOR_EACH_Z 
                 {
-                        /*if (pmap[__y__(_Z_)][__x__(_Z_)] < TERRA)*/
                         if (!LAYER(_Z_, 1, TOP)) trees = false;
                 } 
                 END_EACH_Z
 
                 if (trees == true) {
+
+                        /*if (flip_biased(0.5)) continue;*/
+
                         FOR_EACH_Z 
                         {
-                                /*if (_I_ == (ZMAX-1)) continue;*/
-                                /*if (_J_ == 0 || _J_ == (ZMAX-1)) continue;*/
-                                /*if (_I_ == (ZMAX-2))*/
-                                        /*PLACE_TREETRUNK_TILE(map, _Z_);*/
-                                /*else*/
-                                        PLACE_TREETOP_TILE(map, _Z_);
+                                PLACE_TREETOP_TILE(map, _Z_);
 
                         } 
                         END_EACH_Z
                 }
         }
         }
+        print_status(FINISHED);
+        print_status("Trimming trees...");
 
         for (y=0; y<ymax; y++) {
         for (x=0; x<xmax; x++) {
 
                 fill_codes(ymax, xmax, y, x);
 
-                /*if (LAYER(z[CUR], 1, VEG) &&*/
-                   /*!LAYER(z[L],   2, VEG, TOP)) {*/
-                        /*WIPE_TILE(map, z[CUR], VEG);*/
-                        /*PLACE_TERRA_TILE(map, z[CUR]);*/
-                        /*[>continue;<]*/
-                /*}*/
                 if (LAYER(z[CUR], 1, VEG) &&
                    (!LAYER(z[L],  2, VEG, TOP) ||
                     !LAYER(z[R],  2, VEG, TOP) ||
@@ -371,50 +380,22 @@ void draw_layers(struct map_t *map, double **pmap)
                 {
                         WIPE_TILE(map, z[CUR], VEG);
                         PLACE_TERRA_TILE(map, z[CUR]);
-                        /*continue;*/
-                }
-
-                /*if (LAYER(z[CUR], 1, VEG) &&*/
-                   /*!LAYER(z[R],   2, VEG, TOP)) {*/
-                        /*WIPE_TILE(map, z[CUR], VEG);*/
-                        /*PLACE_TERRA_TILE(map, z[CUR]);*/
-                        /*[>continue;<]*/
-                /*}*/
-
-                /*if (LAYER(z[CUR], 1, VEG) &&*/
-                   /*!LAYER(z[D],   2, VEG, TOP)) {*/
-                        /*WIPE_TILE(map, z[CUR], VEG);*/
-                        /*PLACE_TERRA_TILE(map, z[CUR]);*/
-                        /*[>continue;<]*/
-                        /*[>PLACE_TREETRUNK_TILE(map, z[U]);<]*/
-                /*}*/
-
-                if (LAYER(z[U],   1, VEG) &&
-                   !LAYER(z[CUR], 1, VEG)) {
-                        PLACE_TREETRUNK_TILE(map, z[U]);
                 }
         }
         }
-                        /*// Draw the tree box*/
-                        /*for (i=tree_y; i<=imax; i++) {*/
-                        /*for (j=tree_x; j<jmax; j++) {*/
-                                /*z = MORT(i, j);*/
-                                /*[>if (i == imax) {<]*/
-                                /*set_state(map->tree, z, 0, LAY, VEG);*/
-                                /*set_state(map->tree, z, 0, SED, LIME);*/
-                                /*set_state(map->tree, z, 0, SOI, MOLL);*/
-                                /*mvwadd_wch(PEEK(map->L[VEG]), i, j, &TREE[0]);*/
-                                /*}*/
-                                /*else {*/
-                                        /*mvwadd_wch(PEEK(map->L[VEG]), i, j, &TREE[1]);*/
-                                        /*set_state(map->tree, z, 0, LAY, VEG);*/
-                                        /*set_state(map->tree, z, 0, SED, LIME);*/
-                                        /*set_state(map->tree, z, 0, SOI, SPOD);*/
-                                /*}*/
-                        /*}*/
-                        /*}*/
-        /*}*/
-        /*}*/
+
+        for (y=0; y<ymax; y++) {
+        for (x=0; x<xmax; x++) {
+
+                fill_codes(ymax, xmax, y, x);
+                if (LAYER(z[CUR], 1, VEG) &&
+                    LAYER(z[D],   1, TOP)) {
+                        WIPE_TILE(map, z[CUR], VEG);
+                        PLACE_TREETRUNK_TILE(map, z[CUR]);
+                }
+        }
+        }
+        print_status(FINISHED);
 
 }
 
