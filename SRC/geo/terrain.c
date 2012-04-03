@@ -255,8 +255,8 @@ void sss(double **pmap, int h, int w, float lim, int span)
  */
 void draw_layers(struct map_t *map, double **pmap)
 {
-        #define OCTAVES 18
-        #define SMOOTH 0.98
+        #define OCTAVES 6
+        #define SMOOTH 0.99
 
         /*#define SHOAL -0.10*/
         #define SHOAL -0.003
@@ -290,8 +290,9 @@ void draw_layers(struct map_t *map, double **pmap)
         smooth_cycle(pmap, ymax, xmax, BEACH, SMOOTH_BO, 3);
         smooth_cycle(pmap, ymax, xmax, SHOAL, SMOOTH_BO, 3);
         /*smooth_cycle(pmap, ymax, xmax, SHOAL, SMOOTH_BO, 1);*/
-        /*smooth_cycle(pmap, ymax, xmax, BEACH, SMOOTH_BO, 1);*/
-
+        smooth_cycle(pmap, ymax, xmax, BEACH, SMOOTH_BO, 1);
+        smooth_cycle(pmap, ymax, xmax, TERRA, SMOOTH_BO, 3);
+        /*smooth_cycle(pmap, ymax, xmax, TERRA, SMOOTH_I, 1);*/
 
 
         /*smooth_cycle(pmap, ymax, xmax, TERRA, SMOOTH_BO, 1);*/

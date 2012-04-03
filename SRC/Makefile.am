@@ -20,6 +20,7 @@ arawak_SOURCES = arawak.c \
                    lib/morton.c         \
                    lib/magic.c          \
                    lib/fifo.c           \
+                   lib/lifo.c           \
                    lib/queue.c          \
                    lib/textutils.c      \
                    lib/ufo.c            \
@@ -38,6 +39,7 @@ arawak_SOURCES = arawak.c \
                    gfx/dock.c           \
                    gfx/wselect.c        \
                    gfx/fancy_menus.c    \
+                   gfx/colortest/colortest.c      \
                    gen/perlin.c         \
                    gen/smooth.c         \
                    gfx/term.c           \

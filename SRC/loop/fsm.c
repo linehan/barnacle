@@ -118,6 +118,10 @@ void director(int input)
         else {
                 switch (input) 
                 { 
+                case '#':
+                        TOGPAN(colortest_panel());
+                        paint_ramp(0);
+                        break;
                 case 'n':
                         new_character();
                         break;

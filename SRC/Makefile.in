@@ -48,14 +48,15 @@ am__dirstamp = $(am__leading_dot)dirstamp
 am_arawak_OBJECTS = arawak.$(OBJEXT) init/init.$(OBJEXT) \
 	lib/redblack/rb.$(OBJEXT) lib/sort/mergesort.$(OBJEXT) \
 	lib/sort/quicksort.$(OBJEXT) lib/morton.$(OBJEXT) \
-	lib/magic.$(OBJEXT) lib/fifo.$(OBJEXT) lib/queue.$(OBJEXT) \
-	lib/textutils.$(OBJEXT) lib/ufo.$(OBJEXT) eng/state.$(OBJEXT) \
-	eng/model/bytes.$(OBJEXT) gen/dice.$(OBJEXT) \
-	gen/mtwist.$(OBJEXT) gen/name/name.$(OBJEXT) \
-	geo/weather.$(OBJEXT) geo/terrain.$(OBJEXT) geo/map.$(OBJEXT) \
-	gfx/palette.$(OBJEXT) gfx/sprite.$(OBJEXT) gfx/gfx.$(OBJEXT) \
-	gfx/multiwin.$(OBJEXT) gfx/dock.$(OBJEXT) \
-	gfx/wselect.$(OBJEXT) gfx/fancy_menus.$(OBJEXT) \
+	lib/magic.$(OBJEXT) lib/fifo.$(OBJEXT) lib/lifo.$(OBJEXT) \
+	lib/queue.$(OBJEXT) lib/textutils.$(OBJEXT) lib/ufo.$(OBJEXT) \
+	eng/state.$(OBJEXT) eng/model/bytes.$(OBJEXT) \
+	gen/dice.$(OBJEXT) gen/mtwist.$(OBJEXT) \
+	gen/name/name.$(OBJEXT) geo/weather.$(OBJEXT) \
+	geo/terrain.$(OBJEXT) geo/map.$(OBJEXT) gfx/palette.$(OBJEXT) \
+	gfx/sprite.$(OBJEXT) gfx/gfx.$(OBJEXT) gfx/multiwin.$(OBJEXT) \
+	gfx/dock.$(OBJEXT) gfx/wselect.$(OBJEXT) \
+	gfx/fancy_menus.$(OBJEXT) gfx/colortest/colortest.$(OBJEXT) \
 	gen/perlin.$(OBJEXT) gen/smooth.$(OBJEXT) gfx/term.$(OBJEXT) \
 	gfx/stdpan.$(OBJEXT) pan/titlecard.$(OBJEXT) \
 	geo/path_mvc.$(OBJEXT) txt/gloss_m.$(OBJEXT) \
@@ -186,6 +187,7 @@ arawak_SOURCES = arawak.c \
                    lib/morton.c         \
                    lib/magic.c          \
                    lib/fifo.c           \
+                   lib/lifo.c           \
                    lib/queue.c          \
                    lib/textutils.c      \
                    lib/ufo.c            \
@@ -204,6 +206,7 @@ arawak_SOURCES = arawak.c \
                    gfx/dock.c           \
                    gfx/wselect.c        \
                    gfx/fancy_menus.c    \
+                   gfx/colortest/colortest.c      \
                    gen/perlin.c         \
                    gen/smooth.c         \
                    gfx/term.c           \
@@ -344,6 +347,7 @@ lib/morton.$(OBJEXT): lib/$(am__dirstamp) \
 	lib/$(DEPDIR)/$(am__dirstamp)
 lib/magic.$(OBJEXT): lib/$(am__dirstamp) lib/$(DEPDIR)/$(am__dirstamp)
 lib/fifo.$(OBJEXT): lib/$(am__dirstamp) lib/$(DEPDIR)/$(am__dirstamp)
+lib/lifo.$(OBJEXT): lib/$(am__dirstamp) lib/$(DEPDIR)/$(am__dirstamp)
 lib/queue.$(OBJEXT): lib/$(am__dirstamp) lib/$(DEPDIR)/$(am__dirstamp)
 lib/textutils.$(OBJEXT): lib/$(am__dirstamp) \
 	lib/$(DEPDIR)/$(am__dirstamp)
@@ -409,6 +413,14 @@ gfx/wselect.$(OBJEXT): gfx/$(am__dirstamp) \
 	gfx/$(DEPDIR)/$(am__dirstamp)
 gfx/fancy_menus.$(OBJEXT): gfx/$(am__dirstamp) \
 	gfx/$(DEPDIR)/$(am__dirstamp)
+gfx/colortest/$(am__dirstamp):
+	@$(MKDIR_P) gfx/colortest
+	@: > gfx/colortest/$(am__dirstamp)
+gfx/colortest/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) gfx/colortest/$(DEPDIR)
+	@: > gfx/colortest/$(DEPDIR)/$(am__dirstamp)
+gfx/colortest/colortest.$(OBJEXT): gfx/colortest/$(am__dirstamp) \
+	gfx/colortest/$(DEPDIR)/$(am__dirstamp)
 gen/perlin.$(OBJEXT): gen/$(am__dirstamp) \
 	gen/$(DEPDIR)/$(am__dirstamp)
 gen/smooth.$(OBJEXT): gen/$(am__dirstamp) \
@@ -532,6 +544,7 @@ mostlyclean-compile:
 	-rm -f geo/path_mvc.$(OBJEXT)
 	-rm -f geo/terrain.$(OBJEXT)
 	-rm -f geo/weather.$(OBJEXT)
+	-rm -f gfx/colortest/colortest.$(OBJEXT)
 	-rm -f gfx/dock.$(OBJEXT)
 	-rm -f gfx/fancy_menus.$(OBJEXT)
 	-rm -f gfx/gfx.$(OBJEXT)
@@ -543,6 +556,7 @@ mostlyclean-compile:
 	-rm -f gfx/wselect.$(OBJEXT)
 	-rm -f init/init.$(OBJEXT)
 	-rm -f lib/fifo.$(OBJEXT)
+	-rm -f lib/lifo.$(OBJEXT)
 	-rm -f lib/magic.$(OBJEXT)
 	-rm -f lib/morton.$(OBJEXT)
 	-rm -f lib/queue.$(OBJEXT)
@@ -603,8 +617,10 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@gfx/$(DEPDIR)/stdpan.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@gfx/$(DEPDIR)/term.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@gfx/$(DEPDIR)/wselect.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@gfx/colortest/$(DEPDIR)/colortest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@init/$(DEPDIR)/init.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@lib/$(DEPDIR)/fifo.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@lib/$(DEPDIR)/lifo.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@lib/$(DEPDIR)/magic.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@lib/$(DEPDIR)/morton.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@lib/$(DEPDIR)/queue.Po@am__quote@
@@ -782,6 +798,8 @@ distclean-generic:
 	-rm -f geo/$(am__dirstamp)
 	-rm -f gfx/$(DEPDIR)/$(am__dirstamp)
 	-rm -f gfx/$(am__dirstamp)
+	-rm -f gfx/colortest/$(DEPDIR)/$(am__dirstamp)
+	-rm -f gfx/colortest/$(am__dirstamp)
 	-rm -f init/$(DEPDIR)/$(am__dirstamp)
 	-rm -f init/$(am__dirstamp)
 	-rm -f lib/$(DEPDIR)/$(am__dirstamp)
@@ -811,7 +829,7 @@ clean: clean-am
 clean-am: clean-binPROGRAMS clean-generic mostlyclean-am
 
 distclean: distclean-am
-	-rm -rf ./$(DEPDIR) boat/$(DEPDIR) eng/$(DEPDIR) eng/model/$(DEPDIR) gen/$(DEPDIR) gen/name/$(DEPDIR) geo/$(DEPDIR) gfx/$(DEPDIR) init/$(DEPDIR) lib/$(DEPDIR) lib/redblack/$(DEPDIR) lib/sort/$(DEPDIR) loop/$(DEPDIR) mob/$(DEPDIR) noun/$(DEPDIR) pan/$(DEPDIR) txt/$(DEPDIR) verb/$(DEPDIR)
+	-rm -rf ./$(DEPDIR) boat/$(DEPDIR) eng/$(DEPDIR) eng/model/$(DEPDIR) gen/$(DEPDIR) gen/name/$(DEPDIR) geo/$(DEPDIR) gfx/$(DEPDIR) gfx/colortest/$(DEPDIR) init/$(DEPDIR) lib/$(DEPDIR) lib/redblack/$(DEPDIR) lib/sort/$(DEPDIR) loop/$(DEPDIR) mob/$(DEPDIR) noun/$(DEPDIR) pan/$(DEPDIR) txt/$(DEPDIR) verb/$(DEPDIR)
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
 	distclean-tags
@@ -857,7 +875,7 @@ install-ps-am:
 installcheck-am:
 
 maintainer-clean: maintainer-clean-am
-	-rm -rf ./$(DEPDIR) boat/$(DEPDIR) eng/$(DEPDIR) eng/model/$(DEPDIR) gen/$(DEPDIR) gen/name/$(DEPDIR) geo/$(DEPDIR) gfx/$(DEPDIR) init/$(DEPDIR) lib/$(DEPDIR) lib/redblack/$(DEPDIR) lib/sort/$(DEPDIR) loop/$(DEPDIR) mob/$(DEPDIR) noun/$(DEPDIR) pan/$(DEPDIR) txt/$(DEPDIR) verb/$(DEPDIR)
+	-rm -rf ./$(DEPDIR) boat/$(DEPDIR) eng/$(DEPDIR) eng/model/$(DEPDIR) gen/$(DEPDIR) gen/name/$(DEPDIR) geo/$(DEPDIR) gfx/$(DEPDIR) gfx/colortest/$(DEPDIR) init/$(DEPDIR) lib/$(DEPDIR) lib/redblack/$(DEPDIR) lib/sort/$(DEPDIR) loop/$(DEPDIR) mob/$(DEPDIR) noun/$(DEPDIR) pan/$(DEPDIR) txt/$(DEPDIR) verb/$(DEPDIR)
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 
