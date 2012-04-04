@@ -11,7 +11,7 @@ LDFLAGS=-pg -lm -lmenu -lpanel -lncursesw
 #                                  wide character  
 #                                  support
 
-SOURCES=test.c colortest.c
+SOURCES=test.c rgb_nc.c
 OBJECTS=$(SOURCES:.c=.o)
 
 EXECUTABLE=test
