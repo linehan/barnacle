@@ -1,8 +1,0 @@
-Xft*antialias         :   true                                                 
-Xft*hinting           :   true                                                 
-Xft*hintstyle         :   hintfull                                             
-Xft*rgba              :   rgb                                                  
-===============================================================                
-URxvt.font            :   xft:DejaVu Sans Mono:pixelsize=14,\                  
-                          xft:Unifont:pixelsize=16:antialias=false             
-

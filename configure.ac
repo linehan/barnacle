@@ -3,7 +3,7 @@
 
 AC_PREREQ([2.68])
 AC_INIT([ARAWAK], [0.0.2], [jdl@flexagon.homeunix.org])
-AC_CONFIG_SRCDIR([SRC/arawak.c])
+AC_CONFIG_SRCDIR([src/arawak.c])
 AM_INIT_AUTOMAKE([ARAWAK], [0.0.2])
 
 # Checks for programs.
@@ -35,5 +35,5 @@ AC_TYPE_SIZE_T
 AC_FUNC_MALLOC
 AC_CHECK_FUNCS([setlocale])
 
-AC_CONFIG_FILES([Makefile SRC/Makefile])
+AC_CONFIG_FILES([Makefile src/Makefile])
 AC_OUTPUT
