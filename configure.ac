@@ -35,5 +35,4 @@ AC_TYPE_SIZE_T
 AC_FUNC_MALLOC
 AC_CHECK_FUNCS([setlocale])
 
-AC_CONFIG_FILES([Makefile src/Makefile])
-AC_OUTPUT
+AC_OUTPUT([Makefile src/Makefile])

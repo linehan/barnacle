@@ -24,6 +24,5 @@ void testplex(int testpanel_index)
         if (!testplex_online) init_testplex();
         top_panel(TESTPAN[testpanel_index]);
 
-
-        pmap_test(testpanel_index, LINES-5, COLS-5);
+        /*pmap_test(testpanel_index, LINES-5, COLS-5);*/
 }

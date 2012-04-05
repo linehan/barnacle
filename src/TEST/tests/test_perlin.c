@@ -1,6 +1,5 @@
 #include "../testplex.h"
-#include "../../gen/perlin.h"
-#include "../../gen/smooth.h"
+#include "../../stoc/stoc.h"
 #include "../../lib/mymath.h"
 #include "../../lib/ncolor/src/ncolor.h"
 
