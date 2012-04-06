@@ -81,10 +81,13 @@ int flip_biased(double b)
 
 
 /* 
- * roll_fair - simulate a fair roll of an n sided die
+ * roll_fair - simulate a fair roll of an n sided die. Returns an int
+ *             between 0 and (n-1)
  */
 int roll_fair(int n)                                                          
-{                                                                             
+{                                       
+        n = (n > 0) ? (n-1) : n;
+
         return (floor(mt_normalize() * (double)n));
 }                
 
