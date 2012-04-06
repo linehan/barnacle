@@ -1,0 +1,22 @@
+
+README
+
+ncolor is a simple library for manipulating colors on terminals
+which include programmable 256-color support. It provides handles
+to ncurses color functions, but builds unified color palettes from
+.ggr (GIMP Gradient) files rather than magic numbers specified at
+compile time.
+
+To see it in action, make sure you have a 256-color terminal and 
+the latest version of ncurses installed, and build the test program
+with 
+        make
+
+Then, execute the compiled test program, supplying one of the .ggr
+files in the "samples" directory as an argument. 
+
+        ./test samples/somepalette.ggr
+
+You can specify any path to any .ggr file, of course (so long as it
+has less than 256 colors).
+
