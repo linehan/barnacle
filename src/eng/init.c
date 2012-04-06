@@ -55,7 +55,7 @@ int arawak_init(void)
         print_status("Test-o-plexing...");
         init_test();        // Start test structures
 
-        /*init_testplex();*/
+        init_testplex();
         
         print_status(SUCCESS);
 

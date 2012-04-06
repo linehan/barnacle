@@ -1,6 +1,6 @@
 #include "../testplex.h"
-#include "../../gen/perlin.h"
-#include "../../gen/smooth.h"
+#include "../../lib/stoc/noise.h"
+#include "../../lib/stoc/smooth.h"
 #include "../../lib/mymath.h"
 #include "../../lib/ncolor/src/ncolor.h"
 
@@ -14,7 +14,7 @@ void pmap_test(int testpanel_index, uint32_t h, uint32_t w)
         int i, j;
         double **pmap;
        
-        pmap = gen_perlin_map(h, w);
+        pmap = simplex_matrix(h, w);
         perlin_smooth(pmap, h, w, SMOOTH, OCTAVES);
 
         for (i=0; i<h; i++) {

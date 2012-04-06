@@ -25,5 +25,5 @@ void testplex(int testpanel_index)
         top_panel(TESTPAN[testpanel_index]);
 
 
-        pmap_test(testpanel_index, LINES-5, COLS-5);
+        pmap_test(testpanel_index, LINES-10, COLS-10);
 }

@@ -21,7 +21,7 @@
 #define NUM_TEST_WINDOWS 3
 #define FIRST_TESTPAL_PAIRNUM 238
 #define TESTPAL_PATH "/home/hubert/src/ncolor/test/samples"
-#define TESTPAL_NAME "Greys_06.ggr"
+#define TESTPAL_NAME "meyers.ggr"
 
 WINDOW  *TESTWIN[NUM_TEST_WINDOWS];
 PANEL   *TESTPAN[NUM_TEST_WINDOWS];
