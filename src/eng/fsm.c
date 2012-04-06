@@ -123,8 +123,8 @@ void director(int input)
                         /*paint_ramp(0);*/
                         /*break;*/
                 case '%':
-                        /*testplex(0);*/
-                        /*break;*/
+                        testplex(0);
+                        break;
                 case 'm':
                         setmode(UI_MOB);
                         setmode(MODE_STARTED);
