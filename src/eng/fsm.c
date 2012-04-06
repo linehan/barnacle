@@ -132,10 +132,7 @@ void director(int input)
                         dec_surface_flow();
                         break;
                 case '_':
-                        set_surface_rule(1);
-                        break;
-                case '-':
-                        set_surface_rule(0);
+                        rot_surface_rule();
                         break;
                 case 'm':
                         setmode(UI_MOB);

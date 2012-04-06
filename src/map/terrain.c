@@ -493,8 +493,18 @@ uint32_t any_y(int h, int w, int x)
 }
 
 
-#define RULE_D(z, h) (trom_y(z) < h) ? MORT(trom_y(z)+1, trom_x(z)) : 0
+
+
 #define RULE_R(z, w) (trom_x(z) < w) ? MORT(trom_y(z), trom_x(z)+1) : 0
+
+#define RULE_D(z, h) (trom_y(z) < h) ? MORT(trom_y(z)+1, trom_x(z)) : 0
+#define RULE_L(z, w) (trom_x(z) > 0) ? MORT(trom_y(z), trom_x(z)-1) : 0
+#define RULE_U(z, h) (trom_y(z) > 0) ? MORT(trom_y(z)-1, trom_x(z)) : 0
+
+#define RULE_DR(z, h, w) RULE_D((RULE_R(z, w)), h)
+#define RULE_DL(z, h, w) RULE_D((RULE_L(z, w)), h)
+#define RULE_UL(z, h, w) RULE_U((RULE_L(z, w)), h)
+#define RULE_UR(z, h, w) RULE_U((RULE_R(z, w)), h)
 
 static int num_request;
 static int num_active;
@@ -520,10 +530,11 @@ void set_surface_flow(int n)
         num_request = (n < num_active_max) ? n : num_active_max;
 }
 
+#define NRULES 8
 static int rule;
-void set_surface_rule(int r)
+void rot_surface_rule(void)
 {
-        rule = r;
+        rule = (rule + 1) % NRULES;
 }
 
         
@@ -551,10 +562,32 @@ void surface_flow(struct map_t *map)
         for (i=0; i<num_active; i++) {
                 PLACE_OCEAN_TILE(map, particle[i].z);
 
-                if (rule == 0) 
+                switch (rule) {
+                case 0:
                         moore_set(&particle[i], RULE_R(particle[i].z, w));
-                else
+                        break;
+                case 1:
+                        moore_set(&particle[i], RULE_DR(particle[i].z, h, w));
+                        break;
+                case 2:
                         moore_set(&particle[i], RULE_D(particle[i].z, w));
+                        break;
+                case 3:
+                        moore_set(&particle[i], RULE_DL(particle[i].z, h, w));
+                        break;
+                case 4:
+                        moore_set(&particle[i], RULE_L(particle[i].z, w));
+                        break;
+                case 5:
+                        moore_set(&particle[i], RULE_UL(particle[i].z, h, w));
+                        break;
+                case 6:
+                        moore_set(&particle[i], RULE_U(particle[i].z, w));
+                        break;
+                case 7:
+                        moore_set(&particle[i], RULE_UR(particle[i].z, h, w));
+                        break;
+                }
 
                 if (particle[i].z == 0) 
                         num_active--;

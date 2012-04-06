@@ -6,5 +6,5 @@ void set_surface_flow(int n);
 void dec_surface_flow(void);
 void inc_surface_flow(void);
 void init_surface_flow(int n);
-void set_surface_rule(int r);
+void rot_surface_rule(void);
 
