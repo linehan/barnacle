@@ -131,6 +131,12 @@ void director(int input)
                 case '(':
                         dec_surface_flow();
                         break;
+                case '_':
+                        set_surface_rule(1);
+                        break;
+                case '-':
+                        set_surface_rule(0);
+                        break;
                 case 'm':
                         setmode(UI_MOB);
                         setmode(MODE_STARTED);
