@@ -1,0 +1,2 @@
+
+bool say(int opt);
