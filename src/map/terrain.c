@@ -555,7 +555,7 @@ void surface_flow(struct map_t *map)
                                         "num_active: %d\n", num_request, num_active);
 
                 for (i=0; i<(LINES/5)-3; i++) {                      
-                        wprintw(DIAGNOSTIC_WIN, "particle[%02d]: %u\n", i, particle[i]);
+                        wprintw(DIAGNOSTIC_WIN, "particle[%02d]: %u\n", i, particle[i].z);
                 }
                 doupdate();
         }
