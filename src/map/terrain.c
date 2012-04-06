@@ -519,7 +519,16 @@ void set_surface_flow(int n)
 {
         num_request = (n < num_active_max) ? n : num_active_max;
 }
+
+static int rule;
+void set_surface_rule(int r)
+{
+        rule = r;
+}
+
         
+
+
 void surface_flow(struct map_t *map)
 {
         static bool testing = true;
@@ -541,7 +550,12 @@ void surface_flow(struct map_t *map)
 
         for (i=0; i<num_active; i++) {
                 PLACE_OCEAN_TILE(map, particle[i].z);
-                moore_set(&particle[i], RULE_R(particle[i].z, w));
+
+                if (rule == 0) 
+                        moore_set(&particle[i], RULE_R(particle[i].z, w));
+                else
+                        moore_set(&particle[i], RULE_D(particle[i].z, w));
+
                 if (particle[i].z == 0) 
                         num_active--;
                 else
