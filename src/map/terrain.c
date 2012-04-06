@@ -524,7 +524,7 @@ void surface_flow(struct map_t *map)
 {
         static bool testing = true;
 
-        static struct moore_t particle[20000];
+        static struct moore_t particle[9500];
         int i=0;
         int h;
         int w;
