@@ -67,9 +67,8 @@ am_arawak_OBJECTS = arawak.$(OBJEXT) eng/init.$(OBJEXT) \
 	noun/noun_model.$(OBJEXT) noun/noun_view.$(OBJEXT) \
 	noun/noun_control.$(OBJEXT) verb/verb_model.$(OBJEXT) \
 	verb/verb_view.$(OBJEXT) verb/verb_control.$(OBJEXT) \
-	verb/verbs.$(OBJEXT) test/test.$(OBJEXT) \
-	test/testplex.$(OBJEXT) test/tests/test_perlin.$(OBJEXT) \
-	eng/fsm.$(OBJEXT) eng/loop.$(OBJEXT)
+	verb/verbs.$(OBJEXT) test/test.$(OBJEXT) eng/fsm.$(OBJEXT) \
+	eng/loop.$(OBJEXT)
 arawak_OBJECTS = $(am_arawak_OBJECTS)
 arawak_LDADD = $(LDADD)
 DEFAULT_INCLUDES = -I.@am__isrc@
@@ -226,8 +225,6 @@ arawak_SOURCES = arawak.c               \
                    verb/verb_control.c  \
                    verb/verbs.c         \
                    test/test.c          \
-                   test/testplex.c         \
-                   test/tests/test_perlin.c         \
                    eng/fsm.c            \
                    eng/loop.c          
 
@@ -486,16 +483,6 @@ test/$(DEPDIR)/$(am__dirstamp):
 	@: > test/$(DEPDIR)/$(am__dirstamp)
 test/test.$(OBJEXT): test/$(am__dirstamp) \
 	test/$(DEPDIR)/$(am__dirstamp)
-test/testplex.$(OBJEXT): test/$(am__dirstamp) \
-	test/$(DEPDIR)/$(am__dirstamp)
-test/tests/$(am__dirstamp):
-	@$(MKDIR_P) test/tests
-	@: > test/tests/$(am__dirstamp)
-test/tests/$(DEPDIR)/$(am__dirstamp):
-	@$(MKDIR_P) test/tests/$(DEPDIR)
-	@: > test/tests/$(DEPDIR)/$(am__dirstamp)
-test/tests/test_perlin.$(OBJEXT): test/tests/$(am__dirstamp) \
-	test/tests/$(DEPDIR)/$(am__dirstamp)
 eng/fsm.$(OBJEXT): eng/$(am__dirstamp) eng/$(DEPDIR)/$(am__dirstamp)
 eng/loop.$(OBJEXT): eng/$(am__dirstamp) eng/$(DEPDIR)/$(am__dirstamp)
 arawak$(EXEEXT): $(arawak_OBJECTS) $(arawak_DEPENDENCIES) $(EXTRA_arawak_DEPENDENCIES) 
@@ -547,8 +534,6 @@ mostlyclean-compile:
 	-rm -f noun/noun_model.$(OBJEXT)
 	-rm -f noun/noun_view.$(OBJEXT)
 	-rm -f test/test.$(OBJEXT)
-	-rm -f test/testplex.$(OBJEXT)
-	-rm -f test/tests/test_perlin.$(OBJEXT)
 	-rm -f txt/gloss_c.$(OBJEXT)
 	-rm -f txt/gloss_m.$(OBJEXT)
 	-rm -f txt/gloss_v.$(OBJEXT)
@@ -604,8 +589,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@noun/$(DEPDIR)/noun_model.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@noun/$(DEPDIR)/noun_view.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@test/$(DEPDIR)/test.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@test/$(DEPDIR)/testplex.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@test/tests/$(DEPDIR)/test_perlin.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@txt/$(DEPDIR)/gloss_c.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@txt/$(DEPDIR)/gloss_m.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@txt/$(DEPDIR)/gloss_v.Po@am__quote@
@@ -773,8 +756,6 @@ distclean-generic:
 	-rm -f noun/$(am__dirstamp)
 	-rm -f test/$(DEPDIR)/$(am__dirstamp)
 	-rm -f test/$(am__dirstamp)
-	-rm -f test/tests/$(DEPDIR)/$(am__dirstamp)
-	-rm -f test/tests/$(am__dirstamp)
 	-rm -f txt/$(DEPDIR)/$(am__dirstamp)
 	-rm -f txt/$(am__dirstamp)
 	-rm -f verb/$(DEPDIR)/$(am__dirstamp)
@@ -788,7 +769,7 @@ clean: clean-am
 clean-am: clean-binPROGRAMS clean-generic mostlyclean-am
 
 distclean: distclean-am
-	-rm -rf ./$(DEPDIR) eng/$(DEPDIR) eng/model/$(DEPDIR) gfx/$(DEPDIR) gfx/ui/$(DEPDIR) lib/$(DEPDIR) lib/ncolor/src/$(DEPDIR) lib/redblack/$(DEPDIR) lib/sort/$(DEPDIR) lib/stoc/$(DEPDIR) map/$(DEPDIR) mob/$(DEPDIR) mob/boat/$(DEPDIR) noun/$(DEPDIR) test/$(DEPDIR) test/tests/$(DEPDIR) txt/$(DEPDIR) verb/$(DEPDIR)
+	-rm -rf ./$(DEPDIR) eng/$(DEPDIR) eng/model/$(DEPDIR) gfx/$(DEPDIR) gfx/ui/$(DEPDIR) lib/$(DEPDIR) lib/ncolor/src/$(DEPDIR) lib/redblack/$(DEPDIR) lib/sort/$(DEPDIR) lib/stoc/$(DEPDIR) map/$(DEPDIR) mob/$(DEPDIR) mob/boat/$(DEPDIR) noun/$(DEPDIR) test/$(DEPDIR) txt/$(DEPDIR) verb/$(DEPDIR)
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
 	distclean-tags
@@ -834,7 +815,7 @@ install-ps-am:
 installcheck-am:
 
 maintainer-clean: maintainer-clean-am
-	-rm -rf ./$(DEPDIR) eng/$(DEPDIR) eng/model/$(DEPDIR) gfx/$(DEPDIR) gfx/ui/$(DEPDIR) lib/$(DEPDIR) lib/ncolor/src/$(DEPDIR) lib/redblack/$(DEPDIR) lib/sort/$(DEPDIR) lib/stoc/$(DEPDIR) map/$(DEPDIR) mob/$(DEPDIR) mob/boat/$(DEPDIR) noun/$(DEPDIR) test/$(DEPDIR) test/tests/$(DEPDIR) txt/$(DEPDIR) verb/$(DEPDIR)
+	-rm -rf ./$(DEPDIR) eng/$(DEPDIR) eng/model/$(DEPDIR) gfx/$(DEPDIR) gfx/ui/$(DEPDIR) lib/$(DEPDIR) lib/ncolor/src/$(DEPDIR) lib/redblack/$(DEPDIR) lib/sort/$(DEPDIR) lib/stoc/$(DEPDIR) map/$(DEPDIR) mob/$(DEPDIR) mob/boat/$(DEPDIR) noun/$(DEPDIR) test/$(DEPDIR) txt/$(DEPDIR) verb/$(DEPDIR)
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 

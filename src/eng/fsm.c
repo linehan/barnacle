@@ -122,8 +122,14 @@ void director(int input)
                         /*TOGPAN(colortest_panel());*/
                         /*paint_ramp(0);*/
                         /*break;*/
-                case '%':
-                        testplex(0);
+                /*case '%':*/
+                        /*testplex(0);*/
+                        /*break;*/
+                case ')':
+                        inc_surface_flow();
+                        break;
+                case '(':
+                        dec_surface_flow();
                         break;
                 case 'm':
                         setmode(UI_MOB);
