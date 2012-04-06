@@ -20,7 +20,7 @@
 
 #define NUM_TEST_WINDOWS 3
 #define FIRST_TESTPAL_PAIRNUM 238
-#define TESTPAL_PATH "lib/ncolor/test/samples"
+#define TESTPAL_PATH "src/lib/ncolor/test/samples"
 #define TESTPAL_NAME "meyers.ggr"
 
 WINDOW  *TESTWIN[NUM_TEST_WINDOWS];
