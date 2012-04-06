@@ -487,17 +487,44 @@ uint32_t any_yx(int h, int w)
         return MORT(roll1d(h), roll1d(w));
 }
 
+uint32_t any_y(int h, int w, int x)
+{
+        return MORT(roll1d(h), roll1d(x));
+}
+
 
 #define RULE_D(z, h) (trom_y(z) < h) ? MORT(trom_y(z)+1, trom_x(z)) : 0
 #define RULE_R(z, w) (trom_x(z) < w) ? MORT(trom_y(z), trom_x(z)+1) : 0
 
+static int num_request;
+static int num_active;
+static int num_active_max;
 
-void surface_flow(struct map_t *map, int n)
+void init_surface_flow(int n)
+{
+        num_active_max = LINES * COLS;
+        num_request = n;
+}
+
+void inc_surface_flow(void)
+{
+        num_request = (num_request < num_active_max) ? (num_request+1) : num_active_max;
+}
+void dec_surface_flow(void)
+{
+        num_request = (num_request > 0) ? (num_request-1) : 0;
+}
+
+void set_surface_flow(int n)
+{
+        num_request = (n < num_active_max) ? n : num_active_max;
+}
+        
+void surface_flow(struct map_t *map)
 {
         static bool testing = true;
 
-        static struct moore_t particle[200];
-        static int num_active;
+        static struct moore_t particle[20000];
         int i=0;
         int h;
         int w;
@@ -505,7 +532,7 @@ void surface_flow(struct map_t *map, int n)
         h = LINES;
         w = COLS;
 
-        while (num_active < n) {
+        while (num_active < num_request) {
                 while (particle[i++].z != 0);
                 --i;
                 moore_new(&particle[i], h, w, any_yx(h,w));
@@ -524,10 +551,10 @@ void surface_flow(struct map_t *map, int n)
 
         if (testing) {
                 werase(DIAGNOSTIC_WIN);
-                wprintw(DIAGNOSTIC_WIN, "         n: %d\n"
-                                        "num_active: %d\n", n, num_active);
+                wprintw(DIAGNOSTIC_WIN, "num_request: %d\n"
+                                        "num_active: %d\n", num_request, num_active);
 
-                for (i=0; i<n; i++) {                      
+                for (i=0; i<(LINES/5)-3; i++) {                      
                         wprintw(DIAGNOSTIC_WIN, "particle[%02d]: %u\n", i, particle[i]);
                 }
                 doupdate();

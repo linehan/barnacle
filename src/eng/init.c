@@ -50,13 +50,12 @@ int arawak_init(void)
         print_status("Twisting Mersenne...");
         init_stochastics();      
         print_status(SUCCESS);
+        init_surface_flow(9001);
 
         /*init_menus();       // psh menu and commands*/
         print_status("Test-o-plexing...");
         init_test();        // Start test structures
 
-        init_testplex();
-        
         print_status(SUCCESS);
 
         return 0;

@@ -61,7 +61,5 @@ arawak_SOURCES = arawak.c               \
                    verb/verb_control.c  \
                    verb/verbs.c         \
                    test/test.c          \
-                   test/testplex.c         \
-                   test/tests/test_perlin.c         \
                    eng/fsm.c            \
                    eng/loop.c          

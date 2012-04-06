@@ -56,7 +56,7 @@ static int counter = 0;
 /* Create the diagnostic window */
 void init_test(void)
 {
-	DIAGNOSTIC_WIN = newwin((LINES-30), COLS, 0, 0);
+	DIAGNOSTIC_WIN = newwin((LINES/5), COLS, 0, 0);
         DIAGNOSTIC_PAN = new_panel(DIAGNOSTIC_WIN);
 
         diagnostic_lock = false;
