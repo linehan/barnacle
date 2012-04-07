@@ -121,7 +121,7 @@ void draw_boat(struct boat_t *boat)
         G = get_nibble(boat->state, GUN);
 
         /*W = get_wind(__dir__);*/
-        W = 3;
+        W = 4;
 
         // Maps 16 directions --> 4 cardinals
         if NORTHING(H)      h = 0;
@@ -140,15 +140,16 @@ void draw_boat(struct boat_t *boat)
 //                                                               mast lookup
         mvwadd_wchstr(win, 1, 0, _hull[id].cch[h]);
 
+        static int boom;
         switch (G) {
         case FIR:
                 mvwadd_wch(win, 1, xo, _cann[0].cch[0]);
-                if (roll_fair(2))
+                if (++boom > 1)
                         set_nibble(&boat->state, GUN, LD0);
                 break;
         case LD0:
                 mvwadd_wch(win, 1, xo, _cann[1].cch[0]);
-                if (roll_fair(5))
+                if (boom-- == 1)
                         set_nibble(&boat->state, GUN, RDY);
                 break;
         }

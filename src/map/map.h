@@ -31,6 +31,7 @@
 #ifndef __MAP_TYPES
 #define __MAP_TYPES
 #include <stdint.h>
+#include "../gfx/gfx.h"
 #include "../lib/redblack/rb.h"
 #include "../eng/state.h"
 #include "../lib/ufo.h"

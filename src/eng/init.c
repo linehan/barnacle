@@ -50,7 +50,7 @@ int arawak_init(void)
         print_status("Twisting Mersenne...");
         init_stochastics();      
         print_status(SUCCESS);
-        init_surface_flow(5000);
+        init_surface_flow(100);
 
         /*init_menus();       // psh menu and commands*/
         print_status("Test-o-plexing...");

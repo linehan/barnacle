@@ -68,9 +68,8 @@ cchar_t *mkcch(wchar_t *wch, attr_t attr, short co);
         else    hide_panel(pan)  
 
 
-#define mvwp mvwpaint
 
-void mvwpaint(WINDOW *win, int y, int x, wchar_t *wch, short pair);
+void mvwp(WINDOW *win, int y, int x, wchar_t *wch, short pair, attr_t attr);
 void mvwnpaint(WINDOW *win, int y, int x, wchar_t *wcs, short pair, int n);
 
 

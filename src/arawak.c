@@ -39,7 +39,8 @@ int main()
         gen_map(pad);
         GLOBE = pad;
 
-        print_hold("ALL OK -- Press any key to continue");
+        print_status("\n ALL OK\n");
+        print_hold("Press any key to continue");
 
         roll_map(pad, 0);
         roll_map(pad, 0);
@@ -60,8 +61,8 @@ int main()
         /*struct noun_t *noun = get_noun("Robert Aruga");*/
         /*set_mob(&noun->mob, GLOBE, 1, 1, 4, 4);*/
 
-        mvwp(DIAGNOSTIC_WIN, 0, 10, br_atl(8), PUR_RED);
-        mvwp(DIAGNOSTIC_WIN, 1, 10, br_atm(0), PUR_RED);
+        mvwp(DIAGNOSTIC_WIN, 0, 10, br_atl(8), PUR_RED, 0);
+        mvwp(DIAGNOSTIC_WIN, 1, 10, br_atm(0), PUR_RED, 0);
 
 
         start_event_watchers();

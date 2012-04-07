@@ -29,105 +29,6 @@
 #include "../eng/state.h"
 #include "../gfx/ui/titlecard.h"
 //##############################################################################
-#define putwch mvwadd_wch
-
-/*
- * Place a tile of static ocean
- */
-#define PLACE_OCEAN_TILE(map, z)                                           \
-do {                                                                       \
-        mvwp(PLATE((map), BGR), trom_y(z), trom_x(z), br_atm(0), SEA_MED); \
-        set_state(map->tree, (z), 0, LAY, BGR);                            \
-        set_state(map->tree, (z), 0, ALT, 0);                              \
-} while (0)
-
-
-/*
- * Place a tile of dynamic ocean
- */
-#define PLACE_SWELL_TILE(map, z, n)                                           \
-do {                                                                       \
-        mvwp(PLATE((map), BGR), trom_y(z), trom_x(z), br_atl(3), SEA_MED); \
-        set_state(map->tree, (z), 0, LAY, BGR);                            \
-        set_state(map->tree, (z), 0, ALT, 0);                              \
-} while (0)
-
-
-/*
- * Place a tile of partially-submerged sand 
- */
-#define PLACE_SHOAL_TILE(map, z)                                           \
-do {                                                                       \
-        if (flip_biased(0.7))                                              \
-                mvwp(PLATE((map), GRO), trom_y(z), trom_x(z), br_dis(2), D_SEA_LAGOON); \
-        else    putwch(PLATE((map), GRO), trom_y(z), trom_x(z), &__LAGOON[0]); \
-                                                                           \
-        set_state(map->tree, (z), 0, LAY, GRO);                            \
-        set_state(map->tree, (z), 0, ALT, 1);                              \
-} while (0)
-
-/*
- * Place a tile of beach sand
- */
-#define PLACE_BEACH_TILE(map, z)                                           \
-do {                                                                       \
-        putwch(PLATE((map), GRO), trom_y(z), trom_x(z), &SAND);            \
-        set_state(map->tree, (z), 0, LAY, GRO);                            \
-        set_state(map->tree, (z), 0, ALT, 2);                              \
-} while (0)
-
-/*
- * Place whatever "basic" ground tile is currently active
- */
-#define PLACE_TERRA_TILE(map, z)                                           \
-do {                                                                       \
-        putwch(PLATE((map), TOP), trom_y(z), trom_x(z), &GRASS[1]);        \
-        set_state(map->tree, (z), 0, LAY, TOP);                            \
-        set_state(map->tree, (z), 0, ALT, 4);                              \
-} while (0)
-
-/*
- * Place a perspective tile to indicate a drop of elevation
- */
-#define PLACE_CLIFF_TILE(map, z)                                           \
-do {                                                                       \
-        putwch(PLATE((map), TOP), trom_y(z), trom_x(z), &BLANK);           \
-        putwch(PLATE((map), DRP), trom_y(z), trom_x(z), &MTN[2]);          \
-        set_state(map->tree, (z), 0, LAY, DRP);                            \
-        set_state(map->tree, (z), 0, ALT, 4);                              \
-} while (0)
-
-/*
- * Place a tile corresponding to the "top" of a tree
- */
-#define PLACE_TREETOP_TILE(map, z)                                         \
-do {                                                                       \
-        putwch(PLATE((map), TOP), trom_y(z), trom_x(z), &BLANK);           \
-        putwch(PLATE((map), VEG), trom_y(z), trom_x(z), &TREE[1]);         \
-        set_state(map->tree, (z), 0, LAY, VEG);                            \
-        set_state(map->tree, (z), 0, ALT, 4);                              \
-} while (0)
-
-/*
- * Place a tile corresponding to the "trunk" of a tree, analagous
- * to the "cliff" of a terra tile
- */
-#define PLACE_TREETRUNK_TILE(map, z)                                       \
-do {                                                                       \
-        putwch(PLATE((map), TOP), trom_y(z), trom_x(z), &BLANK);           \
-        putwch(PLATE((map), VEG), trom_y(z), trom_x(z), &TREE[0]);         \
-        set_state(map->tree, (z), 0, LAY, VEG);                            \
-        set_state(map->tree, (z), 0, ALT, 4);                              \
-} while (0)
-
-/*
- * Write a blank tile, erasing any previous tiles.
- */
-#define WIPE_TILE(map, z, layer)                                           \
-do {                                                                       \
-        putwch(PLATE((map), layer), trom_y(z), trom_x(z), &BLANK);         \
-} while (0)
-
 
 
 
@@ -369,10 +270,10 @@ void draw_layers(struct map_t *map, double **pmap)
 
                 fill_codes(ymax, xmax, y, x);
 
-                if (pmap[y][x] < SHOAL) PLACE_OCEAN_TILE(map, z[CUR]); else
-                if (pmap[y][x] < BEACH) PLACE_SHOAL_TILE(map, z[CUR]); else
-                if (pmap[y][x] < TERRA) PLACE_BEACH_TILE(map, z[CUR]); else
-                                        PLACE_TERRA_TILE(map, z[CUR]);
+                if (pmap[y][x] < SHOAL) place_ocean_tile(map, z[CUR]); else
+                if (pmap[y][x] < BEACH) place_shoal_tile(map, z[CUR]); else
+                if (pmap[y][x] < TERRA) place_beach_tile(map, z[CUR]); else
+                                        place_terra_tile(map, z[CUR]);
         }
         }
         print_status(SUCCESS);
@@ -391,7 +292,7 @@ void draw_layers(struct map_t *map, double **pmap)
                 fill_codes(ymax, xmax, y, x);
 
                 if ((LAYER(z[CUR], 1, TOP)) && !(LAYER(z[D], 1, TOP))) 
-                        PLACE_CLIFF_TILE(map, z[CUR]);
+                        place_cliff_tile(map, z[CUR]);
         }
         }
         print_status(SUCCESS);
@@ -419,7 +320,7 @@ void draw_layers(struct map_t *map, double **pmap)
 
                         FOR_EACH_Z 
                         {
-                                PLACE_TREETOP_TILE(map, _Z_);
+                                place_treetop_tile(map, _Z_);
                         } 
                         END_EACH_Z
                 }
@@ -448,8 +349,8 @@ void draw_layers(struct map_t *map, double **pmap)
                     !LAYER(z[UL], 2, VEG, TOP) ||
                     !LAYER(z[UR], 2, VEG, TOP) ))
                 {
-                        WIPE_TILE(map, z[CUR], VEG);
-                        PLACE_TERRA_TILE(map, z[CUR]);
+                        wipe_tile(map, z[CUR], VEG);
+                        place_terra_tile(map, z[CUR]);
                 }
         }
         }
@@ -463,15 +364,23 @@ void draw_layers(struct map_t *map, double **pmap)
 
                 fill_codes(ymax, xmax, y, x);
                 if (LAYER(z[CUR], 1, VEG) &&
-                    LAYER(z[D],   1, TOP)) {
-                        WIPE_TILE(map, z[CUR], VEG);
-                        PLACE_TREETRUNK_TILE(map, z[CUR]);
+                    LAYER(z[D],   1, TOP) &&
+                    LAYER(z[U],   1, VEG)) {
+                        wipe_tile(map, z[CUR], VEG);
+                        place_treetrunk_tile(map, z[CUR]);
+                }
+                else if (LAYER(z[U],   1, TOP) && 
+                         LAYER(z[CUR], 1, VEG) &&
+                         LAYER(z[D],   1, TOP)) {
+                                wipe_tile(map, z[CUR], VEG);
+                                place_terra_tile(map, z[CUR]);
                 }
         }
         }
         print_status(SUCCESS);
 
 
+        print_status("Eating breakfast...");
         /* 
          * Now we focus our attention on the edges of the SHOAL tiles,
          * that is, the threshold between the background "sea level" 
@@ -479,12 +388,13 @@ void draw_layers(struct map_t *map, double **pmap)
          * so we draw a special animated tile that can be stepped through
          * by the event loop.
          */
+        print_status(SUCCESS);
 }
 
 
 uint32_t any_yx(int h, int w)
 {
-        return MORT(roll1d(h), roll1d(w));
+        return MORT((roll1d(h)), (roll1d(w)));
 }
 
 uint32_t any_y(int h, int w, int x)
@@ -546,8 +456,10 @@ void surface_flow(struct map_t *map)
 
         static struct moore_t particle[9500];
         int i=0;
-        int h;
-        int w;
+        static int h;
+        static int w;
+        static int y=0;
+        static int x=0;
 
         h = LINES;
         w = COLS;
@@ -555,12 +467,12 @@ void surface_flow(struct map_t *map)
         while (num_active < num_request) {
                 while (particle[i++].z != 0);
                 --i;
-                moore_new(&particle[i], h, w, any_yx(h,w));
+                moore_new(&particle[i], LINES, COLS, any_yx(h, w));
                 num_active++;
         }
 
         for (i=0; i<num_active; i++) {
-                PLACE_OCEAN_TILE(map, particle[i].z);
+                place_ocean_tile(map, particle[i].z);
 
                 switch (rule) {
                 case 0:
@@ -592,7 +504,7 @@ void surface_flow(struct map_t *map)
                 if (particle[i].z == 0) 
                         num_active--;
                 else
-                        PLACE_SWELL_TILE(map, particle[i].z, 4);
+                        place_swell_tile(map, particle[i].z, 4);
         }
 
 
@@ -648,27 +560,27 @@ void draw_water_rim(struct map_t *map)
                                 continue;
 
                         // Draw an edge if there is an edge in the directions.
-                        if (LAYER(z[U], 1, GRO)){
-                            /*LAYER(z[UL], 1, GRO)||*/
-                            /*LAYER(z[UR], 1, GRO)){*/
-                                wch = shore[2];
-                                color = D_SEA_LAGOON;
-                                attr = 0;
-                        }
-                        else if (LAYER(z[D], 1, GRO)){
-                            /*LAYER(z[BL], 1, GRO)||*/
-                            /*LAYER(z[BR], 1, GRO)){*/
+                        if (LAYER(z[U], 1, GRO) ||
+                            LAYER(z[UL], 1, GRO)||
+                            LAYER(z[UR], 1, GRO)){
                                 wch = shore[0];
                                 color = D_SEA_LAGOON;
                                 attr = 0;
                         }
+                        else if (LAYER(z[D],  1, GRO)||
+                                 LAYER(z[BL], 1, GRO)||
+                                 LAYER(z[BR], 1, GRO)){
+                                wch = shore[1];
+                                color = D_SEA_LAGOON;
+                                attr = 0;
+                        }
                         else if (LAYER(z[L], 1, GRO)) {
-                                wch = shore[3];
+                                wch = shore[2];
                                 color = D_SEA_LAGOON;
                                 attr = 0;
                         }
                         else if (LAYER(z[R], 1, GRO)) {
-                                wch = shore[2];
+                                wch = shore[3];
                                 color = D_SEA_LAGOON;
                                 attr = 0;
                         }
@@ -679,7 +591,7 @@ void draw_water_rim(struct map_t *map)
                         }
                         if (wch != NULL) {
                                 for (k=0; k<SURF_FRAMES; k++) {
-                                        mvwp(PEEK(map->L[RIM]), i, j, &(wch[roll1d(10)]), color);
+                                        mvwp(PEEK(map->L[RIM]), i, j, &(wch[roll1d(10)]), color, 0);
                                         NEXT(map->L[RIM]);
                                 }
                                 set_state(map->tree, z[CUR], 0, LAY, RIM);
