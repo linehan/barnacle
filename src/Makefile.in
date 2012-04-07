@@ -48,18 +48,18 @@ am__dirstamp = $(am__leading_dot)dirstamp
 am_arawak_OBJECTS = arawak.$(OBJEXT) eng/init.$(OBJEXT) \
 	lib/redblack/rb.$(OBJEXT) lib/sort/mergesort.$(OBJEXT) \
 	lib/sort/quicksort.$(OBJEXT) lib/morton.$(OBJEXT) \
-	lib/magic.$(OBJEXT) lib/fifo.$(OBJEXT) lib/textutils.$(OBJEXT) \
-	lib/ufo.$(OBJEXT) lib/stoc/matrix.$(OBJEXT) \
-	lib/stoc/mersenne.$(OBJEXT) lib/stoc/stoc.$(OBJEXT) \
-	lib/stoc/noise.$(OBJEXT) lib/stoc/dice.$(OBJEXT) \
-	lib/stoc/shuffle.$(OBJEXT) lib/stoc/smooth.$(OBJEXT) \
-	lib/stoc/brnoise.$(OBJEXT) eng/state.$(OBJEXT) \
-	eng/model/bytes.$(OBJEXT) map/weather.$(OBJEXT) \
-	map/terrain.$(OBJEXT) map/map.$(OBJEXT) gfx/palette.$(OBJEXT) \
-	gfx/sprite.$(OBJEXT) gfx/gfx.$(OBJEXT) gfx/multiwin.$(OBJEXT) \
-	lib/ncolor/src/ncolor.$(OBJEXT) gfx/ui/dock.$(OBJEXT) \
+	lib/magic.$(OBJEXT) lib/ncolor/src/ncolor.$(OBJEXT) \
+	lib/fifo.$(OBJEXT) lib/textutils.$(OBJEXT) lib/ufo.$(OBJEXT) \
+	lib/stoc/matrix.$(OBJEXT) lib/stoc/mersenne.$(OBJEXT) \
+	lib/stoc/stoc.$(OBJEXT) lib/stoc/noise.$(OBJEXT) \
+	lib/stoc/dice.$(OBJEXT) lib/stoc/shuffle.$(OBJEXT) \
+	lib/stoc/smooth.$(OBJEXT) lib/stoc/brnoise.$(OBJEXT) \
+	eng/state.$(OBJEXT) eng/model/bytes.$(OBJEXT) \
+	gfx/palette.$(OBJEXT) gfx/sprite.$(OBJEXT) gfx/gfx.$(OBJEXT) \
+	gfx/multiwin.$(OBJEXT) gfx/ui/dock.$(OBJEXT) \
 	gfx/ui/stdpan.$(OBJEXT) gfx/ui/titlecard.$(OBJEXT) \
-	map/snake.$(OBJEXT) txt/gloss_m.$(OBJEXT) \
+	map/weather.$(OBJEXT) map/terrain.$(OBJEXT) map/map.$(OBJEXT) \
+	map/tile.$(OBJEXT) map/snake.$(OBJEXT) txt/gloss_m.$(OBJEXT) \
 	txt/gloss_v.$(OBJEXT) txt/gloss_c.$(OBJEXT) \
 	mob/mob_model.$(OBJEXT) mob/mob_control.$(OBJEXT) \
 	mob/boat/boat_model.$(OBJEXT) mob/boat/boat_view.$(OBJEXT) \
@@ -176,57 +176,58 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 AUTOMAKE_OPTIONS = foreign subdir-objects
-arawak_SOURCES = arawak.c               \
-                   eng/init.c           \
-                   lib/redblack/rb.c    \
-                   lib/sort/mergesort.c \
-                   lib/sort/quicksort.c \
-                   lib/morton.c         \
-                   lib/magic.c          \
-                   lib/fifo.c           \
-                   lib/textutils.c      \
-                   lib/ufo.c            \
-                   lib/stoc/matrix.c        \
-                   lib/stoc/mersenne.c      \
-                   lib/stoc/stoc.c          \
-                   lib/stoc/noise.c         \
-                   lib/stoc/dice.c          \
-                   lib/stoc/shuffle.c       \
-                   lib/stoc/smooth.c        \
-                   lib/stoc/brnoise.c       \
-                   eng/state.c          \
-                   eng/model/bytes.c    \
-                   map/weather.c        \
-                   map/terrain.c        \
-                   map/map.c            \
-                   gfx/palette.c        \
-                   gfx/sprite.c         \
-                   gfx/gfx.c            \
-                   gfx/multiwin.c       \
-                   lib/ncolor/src/ncolor.c\
-                   gfx/ui/dock.c        \
-                   gfx/ui/stdpan.c      \
-                   gfx/ui/titlecard.c   \
-                   map/snake.c       \
-                   txt/gloss_m.c        \
-                   txt/gloss_v.c        \
-                   txt/gloss_c.c        \
-                   mob/mob_model.c      \
-                   mob/mob_control.c    \
-                   mob/boat/boat_model.c    \
-                   mob/boat/boat_view.c     \
-                   mob/boat/boat_control.c  \
-                   mob/boat/compass.c       \
-                   noun/noun_model.c    \
-                   noun/noun_view.c     \
-                   noun/noun_control.c  \
-                   verb/verb_model.c    \
-                   verb/verb_view.c     \
-                   verb/verb_control.c  \
-                   verb/verbs.c         \
-                   test/test.c          \
-                   eng/fsm.c            \
-                   eng/loop.c          
+arawak_SOURCES = arawak.c                       \
+                   eng/init.c                   \
+                   lib/redblack/rb.c            \
+                   lib/sort/mergesort.c         \
+                   lib/sort/quicksort.c         \
+                   lib/morton.c                 \
+                   lib/magic.c                  \
+                   lib/ncolor/src/ncolor.c      \
+                   lib/fifo.c                   \
+                   lib/textutils.c              \
+                   lib/ufo.c                    \
+                   lib/stoc/matrix.c            \
+                   lib/stoc/mersenne.c          \
+                   lib/stoc/stoc.c              \
+                   lib/stoc/noise.c             \
+                   lib/stoc/dice.c              \
+                   lib/stoc/shuffle.c           \
+                   lib/stoc/smooth.c            \
+                   lib/stoc/brnoise.c           \
+                   eng/state.c                  \
+                   eng/model/bytes.c            \
+                   gfx/palette.c                \
+                   gfx/sprite.c                 \
+                   gfx/gfx.c                    \
+                   gfx/multiwin.c               \
+                   gfx/ui/dock.c                \
+                   gfx/ui/stdpan.c              \
+                   gfx/ui/titlecard.c           \
+                   map/weather.c                \
+                   map/terrain.c                \
+                   map/map.c                    \
+                   map/tile.c                   \
+                   map/snake.c                  \
+                   txt/gloss_m.c                \
+                   txt/gloss_v.c                \
+                   txt/gloss_c.c                \
+                   mob/mob_model.c              \
+                   mob/mob_control.c            \
+                   mob/boat/boat_model.c        \
+                   mob/boat/boat_view.c         \
+                   mob/boat/boat_control.c      \
+                   mob/boat/compass.c           \
+                   noun/noun_model.c            \
+                   noun/noun_view.c             \
+                   noun/noun_control.c          \
+                   verb/verb_model.c            \
+                   verb/verb_view.c             \
+                   verb/verb_control.c          \
+                   verb/verbs.c                 \
+                   test/test.c                  \
+                   eng/fsm.c                    \
+                   eng/loop.c            
 
 all: all-am
 
@@ -333,6 +334,14 @@ lib/$(DEPDIR)/$(am__dirstamp):
 lib/morton.$(OBJEXT): lib/$(am__dirstamp) \
 	lib/$(DEPDIR)/$(am__dirstamp)
 lib/magic.$(OBJEXT): lib/$(am__dirstamp) lib/$(DEPDIR)/$(am__dirstamp)
+lib/ncolor/src/$(am__dirstamp):
+	@$(MKDIR_P) lib/ncolor/src
+	@: > lib/ncolor/src/$(am__dirstamp)
+lib/ncolor/src/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) lib/ncolor/src/$(DEPDIR)
+	@: > lib/ncolor/src/$(DEPDIR)/$(am__dirstamp)
+lib/ncolor/src/ncolor.$(OBJEXT): lib/ncolor/src/$(am__dirstamp) \
+	lib/ncolor/src/$(DEPDIR)/$(am__dirstamp)
 lib/fifo.$(OBJEXT): lib/$(am__dirstamp) lib/$(DEPDIR)/$(am__dirstamp)
 lib/textutils.$(OBJEXT): lib/$(am__dirstamp) \
 	lib/$(DEPDIR)/$(am__dirstamp)
@@ -368,17 +377,6 @@ eng/model/$(DEPDIR)/$(am__dirstamp):
 	@: > eng/model/$(DEPDIR)/$(am__dirstamp)
 eng/model/bytes.$(OBJEXT): eng/model/$(am__dirstamp) \
 	eng/model/$(DEPDIR)/$(am__dirstamp)
-map/$(am__dirstamp):
-	@$(MKDIR_P) map
-	@: > map/$(am__dirstamp)
-map/$(DEPDIR)/$(am__dirstamp):
-	@$(MKDIR_P) map/$(DEPDIR)
-	@: > map/$(DEPDIR)/$(am__dirstamp)
-map/weather.$(OBJEXT): map/$(am__dirstamp) \
-	map/$(DEPDIR)/$(am__dirstamp)
-map/terrain.$(OBJEXT): map/$(am__dirstamp) \
-	map/$(DEPDIR)/$(am__dirstamp)
-map/map.$(OBJEXT): map/$(am__dirstamp) map/$(DEPDIR)/$(am__dirstamp)
 gfx/$(am__dirstamp):
 	@$(MKDIR_P) gfx
 	@: > gfx/$(am__dirstamp)
@@ -392,14 +390,6 @@ gfx/sprite.$(OBJEXT): gfx/$(am__dirstamp) \
 gfx/gfx.$(OBJEXT): gfx/$(am__dirstamp) gfx/$(DEPDIR)/$(am__dirstamp)
 gfx/multiwin.$(OBJEXT): gfx/$(am__dirstamp) \
 	gfx/$(DEPDIR)/$(am__dirstamp)
-lib/ncolor/src/$(am__dirstamp):
-	@$(MKDIR_P) lib/ncolor/src
-	@: > lib/ncolor/src/$(am__dirstamp)
-lib/ncolor/src/$(DEPDIR)/$(am__dirstamp):
-	@$(MKDIR_P) lib/ncolor/src/$(DEPDIR)
-	@: > lib/ncolor/src/$(DEPDIR)/$(am__dirstamp)
-lib/ncolor/src/ncolor.$(OBJEXT): lib/ncolor/src/$(am__dirstamp) \
-	lib/ncolor/src/$(DEPDIR)/$(am__dirstamp)
 gfx/ui/$(am__dirstamp):
 	@$(MKDIR_P) gfx/ui
 	@: > gfx/ui/$(am__dirstamp)
@@ -412,6 +402,18 @@ gfx/ui/stdpan.$(OBJEXT): gfx/ui/$(am__dirstamp) \
 	gfx/ui/$(DEPDIR)/$(am__dirstamp)
 gfx/ui/titlecard.$(OBJEXT): gfx/ui/$(am__dirstamp) \
 	gfx/ui/$(DEPDIR)/$(am__dirstamp)
+map/$(am__dirstamp):
+	@$(MKDIR_P) map
+	@: > map/$(am__dirstamp)
+map/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) map/$(DEPDIR)
+	@: > map/$(DEPDIR)/$(am__dirstamp)
+map/weather.$(OBJEXT): map/$(am__dirstamp) \
+	map/$(DEPDIR)/$(am__dirstamp)
+map/terrain.$(OBJEXT): map/$(am__dirstamp) \
+	map/$(DEPDIR)/$(am__dirstamp)
+map/map.$(OBJEXT): map/$(am__dirstamp) map/$(DEPDIR)/$(am__dirstamp)
+map/tile.$(OBJEXT): map/$(am__dirstamp) map/$(DEPDIR)/$(am__dirstamp)
 map/snake.$(OBJEXT): map/$(am__dirstamp) map/$(DEPDIR)/$(am__dirstamp)
 txt/$(am__dirstamp):
 	@$(MKDIR_P) txt
@@ -523,6 +525,7 @@ mostlyclean-compile:
 	-rm -f map/map.$(OBJEXT)
 	-rm -f map/snake.$(OBJEXT)
 	-rm -f map/terrain.$(OBJEXT)
+	-rm -f map/tile.$(OBJEXT)
 	-rm -f map/weather.$(OBJEXT)
 	-rm -f mob/boat/boat_control.$(OBJEXT)
 	-rm -f mob/boat/boat_model.$(OBJEXT)
@@ -578,6 +581,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@map/$(DEPDIR)/map.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@map/$(DEPDIR)/snake.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@map/$(DEPDIR)/terrain.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@map/$(DEPDIR)/tile.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@map/$(DEPDIR)/weather.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@mob/$(DEPDIR)/mob_control.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@mob/$(DEPDIR)/mob_model.Po@am__quote@

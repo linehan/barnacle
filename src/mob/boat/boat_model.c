@@ -54,7 +54,7 @@ static struct boat_t *ACTIVE;
 uint32_t new_boat(struct map_t *map, int type, const char *name)
 {
         #define BOAT_PATH_LEN 13
-        #define BOAT_PATH_Y 1
+        #define BOAT_PATH_Y 1 
         #define BOAT_PATH_X 0
         #define BOAT_H 2
         #define BOAT_W 3
@@ -73,7 +73,7 @@ uint32_t new_boat(struct map_t *map, int type, const char *name)
         WINDOW *win = newwin(BOAT_H, BOAT_W, 0, 0);
         new->pan    = new_panel(win);
 
-        wbkgrnd(win, mkcch(br_dis(0), 0, B_SEA_LAGOON));
+        wbkgrnd(win, mkcch(br_dis(0), 0, SEA_MED));
 
         if (BOAT_TREE == NULL) BOAT_TREE = new_tree(1);
 

@@ -181,9 +181,9 @@ int map_hit(struct map_t *map, struct rec_t *rec)
         for (i=rec->y; i<(rec->h+rec->y); i++) {
                 for (j=rec->x; j<(rec->x+rec->w); j++) {
                         z = MORT(i, j);
-                        if (is_state(map->tree, z, 0, LAY, TOP)) return (1);
-                        if (is_state(map->tree, z, 0, LAY, DRP)) return (1);
-                        if (is_state(map->tree, z, 0, LAY, GRO)) return (1);
+                        /*if (is_state(map->tree, z, 0, LAY, TOP)) return (1);*/
+                        /*if (is_state(map->tree, z, 0, LAY, DRP)) return (1);*/
+                        /*if (is_state(map->tree, z, 0, LAY, GRO)) return (1);*/
                         /*if (is_state(map->tree, z, 0, LAY, VEG)) return (1);*/
                 }
         }

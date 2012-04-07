@@ -14,7 +14,7 @@ void sail_boat(struct boat_t *boat)
         S = get_nibble(boat->state, SAI);
         /*#include "../geo/weather.h"*/
         /*W = get_wind(__dir__);*/
-        W = 1;
+        W = 3;
 
         if ((S!=POL)&&(W!=H)) { /*not in irons*/
                 if NORTHING(H)          move_boat(boat, 'u');

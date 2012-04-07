@@ -40,7 +40,7 @@ void init_path(struct path_t *path, int yofs, int xofs, int len)
 
         path->fifo = FIFO_INIT;
         fifo_res(&path->fifo, len);
-        path->origin = mort(yofs, xofs);
+        path->origin = MORT(yofs, xofs);
 
         for (i=0; i<FIFO_BUFSIZE; i++) 
                 fifo_enq(&path->fifo, path->origin);
@@ -96,11 +96,11 @@ void draw_path(WINDOW *win, struct path_t *path)
              spool;
              spool = fifo_dmp(&path->fifo, &pos)) 
         {
-                setcchar(&cch[ugh], br_dis(6), 0, B_SEA_LAGOON, NULL);
-                setcchar(&cch[ugh], br_dis(3), 0, B_SEA_LAGOON, NULL);
-                setcchar(&cch[ugh], br_dis(2), 0, B_SEA_LAGOON, NULL);
-                setcchar(&cch[ugh], br_dis(1), 0, B_SEA_LAGOON, NULL);
-                setcchar(&cch[ugh], br_dis(1), 0, B_SEA_LAGOON, NULL);
+                setcchar(&cch[4], br_dis(6), 0, SEA_SHALLOW, NULL);
+                setcchar(&cch[3], br_dis(3), 0, SEA_SHALLOW, NULL);
+                setcchar(&cch[2], br_dis(2), 0, SEA_SHALLOW, NULL);
+                setcchar(&cch[1], br_dis(1), 0, SEA_SHALLOW, NULL);
+                setcchar(&cch[0], br_dis(1), 0, SEA_SHALLOW, NULL);
 
                 y=(int)trom_y(pos);
                 x=(int)trom_x(pos);
@@ -128,3 +128,4 @@ void draw_path(WINDOW *win, struct path_t *path)
                 wrefresh(win);
         }
 }
+

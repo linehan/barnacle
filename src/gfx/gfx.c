@@ -33,11 +33,11 @@ short saved_pair;
 /*
  * Paint a wide character string and its rendition on the screen
  */
-void mvwpaint(WINDOW *win, int y, int x, wchar_t *wch, short pair)
+void mvwp(WINDOW *win, int y, int x, wchar_t *wch, short pair, attr_t attr)
 {
         cchar_t cch; 
 
-        setcchar(&cch, wch, 0, pair, NULL);
+        setcchar(&cch, wch, attr, pair, NULL);
         mvwadd_wch(win, y, x, &cch);
 }
 

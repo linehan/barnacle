@@ -391,7 +391,7 @@ void init_palette(int set)
         init_pair(SEA_MED, C_SAND_LAGOON, DSEA);
         init_pair(SEA_LIG, LSEA, DSEA);
         init_pair(SEA_SAND, SANDY, BEIGE);
-        init_pair(A_SEA_LAGOON, A_SAND_LAGOON, B_SAND_LAGOON);
+        init_pair(A_SEA_LAGOON, B_SAND_LAGOON, A_SAND_LAGOON);
         init_pair(B_SEA_LAGOON, C_SAND_LAGOON, D_SAND_LAGOON);
         init_pair(C_SEA_LAGOON, C_SAND_LAGOON, C_SAND_LAGOON);
         init_pair(D_SEA_LAGOON, C_SAND_LAGOON, D_SAND_LAGOON);
