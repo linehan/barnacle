@@ -323,15 +323,15 @@ void do_pulse(void)
         int max;             
         int i;
 
-        max = nnouns();
+        max = numnoun;
         for (i=0; i<max; i++) {
 
-                if (keyring[i] == request_key(SUBJECT)) {
+                if (keyring[i] == request_id(SUBJECT)) {
                         view_vitals(SUBJECT);
                         verb_view(keyring[i], SUBJECT);
                 }
 
-                if (keyring[i] == request_key(OBJECT)) {
+                if (keyring[i] == request_id(OBJECT)) {
                         view_vitals(OBJECT);
                         verb_view(keyring[i], OBJECT);
                 }

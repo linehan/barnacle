@@ -1,2 +1,0 @@
-
-bool say(int opt);

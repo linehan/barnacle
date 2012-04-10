@@ -77,8 +77,8 @@ void build_nouns(void)
 
         if (subj_menu_pan==NULL || obj_menu_pan==NULL) buildview_nouns();
         // --------------------------------------------------------------
-        nsubj = nnouns();
-        nobj  = nnouns();
+        nsubj = numnoun;
+        nobj  = numnoun;
 
         subjects = calloc(nsubj, sizeof(char *));
         objects  = calloc(nobj, sizeof(char *));
@@ -234,11 +234,11 @@ void view_vitals(int operand)
         werase(W(operand));
         put_nblocks(W(operand), 0, 0, SMHBAR, TITLE_SCREEN, VIT_MAXLEN);
 
-        focus(request_key(operand));
+        focus(request_id(operand));
         xofs = X(operand);
 
         for (i=0; i<4; i++) {
-                vital = get_vital(request_key(operand), i);
+                vital = get_vital(request_id(operand), i);
                 if (operand==OBJECT)  xofs -= vital;
                 put_nblocks(W(operand), 0, xofs, DBOX, VIT_PAIR[i], vital);
                 if (operand==SUBJECT) xofs += vital;
@@ -267,7 +267,7 @@ void view_attributes(void)
         waddwstr(SUBJ_WIN, L"Σ    Φ    Δ    A    Ψ    W    Χ    Λ");
         wcolor_set(SUBJ_WIN, ATTR_ORIGINAL, NULL);
 
-        unpack_attributes(request_key(SUBJECT), val);
+        unpack_attributes(request_id(SUBJECT), val);
         for (i=0; i<8; i++) {
                 mvwprintw(SUBJ_WIN, 0, (i*STRIDE)+1, "%02u", val[i]);
         }
@@ -292,11 +292,11 @@ void view_noun(int op)
 
         if (op==SUBJECT) {
                 wcolor_set(NOUNWIN(op), PUR_YEL, NULL);
-                wprintw(NOUNWIN(op), "%-*s", ID_W,  fullname(request_key(op)));
+                wprintw(NOUNWIN(op), "%-*s", ID_W,  fullname(request_id(op)));
         }
         if (op==OBJECT) {
                 wcolor_set(NOUNWIN(op), PUR_YEL, NULL);
-                wprintw(NOUNWIN(op), "%*s", ID_W, fullname(request_key(op)));
+                wprintw(NOUNWIN(op), "%*s", ID_W, fullname(request_id(op)));
         }
         win_refresh(NOUNWIN(op));
 }
@@ -308,11 +308,11 @@ void view_noun_grey(int op)
         werase(NOUNWIN(op));
         if (op==SUBJECT) {
                 wcolor_set(NOUNWIN(op), PUR_GRE, NULL);
-                wprintw(NOUNWIN(op), "%-*s", ID_W, fullname(request_key(op)));
+                wprintw(NOUNWIN(op), "%-*s", ID_W, fullname(request_id(op)));
         }
         if (op==OBJECT) {
                 wcolor_set(NOUNWIN(op), PUR_GRE, NULL);
-                wprintw(NOUNWIN(op), "%*s", ID_W, fullname(request_key(op)));
+                wprintw(NOUNWIN(op), "%*s", ID_W, fullname(request_id(op)));
         }
         win_refresh(NOUNWIN(op));
 }

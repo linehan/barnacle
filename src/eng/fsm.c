@@ -99,7 +99,7 @@ void operate_on(int input)
                 inspect_control(input);
                 break;
         case UI_BOAT:
-                boat_control(get_boat("Afarensis"), input, 0);
+                noun_modify(get_noun("Afarensis"), input);
                 break;
         case UI_MOB:
                 mob_control(get_mob("Robert Aruga"), input, 0);
@@ -155,8 +155,16 @@ void director(int input)
                         setmode(MODE_STARTED);
                         break;
                 case '`':
+                        TOGPAN(CONSOLE_PAN);
+                        doupdate();
+                        test_request();
+                        break;
+                case '~':
                         TOGPAN(DIAGNOSTIC_PAN);
                         doupdate();
+                        break;
+                case '@':
+                        loop_test();
                         break;
                 }
         }

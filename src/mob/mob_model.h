@@ -15,6 +15,11 @@ struct mob_t {
 };
 
 
+
+WINDOW *mob_win(struct mob_t *mob);
+PANEL  *mob_pan(struct mob_t *mob);
+
+
 void set_mob(struct mob_t *mob, struct map_t *map, int h, int w, int y0, int x0);
 void move_mob(struct mob_t *mob, int dir);
 int mob_control(struct mob_t *mob, int order, int val);

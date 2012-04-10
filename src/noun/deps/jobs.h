@@ -122,10 +122,10 @@ static const char *job_flavor[] = {
         (char *)NULL
 };
 
-static inline const char *get_job(uint32_t key)
+static inline const char *get_job(int id)
 {
-        focus(key);
-        return (job_list[(uint8_t)focused->job]);
+        focus(id);
+        return (job_list[focused->job]);
 }
 
 #endif

@@ -74,7 +74,7 @@ struct rb_tree *grid_to_tree(int rows, int cols)
         int i;
         int j;
 
-        struct rb_tree *tree = new_tree(1);
+        struct rb_tree *tree = rb_new(1);
         m = malloc((rows*cols) * sizeof(uint32_t));
         n = 0;
 
@@ -127,7 +127,7 @@ struct map_t *new_map(int h, int w, int scr_h, int scr_w, int scr_y, int scr_x)
  * draw_layers();. Once draw_layers(); returns, the layers in *L[16] are
  * flattened into *W.
  */
-void gen_map(struct map_t *map)
+void gen_map(struct map_t *map, double **pmap)
 {
         int i;
         int h;
@@ -136,9 +136,13 @@ void gen_map(struct map_t *map)
         h = map->ufo.box.h;
         w = map->ufo.box.w;
 
-        map->pmap = simplex_matrix(h, w); // 2D Perlin map
         print_status("Generating noise...");
-        /*map->pmap = tuned_perlin_map(h, w, (double)(-0.003));*/
+        if (pmap == NULL) {
+                map->pmap = simplex_matrix(h, w); // 2D Perlin map
+                smooth_layers(map, map->pmap);
+        } else {
+                map->pmap = pmap;
+        }
         print_status(SUCCESS);
 
         map->win = newwin(LINES, COLS, 0, 0); // Fullscreen
@@ -152,7 +156,6 @@ void gen_map(struct map_t *map)
         map->W = new_multiwin(h, w, 0, 0, 2);
 
         draw_layers(map, map->pmap);
-        /*restack_map(map);*/
         draw_water_rim(map);
         restack_map(map);
 }

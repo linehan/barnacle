@@ -2,6 +2,13 @@
 #include "mob_model.h"
 
 ////////////////////////////////////////////////////////////////////////////////
+
+void mob_youarehere(struct mob_t *mob)
+{
+        static wchar_t *wch=L"⬇";
+}
+
+
 void move_mob(struct mob_t *mob, int dir)
 {
         if (dir != 'u' && dir != 'd' && dir != 'l' && dir != 'r') return;

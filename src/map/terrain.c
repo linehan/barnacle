@@ -30,8 +30,6 @@
 #include "../gfx/ui/titlecard.h"
 //##############################################################################
 
-
-
 enum zcodes { UL=0, U=1, UR=2, L=3, CUR=4, R=5, BL=6, D=7, BR=8};
 uint32_t z[9];
 
@@ -217,7 +215,7 @@ inline void FILL_Z(int y, int x, int ymax, int xmax)
  * Using the Perlin simplex noise at 'pmap', generate and then draw the 
  * terrain layers for the struct map_t pointed to by the 'map' argument.
  */
-void draw_layers(struct map_t *map, double **pmap)
+void smooth_layers(struct map_t *map, double **pmap)
 {
         #define OCTAVES 6       /* number of octaves to smooth */
         #define PERSIST 0.99    /* persistence factor */
@@ -256,6 +254,19 @@ void draw_layers(struct map_t *map, double **pmap)
         smooth_cycle(pmap, ymax, xmax, BEACH, SMOOTH_BO, 1);
         smooth_cycle(pmap, ymax, xmax, TERRA, SMOOTH_BO, 3);
         print_status(SUCCESS);
+}
+
+void draw_layers(struct map_t *map, double **pmap)
+{
+        int ymax;
+        int xmax; 
+        int y; 
+        int x;     
+        int frame;
+
+        /* Set the loop (pmap) boundaries */
+        ymax = map->ufo.box.h - 1;         
+        xmax = map->ufo.box.w - 1;
 
         /*
          * Traverse the screen, laying the appropriate tiles based on

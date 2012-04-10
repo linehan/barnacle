@@ -27,7 +27,7 @@ static inline struct rb_node *rb_retreive(struct rb_tree *tree, uint32_t key)
 }
 
 void rb_store(struct rb_tree *tree, uint32_t key, void *extra);
-struct rb_tree *new_tree(int words);
+struct rb_tree *rb_new(int words);
 void rb_init(struct rb_tree *tree);
 void rb_peek(struct rb_tree *tree, uint32_t key);
 void *rb_extra(struct rb_tree *tree, uint32_t key);

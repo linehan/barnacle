@@ -195,7 +195,7 @@ void restack_map(struct map_t *map);
 
 struct map_t *new_map(int h, int w, int scr_h, int scr_w, int scr_y, int scr_x);
 int           map_hit(struct map_t *map, struct rec_t *rec);
-void          gen_map(struct map_t *map);
+void          gen_map(struct map_t *map, double **pmap);
 void         roll_map(struct map_t *map, int dir);
 
 #endif

@@ -11,21 +11,21 @@
 enum attribute_enum {STR,DEX,VIT,AGI,INT,WIS,CHA,LUC};
 static const wchar_t attr_symbols[]={L"ΣΦΔAΨWΧΛ"};
 
-static inline uint32_t get_attribute(uint32_t key, int n)
+static inline uint32_t get_attribute(int id, int n)
 {
-        focus(key);
+        focus(id);
         return (get_nibble(focused->attributes, n));
 }
 
-static inline void set_attribute(uint32_t key, int n, int s)
+static inline void set_attribute(int id, int n, int s)
 {
-        focus(key);
+        focus(id);
         set_nibble(&focused->attributes, n, s);
 }
 
-static inline void unpack_attributes(uint32_t key, int *dest)
+static inline void unpack_attributes(int id, int *dest)
 {
-        focus(key);
+        focus(id);
         unpack_nibbles(focused->attributes, dest, NNIBBLES);
 }
 
