@@ -10,54 +10,98 @@
 #include "../gfx/gfx.h"
 #include "../gfx/ui/titlecard.h"
 
-#define STR(n) #n
 
-#define COLOR_TARGET 256
+/*
+ * Sets terminal to color mode and checks that it supports 256 
+ * programmable colors; if it does, initializes the palette. 
+ */
+int prep_termcolors(void)
+{
+        if (has_colors()) {
+                start_color();        /* Enable terminal colors */
+        } else {
+                printf("Terminal does not support color");
+                goto fail;
+        }
 
+        if (can_change_color()) {
+                init_palette(0);      /* Build our color palette */ 
+                init_gfx_colors();    /* Apply the palette to certain graphics */ 
+        } else {
+                printf("Terminal does not support programmable colors");
+                goto fail;
+        }
+
+        if (COLORS < 256) {
+                printf("Terminal does not support 256 colors");
+                goto fail;
+        }
+
+        return 1;
+
+        fail:
+        return 0;
+}
+
+/* -------------------------------------------------------------------------- */
+
+/*
+ * Configures the terminal's input-output modes
+ */
+int prep_termio(void)
+{
+        cbreak();	       /* Do not wait for newline (line buffering) */
+        noecho();              /* Do not echo input to screen */
+        nodelay(stdscr, true); /* Calls to getch() are non-blocking */ 
+        keypad(stdscr, TRUE);  /* Enable special keys */
+        curs_set(0);           /* Do not display cursor */
+
+        return 1;
+}
+
+/* -------------------------------------------------------------------------- */
+
+/*
+ * Put the terminal in curses mode and enable/disable the appropriate
+ * settings
+ */
+int prep_terminal(void)
+{
+        initscr();            /* Start ncurses */
+
+        prep_termcolors();   
+        prep_termio();        
+
+        return 1;
+}
+
+/* -------------------------------------------------------------------------- */
+
+/*
+ * The main initialization function for the program
+ */
 int arawak_init(void)
 {
-        setlocale(LC_ALL,""); // UTF-8
+        setlocale(LC_ALL,""); /* Must be set for UTF-8 support */
 
-        initscr();            // Start ncurses
-        start_color();        // Initialize color display 
-        cbreak();	      // Disable line buffering
-        noecho();             // Do not echo input
-        nodelay(stdscr, true);// Calls to getch() are non-blocking 
-        keypad(stdscr, TRUE); // Enable special keys
-        curs_set(0);          // hide cursor
+        prep_terminal();      /* Set modes and perform checks... */
 
-        if (!has_colors() || !can_change_color()) {
-                print_status(FAILURE);
-                print_status("Your terminal does not support color!");
-        }
-        if (COLORS < COLOR_TARGET) {
-                print_status(FAILURE);
-                print_status("Your terminal only supports" STR(COLORS) 
-                             "colors; this is insufficient.");
-        }
-
-        else {
-                init_palette(0);    // Set color palette
-                init_gfx_colors();  // Apply palette to character set
-
-        }
-
+        /* Print welcome */
         print_title("Welcome to Arawak!");
         print_status("Setting colors...");
         print_status(SUCCESS);
 
-        geojug_start();     // Start the graphics engine
+        geojug_start();       /* Start the graphics engine */
         print_status("Twisting Mersenne...");
-        init_stochastics();      
+        init_stochastics();   /* Start the RNG and helpers */   
         print_status(SUCCESS);
         init_surface_flow(100);
 
-        /*init_menus();       // psh menu and commands*/
         print_status("Test-o-plexing...");
-        init_test();        // Start test structures
+        init_test();          /* Start test structures */
 
         print_status(SUCCESS);
 
         return 0;
-
 }
+

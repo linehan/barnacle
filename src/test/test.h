@@ -1,22 +1,16 @@
-extern WINDOW *SYSWIN;
-extern PANEL  *SYSPAN;
 
-extern WINDOW *MARQUEEW;
-extern PANEL  *MARQUEEP;
+WINDOW *CONSOLE_WIN;
+PANEL  *CONSOLE_PAN;
 
-extern WINDOW *DIAGNOSTIC_WIN;
-extern PANEL  *DIAGNOSTIC_PAN;
+WINDOW *DIAGNOSTIC_WIN;
+PANEL  *DIAGNOSTIC_PAN;
 
-extern WINDOW *BIGWIN;
-extern PANEL  *BIGPAN;
-
-extern WINDOW *INSPECTORMSGWIN;
-extern PANEL  *INSPECTORMSGPAN;
+WINDOW *INSPECTORWIN;
+PANEL  *INSPECTORPAN;
+WINDOW *INSPECTORMSGWIN;
+PANEL  *INSPECTORMSGPAN;
 
 void init_test(void);
-void toggle_dpanel(void);
-void speak_error(const char *error);
-void toggle_syspan(void);
-void speak_error_mono(const char *error);
-void toggle_bigpan(void);
 int inspect_control(int dir);
+void test_request(void);
+

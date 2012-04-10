@@ -13,6 +13,7 @@ LDFLAGS=-pg -lm -lpthread -lmenu -lpanel -lform -lncursesw -lev
 #                                                      support
 bin_PROGRAMS = arawak
 arawak_SOURCES = arawak.c                       \
+                   (wildcard lib/ccan/*/*.c)    \
                    eng/init.c                   \
                    lib/redblack/rb.c            \
                    lib/sort/mergesort.c         \
@@ -45,18 +46,17 @@ arawak_SOURCES = arawak.c                       \
                    map/map.c                    \
                    map/tile.c                   \
                    map/snake.c                  \
+                   map/arena.c                  \
                    txt/gloss_m.c                \
                    txt/gloss_v.c                \
                    txt/gloss_c.c                \
                    mob/mob_model.c              \
                    mob/mob_control.c            \
-                   mob/boat/boat_model.c        \
-                   mob/boat/boat_view.c         \
-                   mob/boat/boat_control.c      \
-                   mob/boat/compass.c           \
                    noun/noun_model.c            \
                    noun/noun_view.c             \
                    noun/noun_control.c          \
+                   noun/types/boat/boat.c\
+                   noun/types/boat/compass.c\
                    verb/verb_model.c            \
                    verb/verb_view.c             \
                    verb/verb_control.c          \

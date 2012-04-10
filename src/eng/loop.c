@@ -5,24 +5,17 @@
 #include "../gfx/gfx.h"
 #include "../gfx/ui/dock.h"
 #include "../map/map.h"
-#include "../mob/boat/boat_model.h"
-#include "../mob/boat/boat_control.h"
-#include "../mob/boat/boat_view.h"
+#include "../noun/types/boat/boat.h"
 #include "../verb/verb_view.h"
 #include "txt/gloss.h"
 
 #include "../lib/stoc/stoc.h"
 #include "fsm.h"
 
-////////////////////////////////////////////////////////////////////////////////
-void
-refresh_cb(EV_P_ ev_timer *w, int revents)
-{
-        vrt_refresh();
-        scr_refresh();
-        ev_timer_again(EV_DEFAULT, w);
-}
+static bool loop_test_active;
 
+#define SPIN 4
+const char spinner[SPIN]="|/-\\";
 
 ////////////////////////////////////////////////////////////////////////////////
 void
@@ -45,39 +38,56 @@ print_cb(EV_P_ ev_timer *w, int revents)
 }
 
 
-////////////////////////////////////////////////////////////////////////////////
-void 
-move_cb(EV_P_ ev_timer *w, int revents)
+/* -------------------------------------------------------------------------- */
+
+/*
+ * render_cb 
+ *
+ * Called by the rendering loop, which is the tightest of the event loops. 
+ * It writes any modified state to the screen, and tries not to calculate much
+ * itself, since it has to return quickly.
+ * Repeat: .02 seconds
+ */
+void render_cb(EV_P_ ev_timer *w, int revents)
 {
-        sail_boat(get_boat("Afarensis"));
-        restack_map(GLOBE);
-        map_refresh(GLOBE);
-
-        ev_timer_again(EV_DEFAULT, w);
-}
-
-
-////////////////////////////////////////////////////////////////////////////////
-void 
-sail_cb(EV_P_ ev_timer *w, int revents)
-{
+        static int spindex;
+        if (loop_test_active) {
+                mvwprintw(CONSOLE_WIN, 1, 0, "(%c) render_cb\n", 
+                          spinner[++spindex%SPIN]);
+        }
+        view_dock();
         draw_compass();
         approach_helm();
 
+        update_panels();
+        doupdate();
+
         ev_timer_again(EV_DEFAULT, w);
 }
 
 
-////////////////////////////////////////////////////////////////////////////////
-void 
-weather_cb(EV_P_ ev_timer *w, int revents)
+/* -------------------------------------------------------------------------- */
+
+
+/*
+ * move_cb
+ *
+ * Called by the movement loop, this callback shifts the position of entities
+ * on-screen. Its timing is the closest thing to the "heartbeat" of the game, 
+ * if only because the player is most aware of its effects.
+ * Repeat: .08 seconds
+ */
+void move_cb(EV_P_ ev_timer *w, int revents)
 {
-        /*mark_wind();*/
-        /*seek_prevailing();*/
-        view_dock();
+        static int spindex;
+        if (loop_test_active) {
+                mvwprintw(CONSOLE_WIN, 2, 0, "(%c) move_cb\n", 
+                          spinner[++spindex%SPIN]);
+        }
         do_pulse();
-        draw_compass();
+        noun_render(get_noun("Afarensis"));
         surface_flow(GLOBE);
+
         restack_map(GLOBE);
         map_refresh(GLOBE);
 
@@ -85,10 +95,24 @@ weather_cb(EV_P_ ev_timer *w, int revents)
 }
 
 
-////////////////////////////////////////////////////////////////////////////////
-void 
-animate_cb(EV_P_ ev_timer *w, int revents)
+/* -------------------------------------------------------------------------- */
+
+/*
+ * animate_cb
+ *
+ * Probably an ambiguous name, this is a long-term callback which steps 
+ * through the WINDOWs in a multiwin linked list, drawing the newly active
+ * WINDOW to the screen. It is responsible for the edge effects along the
+ * shoreline right now.
+ * Repeat: 3.5 seconds
+ */
+void animate_cb(EV_P_ ev_timer *w, int revents)
 {
+        static int spindex;
+        if (loop_test_active) {
+                mvwprintw(CONSOLE_WIN, 3, 0, "(%c) animate_cb\n", 
+                          spinner[++spindex%SPIN]);
+        }
         NEXT(GLOBE->L[RIM]);
         restack_map(GLOBE);
         map_refresh(GLOBE);
@@ -97,10 +121,24 @@ animate_cb(EV_P_ ev_timer *w, int revents)
 }
 
 
-////////////////////////////////////////////////////////////////////////////////
-void 
-*iolisten(EV_P_ ev_io *w, int revents)
+/* -------------------------------------------------------------------------- */
+
+
+/*
+ * iolisten_cb
+ *
+ * Listens for readable input on stdin, triggering when some is detected.
+ * So it is responsible for handling user input events, and passing the
+ * keypress from the stdin input buffer to the control handler in the FSM.
+ * Repeat: n/a
+ */
+void *iolisten_cb(EV_P_ ev_io *w, int revents)
 {
+        static int spindex;
+        if (loop_test_active) {
+                mvwprintw(CONSOLE_WIN, 4, 0, "(%c) iolisten_cb\n", 
+                          spinner[++spindex%SPIN]);
+        }
         ev_io_stop (EV_A, w);
 
         int ch = getch();
@@ -123,39 +161,40 @@ int start_event_watchers(void)
         struct ev_loop *drawloop = EV_DEFAULT;
 
         ev_io read;         // stdin is readable
-        ev_timer sail;      // boat state shift 
-        ev_timer weather;   // weather state shift
+        ev_timer render;    // boat state & compass state
+        ev_timer move;      // weather state shift (particles)
         ev_timer animate;   // map state shift
-        ev_timer print;     // prints text effects
-        ev_timer refresh;   // write the new state to the screen
-        ev_timer move;
 
-        ev_io_init(&read, &iolisten, 0, EV_READ);
-        ev_init(&sail, &sail_cb);
-        ev_init(&weather, &weather_cb);
-        ev_init(&animate, &animate_cb);
-        ev_init(&print, &print_cb);
-        ev_init(&refresh, &refresh_cb);
+        ev_io_init(&read, &iolisten_cb, 0, EV_READ);
+        ev_init(&render, &render_cb);
         ev_init(&move, &move_cb);
+        ev_init(&animate, &animate_cb);
 
-        move.repeat    = .08;
-        sail.repeat    = .02;
-        weather.repeat = .08;
-        animate.repeat = 3.5;
-        print.repeat   = .02;
-        refresh.repeat = .01;
+        render.repeat    = .02;
+        move.repeat      = .08;
+        animate.repeat   = 3.5;
+
 
         ev_io_start(readloop, &read);
-        ev_timer_again(execloop, &sail);
-        ev_timer_again(execloop, &weather);
+        ev_timer_again(execloop, &render);
+        ev_timer_again(execloop, &move);
         ev_timer_again(execloop, &animate);
-        ev_timer_again(drawloop, &print);
-        ev_timer_again(drawloop, &refresh);
-        ev_timer_again(drawloop, &move);
 
         ev_run(execloop, 0);
         ev_run(drawloop, 0);
 
         return 0;
+}
+
+
+void loop_test(void)
+{
+        if (loop_test_active) {
+                loop_test_active = false;
+                werase(CONSOLE_WIN);
+        } else {
+                loop_test_active = true;
+                mvwprintw(CONSOLE_WIN, 0, 0, "Event loop status\n");
+        }
 }
 

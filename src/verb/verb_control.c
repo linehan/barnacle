@@ -176,12 +176,12 @@ int choose_verb(int input)
                 menu_driver(menu, REQ_NEXT_MATCH);
                 break;
         case ' ':
-                verb_new(request_key(SUBJECT), 
-                         request_key(OBJECT), 
+                verb_new(request_id(SUBJECT), 
+                         request_id(OBJECT), 
                          (uint32_t)verb->id);
                 break;
         case 'x':
-                verb_cancel(request_key(SUBJECT));
+                verb_cancel(request_id(SUBJECT));
                 break;
         case 'v':
                 hide_panel(pan);

@@ -97,11 +97,11 @@ static void operate_on(void *noun)
        
         if (mode_changed == true) setmode(RESET);
 
-        install_key(key, op);
+        install_id(key, op);
 
         switch(mode) {
         case STARTING:
-                install_key(key, op^1);
+                install_id(key, op^1);
                 setmode(DEFAULT_MODE);
                 view_vitals(SUBJECT);
                 view_vitals(OBJECT);

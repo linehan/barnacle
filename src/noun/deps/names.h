@@ -4,9 +4,9 @@
 #include <string.h>
 #include "../noun_model.h"
 
-static inline char *fullname(uint32_t key)
+static inline char *fullname(int id)
 {
-        focus(key);
+        focus(id);
         return (focused->name);
 }
 

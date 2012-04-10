@@ -29,7 +29,7 @@ struct rb_node *make_node(uint32_t key, uint8_t words)
         return (new);
 }
 
-struct rb_tree *new_tree(int words)
+struct rb_tree *rb_new(int words)
 {
         struct rb_tree *new = malloc(sizeof *new);
         new->root  = NULL;

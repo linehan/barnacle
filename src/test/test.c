@@ -1,9 +1,10 @@
-// vim:fdm=marker
-/*******************************************************************************
- FILENAME: test.c
- Provides a diagnostic window for diagnostic output, and connects it to
- a panel which can be toggled.
-*******************************************************************************/
+
+/*
+ * FILENAME: test.c
+ * Provides various panels and windows for printing and requesting diagnostic
+ * or error output.
+ */
+
 #define _XOPEN_SOURCE_EXTENDED = 1  /* extended character sets */
 #include <stdio.h>
 #include <stdlib.h>
@@ -20,22 +21,23 @@
 #include "../lib/morton.h"
 #include "../lib/ufo.h"
 #include "../eng/fsm.h"
-/******************************************************************************/
+
+/* -------------------------------------------------------------------------- */
+
+/* The console menu */
+#define CONSOLE_W (COLS) 
+#define CONSOLE_H (LINES/5)
+WINDOW *CONSOLE_WIN;
+PANEL  *CONSOLE_PAN;
+WINDOW *CONSOLE_INPUT;
+
+/* Dump print statements */
+#define DIAGNOSTIC_W (COLS)
+#define DIAGNOSTIC_H (LINES/2)
 WINDOW *DIAGNOSTIC_WIN;
 PANEL  *DIAGNOSTIC_PAN;
 
-WINDOW *MARQUEEW;
-PANEL  *MARQUEEP;
-
-WINDOW *BIGWIN;
-PANEL  *BIGPAN;
-
-WINDOW *ERROR_WIN;
-PANEL  *ERROR_PAN;
-
-WINDOW *SYSWIN;
-PANEL  *SYSPAN;
-
+/* Cursor and message strip */
 WINDOW *INSPECTORWIN;
 PANEL  *INSPECTORPAN;
 WINDOW *INSPECTORMSGWIN;
@@ -51,21 +53,19 @@ static int inspector_x = 0;
 static int inspector_yy = 0;
 static int inspector_xx = 0;
 
-static int counter = 0;
-/******************************************************************************/
+
+/* -------------------------------------------------------------------------- */
+
 /* Create the diagnostic window */
 void init_test(void)
 {
-	DIAGNOSTIC_WIN = newwin((LINES/5), COLS, 0, 0);
+	DIAGNOSTIC_WIN = newwin(DIAGNOSTIC_H, DIAGNOSTIC_W, 0, 0);
         DIAGNOSTIC_PAN = new_panel(DIAGNOSTIC_WIN);
 
-        diagnostic_lock = false;
+        CONSOLE_WIN = newwin(CONSOLE_H, CONSOLE_W, 0, 0);
+        CONSOLE_PAN = new_panel(CONSOLE_WIN);
 
-        BIGWIN = newwin(LINES, COLS, 0, 0);
-        BIGPAN = new_panel(BIGWIN);
-
-        MARQUEEW = newwin(1, COLS, LINES-1, 0);
-        MARQUEEP = new_panel(MARQUEEW);
+        CONSOLE_INPUT = derwin(CONSOLE_WIN, 1, CONSOLE_W, CONSOLE_H-1, 0);
 
         INSPECTORWIN = newwin(1, 1, 0, 0);
         INSPECTORPAN = new_panel(INSPECTORWIN);
@@ -75,66 +75,27 @@ void init_test(void)
         INSPECTORMSGPAN = new_panel(INSPECTORMSGWIN);
         wbkgrnd(INSPECTORMSGWIN, &WARNBG);
 
-	SYSWIN = newwin(30, COLS-(COLS/2), ((LINES/2)-15), (COLS/2)/2);
-        SYSPAN = new_panel(SYSWIN);
-
-	ERROR_WIN = newwin(10, COLS-(COLS/2), ((LINES/2)-5), (COLS/2)/2);
-        ERROR_PAN = new_panel(ERROR_WIN);
-        wbkgrnd(ERROR_WIN, &WARNBG);
-
         hide_panel(DIAGNOSTIC_PAN);
-        hide_panel(ERROR_PAN);
-        hide_panel(SYSPAN);
-        hide_panel(BIGPAN);
+        hide_panel(CONSOLE_PAN);
         hide_panel(INSPECTORPAN);
         hide_panel(INSPECTORMSGPAN);
 }
-/* Toggle the diagnostic panel's visibility */
-void toggle_dpanel(void)
+
+/* -------------------------------------------------------------------------- */
+
+void test_request(void)
 {
-        if ((panel_hidden(DIAGNOSTIC_PAN)))                 
-                show_panel(DIAGNOSTIC_PAN);
-        else 
-                hide_panel(DIAGNOSTIC_PAN);
+        char buf[81], *p;
+
+        werase(CONSOLE_INPUT);
+        wprintw(CONSOLE_INPUT, "> ");
+        fflush(stdout);
+        /*p = fgets(buf, 80, stdin);*/
+
+        doupdate();
 }
 
-void toggle_syspan(void)
-{
-        if ((panel_hidden(SYSPAN)))                 
-                show_panel(SYSPAN);
-        else 
-                hide_panel(SYSPAN);
-}
-
-void toggle_bigpan(void)
-{
-        if ((panel_hidden(BIGPAN)))                 
-                show_panel(BIGPAN);
-        else 
-                hide_panel(BIGPAN);
-}
-
-void speak_error(const char *error)
-{
-        mvwprintw(ERROR_WIN, 1, 2, "%s\n", error);
-        show_panel(ERROR_PAN);
-        noecho();
-        while (wgetch(ERROR_WIN) != '\n');
-        echo();
-        hide_panel(ERROR_PAN);
-        werase(ERROR_WIN);
-}
-
-void speak_error_mono(const char *error)
-{
-        wcolor_set(ERROR_WIN, COLOR_BLACK, NULL);
-        wbkgrnd(ERROR_WIN, &PLAIN);
-        mvwprintw(ERROR_WIN, 1, 2, "%s\n", error);
-        show_panel(ERROR_PAN);
-        while (wgetch(ERROR_WIN) != '\n');
-        hide_panel(ERROR_PAN);
-        werase(ERROR_WIN);
-}
+/* -------------------------------------------------------------------------- */
 
 int inspect_control(int dir)
 {
@@ -179,3 +140,4 @@ int inspect_control(int dir)
         scr_refresh();
         return MODE_PERSIST;
 }
+

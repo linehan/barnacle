@@ -14,8 +14,7 @@
  */
 void set_mob(struct mob_t *mob, struct map_t *map, int h, int w, int y, int x)
 {
-        static wchar_t *wch=L"д";
-        cchar_t cch;
+
 
         #define MOB_PATH_LEN 13
 
@@ -24,15 +23,20 @@ void set_mob(struct mob_t *mob, struct map_t *map, int h, int w, int y, int x)
 
         init_path(&mob->path, 0, 0, MOB_PATH_LEN);
 
-        setcchar(&cch, &wch[0], 0, PUR_WHITE, NULL);
-
         WINDOW *win = newwin(h, w, y, x);
-        wadd_wch(win, &cch);
-        wrefresh(win);
         mob->pan    = new_panel(win);
+        wrefresh(win);
 }
 
 
+PANEL *mob_pan(struct mob_t *mob)
+{
+        return (mob->pan);
+}
+WINDOW *mob_win(struct mob_t *mob)
+{
+        return panel_window(mob->pan);
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 void move_mob(struct mob_t *mob, int dir)
@@ -82,3 +86,4 @@ void move_mob(struct mob_t *mob, int dir)
         path_push(&mob->path, y, x);
         doupdate();
 }
+

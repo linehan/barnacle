@@ -27,7 +27,7 @@
 #include "eng/loop.h"
 
 #include "mob/mob_model.h"
-#include "mob/boat/boat_model.h"
+#include "noun/types/boat/boat.h"
 #include "gfx/ui/titlecard.h"
 
 /* Day-toh-nah */
@@ -35,8 +35,9 @@ int main()
 {
         arawak_init();
 
-        struct map_t *pad = new_map((LINES*3), (COLS*3), LINES, COLS, 0, 0);
-        gen_map(pad);
+        /*[>struct map_t *pad = new_map((LINES*3), (COLS*3), LINES, COLS, 0, 0);<]*/
+        /*[>gen_map(pad, NULL);<]*/
+        struct map_t *pad = make_arena(LINES-30, COLS-20, 0, 0);
         GLOBE = pad;
 
         print_status("\n ALL OK\n");
@@ -45,10 +46,8 @@ int main()
         roll_map(pad, 0);
         roll_map(pad, 0);
 
-        uint32_t key;
-        key = new_boat(pad, FUNBOAT, "Afarensis");
-
-        draw_boat(get_boat("Afarensis"));
+        new_boat(pad, FUNBOAT, "Afarensis");
+        noun_render(get_noun("Afarensis"));
 
         toggle_instrument_panel();
         toggle_instrument_panel();
@@ -58,14 +57,10 @@ int main()
         view_dock();
         choose_noun('*');
 
-        /*struct noun_t *noun = get_noun("Robert Aruga");*/
-        /*set_mob(&noun->mob, GLOBE, 1, 1, 4, 4);*/
+        struct noun_t *noun = get_noun("Robert Aruga");
+        set_mob(&noun->mob, GLOBE, 1, 1, LINES/2, COLS/2);
 
-        mvwp(DIAGNOSTIC_WIN, 0, 10, br_atl(8), PUR_RED, 0);
-        mvwp(DIAGNOSTIC_WIN, 1, 10, br_atm(0), PUR_RED, 0);
-
-
-        start_event_watchers();
+        start_event_watchers(); /* Enter the event loop */
 
         endwin(); /* end curses mode */
         return 0;

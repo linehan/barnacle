@@ -1,2 +1,0 @@
-
-void crewgen(int n);

@@ -56,7 +56,6 @@ uint32_t mort(uint32_t y, uint32_t x)
 
 
 
-
 /*
  * trom -- given a z-index z, return un-interleaved value (even or odd)
  * @z: unsigned 32-bit integer z-index value
@@ -80,7 +79,6 @@ uint32_t trom(uint32_t z)
 
 
 
-
 /*
  * tromx -- call trom() with no offset, to receive x-value 
  * @z: unsigned 32-bit integer z-index value
@@ -89,7 +87,6 @@ uint32_t trom_x(uint32_t z)
 {
   return trom(z >> 0);
 }
-
 
 
 
