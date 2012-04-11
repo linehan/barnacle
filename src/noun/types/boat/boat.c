@@ -144,6 +144,7 @@ void new_boat(struct map_t *map, int type, const char *name)
         noun_set_modify(noun, boat_control);
 
         mob_cfg(&noun->mob, map, BOAT_H, BOAT_W, 0, 0);
+        init_path(&noun->mob.path, BOAT_PATH_Y, BOAT_PATH_X, BOAT_PATH_LEN);
         wbkgrnd(mob_win(&noun->mob), mkcch(br_dis(0), 0, SEA_MED));
 }
 
