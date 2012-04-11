@@ -45,12 +45,11 @@ int main()
         roll_map(pad, 0);
 
         new_boat(pad, FUNBOAT, "Afarensis");
-        set_mob(noun_mob("Afarensis"), true);
+        set_mob(noun_mob("Afarensis"), false);
 
         toggle_instrument_panel();
         toggle_instrument_panel();
 
-        draw_compass();
         load_noun_test();
         view_dock();
         choose_noun('*');
