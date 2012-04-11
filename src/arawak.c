@@ -45,7 +45,7 @@ int main()
         roll_map(pad, 0);
 
         new_boat(pad, FUNBOAT, "Afarensis");
-        set_mob(noun_mob("Afarensis"), false);
+        set_mob(noun_mob("Afarensis"), true);
 
         toggle_instrument_panel();
         toggle_instrument_panel();
