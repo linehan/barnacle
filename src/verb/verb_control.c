@@ -26,7 +26,6 @@
 
 
 ///////////////////////////////////////////////////////////////////////////// */
-#define _XOPEN_SOURCE_EXTENDED = 1 
 #include <stdio.h>
 #include <stdlib.h>
 #include "../lib/fifo.h"
@@ -34,8 +33,8 @@
 #include "../gfx/ui/dock.h"
 #include "../noun/noun_model.h"
 #include "../noun/noun_view.h"
+#include "../com/arawak.h"
 #include "verb_model.h"
-#include "../eng/fsm.h"
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
 //                                                                            //

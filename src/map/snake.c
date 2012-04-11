@@ -129,3 +129,5 @@ void draw_path(WINDOW *win, struct path_t *path)
         }
 }
 
+
+

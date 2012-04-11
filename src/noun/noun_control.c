@@ -13,10 +13,9 @@
 //                   \`                                                       //
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
-#define _XOPEN_SOURCE_EXTENDED = 1  
+#include "../com/arawak.h"
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdbool.h>
 
 #include "../eng/fsm.h"
 #include "../lib/stoc/stoc.h"
@@ -27,7 +26,7 @@
 #include "noun_control.h"
 #include "../verb/verb_model.h"
 
-#define KEY_ESC 27 // ESC keycode
+
 
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //

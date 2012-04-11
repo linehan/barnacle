@@ -6,13 +6,38 @@
 #include "../../../gfx/gfx.h"
 #include "../../../lib/ufo.h"
 #include "../../../map/snake.h"
-#include "../../../mob/mob_model.h"
+#include "../../../mob/mob.h"
 #include "compass.h"
 
+/*
+  ⎛⎝     
+  ◥■◤ 
+  ⎛⎝  
+  ◥◤  
+  ⎛⎞  
+  ◥◤  
+  ⎠⎞  
+  ◥◤  
+   ⎠⎞ 
+  ◥■◤ 
+    ⎠ 
+   ◥■◤
+    ⎠⎞
+   ◥■◤
+    ⎠⎞
+    ◥◤
+    ⎛⎞
+    ◥◤
+    ⎛⎝
+    ◥◤
+   ⎛⎝    
+   ◥■◤
+*/
+
+////////////////////////////////////////////////////////////////////////////////
 
 struct boat_t {
         int type;
-        struct mob_t mob;
         struct boat_gfx *gfx;
         uint32_t state;
         uint32_t hdg;
@@ -20,18 +45,13 @@ struct boat_t {
 };
 
 
-
-
 void new_boat(struct map_t *map, int type, const char *name);
 struct boat_t *get_boat(const char *name);
 
-void boat_control(void *mynoun, int order);
+int boat_control(void *mynoun, int order);
 void sail_boat(void *mynoun);
 
-
-
 ////////////////////////////////////////////////////////////////////////////////
-
 
 
 enum boat_genera { FUNBOAT, KETCH, CARAVEL };
@@ -94,6 +114,9 @@ enum boat_sail_gfx {
 
 enum helm_commands { TURN_L, TURN_R, TURN_HR, TURN_HL, COME_ABOUT };
 
+
+
+/* -------------------------------------------------------------------------- */
 
 
 
@@ -211,7 +234,47 @@ static unsigned char mtbl[16][16] = {
 #define SEASTING(x)        ((x==SE)) 
 
 
+////////////////////////////////////////////////////////////////////////////////
 
+#define HULLCOUNT 3 
+#define MASTCOUNT 3 
+#define SAILCOUNT 3 
+#define GUNCOUNT  2 
+
+static struct gpkg _hull[HULLCOUNT]={
+{ 4 , {1 , 1 , 1 , 1} , BOAT_WOOD , {L"◥◤"  , L"◥■◤"   , L"◥◤"  , L"◥■◤"}}   ,
+{ 4 , {1 , 1 , 1 , 2} , BOAT_WOOD , {L"▗▅▖" , L"▃▂▃▖"  , L"▗▅▖" , L"▗▃▂▃"}}  ,
+{ 4 , {1 , 2 , 1 , 2} , BOAT_WOOD , {L"▜▛"  , L"▜▄▂▃▖" , L"▗▃▖" , L"▗▃▂▄▛"}}
+};
+
+static struct gpkg _mast[MASTCOUNT] = {
+{ 3, {0}, BOAT_WOOD, {L"⎢",L"⎦",L"⎣"}},
+{ 3, {0}, BOAT_WOOD, {L"⎢",L"⎦",L"⎣"}},
+{ 3, {0}, BOAT_WOOD, {L"⎢",L"⎦",L"⎣"}}
+};
+
+static struct gpkg _sail[SAILCOUNT] = {
+{ 8, {0}, BOAT_WHITE, {L"⎠",L"⎝",L"⎞",L"⎛",L"⎠⎝",L"⎛⎞",L"⎛⎝",L"⎠⎞"}},
+{ 8, {0}, BOAT_WHITE, {L"⎠",L"⎝",L"⎞",L"⎛",L"⎠⎝",L"⎛⎞",L"⎛⎝",L"⎠⎞"}},
+{ 8, {0}, BOAT_WHITE, {L"⎠",L"⎝",L"⎞",L"⎛",L"⎠⎝",L"⎛⎞",L"⎛⎝",L"⎠⎞"}}
+};
+
+static struct gpkg _cann[GUNCOUNT] = {
+{ 8, {0}, GUN_FLASH, {L"✶",L"✶",L"✶",L"✶",L"✶",L"✶",L"✶",L"✶"}},
+{ 8, {0}, GUN_SMOKE, {L"✺",L"✺",L"✺",L"✺",L"✺",L"✺",L"✺",L"✺"}}
+};
+
+
+static inline void init_boatgfx(void)
+{
+        if (_hull[0].cch[0] != NULL) return;
+
+        unsigned char i;
+        i = HULLCOUNT;  while (i-->0) { build_gpkg(&_hull[i]); };
+        i = MASTCOUNT;  while (i-->0) { build_gpkg(&_mast[i]); };
+        i = SAILCOUNT;  while (i-->0) { build_gpkg(&_sail[i]); };
+        i = GUNCOUNT;   while (i-->0) { build_gpkg(&_cann[i]); };
+}
 ////////////////////////////////////////////////////////////////////////////////
 #endif
 

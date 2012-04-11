@@ -1,13 +1,7 @@
-// vim:fdm=marker
 #ifndef __GFX_TYPES
 #define __GFX_TYPES
-#define _XOPEN_SOURCE_EXTENDED = 1  /* extended character sets */
+#include "../com/arawak.h"
 #include <stdlib.h>
-#include <wchar.h>
-#include <ncurses.h>
-#include <panel.h>
-#include <menu.h>
-#include <locale.h>
 #include <string.h>
 
 #include "sprite.h"
@@ -61,12 +55,6 @@ cchar_t *mkcch(wchar_t *wch, attr_t attr, short co);
 #define map_refresh(map) \
         copywin(PEEK(map->W), map->win, ufo_y(map, ufo), ufo_x(map, ufo), 0, 0, LINES-1, COLS-1, 0); \
         doupdate();\
-
-#define TOGPAN(pan)              \
-        if (panel_hidden(pan))   \
-                show_panel(pan); \
-        else    hide_panel(pan)  
-
 
 
 void mvwp(WINDOW *win, int y, int x, wchar_t *wch, short pair, attr_t attr);

@@ -153,8 +153,8 @@ void approach_helm(void)
         if (buffer < BUF_FULL) buffer = (buffer+BUF_REST);
 
                 if (buffer < BUF_MIN && offset != 0 ) {
-                        change_course(get_boat("Afarensis"), dir^1);
-                        turn_helm(get_boat("Afarensis"), dir);
+                        change_course(noun_obj("Afarensis"), dir^1);
+                        turn_helm(noun_obj("Afarensis"), dir);
                 }
 }
 

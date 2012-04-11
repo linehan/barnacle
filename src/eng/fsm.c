@@ -1,10 +1,11 @@
+#include "../com/arawak.h"
 #include <stdlib.h>
 #include <pthread.h>
 #include <semaphore.h>
 #include <ev.h>
 
 #include "../gfx/gfx.h"
-#include "../mob/mob_model.h"
+#include "../mob/mob.h"
 #include "../test/test.h"
 #include "fsm.h"
 
@@ -102,7 +103,7 @@ void operate_on(int input)
                 noun_modify(get_noun("Afarensis"), input);
                 break;
         case UI_MOB:
-                mob_control(get_mob("Robert Aruga"), input, 0);
+                noun_modify(get_noun("Mr. E"), input);
                 break;
         }
 }

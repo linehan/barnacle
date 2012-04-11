@@ -3,9 +3,7 @@
 #define CCAN_LIST_H
 #include <stdbool.h>
 #include <assert.h>
-#include "deps/container_of.h"
-#include "deps/check_type.h"
-
+#include "../../com/arawak.h"
 
 
 /* Allocates memory for and then initializes a new ring head */
