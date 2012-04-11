@@ -1,3 +1,4 @@
+#include "../com/arawak.h"
 #include <stdlib.h>
 #include <stdbool.h>
 #include <ev.h>
@@ -14,8 +15,7 @@
 
 static bool loop_test_active;
 
-#define SPIN 4
-const char spinner[SPIN]="|/-\\";
+
 
 ////////////////////////////////////////////////////////////////////////////////
 void
@@ -53,7 +53,7 @@ void render_cb(EV_P_ ev_timer *w, int revents)
         static int spindex;
         if (loop_test_active) {
                 mvwprintw(CONSOLE_WIN, 1, 0, "(%c) render_cb\n", 
-                          spinner[++spindex%SPIN]);
+                          SPINNER(spindex++));
         }
         view_dock();
         draw_compass();
@@ -82,7 +82,7 @@ void move_cb(EV_P_ ev_timer *w, int revents)
         static int spindex;
         if (loop_test_active) {
                 mvwprintw(CONSOLE_WIN, 2, 0, "(%c) move_cb\n", 
-                          spinner[++spindex%SPIN]);
+                          SPINNER(spindex++));
         }
         do_pulse();
         noun_render(get_noun("Afarensis"));
@@ -111,7 +111,7 @@ void animate_cb(EV_P_ ev_timer *w, int revents)
         static int spindex;
         if (loop_test_active) {
                 mvwprintw(CONSOLE_WIN, 3, 0, "(%c) animate_cb\n", 
-                          spinner[++spindex%SPIN]);
+                          SPINNER(spindex++));
         }
         NEXT(GLOBE->L[RIM]);
         restack_map(GLOBE);
@@ -137,7 +137,7 @@ void *iolisten_cb(EV_P_ ev_io *w, int revents)
         static int spindex;
         if (loop_test_active) {
                 mvwprintw(CONSOLE_WIN, 4, 0, "(%c) iolisten_cb\n", 
-                          spinner[++spindex%SPIN]);
+                          SPINNER(spindex++));
         }
         ev_io_stop (EV_A, w);
 

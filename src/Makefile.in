@@ -61,11 +61,11 @@ am_arawak_OBJECTS = arawak.$(OBJEXT) eng/init.$(OBJEXT) \
 	map/weather.$(OBJEXT) map/terrain.$(OBJEXT) map/map.$(OBJEXT) \
 	map/tile.$(OBJEXT) map/snake.$(OBJEXT) map/arena.$(OBJEXT) \
 	txt/gloss_m.$(OBJEXT) txt/gloss_v.$(OBJEXT) \
-	txt/gloss_c.$(OBJEXT) mob/mob_model.$(OBJEXT) \
-	mob/mob_control.$(OBJEXT) noun/noun_model.$(OBJEXT) \
-	noun/noun_view.$(OBJEXT) noun/noun_control.$(OBJEXT) \
-	noun/types/boat/boat.$(OBJEXT) \
-	noun/types/boat/compass.$(OBJEXT) verb/verb_model.$(OBJEXT) \
+	txt/gloss_c.$(OBJEXT) mob/mob.$(OBJEXT) \
+	noun/noun_model.$(OBJEXT) noun/noun_view.$(OBJEXT) \
+	noun/noun_control.$(OBJEXT) noun/types/boat/boat.$(OBJEXT) \
+	noun/types/boat/compass.$(OBJEXT) \
+	noun/types/person/person.$(OBJEXT) verb/verb_model.$(OBJEXT) \
 	verb/verb_view.$(OBJEXT) verb/verb_control.$(OBJEXT) \
 	verb/verbs.$(OBJEXT) test/test.$(OBJEXT) eng/fsm.$(OBJEXT) \
 	eng/loop.$(OBJEXT)
@@ -214,13 +214,13 @@ arawak_SOURCES = arawak.c                       \
                    txt/gloss_m.c                \
                    txt/gloss_v.c                \
                    txt/gloss_c.c                \
-                   mob/mob_model.c              \
-                   mob/mob_control.c            \
+                   mob/mob.c                    \
                    noun/noun_model.c            \
                    noun/noun_view.c             \
                    noun/noun_control.c          \
                    noun/types/boat/boat.c\
                    noun/types/boat/compass.c\
+                   noun/types/person/person.c   \
                    verb/verb_model.c            \
                    verb/verb_view.c             \
                    verb/verb_control.c          \
@@ -434,10 +434,7 @@ mob/$(am__dirstamp):
 mob/$(DEPDIR)/$(am__dirstamp):
 	@$(MKDIR_P) mob/$(DEPDIR)
 	@: > mob/$(DEPDIR)/$(am__dirstamp)
-mob/mob_model.$(OBJEXT): mob/$(am__dirstamp) \
-	mob/$(DEPDIR)/$(am__dirstamp)
-mob/mob_control.$(OBJEXT): mob/$(am__dirstamp) \
-	mob/$(DEPDIR)/$(am__dirstamp)
+mob/mob.$(OBJEXT): mob/$(am__dirstamp) mob/$(DEPDIR)/$(am__dirstamp)
 noun/$(am__dirstamp):
 	@$(MKDIR_P) noun
 	@: > noun/$(am__dirstamp)
@@ -460,6 +457,14 @@ noun/types/boat/boat.$(OBJEXT): noun/types/boat/$(am__dirstamp) \
 	noun/types/boat/$(DEPDIR)/$(am__dirstamp)
 noun/types/boat/compass.$(OBJEXT): noun/types/boat/$(am__dirstamp) \
 	noun/types/boat/$(DEPDIR)/$(am__dirstamp)
+noun/types/person/$(am__dirstamp):
+	@$(MKDIR_P) noun/types/person
+	@: > noun/types/person/$(am__dirstamp)
+noun/types/person/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) noun/types/person/$(DEPDIR)
+	@: > noun/types/person/$(DEPDIR)/$(am__dirstamp)
+noun/types/person/person.$(OBJEXT): noun/types/person/$(am__dirstamp) \
+	noun/types/person/$(DEPDIR)/$(am__dirstamp)
 verb/$(am__dirstamp):
 	@$(MKDIR_P) verb
 	@: > verb/$(am__dirstamp)
@@ -525,13 +530,13 @@ mostlyclean-compile:
 	-rm -f map/terrain.$(OBJEXT)
 	-rm -f map/tile.$(OBJEXT)
 	-rm -f map/weather.$(OBJEXT)
-	-rm -f mob/mob_control.$(OBJEXT)
-	-rm -f mob/mob_model.$(OBJEXT)
+	-rm -f mob/mob.$(OBJEXT)
 	-rm -f noun/noun_control.$(OBJEXT)
 	-rm -f noun/noun_model.$(OBJEXT)
 	-rm -f noun/noun_view.$(OBJEXT)
 	-rm -f noun/types/boat/boat.$(OBJEXT)
 	-rm -f noun/types/boat/compass.$(OBJEXT)
+	-rm -f noun/types/person/person.$(OBJEXT)
 	-rm -f test/test.$(OBJEXT)
 	-rm -f txt/gloss_c.$(OBJEXT)
 	-rm -f txt/gloss_m.$(OBJEXT)
@@ -580,13 +585,13 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@map/$(DEPDIR)/terrain.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@map/$(DEPDIR)/tile.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@map/$(DEPDIR)/weather.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@mob/$(DEPDIR)/mob_control.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@mob/$(DEPDIR)/mob_model.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@mob/$(DEPDIR)/mob.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@noun/$(DEPDIR)/noun_control.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@noun/$(DEPDIR)/noun_model.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@noun/$(DEPDIR)/noun_view.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@noun/types/boat/$(DEPDIR)/boat.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@noun/types/boat/$(DEPDIR)/compass.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@noun/types/person/$(DEPDIR)/person.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@test/$(DEPDIR)/test.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@txt/$(DEPDIR)/gloss_c.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@txt/$(DEPDIR)/gloss_m.Po@am__quote@
@@ -753,6 +758,8 @@ distclean-generic:
 	-rm -f noun/$(am__dirstamp)
 	-rm -f noun/types/boat/$(DEPDIR)/$(am__dirstamp)
 	-rm -f noun/types/boat/$(am__dirstamp)
+	-rm -f noun/types/person/$(DEPDIR)/$(am__dirstamp)
+	-rm -f noun/types/person/$(am__dirstamp)
 	-rm -f test/$(DEPDIR)/$(am__dirstamp)
 	-rm -f test/$(am__dirstamp)
 	-rm -f txt/$(DEPDIR)/$(am__dirstamp)
@@ -768,7 +775,7 @@ clean: clean-am
 clean-am: clean-binPROGRAMS clean-generic mostlyclean-am
 
 distclean: distclean-am
-	-rm -rf ./$(DEPDIR) eng/$(DEPDIR) eng/model/$(DEPDIR) gfx/$(DEPDIR) gfx/ui/$(DEPDIR) lib/$(DEPDIR) lib/ncolor/src/$(DEPDIR) lib/redblack/$(DEPDIR) lib/sort/$(DEPDIR) lib/stoc/$(DEPDIR) map/$(DEPDIR) mob/$(DEPDIR) noun/$(DEPDIR) noun/types/boat/$(DEPDIR) test/$(DEPDIR) txt/$(DEPDIR) verb/$(DEPDIR)
+	-rm -rf ./$(DEPDIR) eng/$(DEPDIR) eng/model/$(DEPDIR) gfx/$(DEPDIR) gfx/ui/$(DEPDIR) lib/$(DEPDIR) lib/ncolor/src/$(DEPDIR) lib/redblack/$(DEPDIR) lib/sort/$(DEPDIR) lib/stoc/$(DEPDIR) map/$(DEPDIR) mob/$(DEPDIR) noun/$(DEPDIR) noun/types/boat/$(DEPDIR) noun/types/person/$(DEPDIR) test/$(DEPDIR) txt/$(DEPDIR) verb/$(DEPDIR)
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
 	distclean-tags
@@ -814,7 +821,7 @@ install-ps-am:
 installcheck-am:
 
 maintainer-clean: maintainer-clean-am
-	-rm -rf ./$(DEPDIR) eng/$(DEPDIR) eng/model/$(DEPDIR) gfx/$(DEPDIR) gfx/ui/$(DEPDIR) lib/$(DEPDIR) lib/ncolor/src/$(DEPDIR) lib/redblack/$(DEPDIR) lib/sort/$(DEPDIR) lib/stoc/$(DEPDIR) map/$(DEPDIR) mob/$(DEPDIR) noun/$(DEPDIR) noun/types/boat/$(DEPDIR) test/$(DEPDIR) txt/$(DEPDIR) verb/$(DEPDIR)
+	-rm -rf ./$(DEPDIR) eng/$(DEPDIR) eng/model/$(DEPDIR) gfx/$(DEPDIR) gfx/ui/$(DEPDIR) lib/$(DEPDIR) lib/ncolor/src/$(DEPDIR) lib/redblack/$(DEPDIR) lib/sort/$(DEPDIR) lib/stoc/$(DEPDIR) map/$(DEPDIR) mob/$(DEPDIR) noun/$(DEPDIR) noun/types/boat/$(DEPDIR) noun/types/person/$(DEPDIR) test/$(DEPDIR) txt/$(DEPDIR) verb/$(DEPDIR)
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 

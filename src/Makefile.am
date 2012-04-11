@@ -50,13 +50,13 @@ arawak_SOURCES = arawak.c                       \
                    txt/gloss_m.c                \
                    txt/gloss_v.c                \
                    txt/gloss_c.c                \
-                   mob/mob_model.c              \
-                   mob/mob_control.c            \
+                   mob/mob.c                    \
                    noun/noun_model.c            \
                    noun/noun_view.c             \
                    noun/noun_control.c          \
                    noun/types/boat/boat.c\
                    noun/types/boat/compass.c\
+                   noun/types/person/person.c   \
                    verb/verb_model.c            \
                    verb/verb_view.c             \
                    verb/verb_control.c          \

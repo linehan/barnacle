@@ -3,12 +3,10 @@
   FILENAME:  dork.c
   This is the main program. 
 *******************************************************************************/
-#define _XOPEN_SOURCE_EXTENDED = 1  /* extended character sets */
+#include "com/arawak.h"
+
 #include <stdio.h>
 #include <stdlib.h>
-#include <ncurses.h>
-#include <panel.h>
-#include <math.h>
 
 #include "lib/llist/list.h"
 
@@ -26,7 +24,7 @@
 #include "eng/init.h"
 #include "eng/loop.h"
 
-#include "mob/mob_model.h"
+#include "mob/mob.h"
 #include "noun/types/boat/boat.h"
 #include "gfx/ui/titlecard.h"
 
@@ -47,7 +45,7 @@ int main()
         roll_map(pad, 0);
 
         new_boat(pad, FUNBOAT, "Afarensis");
-        noun_render(get_noun("Afarensis"));
+        set_mob(noun_mob("Afarensis"), true);
 
         toggle_instrument_panel();
         toggle_instrument_panel();
@@ -57,8 +55,8 @@ int main()
         view_dock();
         choose_noun('*');
 
-        struct noun_t *noun = get_noun("Robert Aruga");
-        set_mob(&noun->mob, GLOBE, 1, 1, LINES/2, COLS/2);
+        new_person("Mr. E", 0);
+        set_mob(noun_mob("Mr. E"), true);
 
         start_event_watchers(); /* Enter the event loop */
 

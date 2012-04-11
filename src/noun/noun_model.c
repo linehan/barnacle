@@ -61,7 +61,7 @@ void focus(uint32_t id)
  * @type: the type of the noun, such as "person" or "boat"
  * @job: the job or subtype of the noun, such as "monk" or "yawl"
  */
-void new_noun(const char *name, uint32_t type, uint32_t job, void *obj)
+struct noun_t *new_noun(const char *name, uint32_t type, uint32_t job, void *obj)
 {
         struct noun_t *new;        
         uint32_t id;
@@ -90,32 +90,37 @@ void new_noun(const char *name, uint32_t type, uint32_t job, void *obj)
 
         rb_store(nountree, id, new);
         keyring[numnoun++] = id;
+
+        return new;
 }
 
 void *noun_obj(const char *name)
 {
-        struct noun_t *tmp;
+        return (void *)(get_noun(name))->obj;
+}
 
-        tmp = get_noun(name);
-        return tmp->obj;
+struct mob_t *noun_mob(const char *name)
+{
+        return &((get_noun(name))->mob);
 }
 
 void noun_set_render(struct noun_t *noun, void (*func)(void *obj))
 {
         noun->render = func;
 }
-void noun_set_modify(struct noun_t *noun, void (*func)(void *obj, int opt))
+void noun_set_modify(struct noun_t *noun, int (*func)(void *obj, int opt))
 {
         noun->modify = func;
 }
 
 void noun_render(struct noun_t *noun)
 {
-        noun->render(noun->obj);
+        noun->render(noun);
 }
+
 void noun_modify(struct noun_t *noun, int opt)
 {
-        noun->modify(noun->obj, opt);
+        noun->modify(noun, opt);
 }
 
 
@@ -200,7 +205,7 @@ void load_noun_test(void)
 
         int i;
         for (i=0; i<24; i++) {
-                new_noun(name[i], 0, j[i], NULL); 
+                new_person(name[i], j[i]);
         }
 
         for (i=0; i<numnoun; i++) {

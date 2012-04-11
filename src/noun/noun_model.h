@@ -7,9 +7,9 @@
 #include "../verb/verb_model.h"
 #include "../eng/model/bytes.h"
 #include "../lib/redblack/rb.h"
-#include "../mob/mob_model.h"
+#include "../mob/mob.h"
 
-enum nountypes { SAILBOAT};
+enum nountypes {SAILBOAT, PERSON};
 
 struct noun_t {
         char *name;
@@ -21,7 +21,7 @@ struct noun_t {
         struct mob_t mob;
         void *obj;
         void (*render)(void *self);
-        void (*modify)(void *self, int opt);
+        int (*modify)(void *self, int opt);
 };
 
 
@@ -30,8 +30,10 @@ void focus(uint32_t id);
 void unfocus(void);
 
 void *noun_obj(const char *name);
+struct mob_t *noun_mob(const char *name);
+void noun_set_mobile(struct noun_t *noun, struct map_t *map, int h, int w, int y, int x);
 void noun_set_render(struct noun_t *noun, void (*func)(void *obj));
-void noun_set_modify(struct noun_t *noun, void (*func)(void *obj, int opt));
+void noun_set_modify(struct noun_t *noun, int (*func)(void *obj, int opt));
 void noun_render(struct noun_t *noun);
 void noun_modify(struct noun_t *noun, int opt);
 
@@ -47,7 +49,7 @@ extern int numnoun;
 
 
 void load_noun_test(void);
-void new_noun(const char *name, uint32_t type, uint32_t job, void *obj);
+struct noun_t *new_noun(const char *name, uint32_t type, uint32_t job, void *obj);
 
 
 // Support modules
