@@ -7,7 +7,7 @@
 
 void new_person(const char *name, int job)
 {
-        struct persno_t *new;
+        struct person_t *new;
         struct noun_t *noun;
 
         new = malloc(sizeof(struct person_t)); 

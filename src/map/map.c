@@ -137,13 +137,14 @@ void gen_map(struct map_t *map, double **pmap)
         w = map->ufo.box.w;
 
         print_status("Generating noise...");
+        print_status(SUCCESS);
         if (pmap == NULL) {
                 map->pmap = simplex_matrix(h, w); // 2D Perlin map
                 smooth_layers(map, map->pmap);
         } else {
                 map->pmap = pmap;
         }
-        print_status(SUCCESS);
+
 
         map->win = newwin(LINES, COLS, 0, 0); // Fullscreen
         map->pan = new_panel(map->win);

@@ -33,9 +33,9 @@ int main()
 {
         arawak_init();
 
-        /*[>struct map_t *pad = new_map((LINES*3), (COLS*3), LINES, COLS, 0, 0);<]*/
-        /*[>gen_map(pad, NULL);<]*/
-        struct map_t *pad = make_arena(LINES-30, COLS-20, 0, 0);
+        struct map_t *pad = new_map((LINES*3), (COLS*3), LINES, COLS, 0, 0);
+        gen_map(pad, NULL);
+        /*struct map_t *pad = make_arena(LINES-30, COLS-20, 0, 0);*/
         GLOBE = pad;
 
         print_status("\n ALL OK\n");
@@ -54,8 +54,8 @@ int main()
         view_dock();
         choose_noun('*');
 
-        new_person("Mr. E", 0);
-        set_mob(noun_mob("Mr. E"), true);
+        /*new_person("Mr. E", 0);*/
+        /*set_mob(noun_mob("Mr. E"), true);*/
 
         start_event_watchers(); /* Enter the event loop */
 
