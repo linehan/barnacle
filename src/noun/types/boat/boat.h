@@ -2,7 +2,8 @@
 #ifndef __BOAT_H
 #define __BOAT_H
 
-#include <stdint.h>
+#include "../../../com/arawak.h"
+#include "../../noun_model.h"
 #include "../../../gfx/gfx.h"
 #include "../../../lib/ufo.h"
 #include "../../../map/snake.h"
@@ -82,7 +83,7 @@ enum SAI_state_tags {
 enum GUN_state_tags {
         HAS, // Vessel is equipped with cannon and they are operational.
         POW, // Vessel has powder availible.
-        SHO, // Vessel has shot availible.
+        SHH, // Vessel has shot availible.
         LD0, // Loading stage 0
         LD1, // Loading stage 1
         RDY, // Loading complete (ready status)

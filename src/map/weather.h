@@ -1,3 +1,6 @@
+#pragma once
+#ifndef _CLIMATE_H
+#define _CLIMATE_H
 
 typedef struct climate_package {
         int lat;
@@ -15,3 +18,5 @@ void init_weather(void);
 int get_wind(int a);
 void set_wind(int a, int val);
 void wind_gfx(void);
+
+#endif

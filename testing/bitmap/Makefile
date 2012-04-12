@@ -11,7 +11,7 @@ LDFLAGS=-pg
 #       
 #                                  
 
-SOURCES=test.c bitmap.c
+SOURCES=test.c bitmap.c matrix.c
 OBJECTS=$(SOURCES:.c=.o)
 
 EXECUTABLE=test

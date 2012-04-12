@@ -6,7 +6,7 @@
 
 static inline char *fullname(int id)
 {
-        focus(id);
+        key_noun(id);
         return (focused->name);
 }
 

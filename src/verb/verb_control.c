@@ -48,7 +48,7 @@ inline void verb_tick_send(uint32_t key)
         uint32_t send; 
         uint32_t bump;
 
-        focus(key);
+        key_noun(key);
         if (focused->verb.send == 0U) return; // nothing to do
         update_mask(key);
 
@@ -88,7 +88,7 @@ inline void verb_tick_rec(uint32_t key)
         uint32_t rec;
         uint32_t bump;
 
-        focus(key);
+        key_noun(key);
 
         rec  = focused->verb.rec;
         bump = focused->verb.bump;
@@ -110,7 +110,7 @@ void verb_tick(uint32_t key)
         // 1. The fundamental's direction oscillates
         // 2. The send buffer always shifts away from the origin (to the right)
         // 3. The receive buffer always shifts toward the origin (to the left)
-        focus(key);
+        key_noun(key);
         update_mask(key);
 
         if ((focused->verb.forw == true)) 
@@ -134,7 +134,7 @@ void verb_tick(uint32_t key)
 ////////////////////////////////////////////////////////////////////////////////
 void verb_cancel(uint32_t key)
 {
-        focus(key);
+        key_noun(key);
         focused->verb.canc  = focused->verb.send;
         focused->verb.send ^= focused->verb.send;
 }

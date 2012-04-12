@@ -234,7 +234,7 @@ void view_vitals(int operand)
         werase(W(operand));
         put_nblocks(W(operand), 0, 0, SMHBAR, TITLE_SCREEN, VIT_MAXLEN);
 
-        focus(request_id(operand));
+        key_noun(request_id(operand));
         xofs = X(operand);
 
         for (i=0; i<4; i++) {

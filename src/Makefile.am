@@ -24,7 +24,6 @@ arawak_SOURCES = arawak.c                       \
                    lib/fifo.c                   \
                    lib/textutils.c              \
                    lib/ufo.c                    \
-                   lib/stoc/matrix.c            \
                    lib/stoc/mersenne.c          \
                    lib/stoc/stoc.c              \
                    lib/stoc/noise.c             \
@@ -32,8 +31,10 @@ arawak_SOURCES = arawak.c                       \
                    lib/stoc/shuffle.c           \
                    lib/stoc/smooth.c            \
                    lib/stoc/brnoise.c           \
-                   eng/state.c                  \
-                   eng/model/bytes.c            \
+                   lib/matrix.c                 \
+                   eng/bytes.c                  \
+                   eng/fsm.c                    \
+                   eng/loop.c                   \
                    gfx/palette.c                \
                    gfx/sprite.c                 \
                    gfx/gfx.c                    \
@@ -44,9 +45,9 @@ arawak_SOURCES = arawak.c                       \
                    map/weather.c                \
                    map/terrain.c                \
                    map/map.c                    \
-                   map/tile.c                   \
                    map/snake.c                  \
                    map/arena.c                  \
+                   map/particle.c               \
                    txt/gloss_m.c                \
                    txt/gloss_v.c                \
                    txt/gloss_c.c                \
@@ -54,13 +55,12 @@ arawak_SOURCES = arawak.c                       \
                    noun/noun_model.c            \
                    noun/noun_view.c             \
                    noun/noun_control.c          \
-                   noun/types/boat/boat.c\
-                   noun/types/boat/compass.c\
+                   noun/types/boat/boat.c       \
+                   noun/types/boat/compass.c    \
                    noun/types/person/person.c   \
                    verb/verb_model.c            \
                    verb/verb_view.c             \
                    verb/verb_control.c          \
                    verb/verbs.c                 \
-                   test/test.c                  \
-                   eng/fsm.c                    \
-                   eng/loop.c            
+                   test/test.c                  
+

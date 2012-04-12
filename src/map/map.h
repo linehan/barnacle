@@ -33,7 +33,7 @@
 #include <stdint.h>
 #include "../gfx/gfx.h"
 #include "../lib/redblack/rb.h"
-#include "../eng/state.h"
+#include "../eng/bytes.h"
 #include "../lib/ufo.h"
 
 #define NLAYERS 16  // Number of layers on the world map.
@@ -43,7 +43,7 @@ struct map_t {
         struct multiwin_t *W;
         WINDOW *win;
         PANEL  *pan;
-        struct rb_tree *tree;
+        struct matrix_t *mx;
         struct ufo_t ufo;
         double **pmap;
 };

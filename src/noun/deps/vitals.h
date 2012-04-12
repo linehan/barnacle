@@ -22,31 +22,31 @@ enum vitals_enum {HP, SP, LP, EP};          //
 
 static inline uint32_t get_vital(int id, int b)
 {
-        focus(id);
+        key_noun(id);
         return (get_byte(focused->vitals, b));
 }
 
 static inline void set_vital(int id, int b, int s)
 {
-        focus(id);
+        key_noun(id);
         set_byte(&focused->vitals, b, s);
 }
 
 static inline void unpack_vitals(int id, int *dest)
 {
-        focus(id);
+        key_noun(id);
         unpack_bytes(focused->vitals, dest, NBYTES);
 }
 
 static inline void inc_vital(int id, int b)
 {
-        focus(id);
+        key_noun(id);
         set_byte(&focused->vitals, b, (get_byte(focused->vitals, b)+1));
 }
 
 static inline void dec_vital(int id, int b)
 {
-        focus(id);
+        key_noun(id);
         set_byte(&focused->vitals, b, (get_byte(focused->vitals, b)-1));
 }
 

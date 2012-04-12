@@ -1,30 +1,17 @@
-////////////////////////////////////////////////////////////////////////////////
-//    |  \ \ | |/ /                                                           //
-//    |  |\ `' ' /                                                            //
-//    |  ;'      \      / ,                                                   //
-//    | ;    _,   |    / / ,                                                  //
-//    | |   (  `-.;_,-' '-' ,                                                 //
-//    | `,   `-._       _,-'_                                                 //
-//    |,-`.    `.)    ,<_,-'_,                                                //
-//   ,'    `.   /   ,'  `;-' _,                                               //
-//  ;        `./   /`,    \-'                                                 //
-//  |         /   |  ;\   |\                                                  //
-//  |        ;_,._|_,  `, ' \                    noun_model.c                 //
-//  |        \    \ `       `,                                                //
-//  `      __ `    \         ;,                                               //
-//   \   ,'  `      \,       ;,                                               //
-//    \_(            ;,      ;;                                               //
-//    |  \           `;,     ;;                                               //
-//    |  |`.          `;;,   ;'                                               //
-//    |  |  `-.        ;;;;,;'                                                //
-//    |  |    |`-.._  ,;;;;;'                                                 //
-//    |  |    |   | ``';;;'                                                   //
-////////////////////////////////////////////////////////////////////////////////
-#define _XOPEN_SOURCE_EXTENDED = 1 
+/*
+ * noun_model.c -- provides an interface for the noun database
+ *
+ * new_noun (private) -- allocate a new struct noun_t
+ * add_noun (public) -- add a noun to the nountree
+ * del_noun (public) -- remove a noun from the nountree
+ * get_noun (public) -- return a pointer to a noun given the name string
+ * key_noun (public) -- return a pointer to a noun given the unique id
+ *
+ */
+
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
-
 #include "../lib/stoc/stoc.h"
 #include "../lib/hash.h"
 #include "../lib/textutils.h"
@@ -35,31 +22,17 @@
 #define MAXNOUN 1000
 
 
-struct rb_tree *nountree;
-int numnoun;
-
-
-/*
- * focus -- given an id, set the 'focused' pointer to the matching noun_t
- * @id: the unique identifier of the noun
- */ 
-void focus(uint32_t id)
-{
-        struct noun_t *tmp;
-
-        tmp = rb_extra(nountree, id);
-        assert(tmp != NULL);
-
-        focused = tmp;
-}
+struct rb_tree *nountree; /* Holds all registered nouns */
+int numnoun;              /* Counts all registered nouns */
 
 
 
 /*
- * new_noun -- create a new noun object and store it in the nountree
+ * new_noun (private) -- Create a new noun object and store it in the nountree
  * @name: the name of the noun
- * @type: the type of the noun, such as "person" or "boat"
- * @job: the job or subtype of the noun, such as "monk" or "yawl"
+ * @type: the type enum of the noun
+ * @job: the job or subtype enum of the noun
+ * @obj: the class struct containing type-specific data
  */
 struct noun_t *new_noun(const char *name, uint32_t type, uint32_t job, void *obj)
 {
@@ -94,54 +67,11 @@ struct noun_t *new_noun(const char *name, uint32_t type, uint32_t job, void *obj
         return new;
 }
 
-void *noun_obj(const char *name)
-{
-        return (void *)(get_noun(name))->obj;
-}
-
-struct mob_t *noun_mob(const char *name)
-{
-        return &((get_noun(name))->mob);
-}
-
-void noun_set_render(struct noun_t *noun, void (*func)(void *obj))
-{
-        noun->render = func;
-}
-void noun_set_modify(struct noun_t *noun, int (*func)(void *obj, int opt))
-{
-        noun->modify = func;
-}
-
-void noun_render(struct noun_t *noun)
-{
-        noun->render(noun);
-}
-
-void noun_modify(struct noun_t *noun, int opt)
-{
-        noun->modify(noun, opt);
-}
 
 
 
-/*
- * get_noun -- given a name string, return a pointer to the noun_t
- * @name: name of the noun to be returned
- */
-struct noun_t *get_noun(const char *name)
-{
-        focus(fasthash(name, strlen(name)));
-        return (focused);
-}
 
-////////////////////////////////////////////////////////////////////////////////
-//                                                                            //
-//                                                                            //
-//                                  keys                                      //
-//                                                                            //
-//                                                                            //
-////////////////////////////////////////////////////////////////////////////////
+
 static int loaded;
 uint32_t active_id[2];
 
@@ -166,13 +96,9 @@ uint32_t request_id(int option)
 }
 
 
-////////////////////////////////////////////////////////////////////////////////
-//                                                                            //
-//                                                                            //
-//                                test                                        //
-//                                                                            //
-//                                                                            //
-////////////////////////////////////////////////////////////////////////////////
+/*
+ * Load some test data into the nountree
+ */
 void load_noun_test(void)
 {
 
@@ -213,7 +139,7 @@ void load_noun_test(void)
                 set_vital(keyring[i], SP, roll_fair(8));
                 set_vital(keyring[i], LP, roll_fair(8));
                 set_vital(keyring[i], EP, roll_fair(8));
-                focus(keyring[i]);
+                key_noun(keyring[i]);
                 focused->verb.fund = 0x80000000>>vit_blocklen(keyring[i]);
         }
 }

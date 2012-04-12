@@ -13,19 +13,19 @@ static const wchar_t attr_symbols[]={L"ΣΦΔAΨWΧΛ"};
 
 static inline uint32_t get_attribute(int id, int n)
 {
-        focus(id);
+        key_noun(id);
         return (get_nibble(focused->attributes, n));
 }
 
 static inline void set_attribute(int id, int n, int s)
 {
-        focus(id);
+        key_noun(id);
         set_nibble(&focused->attributes, n, s);
 }
 
 static inline void unpack_attributes(int id, int *dest)
 {
-        focus(id);
+        key_noun(id);
         unpack_nibbles(focused->attributes, dest, NNIBBLES);
 }
 

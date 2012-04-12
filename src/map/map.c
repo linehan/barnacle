@@ -58,47 +58,6 @@
 #include "../gfx/ui/titlecard.h"
 //##############################################################################
 
-
-
-
-
-/*
- * Given a rectangle struct rec_t, computes Morton codes for each coordinate
- * pair in the rectangle, sorts them, and inserts them into a red-black tree,
- * which is then returned. 
- */
-struct rb_tree *grid_to_tree(int rows, int cols)
-{
-        uint32_t *m;          // Array of Morton codes, one per grid square
-        int n;                // Total number of grid squares 
-        int i;
-        int j;
-
-        struct rb_tree *tree = rb_new(1);
-        m = malloc((rows*cols) * sizeof(uint32_t));
-        n = 0;
-
-        for (i=0; i<rows; i++) {
-                for (j=0; j<cols; j++) {
-                        m[n++] = MORT(i, j);
-                }
-        }
-
-        quicksort(m, n);
-
-        while (n-->0) 
-                rb_insert(tree, m[n]);
-
-        free(m); // The sorted Morton codes have been copied into the tree
-
-        return (tree);
-}
-
-
-
-
-
-
 /*
  * Allocate memory for a new struct map_t, and initialize certain
  * of its members.
@@ -109,17 +68,12 @@ struct map_t *new_map(int h, int w, int scr_h, int scr_w, int scr_y, int scr_x)
 
         new->pan  = malloc(sizeof new->pan);
         new->win  = malloc(sizeof new->win);
+        new->mx   = new_matrix(h, w);
 
         set_ufo(&new->ufo, scr_h, scr_w, scr_y, scr_x, h, w, 0, 0);
 
-        new->tree = grid_to_tree(h, w);
-
         return (new);
 }
-
-
-
-
 
 
 /*
@@ -140,11 +94,9 @@ void gen_map(struct map_t *map, double **pmap)
         print_status(SUCCESS);
         if (pmap == NULL) {
                 map->pmap = simplex_matrix(h, w); // 2D Perlin map
-                smooth_layers(map, map->pmap);
         } else {
                 map->pmap = pmap;
         }
-
 
         map->win = newwin(LINES, COLS, 0, 0); // Fullscreen
         map->pan = new_panel(map->win);
@@ -156,8 +108,8 @@ void gen_map(struct map_t *map, double **pmap)
 
         map->W = new_multiwin(h, w, 0, 0, 2);
 
-        draw_layers(map, map->pmap);
-        draw_water_rim(map);
+        map_label(map);
+        map_render(map);
         restack_map(map);
 }
 

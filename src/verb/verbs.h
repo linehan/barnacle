@@ -17,7 +17,6 @@ struct verb_info verbs[MAXVERB];
 
 
 enum sayings { MSG_CANCEL, MSG_SMACK, SAY_INIT };
-bool say(int opt);
 
 
 #endif

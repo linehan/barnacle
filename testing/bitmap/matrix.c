@@ -50,8 +50,8 @@ struct matrix_t *new_matrix(int nrows, int ncols)
                 new->mx[k] = new->ar + (k * ncols);
 
         /* Assign helper values to members in the structure */
-        new->nrows = nrows;
-        new->ncols = ncols;
+        new->rows = nrows;
+        new->cols = ncols;
         new->len = nrows * ncols;
         new->die = &delete_matrix;
 
