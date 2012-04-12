@@ -4,6 +4,7 @@
         *.cache
         *.m4
         *.o
+        */*/*.o
         depcomp
         install-sh
         missing
@@ -16,6 +17,7 @@
 # vim
         *.swp
         .*.sw*
+        */*/.*.sw* # ffs 
 
 # Big files that shouldn't be accidentally committed
         *.pdf
