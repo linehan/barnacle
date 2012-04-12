@@ -1,124 +1,114 @@
-// vim:fdm=marker
-//##############################################################################
-//# FILENAME: map.c                                                            #
-//# -------------------------------------------------------------------------- #
-//# Data structures and functions for a procedural world map.                  #
-//#                                                                            #
-//# GRAPHICAL DATA                                                             #
-//#                                                                            #
-//#     WINDOW *L[16];                                                         #
-//#             Array of 16 pads, one for each graphics layer. Each layer is   #
-//#             drawn on individually during terrain generation. When done,    #
-//#             the array is flattened using the overlay(); routine.           #
-//#                                                                            #
-//#     WINDOW *W;                                                             #
-//#             The destination of the overlay(); call following terrain       #
-//#             generation. Holds the aggregate of the 16 layer pads, in       #
-//#             proper order. Should serve as the sole "world map window".     #
-//#                                                                            #
-//#     WINDOW *win;                                                           #
-//#             The effective "viewport" for the pad *W. Pads cannot be        #
-//#             displayed all at once, nor can they be attached to PANELs      #
-//#             without causing trouble. By using *win and the copywin();      #
-//#             routine, we can minimize this shortcoming.                     #
-//#                                                                            #
-//#     PANEL *pan;                                                            #
-//#             The PANEL to which *win is attached.                           #
-//#                                                                            #
-//# CELLULAR DATA                                                              #
-//#                                                                            #
-//#     struct rb_tree *tree;                                                  #
-//#             Stores data about each cell (character box) of the world map.  #
-//#             *tree is a red-black tree, a kind of self-balancing binary     #
-//#             search tree. The lookup key for a particular cell is the       #
-//#             Morton code, or z-code, of that cell's y and x coordinates.    #
-//#             See "morton.h".                                                #
-//#                                                                            #
-//#     struct ufo_t *ufo;                                                     #
-//#             Used to simplify movement of object within a specified range.  #
-//#             See "ufo.h".                                                   #
-//#                                                                            #
-//##############################################################################
-#define _XOPEN_SOURCE_EXTENDED = 1  /* extended character sets */
+/*
+ * map.c
+ *
+ * A 'map' in this program refers to the persistent data structure that 
+ * organizes the terrain, climate, and other spatial features in a regularly
+ * addressable manner. In many ways it is the most important data structure
+ * in the program, since it holds the context within which most other actions 
+ * are executed, and to which most decisions refer.
+ *
+ * There are two primary members of a map structure: 
+ *
+ *      WINDOW *L[16]   An array of 16 pads (see curs_pad(3X))
+ *      MATRIX *mx      A matrix containing label values
+ *      
+ * Essentially, the map stores two kinds of information, addressed to the
+ * same square grid. One is rendering meant to be drawn to the screen (L[16]),
+ * while the other is labeling, meant to be traversed, interpreted, or
+ * altered by terrain algorithms.
+ *
+ * Document more later...
+ */
+
 #include <stdlib.h>
-#include <string.h>
-
 #include "../gfx/gfx.h"
-
+#include "../gfx/ui/titlecard.h"
 #include "../lib/stoc/stoc.h"
-
 #include "../test/test.h"
-#include "../lib/ufo.h"
-
-#include "../lib/sort/quicksort.h"
-#include "../lib/morton.h"
-
 #include "map.h"
 #include "terrain.h"
-#include "../gfx/ui/titlecard.h"
-//##############################################################################
+
+/* -------------------------------------------------------------------------- */
+
+void map_restack(void *mymap);
+
+/* -------------------------------------------------------------------------- */
 
 /*
- * Allocate memory for a new struct map_t, and initialize certain
- * of its members.
+ * new_map -- allocate and initialize new map structure 
+ * @h: the desired map height
+ * @w: the desired map width
+ * @scr_h: the screen height for the pad window 
+ * @scr_w: the screen width for the pad window
+ * @scr_y: the screen y-offset for the pad window 
+ * @scr_x: the screen x-offset for the pad window 
  */
 struct map_t *new_map(int h, int w, int scr_h, int scr_w, int scr_y, int scr_x)
 {
-        struct map_t *new = malloc(sizeof *new);
+        struct map_t *new;
+        int i;
+       
+        new = malloc(sizeof(struct map_t));
 
-        new->pan  = malloc(sizeof new->pan);
-        new->win  = malloc(sizeof new->win);
-        new->mx   = new_matrix(h, w);
-
+        /* Build some stuff */
+        new->mx = new_matrix(h, w);
         set_ufo(&new->ufo, scr_h, scr_w, scr_y, scr_x, h, w, 0, 0);
+
+        /* Add methods */
+        new->render  = &map_render;  /* see terrain.c */
+        new->restack = &map_restack;
+
+        /* Build windows, pads, and panels */
+        new->win = newwin(LINES, COLS, 0, 0); /* Fullscreen */
+        new->pan = new_panel(new->win);
+        for (i=0; i<NLAYERS; i++) {
+                if (i == RIM) 
+                        new->L[i] = new_multiwin(h, w, 0, 0, 4);
+                else          
+                        new->L[i] = new_multiwin(h, w, 0, 0, 1);
+        }
+        new->W = new_multiwin(h, w, 0, 0, 2);
 
         return (new);
 }
 
 
 /*
- * Generates terrain using a Perlin simplex noise map, which is passed to
- * draw_layers();. Once draw_layers(); returns, the layers in *L[16] are
- * flattened into *W.
+ * map_gen -- fill a new map with generated data that can be rendered
+ * @map: pointer to a previously-allocated map
+ * @pmap: matrix of doubles used for labeling. If NULL, simplex noise is used
  */
-void gen_map(struct map_t *map, double **pmap)
+void map_gen(struct map_t *map, double **pmap)
 {
-        int i;
-        int h;
-        int w;
-
-        h = map->ufo.box.h;
-        w = map->ufo.box.w;
-
         print_status("Generating noise...");
-        print_status(SUCCESS);
+
         if (pmap == NULL) {
-                map->pmap = simplex_matrix(h, w); // 2D Perlin map
+                map->pmap = simplex_matrix(map->ufo.box.h, map->ufo.box.w);
         } else {
                 map->pmap = pmap;
         }
 
-        map->win = newwin(LINES, COLS, 0, 0); // Fullscreen
-        map->pan = new_panel(map->win);
-
-        for (i=0; i<NLAYERS; i++) {
-                if (i == RIM) map->L[i] = new_multiwin(h, w, 0, 0, 4);
-                else          map->L[i] = new_multiwin(h, w, 0, 0, 1);
-        }
-
-        map->W = new_multiwin(h, w, 0, 0, 2);
+        print_status(SUCCESS);
 
         map_label(map);
-        map_render(map);
-        restack_map(map);
+        map->render(map);
+        map->restack(map);
 }
 
 
-
-
-void restack_map(struct map_t *map)
+/*
+ * map_restack (METHOD) -- re-draw the visual layers in their sorted order
+ * @mymap: void * pointer to a previously-allocated map
+ *
+ * Loop over the map's WINDOW stack, and overlay each successive layer
+ * into the WINDOW at map->W, so that when the loop terminates, map->W
+ * holds the (non-destructive) union of all layers in the WINDOW stack.
+ */
+void map_restack(void *mymap)
 {
+        struct map_t *map = (struct map_t *)mymap;
         int i;
+
         for (i=0; i<NLAYERS; i++) {
                 overlay(PEEK(map->L[i]), PEEK(map->W));
         }
@@ -130,13 +120,11 @@ void restack_map(struct map_t *map)
  */
 int map_hit(struct map_t *map, struct rec_t *rec)
 {
-        uint32_t z; // Stores Morton code.
         uint32_t i;
         uint32_t j;
 
         for (i=rec->y; i<(rec->h+rec->y); i++) {
                 for (j=rec->x; j<(rec->x+rec->w); j++) {
-                        z = MORT(i, j);
                         /*if (is_state(map->tree, z, 0, LAY, TOP)) return (1);*/
                         /*if (is_state(map->tree, z, 0, LAY, DRP)) return (1);*/
                         /*if (is_state(map->tree, z, 0, LAY, GRO)) return (1);*/
@@ -148,7 +136,7 @@ int map_hit(struct map_t *map, struct rec_t *rec)
 
 
 
-void roll_map(struct map_t *map, int dir)
+void map_roll(struct map_t *map, int dir)
 {
         switch (dir) {
         case 'l': 

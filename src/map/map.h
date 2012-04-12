@@ -1,51 +1,24 @@
-// vim:fdm=marker
-//{{{1 README
-//##############################################################################
-//#
-//#   We think of the screen as a 2D grid of square tiles, with each tile
-//#   being uniquely identified by a coordinate pair (y,x), where y is the
-//#   row or line number, and x is the column number. 
-//# 
-//#   All information about a particular tile is stored in a single uint32_t,
-//#   accessed by indexing a screen array. This array is linear, because we 
-//#   generate a Morton number for each input pair (y,x), which serves as the
-//#   index.
-//#
-//#   A "nibble" or "nybble" is a unit of 4 bits. There are 8 such nibbles in
-//#   our uint32_t (32/4). Each nibble can take one of 2^4 (16) possible 
-//#   states. Each nibble represents an option "category", and each of the
-//#   16 states of a category represents a "setting". 
-//#
-//#   To keep myself from glazing over, each nibble is assigned a tag, which
-//#   is composed of two complementary parts: an enum, and an array of labels
-//#   which is indexed by each enum.
-//#
-//#   Likewise, all the possible states of a category are identified with an
-//#   enum and corresponding label array.
-//#
-//#                  0000 0000 0000 0000 0000 0000 0000 0000                                
-//#                  ENV  TER  SID  MOV  HDG  WND  WEA  ALT                                    
-//#
-//##############################################################################
-//}}}1
-#ifndef __MAP_TYPES
-#define __MAP_TYPES
+#pragma once
+#ifndef __MAP_H
+#define __MAP_H
+
 #include <stdint.h>
 #include "../gfx/gfx.h"
-#include "../lib/redblack/rb.h"
 #include "../eng/bytes.h"
 #include "../lib/ufo.h"
 
 #define NLAYERS 16  // Number of layers on the world map.
 
 struct map_t {
-        struct multiwin_t *L[NLAYERS];
-        struct multiwin_t *W;
         WINDOW *win;
         PANEL  *pan;
+        struct multiwin_t *L[NLAYERS];
+        struct multiwin_t *W;
         struct matrix_t *mx;
         struct ufo_t ufo;
         double **pmap;
+        void (*render)(void *self);
+        void (*restack)(void *self);
 };
 
 extern struct map_t *GLOBE; // Global map.
@@ -191,11 +164,9 @@ char **map_opts[8] = {lay_tag,ALT_tag,BED_tag,SED_tag,SOI_tag,MOI_tag,grad_tag,h
 
 #define PLATE(map, tag) PEEK(((map)->L[(tag)]))
 
-void restack_map(struct map_t *map);
-
 struct map_t *new_map(int h, int w, int scr_h, int scr_w, int scr_y, int scr_x);
 int           map_hit(struct map_t *map, struct rec_t *rec);
-void          gen_map(struct map_t *map, double **pmap);
-void         roll_map(struct map_t *map, int dir);
+void          map_gen(struct map_t *map, double **pmap);
+void         map_roll(struct map_t *map, int dir);
 
 #endif

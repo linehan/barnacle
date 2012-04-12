@@ -84,16 +84,16 @@ void operate_on(int input)
                 switch(input) 
                 {
                 case 'w':
-                        roll_map(GLOBE, 'u');
+                        map_roll(GLOBE, 'u');
                         break;
                 case 'a':
-                        roll_map(GLOBE, 'l');
+                        map_roll(GLOBE, 'l');
                         break;
                 case 's':
-                        roll_map(GLOBE, 'd');
+                        map_roll(GLOBE, 'd');
                         break;
                 case 'd':
-                        roll_map(GLOBE, 'r');
+                        map_roll(GLOBE, 'r');
                         break;
                 }
                 break;

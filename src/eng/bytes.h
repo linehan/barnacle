@@ -60,9 +60,9 @@ static const char *lay_tag[NSTATES] = {"XXX","BGR","HIG","RIM","DRP","TOP",
                                        "XXX","XXX","XXX","XXX"};
 /* Scalar value */
 /* No enum is necessary, since it would be redundant. */
-static const char *scal_tag[NSTATES] = {"XX","00","01","02","03","04","05",
-                                        "06","07","08","09","10","11","12",
-                                        "13","14"};
+//static const char *scal_tag[NSTATES] = {"XX","00","01","02","03","04","05",
+                                        //"06","07","08","09","10","11","12",
+                                        //"13","14"};
 
 
 static inline void inc_byte(uint32_t *word, int b)

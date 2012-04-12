@@ -26,6 +26,7 @@
 
 #include "mob/mob.h"
 #include "noun/types/boat/boat.h"
+#include "noun/types/person/person.h"
 #include "gfx/ui/titlecard.h"
 
 /* Day-toh-nah */
@@ -34,15 +35,15 @@ int main()
         arawak_init();
 
         struct map_t *pad = new_map((LINES*3), (COLS*3), LINES, COLS, 0, 0);
-        gen_map(pad, NULL);
+        map_gen(pad, NULL);
         /*struct map_t *pad = make_arena(LINES-30, COLS-20, 0, 0);*/
         GLOBE = pad;
 
         print_status("\n ALL OK\n");
         print_hold("Press any key to continue");
 
-        roll_map(pad, 0);
-        roll_map(pad, 0);
+        map_roll(pad, 0);
+        map_roll(pad, 0);
 
         new_boat(pad, FUNBOAT, "Afarensis");
         set_mob(noun_mob("Afarensis"), false);

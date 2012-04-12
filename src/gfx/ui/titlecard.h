@@ -1,3 +1,6 @@
+#pragma once
+#ifndef __UI_TITLECARD_H
+#define __UI_TITLECARD_H
 
 void print_title(const char *title);
 void hide_title(void);
@@ -7,3 +10,5 @@ void print_hold(const char *status);
 
 #define SUCCESS "\tdone\n" 
 #define FAILURE "\tfail\n" /* Can one succeed at failing to define failure? */
+
+#endif

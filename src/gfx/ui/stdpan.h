@@ -1,3 +1,7 @@
+#pragma once
+#ifndef __UI_STDPAN_H
+#define __UI_STDPAN_H
+
 #include "../gfx.h"
 
 void stdpan(WINDOW *win, WINDOW **sub, WINDOW **buf, PANEL **pan);
@@ -9,3 +13,4 @@ void menu_pair(MENU *menu, short fore, short back);
 void menu_control(MENU *menu, int esc);
 MENU *make_new_menu(char **name, char **description, void **usrptr, int n);
 
+#endif

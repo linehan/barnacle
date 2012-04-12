@@ -88,7 +88,7 @@ inline int ismode(int somemode)
 //                                                                            //
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
-static void operate_on(void *noun)
+void operate_on(void *noun)
 {
         #define DEFAULT_MODE VITALS
 
@@ -161,7 +161,6 @@ int choose_noun(int ch)
 
         MENU *menu[2]={get_noun_menu(SUBJECT), get_noun_menu(OBJECT)};
         static ITEM *item;
-        int c;  
 
         switch (ch)
         {

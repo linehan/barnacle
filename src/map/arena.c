@@ -40,7 +40,7 @@ struct map_t *make_arena(int h, int w, int y, int x)
         }
        
         arena = new_map(LINES+1, COLS+1, LINES, COLS, 0, 0);
-        gen_map(arena, armap);
+        map_gen(arena, armap);
 
         return arena;
 }

@@ -17,6 +17,7 @@
 #include "terrain.h"
 #include "tile.h"
 
+/* -------------------------------------------------------------------------- */
 
 /* Holdunter yer buttz... */
 void smooth_layers(struct map_t *map);
@@ -27,6 +28,7 @@ void label_treetops_trim(struct map_t *map);
 void label_treetrunks(struct map_t *map);
 void label_shorelines(struct map_t *map);
 
+/* -------------------------------------------------------------------------- */
 
 /*
  * Perform a detailed series of passes over the map's matrix, and apply a
@@ -69,12 +71,16 @@ void map_label(struct map_t *map)
 }
 
 /*
+ * map_render (METHOD) -- draw the graphics for all labels in the map matrix
+ * @mymap: void * pointer to a previously-allocated map
+ *
  * Traverse the map's matrix and simply pass every label encountered
  * to the place_tile routine. Any labels associated with a tile rendering
  * will have that rendering applied to the grid cell at (i,j).
  */
-void map_render(struct map_t *map)
+void map_render(void *mymap)
 {
+        struct map_t *map = (struct map_t *)mymap;
         int i;
         int j;
 
@@ -85,7 +91,7 @@ void map_render(struct map_t *map)
         }
 }
 
-
+/* -------------------------------------------------------------------------- */
 
 /*
  * Simplified accessors for comparing the value of multiple labels in
@@ -256,8 +262,10 @@ void label_treetops_trim(struct map_t *map)
 
 
 /*
- * One more pass, place TTR labels at the "bottom" edges of every 
- * TTO label (analagous to label_cliffs, see above)
+ * One more pass, place TTR labels at the "bottom" edges of every TTO 
+ * label (analagous to label_cliffs, see above). If the normal condition
+ * isn't met, the loop suspects a single lonely TTO label, and if confirmed,
+ * wipes it. 
  */
 void label_treetrunks(struct map_t *map)
 {
@@ -277,7 +285,7 @@ void label_treetrunks(struct map_t *map)
                         place_treetrunk_label(seed.cur);
                 }
                 else if (LAYER(*seed.n,   1, TOP) && 
-                         LAYER(*seed.cur, 1, TTR) &&
+                         LAYER(*seed.cur, 1, TTO) &&
                          LAYER(*seed.s,   1, TOP)) {
                                 wipe_label(seed.cur);
                                 place_terra_label(seed.cur);
@@ -304,10 +312,13 @@ void label_shorelines(struct map_t *map)
         int i;
         int j;
         int k; 
-        static wchar_t shore[4][24]={L"⠁⠈⠉⠑⠃⠘⠁⠈⠉⠑⠃⠘⠁⠈⠉⠑⠃⠘⠁⠈⠉⠑⠃⠘", 
+        static wchar_t shore[6][24]={L"⠁⠈⠉⠑⠃⠘⠁⠈⠉⠑⠃⠘⠁⠈⠉⠑⠃⠘⠁⠈⠉⠑⠃⠘", 
                                      L"⡀⢀⣀⢄⡄⢠⡀⢀⣀⢄⡄⢠⡀⢀⣀⢄⡄⢠⡀⢀⣀⢄⡄⢠", 
                                      L"⠁⠁⠂⠂⠁⠁⠂⠂⠄⡀⠃⠅⠆⠄⡀⠃⡂⠄⡀⠃⠅⠆⡁⡂",
-                                     L"⠈⠐⠠⢀⠘⠈⠐⠠⢀⠘⠨⠰⠰⢈⢈⢐⢠⢠⠨⠰⠰⢈⢐⢠"};
+                                     L"⠈⠐⠠⢀⠘⠈⠐⠠⢀⠘⠨⠰⠰⢈⢈⢐⢠⢠⠨⠰⠰⢈⢐⢠",
+                                     L"⠁⠁⠂⠂⠁⠁⠂⠂⠁⠁⠂⠂⠁⠁⠂⠂⠁⠁⠂⠂⠁⠁⠂⠂", /* 4 NE */
+                                     L"⠈⠐⠐⠘⠈⠘⠈⠑⠐⠐⠘⠈⠐⠑⠑⠈⠐⠘⠈⠐⠑⠑⠈⠐"  /* 5 NW */
+        };
         
         for (i=0; i<map->ufo.box.h-1; i++) {
         for (j=0; j<map->ufo.box.w-1; j++) {
@@ -315,13 +326,15 @@ void label_shorelines(struct map_t *map)
                 mx_seed(map->mx, i, j, &seed);
 
                 /* Draw nothing if the cursor is on land */
-                if ((LAYER(*seed.cur, 4, TOP, DRP, BEA, SHO)) 
-                ||  (LAYER(*seed.nw,  1, XXX) && LAYER(*seed.w, 1, TOP))
-                ||  (LAYER(*seed.ne,  1, XXX) && LAYER(*seed.e, 1, TOP)))
+                if ((LAYER(*seed.cur, 6, TOP, DRP, BEA, SHO, TTO, TTR)) 
+                ||  (LAYER(*seed.nw,  1, BGR) && LAYER(*seed.w, 1, TOP))
+                ||  (LAYER(*seed.ne,  1, BGR) && LAYER(*seed.e, 1, TOP)))
                 {
                         continue;
                 }
+
                 /* Draw an edge if the following conditions apply... */
+
                 if (LAYER(*seed.n,  2, BEA, SHO) 
                 ||  LAYER(*seed.nw, 2, BEA, SHO)
                 ||  LAYER(*seed.ne, 2, BEA, SHO))
@@ -350,6 +363,26 @@ void label_shorelines(struct map_t *map)
                 {
                         wch = shore[0];
                         color = _SEA_SHALLOW;
+                }
+                else if (LAYER(*seed.e, 2, TOP, DRP))
+                {
+                        wch = shore[3];
+                        color = SEA_MED;
+                }
+                else if (LAYER(*seed.w, 2, TOP, DRP))
+                {
+                        wch = shore[2];
+                        color = SEA_MED;
+                }
+                else if (LAYER(*seed.nw, 2, TOP, DRP))
+                {
+                        wch = shore[4];
+                        color = SEA_MED;
+                }
+                else if (LAYER(*seed.ne, 2, TOP, DRP))
+                {
+                        wch = shore[5];
+                        color = SEA_MED;
                 }
                 else {
                         continue; /* Arrest any wild ones */

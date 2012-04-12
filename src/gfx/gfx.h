@@ -12,7 +12,9 @@
 #include "../map/map.h"
 #include "../lib/ufo.h"
 
-
+#include "ui/dock.h"
+#include "ui/stdpan.h"
+#include "ui/titlecard.h"
 
 struct gpkg {
         int n;

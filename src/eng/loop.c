@@ -1,21 +1,20 @@
 #include "../com/arawak.h"
-#include <stdlib.h>
-#include <stdbool.h>
+
 #include <ev.h>
 
 #include "../gfx/gfx.h"
-#include "../gfx/ui/dock.h"
+#include "../lib/stoc/stoc.h"
 #include "../map/map.h"
+#include "../noun/noun_model.h"
 #include "../noun/types/boat/boat.h"
 #include "../verb/verb_view.h"
-#include "txt/gloss.h"
-#include "../noun/noun_model.h"
-
-#include "../lib/stoc/stoc.h"
+#include "../txt/gloss.h"
+#include "../map/terrain.h"
+#include "../map/particle.h"
 #include "fsm.h"
 
-static bool loop_test_active;
 
+static bool loop_test_active;
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -89,7 +88,7 @@ void move_cb(EV_P_ ev_timer *w, int revents)
         noun_render(get_noun("Afarensis"));
         surface_flow(GLOBE);
 
-        restack_map(GLOBE);
+        GLOBE->restack(GLOBE);
         map_refresh(GLOBE);
 
         ev_timer_again(EV_DEFAULT, w);
@@ -115,7 +114,7 @@ void animate_cb(EV_P_ ev_timer *w, int revents)
                           SPINNER(spindex++));
         }
         NEXT(GLOBE->L[RIM]);
-        restack_map(GLOBE);
+        GLOBE->restack(GLOBE);
         map_refresh(GLOBE);
 
         ev_timer_again(EV_DEFAULT, w);
