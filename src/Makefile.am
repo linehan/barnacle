@@ -42,7 +42,6 @@ arawak_SOURCES = arawak.c                       \
                    gfx/ui/dock.c                \
                    gfx/ui/stdpan.c              \
                    gfx/ui/titlecard.c           \
-                   map/weather.c                \
                    map/terrain.c                \
                    map/map.c                    \
                    map/snake.c                  \

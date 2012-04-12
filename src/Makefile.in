@@ -58,8 +58,8 @@ am_arawak_OBJECTS = arawak.$(OBJEXT) eng/init.$(OBJEXT) \
 	gfx/palette.$(OBJEXT) gfx/sprite.$(OBJEXT) gfx/gfx.$(OBJEXT) \
 	gfx/multiwin.$(OBJEXT) gfx/ui/dock.$(OBJEXT) \
 	gfx/ui/stdpan.$(OBJEXT) gfx/ui/titlecard.$(OBJEXT) \
-	map/weather.$(OBJEXT) map/terrain.$(OBJEXT) map/map.$(OBJEXT) \
-	map/snake.$(OBJEXT) map/arena.$(OBJEXT) map/particle.$(OBJEXT) \
+	map/terrain.$(OBJEXT) map/map.$(OBJEXT) map/snake.$(OBJEXT) \
+	map/arena.$(OBJEXT) map/particle.$(OBJEXT) \
 	txt/gloss_m.$(OBJEXT) txt/gloss_v.$(OBJEXT) \
 	txt/gloss_c.$(OBJEXT) mob/mob.$(OBJEXT) \
 	noun/noun_model.$(OBJEXT) noun/noun_view.$(OBJEXT) \
@@ -205,7 +205,6 @@ arawak_SOURCES = arawak.c                       \
                    gfx/ui/dock.c                \
                    gfx/ui/stdpan.c              \
                    gfx/ui/titlecard.c           \
-                   map/weather.c                \
                    map/terrain.c                \
                    map/map.c                    \
                    map/snake.c                  \
@@ -400,8 +399,6 @@ map/$(am__dirstamp):
 map/$(DEPDIR)/$(am__dirstamp):
 	@$(MKDIR_P) map/$(DEPDIR)
 	@: > map/$(DEPDIR)/$(am__dirstamp)
-map/weather.$(OBJEXT): map/$(am__dirstamp) \
-	map/$(DEPDIR)/$(am__dirstamp)
 map/terrain.$(OBJEXT): map/$(am__dirstamp) \
 	map/$(DEPDIR)/$(am__dirstamp)
 map/map.$(OBJEXT): map/$(am__dirstamp) map/$(DEPDIR)/$(am__dirstamp)
@@ -519,7 +516,6 @@ mostlyclean-compile:
 	-rm -f map/particle.$(OBJEXT)
 	-rm -f map/snake.$(OBJEXT)
 	-rm -f map/terrain.$(OBJEXT)
-	-rm -f map/weather.$(OBJEXT)
 	-rm -f mob/mob.$(OBJEXT)
 	-rm -f noun/noun_control.$(OBJEXT)
 	-rm -f noun/noun_model.$(OBJEXT)
@@ -573,7 +569,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@map/$(DEPDIR)/particle.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@map/$(DEPDIR)/snake.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@map/$(DEPDIR)/terrain.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@map/$(DEPDIR)/weather.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@mob/$(DEPDIR)/mob.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@noun/$(DEPDIR)/noun_control.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@noun/$(DEPDIR)/noun_model.Po@am__quote@
