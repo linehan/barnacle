@@ -1,7 +1,9 @@
+#pragma once
+#ifndef __UI_DOCK_H
+#define __UI_DOCK_H
 
 enum dockw_enum { DOCK_WIN, SUBJECT_WIN, SUBJ_ID_WIN, SUBJ_WI_WIN,
                             OBJECT_WIN,  OBJ_ID_WIN,  OBJ_WI_WIN, SUBJ_TX_WIN, OBJ_TX_WIN };
-
 
 #define DOCK_H 2 
 #define DOCK_W COLS
@@ -20,7 +22,8 @@ enum dockw_enum { DOCK_WIN, SUBJECT_WIN, SUBJ_ID_WIN, SUBJ_WI_WIN,
 #define SUBJECT_X 2
 #define OBJECT_X COLS-OPERAND_W
 
-
 void init_dock(void);
 WINDOW *dock_window(int windowid);
 void view_dock(void);
+
+#endif

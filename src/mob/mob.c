@@ -86,12 +86,12 @@ void mob_move(struct mob_t *mob, int dir)
 
         // Scroll down at bottom boundary
         if (ufo_y(mob, ufo) == LINES-10) {
-                roll_map(GLOBE, 'd');
+                map_roll(GLOBE, 'd');
                 ufo_up(mob, ufo);
         }
         // Scroll right at right boundary
         if (ufo_x(mob, ufo) == COLS-10) {
-                roll_map(GLOBE, 'r');
+                map_roll(GLOBE, 'r');
                 ufo_left(mob, ufo);
         }
 

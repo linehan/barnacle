@@ -61,7 +61,7 @@ uint32_t verb_new(uint32_t sender, uint32_t recipient, uint32_t verb)
 {
         key_noun(sender);      
 
-        if (focused->verb.send != 0U) return; // only one verb at a time
+        if (focused->verb.send != 0U) return 0; // only one verb at a time
 
         fifo_enq(&focused->verb.to, recipient);
         fifo_enq(&focused->verb.give, verb);
