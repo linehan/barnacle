@@ -124,7 +124,7 @@ static const char *job_flavor[] = {
 
 static inline const char *get_job(int id)
 {
-        focus(id);
+        key_noun(id);
         return (job_list[focused->job]);
 }
 

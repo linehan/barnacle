@@ -45,7 +45,7 @@ int main()
         roll_map(pad, 0);
 
         new_boat(pad, FUNBOAT, "Afarensis");
-        set_mob(noun_mob("Afarensis"), true);
+        set_mob(noun_mob("Afarensis"), false);
 
         toggle_instrument_panel();
         toggle_instrument_panel();
@@ -54,8 +54,8 @@ int main()
         view_dock();
         choose_noun('*');
 
-        /*new_person("Mr. E", 0);*/
-        /*set_mob(noun_mob("Mr. E"), true);*/
+        new_person("Mr. E", 0);
+        set_mob(noun_mob("Mr. E"), true);
 
         start_event_watchers(); /* Enter the event loop */
 

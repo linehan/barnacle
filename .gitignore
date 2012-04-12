@@ -14,7 +14,8 @@
         *.out
 
 # vim
-        .*.swp
+        *.swp
+        .*.sw*
 
 # Big files that shouldn't be accidentally committed
         *.pdf

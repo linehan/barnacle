@@ -46,7 +46,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 uint32_t update_mask(uint32_t key)
 {
-        focus(key);
+        key_noun(key);
         focused->verb.mask = (~0U >> vit_blocklen(key));
         focused->verb.bump = 0x80000000 >> lzc(focused->verb.mask);
 }
@@ -59,7 +59,7 @@ uint32_t update_mask(uint32_t key)
 ////////////////////////////////////////////////////////////////////////////////
 uint32_t verb_new(uint32_t sender, uint32_t recipient, uint32_t verb)
 {
-        focus(sender);      
+        key_noun(sender);      
 
         if (focused->verb.send != 0U) return; // only one verb at a time
 
@@ -80,13 +80,13 @@ uint32_t verb_send(uint32_t sender)
         uint32_t recipient;
         uint32_t verb;
 
-        focus(sender);
+        key_noun(sender);
 
         recipient = fifo_deq(&focused->verb.to);
         verb      = fifo_deq(&focused->verb.give);
         focused->verb.send ^= 0x00000001;
 
-        focus(recipient);
+        key_noun(recipient);
 
         fifo_enq(&focused->verb.from, sender);
         fifo_enq(&focused->verb.get, verb);
@@ -106,7 +106,7 @@ uint32_t verb_do(uint32_t to)
         uint32_t from;        
         uint32_t verb;
 
-        focus(to);
+        key_noun(to);
 
         from = fifo_deq(&focused->verb.from);
         verb = fifo_deq(&focused->verb.get);

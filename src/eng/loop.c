@@ -9,6 +9,7 @@
 #include "../noun/types/boat/boat.h"
 #include "../verb/verb_view.h"
 #include "txt/gloss.h"
+#include "../noun/noun_model.h"
 
 #include "../lib/stoc/stoc.h"
 #include "fsm.h"

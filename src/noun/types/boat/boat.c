@@ -10,7 +10,7 @@
 
 
 /*
- * draw_boat -- renders a boat on the screen, based on it's current state
+ * draw_boat -- renders a boat on the screen, based on its current state
  * @boat: the struct boat_t pointer
  */
 void draw_boat(WINDOW * win, struct boat_t *boat)

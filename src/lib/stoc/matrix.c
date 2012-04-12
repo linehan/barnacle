@@ -16,11 +16,6 @@ void dismember_matrix(void *self)
 {
         struct matrix_t *condemned = (struct matrix_t *)self;
 
-        /* 
-         * We don't have to loop in order to free everything, 
-         * because 'mx' is an array of pointers to the same 
-         * memory laid out in 'ar'
-         */
         free(condemned->mx);
         free(condemned->ar); 
         free(condemned);        /* bon voyage! */
@@ -45,7 +40,7 @@ struct matrix_t *new_matrix(int nrows, int ncols)
                 puts("\nFailure to allocate room for the struct matrix_t");
                 exit(0);
         }
-        /* Allocate the 1D array to contain all values in contiguous memory */
+        /* Allocate the 1D array to contain all values in contiguous memory */ 
         if (new->ar = malloc(nrows * ncols * sizeof(double)), new == NULL)
         {
                 puts("\nFailure to allocate memory for the matrix array");
@@ -57,17 +52,14 @@ struct matrix_t *new_matrix(int nrows, int ncols)
                 puts("\nFailure to allocate memory for matrix pointers.");
                 exit(0);
         }
-        /*
-         * Calculate the offset of each "row" in the 1D array, and assign
-         * the address of the first item in this row to the corresponding
-         * row pointer. We can now access the matrix as rptr[row][col].
-         */
+         Calculate the offset of each "row" in the 1D array, and assign
+         the address of the first item in this row to the corresponding
+         row pointer. We can now access the matrix as rptr[row][col].
         for (k=0; k<nrows; k++)
         {
                 new->mx[k] = new->ar + (k * ncols);
         }
 
-        /* Assign helper values to members in the structure */
         new->nrows = nrows;
         new->ncols = ncols;
         new->die   = &dismember_matrix;

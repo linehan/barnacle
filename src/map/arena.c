@@ -1,33 +1,16 @@
-// vim:fdm=marker
-/*******************************************************************************
-    FILENAME:  terrain.c
-    Functions for creating landscapes.
-*******************************************************************************/
-#define _XOPEN_SOURCE_EXTENDED = 1  /* extended character sets */
 #include <stdio.h>
 #include <stdlib.h>
-#include <ncurses.h>
-#include <panel.h>
-#include <wchar.h>
-#include <locale.h>
-#include <math.h>
 
 #include "terrain.h"
 #include "weather.h"
 #include "map.h"
 
 #include "../lib/stoc/stoc.h"
-
-#include "../eng/model/bytes.h"
-#include "../gfx/gfx.h"
-#include "../gfx/palette.h"
-#include "../gfx/sprite.h"
-#include "../lib/morton.h"
-#include "../test/test.h"
-#include "../lib/ufo.h"
-
-#include "../eng/state.h"
+#include "../eng/bytes.h"
 #include "../gfx/ui/titlecard.h"
+#include "../test/test.h"
+
+
 
 #define BEACH_F 0.021
 #define TERRA_F 0.450

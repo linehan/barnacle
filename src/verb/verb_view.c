@@ -294,7 +294,7 @@ void verb_view(uint32_t key, int opt)
         if (opt==SUBJECT) win = dock_window(SUBJ_WI_WIN);
         else              win = dock_window(OBJ_WI_WIN);
 
-        focus(key);
+        key_noun(key);
 
         verb_view_elem(BASE, &focused->verb, win, opt);
         verb_view_elem(FUND, &focused->verb, win, opt);

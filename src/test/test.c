@@ -11,7 +11,8 @@
 #include <math.h>
 #include <string.h>
 
-#include "../eng/model/bytes.h"
+#include "../lib/matrix.h"
+#include "../eng/bytes.h"
 #include "../gfx/gfx.h"
 #include "../map/terrain.h"
 #include "../lib/morton.h"
@@ -129,8 +130,8 @@ int inspect_control(int dir)
                         i_yy, 
                         i_xx, 
                         z,
-                        lay_tag[get_nibble(rb_data(GLOBE->tree, z), LAY)], 
-                        get_nibble(rb_data(GLOBE->tree, z), ALT), 
+                        lay_tag[get_nibble(mx_val(GLOBE->mx, i_yy, i_xx), LAY)], 
+                        get_nibble(mx_val(GLOBE->mx, i_yy, i_xx), ALT), 
                         GLOBE->pmap[i_yy][i_xx]);
         scr_refresh();
         return MODE_PERSIST;

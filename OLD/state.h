@@ -39,10 +39,10 @@ enum lay_t {
         RIM = 3,  // edge effects (animated)
         DRP = 4,  // the "drop" of the perspective
         TOP = 5,  // the "top" of the perspective 
-        GRO = 6,  // the ground
-        HUT = 7,  // dwelling or structure
-        VEG = 8,  // vegetation
-        SKY = 9   // weather and atmospheric effects
+        SHO = 6,  // the ground
+        BEA = 7,  // the ground
+        TTO = 8,  // treetop
+        TTR = 9,  // treetrunk
 };                                                                      
 
 static const char *lay_tag[NSTATES] = {"XXX","BGR","HIG","RIM","DRP","TOP",

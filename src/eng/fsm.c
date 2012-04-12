@@ -4,6 +4,7 @@
 #include <semaphore.h>
 #include <ev.h>
 
+#include "../noun/noun_model.h"
 #include "../gfx/gfx.h"
 #include "../mob/mob.h"
 #include "../test/test.h"

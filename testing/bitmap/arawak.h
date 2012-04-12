@@ -74,6 +74,11 @@ static const char SPINNER_CHAR[NUM_SPINNER_CHARS]="|/-\\";
 #define SPINNER(indexer) SPINNER_CHAR[((int)(indexer)%NUM_SPINNER_CHARS)]
 
 
+/*
+ * printf hex formatting string
+ */
+#define FHEX32 "%#010x"
+#define FHEX8  "%02x"
 
 /*
  * Reserved modes for the FSM and function returns
@@ -89,7 +94,7 @@ enum fsm_reserved_modes {
 };
 
 
-#define ARRAY_SIZE(arr) (sizeof(arr) / sizeof((arr)[0]) + __must_be_array(arr))
+
 
 /*
  * abs() handles unsigned and signed longs, ints, shorts and chars.  For all
@@ -272,10 +277,12 @@ enum fsm_reserved_modes {
 
 #endif	/* __CHECKER__ */
 
-/*
- * Safe decrement and increment
- */
-#define DEC(x, min) x = ((x) > (min)) ? ((x)-1) : (x)
-#define INC(x, max) x = ((x) < (max)) ? ((x)+1) : (x)
+
+#define ARRAY_SIZE(arr) (sizeof(arr) / sizeof((arr)[0]))
+
+#define gt0(x)  (x > 0) ? 1 : 0
+#define ltN(x,v) (x < v) ? 1 : 0
+
+
 
 #endif /* header */
