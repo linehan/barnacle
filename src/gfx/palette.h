@@ -373,7 +373,10 @@ enum purpairs {
         PUR_PURPLE      = 235, 
         _PUR_PURPLE     = 236, 
         PUR_ARSENIC = 237,
+        FLEX=238,
+        FLEX2=239,
 };
+
 
 #define TITLE_COLOR PUR_BLACK
 

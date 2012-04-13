@@ -35,9 +35,22 @@
 //                                                                            //
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
-enum operator_modes { STARTING, EXITING, LAST, ATTRIBUTES, PROFESSION, VITALS, 
-                      PATTERN, ACTION, CANCEL,
-                      OPSUBJECT, OPOBJECT, POPMENU, VERB_READY };
+enum operator_modes { 
+        STARTING,       /* Initialize */
+        EXITING,        /* Exit */
+        LAST,           /* Restore mode to previous */
+        ATTRIBUTES,     /* Display attributes of operand */
+        PROFESSION,     /* Display profession of operand */
+        VITALS,         /* Display vitals of operand */
+        PATTERN,        /* Pattern matching in progress */
+        ACTION,         /* Initiate verb action */
+        CANCEL,         /* Cancel verb action in progress */
+        OPSUBJECT,      /* Change operand to SUBJECT */
+        OPOBJECT,       /* Change operand to OBJECT */
+        POPMENU,        /* Open the operand's menu (if closed) */
+        REFRESHMENU,    /* Refresh the noun menu with the query results */
+        TOGMENU         /* Toggle the menu of the operand */
+};
 
 
 #define RESET -1 
@@ -94,28 +107,37 @@ void operate_on(void *noun)
 
         uint32_t key = (noun!=NULL) ? *(uint32_t *)noun : 0;
        
-        if (mode_changed == true) setmode(RESET);
+        if (mode_changed == true) 
+                setmode(RESET);
 
         install_id(key, op);
 
-        switch(mode) {
+        switch (mode) {
         case STARTING:
                 install_id(key, op^1);
                 setmode(DEFAULT_MODE);
-                view_vitals(SUBJECT);
-                view_vitals(OBJECT);
+                break;
         case EXITING:
-                view_noun_grey(SUBJECT);
-                view_noun_grey(OBJECT);
-                close_nouns(SUBJECT);
-                close_nouns(OBJECT);
+                grey_current_noun(SUBJECT);
+                grey_current_noun(OBJECT);
+                close_noun_menu(SUBJECT);
+                close_noun_menu(OBJECT);
                 return;
-        case POPMENU:
-                werase(DIAGNOSTIC_WIN);
-                wprintw(DIAGNOSTIC_WIN, "op: %u\n", op);
-                open_nouns(op);
+        case PATTERN:
+                return;
+        case TOGMENU:
+                tog_noun_menu(op);
+                setmode(DEFAULT_MODE);
+                return;
+        case REFRESHMENU:
+                close_noun_menu(op);
+                list_nouns(op, ALL_NOUNS);
+                open_noun_menu(op);
                 setmode(LAST);
-                wprintw(DIAGNOSTIC_WIN, "op: %u", op);
+                break;
+        case POPMENU:
+                open_noun_menu(op);
+                setmode(LAST);
                 break;
         case ACTION:
                 if (op != SUBJECT) {
@@ -138,8 +160,8 @@ void operate_on(void *noun)
                 view_vitals(op^1);
                 break;
         }
-        view_noun_grey(op^1);
-        view_noun(op);
+        grey_current_noun(op^1);
+        print_current_noun(op);
         scr_refresh();
 }
 ////////////////////////////////////////////////////////////////////////////////
@@ -151,33 +173,20 @@ void operate_on(void *noun)
 ////////////////////////////////////////////////////////////////////////////////
 int choose_noun(int ch) 
 {
-        /* ncurses sets the ESC key delay at 100ms by default, and this
-         * is way too slow. According to Wolfram Alpha, 
-         * 60hz == 0.0167s == 16.7ms, and is about equivalent to the time 
-         * it takes a nerve impulse to travel the length of an avg. human 
-         * body. For comparison, a typical human blink duration is 100ms-
-         * 400ms, and that's just not what we're looking for here. */
-        if (getenv ("ESCDELAY") == NULL) ESCDELAY = 25;
-
         MENU *menu[2]={get_noun_menu(SUBJECT), get_noun_menu(OBJECT)};
         static ITEM *item;
 
-        switch (ch)
-        {
+        switch (ch) {
+
+        /* Enter noun menu mode --------------------------- */
         case MODE_STARTED:
-                if (mode == EXITING) setmode(LAST);
-                else                 setmode(STARTING);
+                if (mode == EXITING) 
+                        setmode(LAST);
+                else                 
+                        setmode(STARTING);
                 break;
-        case '/': 
-                while (item = (ITEM *)get_pattern(), item!=NULL)
-                        operate_on(item_userptr(item));
-                break;
-        case '!':
-                setmode(ACTION);
-                break;
-        case 'x':
-                setmode(CANCEL);
-                break;
+
+        /* Menu navigation -------------------------------- */
         case 'k':
                 menu_driver(menu[op], REQ_PREV_ITEM);
                 break;
@@ -190,6 +199,44 @@ int choose_noun(int ch)
         case 'p':
                 menu_driver(menu[op], REQ_NEXT_MATCH);
                 break;
+
+        /* Select / open the subject or object menu ------- */
+        case 'o':
+                if (op == OBJECT) setmode(TOGMENU);
+                else              setmode(OPOBJECT);
+                break;
+        case 'i':
+                if (op == SUBJECT) setmode(TOGMENU);
+                else               setmode(OPSUBJECT);
+                break;
+
+        /* Toggle the selected menu ----------------------- */
+        case '\n':
+        case 'u':
+                setmode(TOGMENU);
+                break;
+
+        /* Refresh the contents of the selected menu ------ */
+        case 'r':
+                setmode(REFRESHMENU);
+                break;
+
+        /* Feed input to the pattern matcher -------------- */
+        case '/': 
+                setmode(PATTERN);
+                while (item=(ITEM *)pattern_noun_menu(op), item!=NULL)
+                        operate_on(item_userptr(item));
+                break;
+
+        /* Initiate verb actions -------------------------- */
+        case '!':
+                setmode(ACTION);
+                break;
+        case 'x':
+                setmode(CANCEL);
+                break;
+
+        /* Will be filters in the future ------------------ */
         case 'P':
                 setmode(PROFESSION);
                 break;
@@ -199,23 +246,18 @@ int choose_noun(int ch)
         case 'v':
                 setmode(VITALS);
                 break;
-        case 'o':
-                if (op == OBJECT) setmode(POPMENU);
-                else              setmode(OPOBJECT);
-                break;
-        case 's':
-                if (op == SUBJECT) setmode(POPMENU);
-                else               setmode(OPSUBJECT);
-                break;
+
+        /* Exit noun menu mode ---------------------------- */
         case KEY_ESC:
-        case 'c':
+        case 'm':
                 setmode(EXITING);
                 operate_on(item_userptr(item));
                 return MODE_RESTORE;
         }
-        item=current_item(menu[op]);
-        operate_on(item_userptr(item));
 
+        /* Feed the noun key of the selected item into the operator routine */
+        item = current_item(menu[op]);
+        operate_on(item_userptr(item));
 
         return MODE_PERSIST;
 }

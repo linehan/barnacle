@@ -3,8 +3,6 @@
 
 
 
-
-
 /*
  * mob_cfg -- initialize a previously-allocated struct mob_t.
  *
@@ -97,6 +95,8 @@ void mob_move(struct mob_t *mob, int dir)
 
         move_panel(mob->pan, ufo_y(mob, ufo), ufo_x(mob, ufo));
         update_panels();
+
+        take_bkgrnd(panel_window(mob->pan), PEEK(GLOBE->W));
 
         path_push(&mob->path, y, x);
         doupdate();

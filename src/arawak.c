@@ -12,6 +12,7 @@
 
 #include "gfx/gfx.h"
 #include "map/map.h"
+#include "map/arena.h"
 #include "map/terrain.h"
 #include "map/weather.h"
 #include "test/test.h"
@@ -25,6 +26,7 @@
 #include "eng/loop.h"
 
 #include "mob/mob.h"
+#include "noun/noun_view.h"
 #include "noun/types/boat/boat.h"
 #include "noun/types/person/person.h"
 #include "gfx/ui/titlecard.h"
@@ -34,9 +36,10 @@ int main()
 {
         arawak_init();
 
-        struct map_t *pad = new_map((LINES*3), (COLS*3), LINES, COLS, 0, 0);
-        map_gen(pad, NULL);
-        /*struct map_t *pad = make_arena(LINES-30, COLS-20, 0, 0);*/
+        /*struct map_t *pad = new_map((LINES*3), (COLS*3), LINES, COLS, 0, 0);*/
+        /*map_gen(pad, NULL, MAP_DOSMOOTH);*/
+
+        struct map_t *pad = map_preset_arena();
         GLOBE = pad;
 
         print_status("\n ALL OK\n");
@@ -52,11 +55,25 @@ int main()
         toggle_instrument_panel();
 
         load_noun_test();
+        list_nouns(SUBJECT, ALL_NOUNS);
+        list_nouns(OBJECT, ALL_NOUNS);
         view_dock();
         choose_noun('*');
+        
+        init_pair(FLEX, BLACK, WHITE);
+        init_pair(FLEX2, BLACK, WHITE);
 
-        new_person("Mr. E", 0);
-        set_mob(noun_mob("Mr. E"), true);
+        new_creature("Guy", PERSON, L"д", FLEX);
+        new_creature("Killer", MONSTER, L"⿍", FLEX);
+
+        set_mob(noun_mob("Guy"), true);
+        mob_move(noun_mob("Guy"), 'd');
+        mob_move(noun_mob("Guy"), 'd');
+        mob_move(noun_mob("Guy"), 'd');
+
+        set_mob(noun_mob("Killer"), true);
+        mob_move(noun_mob("Killer"), 'd');
+
 
         start_event_watchers(); /* Enter the event loop */
 

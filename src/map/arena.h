@@ -1,3 +1,3 @@
 #include "map.h"
 
-struct map_t *make_arena(int h, int w, int y, int x);
+struct map_t *map_preset_arena(void);
