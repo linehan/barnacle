@@ -240,7 +240,6 @@ void init_palette(int set)
         init_color(C_SAND_LAGOON, 259, 361, 318);
         init_color(D_SAND_LAGOON, 188, 267, 235);
 
-
         /*init_color(SANDY, 886,  737,  557);*/
 
         /* UI COLOR PAIRS */

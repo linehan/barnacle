@@ -16,6 +16,8 @@ void new_creature(const char *name, int job, const wchar_t *wch, short pair)
         noun_set_modify(noun, modify_creature);
         mob_cfg(&noun->mob, GLOBE, 1, 1, CENTERED);
 
+        noun->options |= NOUN_CREATURE;
+
         /*init_pair(pair, BLACK, WHITE);*/
         setcchar(&new->cch, wch, 0, pair, NULL);
         wbkgrnd(mob_win(&noun->mob), &new->cch);

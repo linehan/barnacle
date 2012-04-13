@@ -20,6 +20,7 @@ struct noun_t {
         uint32_t job;           /* Sub-sub class of noun */
         uint32_t vitals;        /* The state word */
         uint32_t attributes;    /* The options word */
+        uint32_t options;       /* Used by the query system */
         struct verb_t verb;     /* A verb package to be used by verb.c */
         struct mob_t mob;       /* A mob package to be used by mob.c */
         void *obj;              /* A private data type */
@@ -132,6 +133,14 @@ uint32_t keyring[100];  /* Contains all noun keys */
 enum install_key_opts {SUBJECT, OBJECT};
 void     install_id(uint32_t id, int option); /* Make a noun the subj/obj */
 uint32_t request_id(int option); /* Request the current subj/obj */
+
+
+#define NOUN_CREATURE 0x00000001
+#define NOUN_SAILBOAT 0x00000002
+#define NOUN_RENDERED 0x00000004
+#define NOUN_MOBILE   0x00000008
+
+
 
 
 /* Support modules 

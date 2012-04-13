@@ -124,6 +124,7 @@ void operate_on(void *noun)
                 close_noun_menu(OBJECT);
                 return;
         case PATTERN:
+                scr_refresh();
                 return;
         case TOGMENU:
                 tog_noun_menu(op);
@@ -153,7 +154,7 @@ void operate_on(void *noun)
         }
         switch(mode) {
         case ATTRIBUTES:
-                view_attributes();
+                view_attributes(op);
                 break;
         case VITALS:
                 view_vitals(op);
@@ -193,6 +194,14 @@ int choose_noun(int ch)
         case 'j':
                 menu_driver(menu[op], REQ_NEXT_ITEM);
                 break;
+        case 'K':
+                if ((menu_driver(menu[op], REQ_SCR_UPAGE) == E_REQUEST_DENIED))
+                        menu_driver(menu[op], REQ_FIRST_ITEM);
+                break;
+        case 'J':
+                if ((menu_driver(menu[op], REQ_SCR_DPAGE) == E_REQUEST_DENIED))
+                        menu_driver(menu[op], REQ_LAST_ITEM);
+                break;
         case 'n':
                 menu_driver(menu[op], REQ_PREV_MATCH);
                 break;
@@ -226,6 +235,7 @@ int choose_noun(int ch)
                 setmode(PATTERN);
                 while (item=(ITEM *)pattern_noun_menu(op), item!=NULL)
                         operate_on(item_userptr(item));
+                setmode(LAST);
                 break;
 
         /* Initiate verb actions -------------------------- */
@@ -238,10 +248,13 @@ int choose_noun(int ch)
 
         /* Will be filters in the future ------------------ */
         case 'P':
-                setmode(PROFESSION);
+                query_noun_menu(op, NOUN_MOBILE);
                 break;
         case 'a':
                 setmode(ATTRIBUTES);
+                break;
+        case 's':
+                sort_noun_menu(op, 0);
                 break;
         case 'v':
                 setmode(VITALS);

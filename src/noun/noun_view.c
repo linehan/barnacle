@@ -18,7 +18,7 @@
 
 /* -------------------------------------------------------------------------- */
 
-#define MENU_W 20
+#define MENU_W 21
 #define MENU_H (LINES/3)
 #define MENU_X(op) (op == SUBJECT) ? 1 : COLS-(MENU_W+1)
 #define MENU_Y LINES-MENU_H-2
@@ -27,6 +27,8 @@
 
 struct stdmenu_t *nounmenu[NUM_NOUNMENUS];
 
+#define IDWIN(op) (op == SUBJECT) ? (dock_window(SUBJ_ID_WIN)) : (dock_window(OBJ_ID_WIN))
+#define WIWIN(op) (op == SUBJECT) ? (dock_window(SUBJ_WI_WIN)) : (dock_window(OBJ_WI_WIN))
 
 /*
  * list_nouns -- generate the nouns list based queries and put them in a menu
@@ -46,6 +48,7 @@ void list_nouns(int op, int query)
 
         nitems = numnoun;
 
+
         name = calloc(nitems, sizeof(char *));      /* Noun names */
         key  = calloc(nitems, sizeof(uint32_t *));  /* Noun ids */
 
@@ -56,16 +59,16 @@ void list_nouns(int op, int query)
 
         nounmenu[op] = new_stdmenu(name, name, (void **)key, nitems);
 
+        nounmenu[op]->nitems = nitems;
+
         stdmenu_win(nounmenu[op], MENU_H, MENU_W, MENU_Y, MENU_X(op));
+        stdmenu_buf(nounmenu[op], IDWIN(op));
 
-#define NOUNWIN(op) (op==SUBJECT) ? dock_window(SUBJ_ID_WIN) : dock_window(OBJ_ID_WIN) 
-
-        stdmenu_buf(nounmenu[op], NOUNWIN(op));
         wcolor_set(nounmenu[op]->buf, PUR_YEL, NULL);
 
-        stdmenu_color(nounmenu[op], STANDOUT, ORIGINAL);
+        stdmenu_color(nounmenu[op], STANDOUT, ORIGINAL, __PUR_GREY);
         stdmenu_cfg(nounmenu[op], DESC, false, NULL);
-        stdmenu_cfg(nounmenu[op], MARK, false, NULL);
+        /*stdmenu_cfg(nounmenu[op], MARK, false, NULL);*/
 
         nounmenu[op]->post(nounmenu[op], true);
 }
@@ -128,6 +131,73 @@ void tog_noun_menu(int op)
 }
 
 
+
+/*
+ * sort_noun_menu -- sort the noun menu items according to some criteria
+ * @op: the operand, either SUBJECT (left menu) or OBJECT (right menu)
+ */
+void sort_noun_menu(int op, uint32_t sort)
+{
+        ITEM **item;    /* All the items in the menu */
+        ITEM *tmp;      /* For swapping items during sort */
+        int nitems;     /* Number of items in total */
+        int i;
+        int j;
+
+        nitems = nounmenu[op]->nitems;
+        item   = nounmenu[op]->item;
+        tmp    = NULL;
+
+        for (i=0; i<nitems; i++) {
+                if (item_opts(item[i]) == O_SELECTABLE) {
+                        tmp = item[i];
+                        /* Swap match with first non-selectable item */
+                        for (j=0; j<nitems; j++) {
+                                if (item_opts(item[j]) != O_SELECTABLE)
+                                        break; 
+                        } 
+                        item[i] = item[j];
+                        item[j] = tmp;
+                }
+        }
+        unpost_menu(nounmenu[op]->menu);
+        set_menu_items(nounmenu[op]->menu, nounmenu[op]->item);
+        post_menu(nounmenu[op]->menu);
+        scr_refresh();
+}
+
+
+/*
+ * query_noun_menu -- list nearby nouns in order of increasing distance
+ * @op: the operand, either SUBJECT (left menu) or OBJECT (right menu)
+ */
+void query_noun_menu(int op, uint32_t query)
+{
+        ITEM **item;    /* All the items in the menu */
+        int nitems;     /* Number of items in total */
+        int i;
+
+        nitems = nounmenu[op]->nitems;
+        item   = nounmenu[op]->item;
+
+        /* 
+         * Any nouns with option fields that DO NOT match the query 
+         * bitmask are set !O_SELECTABLE 
+         */
+        for (i=0; i<nitems; i++) {
+                if (item_opts(item[i]) == O_SELECTABLE) {
+                        key_noun(*((uint32_t *)item_userptr(item[i])));
+                        if ((focused->options & query) != query)
+                                item_opts_off(item[i], O_SELECTABLE);
+                }
+        }
+
+        sort_noun_menu(op, 0);  /* Selectable items get promoted to top */
+        scr_refresh();
+}
+
+
+
 /*
  * pattern_noun_menu -- perform pattern matching on a given noun menu
  * @op: the operand, either SUBJECT (left menu) or OBJECT (right menu)
@@ -142,9 +212,10 @@ void *pattern_noun_menu(int op)
         int c;
 
         if (firstcall == true) 
-                goto PATTERN_LISTEN;
-        else                   
                 goto PATTERN_START;
+        else                   
+                goto PATTERN_LISTEN;
+
 
         /* 
          * Highlight the pattern buffer and draw 
@@ -152,9 +223,7 @@ void *pattern_noun_menu(int op)
          */
         PATTERN_START:
                 open_noun_menu(op);
-                wbkgrnd(nounmenu[op]->buf, &PURPLE[1]);
-                wprintw(nounmenu[op]->buf, " /"); 
-                firstcall = true;
+                firstcall = false;
 
                 goto PATTERN_LISTEN;
 
@@ -183,7 +252,11 @@ void *pattern_noun_menu(int op)
                         else
                                 wcolor_set(nounmenu[op]->buf, PUR_WHITE, NULL);
 
-                        wprintw(nounmenu[op]->buf, " /%*s", ID_W, menu_pattern(nounmenu[op]->menu));
+                        if (op == SUBJECT)
+                                wprintw(nounmenu[op]->buf, "\"%s\"", menu_pattern(nounmenu[op]->menu));
+                        else
+                                wprintw(nounmenu[op]->buf, "  \"%s\"", menu_pattern(nounmenu[op]->menu));
+
                         wrefresh(nounmenu[op]->buf);
                         return (current_item(nounmenu[op]->menu));
                 }
@@ -196,10 +269,10 @@ void *pattern_noun_menu(int op)
         PATTERN_END:
                 menu_driver(nounmenu[op]->menu, REQ_CLEAR_PATTERN);
                 werase(nounmenu[op]->buf);
-                wbkgrnd(nounmenu[op]->buf, &PURPLE[3]);
+                wcolor_set(nounmenu[op]->buf, PUR_PURPLE, NULL);
                 win_refresh(nounmenu[op]->buf);
                 scr_refresh();
-                firstcall = false;
+                firstcall = true;
                 return (NULL);
 }
 
@@ -214,17 +287,17 @@ void *pattern_noun_menu(int op)
 void print_current_noun(int op)
 {
         if (op > 1) return;
-        /*werase(NOUNWIN(op));*/
+        werase(IDWIN(op));
 
-        /*if (op==SUBJECT) {*/
-                /*wcolor_set(NOUNWIN(op), PUR_YEL, NULL);*/
-                /*wprintw(NOUNWIN(op), "%-*s", ID_W,  fullname(request_id(op)));*/
-        /*}*/
-        /*if (op==OBJECT) {*/
-                /*wcolor_set(NOUNWIN(op), PUR_YEL, NULL);*/
-                /*wprintw(NOUNWIN(op), "%*s", ID_W, fullname(request_id(op)));*/
-        /*}*/
-        /*win_refresh(NOUNWIN(op));*/
+        if (op==SUBJECT) {
+                wcolor_set(IDWIN(op), PUR_YEL, NULL);
+                wprintw(IDWIN(op), "%-*s", ID_W,  fullname(request_id(op)));
+        }
+        if (op==OBJECT) {
+                wcolor_set(IDWIN(op), PUR_YEL, NULL);
+                wprintw(IDWIN(op), "%*s", ID_W, fullname(request_id(op)));
+        }
+        win_refresh(IDWIN(op));
 }
 
 
@@ -235,16 +308,16 @@ void print_current_noun(int op)
 void grey_current_noun(int op)
 {
         if (op > 1) return;
-        /*werase(NOUNWIN(op));*/
-        /*if (op==SUBJECT) {*/
-                /*wcolor_set(NOUNWIN(op), PUR_GRE, NULL);*/
-                /*wprintw(NOUNWIN(op), "%-*s", ID_W, fullname(request_id(op)));*/
-        /*}*/
-        /*if (op==OBJECT) {*/
-                /*wcolor_set(NOUNWIN(op), PUR_GRE, NULL);*/
-                /*wprintw(NOUNWIN(op), "%*s", ID_W, fullname(request_id(op)));*/
-        /*}*/
-        /*win_refresh(NOUNWIN(op));*/
+        werase(IDWIN(op));
+        if (op==SUBJECT) {
+                wcolor_set(IDWIN(op), PUR_GRE, NULL);
+                wprintw(IDWIN(op), "%-*s", ID_W, fullname(request_id(op)));
+        }
+        if (op==OBJECT) {
+                wcolor_set(IDWIN(op), PUR_GRE, NULL);
+                wprintw(IDWIN(op), "%*s", ID_W, fullname(request_id(op)));
+        }
+        win_refresh(IDWIN(op));
 }
 
 
@@ -274,10 +347,6 @@ static const wchar_t  BOX_WCH[]=L"▩▨▧▦▣□ⲾⲿⲺⲻ";
 static cchar_t BOX_CCH;
 
 
-#define SUBJ_WIN dock_window(SUBJ_WI_WIN) 
-#define OBJ_WIN dock_window(OBJ_WI_WIN) 
-
-
 inline void put_nblocks(WINDOW *win, int y, int x, int block, short pair, int n)
 {
         setcchar(&BOX_CCH, &BOX_WCH[block], 0, pair, NULL);
@@ -285,29 +354,28 @@ inline void put_nblocks(WINDOW *win, int y, int x, int block, short pair, int n)
 }
 
 
-void view_vitals(int operand)
+void view_vitals(int op)
 {
-        if (operand!=SUBJECT && operand!=OBJECT) operand=SUBJECT;
+        if (op!=SUBJECT && op!=OBJECT) op=SUBJECT;
 
         #define X(op) (op==SUBJECT) ? 0 : VIT_MAXLEN
-        #define W(op) (op==SUBJECT) ? SUBJ_WIN : OBJ_WIN
 
         int vital;      // value of each vital in loop
         int i, xofs;
 
-        werase(W(operand));
-        put_nblocks(W(operand), 0, 0, SMHBAR, TITLE_SCREEN, VIT_MAXLEN);
+        werase(WIWIN(op));
+        put_nblocks(WIWIN(op), 0, 0, SMHBAR, TITLE_SCREEN, VIT_MAXLEN);
 
-        key_noun(request_id(operand));
-        xofs = X(operand);
+        key_noun(request_id(op));
+        xofs = X(op);
 
         for (i=0; i<4; i++) {
-                vital = get_vital(request_id(operand), i);
-                if (operand==OBJECT)  xofs -= vital;
-                put_nblocks(W(operand), 0, xofs, DBOX, VIT_PAIR[i], vital);
-                if (operand==SUBJECT) xofs += vital;
+                vital = get_vital(request_id(op), i);
+                if (op==OBJECT)  xofs -= vital;
+                put_nblocks(WIWIN(op), 0, xofs, DBOX, VIT_PAIR[i], vital);
+                if (op==SUBJECT) xofs += vital;
         }
-        win_refresh(W(operand));
+        win_refresh(WIWIN(op));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -317,7 +385,7 @@ void view_vitals(int operand)
 //                                                                            //
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
-void view_attributes(void)
+void view_attributes(int op)
 {
         #define STRIDE 5
         #define ATTR_STANDOUT PUR_GRE
@@ -326,15 +394,15 @@ void view_attributes(void)
         int val[8];
         int i;
 
-        werase(SUBJ_WIN);
-        wcolor_set(SUBJ_WIN, ATTR_STANDOUT, NULL);
-        waddwstr(SUBJ_WIN, L"Σ    Φ    Δ    A    Ψ    W    Χ    Λ");
-        wcolor_set(SUBJ_WIN, ATTR_ORIGINAL, NULL);
+        werase(WIWIN(op));
+        wcolor_set(WIWIN(op), ATTR_STANDOUT, NULL);
+        waddwstr(WIWIN(op), L"Σ    Φ    Δ    A    Ψ    W    Χ    Λ");
+        wcolor_set(WIWIN(op), ATTR_ORIGINAL, NULL);
 
         unpack_attributes(request_id(SUBJECT), val);
         for (i=0; i<8; i++) {
-                mvwprintw(SUBJ_WIN, 0, (i*STRIDE)+1, "%02u", val[i]);
+                mvwprintw(WIWIN(op), 0, (i*STRIDE)+1, "%02u", val[i]);
         }
-        win_refresh(SUBJ_WIN);
+        win_refresh(WIWIN(op));
 }
 

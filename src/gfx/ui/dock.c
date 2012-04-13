@@ -47,8 +47,6 @@ void init_dock(void)
         wbkgrnd(subj_tx_win, &PURPLE[2]);
         wbkgrnd(object_win, &PURPLE[2]);
         wbkgrnd(obj_id_win, &PURPLE[2]);
-        /*wbkgrnd(obj_wi_win, &PURPLE[2]);*/
-        /*wbkgrnd(obj_tx_win, &PURPLE[2]);*/
         dock_pan = new_panel(dock_win);
 }
 
@@ -69,8 +67,6 @@ void view_dock(void)
         if (dock_pan == NULL) init_dock();
         if (get_noun_menu(0) == NULL || get_noun_menu(1) == NULL)
                 list_nouns(SUBJECT, ALL_NOUNS);
-        /*if (get_noun_menu(1) == NULL) */
-                /*list_nouns(OBJECT, ALL_NOUNS);*/
         else    
                 top_panel(dock_pan);
 }
