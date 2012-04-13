@@ -74,6 +74,12 @@ void list_nouns(int op, int query)
 }
 
 
+struct stdmenu_t *get_noun_struct(int op)
+{
+        return nounmenu[op];
+}
+
+
 /*
  * get_noun_menu -- return a pointer to the passed operand's MENU
  * @op: the operand, either SUBJECT (left menu) or OBJECT (right menu)
@@ -129,154 +135,6 @@ void tog_noun_menu(int op)
         else
                 nounmenu[op]->vis(nounmenu[op], false);
 }
-
-
-
-/*
- * sort_noun_menu -- sort the noun menu items according to some criteria
- * @op: the operand, either SUBJECT (left menu) or OBJECT (right menu)
- */
-void sort_noun_menu(int op, uint32_t sort)
-{
-        ITEM **item;    /* All the items in the menu */
-        ITEM *tmp;      /* For swapping items during sort */
-        int nitems;     /* Number of items in total */
-        int i;
-        int j;
-
-        nitems = nounmenu[op]->nitems;
-        item   = nounmenu[op]->item;
-        tmp    = NULL;
-
-        for (i=0; i<nitems; i++) {
-                if (item_opts(item[i]) == O_SELECTABLE) {
-                        tmp = item[i];
-                        /* Swap match with first non-selectable item */
-                        for (j=0; j<nitems; j++) {
-                                if (item_opts(item[j]) != O_SELECTABLE)
-                                        break; 
-                        } 
-                        item[i] = item[j];
-                        item[j] = tmp;
-                }
-        }
-        unpost_menu(nounmenu[op]->menu);
-        set_menu_items(nounmenu[op]->menu, nounmenu[op]->item);
-        post_menu(nounmenu[op]->menu);
-        scr_refresh();
-}
-
-
-/*
- * query_noun_menu -- list nearby nouns in order of increasing distance
- * @op: the operand, either SUBJECT (left menu) or OBJECT (right menu)
- */
-void query_noun_menu(int op, uint32_t query)
-{
-        ITEM **item;    /* All the items in the menu */
-        int nitems;     /* Number of items in total */
-        int i;
-
-        nitems = nounmenu[op]->nitems;
-        item   = nounmenu[op]->item;
-
-        /* 
-         * Any nouns with option fields that DO NOT match the query 
-         * bitmask are set !O_SELECTABLE 
-         */
-        for (i=0; i<nitems; i++) {
-                if (item_opts(item[i]) == O_SELECTABLE) {
-                        key_noun(*((uint32_t *)item_userptr(item[i])));
-                        if ((focused->options & query) != query)
-                                item_opts_off(item[i], O_SELECTABLE);
-                }
-        }
-
-        sort_noun_menu(op, 0);  /* Selectable items get promoted to top */
-        scr_refresh();
-}
-
-
-
-/*
- * pattern_noun_menu -- perform pattern matching on a given noun menu
- * @op: the operand, either SUBJECT (left menu) or OBJECT (right menu)
- */
-void *pattern_noun_menu(int op)
-{
-        #define PATTERN (menu_pattern(nounmenu->menu))
-        #define COLOR_NO_MATCH PUR_RED 
-
-        static bool firstcall;
-        static int status;
-        int c;
-
-        if (firstcall == true) 
-                goto PATTERN_START;
-        else                   
-                goto PATTERN_LISTEN;
-
-
-        /* 
-         * Highlight the pattern buffer and draw 
-         * the prompt character
-         */
-        PATTERN_START:
-                open_noun_menu(op);
-                firstcall = false;
-
-                goto PATTERN_LISTEN;
-
-        /*
-         * Feed input into the menu driver's 
-         * pattern handler
-         */
-        PATTERN_LISTEN:
-                while ((c=getch()), c!='\n') {
-                        switch (c) {
-                        case KEY_ESC:
-                                if (*(menu_pattern(nounmenu[op]->menu))=='\0') 
-                                        goto PATTERN_END;
-                                menu_driver(nounmenu[op]->menu, REQ_CLEAR_PATTERN);
-                                break;
-                        case KEY_BACKSPACE:
-                                status = menu_driver(nounmenu[op]->menu, REQ_BACK_PATTERN);
-                                break;
-                        default:
-                                status = menu_driver(nounmenu[op]->menu, c);
-                                break;
-                        }
-                        werase(nounmenu[op]->buf);
-                        if (status == E_NO_MATCH)
-                                wcolor_set(nounmenu[op]->buf, COLOR_NO_MATCH, NULL);
-                        else
-                                wcolor_set(nounmenu[op]->buf, PUR_WHITE, NULL);
-
-                        if (op == SUBJECT)
-                                wprintw(nounmenu[op]->buf, "\"%s\"", menu_pattern(nounmenu[op]->menu));
-                        else
-                                wprintw(nounmenu[op]->buf, "  \"%s\"", menu_pattern(nounmenu[op]->menu));
-
-                        wrefresh(nounmenu[op]->buf);
-                        return (current_item(nounmenu[op]->menu));
-                }
-
-        /*
-         * Erase the menu's internal pattern 
-         * buffer and the buffer window, then
-         * reinitialize the 'firstcall' bool.
-         */
-        PATTERN_END:
-                menu_driver(nounmenu[op]->menu, REQ_CLEAR_PATTERN);
-                werase(nounmenu[op]->buf);
-                wcolor_set(nounmenu[op]->buf, PUR_PURPLE, NULL);
-                win_refresh(nounmenu[op]->buf);
-                scr_refresh();
-                firstcall = true;
-                return (NULL);
-}
-
-
 
 
 

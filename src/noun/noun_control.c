@@ -202,12 +202,7 @@ int choose_noun(int ch)
                 if ((menu_driver(menu[op], REQ_SCR_DPAGE) == E_REQUEST_DENIED))
                         menu_driver(menu[op], REQ_LAST_ITEM);
                 break;
-        case 'n':
-                menu_driver(menu[op], REQ_PREV_MATCH);
-                break;
-        case 'p':
-                menu_driver(menu[op], REQ_NEXT_MATCH);
-                break;
+
 
         /* Select / open the subject or object menu ------- */
         case 'o':
@@ -247,8 +242,8 @@ int choose_noun(int ch)
                 break;
 
         /* Will be filters in the future ------------------ */
-        case 'P':
-                query_noun_menu(op, NOUN_MOBILE);
+        case 'p':
+                query_noun_menu(op, NOUN_MOBILE, NOUN_DOSORT);
                 break;
         case 'a':
                 setmode(ATTRIBUTES);

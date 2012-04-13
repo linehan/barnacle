@@ -62,8 +62,9 @@ am_arawak_OBJECTS = arawak.$(OBJEXT) eng/init.$(OBJEXT) \
 	map/map.$(OBJEXT) map/snake.$(OBJEXT) map/arena.$(OBJEXT) \
 	map/particle.$(OBJEXT) txt/gloss_m.$(OBJEXT) \
 	txt/gloss_v.$(OBJEXT) txt/gloss_c.$(OBJEXT) mob/mob.$(OBJEXT) \
-	noun/noun_model.$(OBJEXT) noun/noun_view.$(OBJEXT) \
-	noun/noun_control.$(OBJEXT) noun/types/boat/boat.$(OBJEXT) \
+	noun/noun_model.$(OBJEXT) noun/noun_discrim.$(OBJEXT) \
+	noun/noun_view.$(OBJEXT) noun/noun_control.$(OBJEXT) \
+	noun/types/boat/boat.$(OBJEXT) \
 	noun/types/boat/compass.$(OBJEXT) \
 	noun/types/person/person.$(OBJEXT) verb/verb_model.$(OBJEXT) \
 	verb/verb_view.$(OBJEXT) verb/verb_control.$(OBJEXT) \
@@ -216,6 +217,7 @@ arawak_SOURCES = arawak.c                       \
                    txt/gloss_c.c                \
                    mob/mob.c                    \
                    noun/noun_model.c            \
+                   noun/noun_discrim.c          \
                    noun/noun_view.c             \
                    noun/noun_control.c          \
                    noun/types/boat/boat.c       \
@@ -436,6 +438,8 @@ noun/$(DEPDIR)/$(am__dirstamp):
 	@: > noun/$(DEPDIR)/$(am__dirstamp)
 noun/noun_model.$(OBJEXT): noun/$(am__dirstamp) \
 	noun/$(DEPDIR)/$(am__dirstamp)
+noun/noun_discrim.$(OBJEXT): noun/$(am__dirstamp) \
+	noun/$(DEPDIR)/$(am__dirstamp)
 noun/noun_view.$(OBJEXT): noun/$(am__dirstamp) \
 	noun/$(DEPDIR)/$(am__dirstamp)
 noun/noun_control.$(OBJEXT): noun/$(am__dirstamp) \
@@ -522,6 +526,7 @@ mostlyclean-compile:
 	-rm -f map/terrain.$(OBJEXT)
 	-rm -f mob/mob.$(OBJEXT)
 	-rm -f noun/noun_control.$(OBJEXT)
+	-rm -f noun/noun_discrim.$(OBJEXT)
 	-rm -f noun/noun_model.$(OBJEXT)
 	-rm -f noun/noun_view.$(OBJEXT)
 	-rm -f noun/types/boat/boat.$(OBJEXT)
@@ -576,6 +581,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@map/$(DEPDIR)/terrain.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@mob/$(DEPDIR)/mob.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@noun/$(DEPDIR)/noun_control.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@noun/$(DEPDIR)/noun_discrim.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@noun/$(DEPDIR)/noun_model.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@noun/$(DEPDIR)/noun_view.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@noun/types/boat/$(DEPDIR)/boat.Po@am__quote@

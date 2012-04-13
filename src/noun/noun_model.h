@@ -140,6 +140,9 @@ uint32_t request_id(int option); /* Request the current subj/obj */
 #define NOUN_RENDERED 0x00000004
 #define NOUN_MOBILE   0x00000008
 
+#define NOUN_DOSORT 1
+#define NOUN_NOSORT 0
+
 
 
 
