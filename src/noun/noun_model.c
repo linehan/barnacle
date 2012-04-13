@@ -19,6 +19,7 @@
 
 #include "noun_model.h"
 
+
 #define MAXNOUN 1000
 
 
@@ -67,6 +68,14 @@ struct noun_t *new_noun(const char *name, uint32_t type, uint32_t job, void *obj
         return new;
 }
 
+void noun_set_mob(struct noun_t *noun, bool yesno)
+{
+        set_mob(&noun->mob, yesno);
+        if (yesno == true)
+                noun->options |= NOUN_MOBILE;
+        else
+                noun->options &= ~NOUN_MOBILE;
+}
 
 
 

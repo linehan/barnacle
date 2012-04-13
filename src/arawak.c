@@ -54,25 +54,26 @@ int main()
         toggle_instrument_panel();
         toggle_instrument_panel();
 
+        view_dock();
         load_noun_test();
         list_nouns(SUBJECT, ALL_NOUNS);
         list_nouns(OBJECT, ALL_NOUNS);
-        view_dock();
         choose_noun('*');
         
         init_pair(FLEX, BLACK, WHITE);
         init_pair(FLEX2, BLACK, WHITE);
 
         new_creature("Guy", PERSON, L"д", FLEX);
-        new_creature("Killer", MONSTER, L"⿍", FLEX);
+        new_creature("Killbot", MONSTER, L"⿍", FLEX);
 
-        set_mob(noun_mob("Guy"), true);
+        /*set_mob(noun_mob("Guy"), true);*/
+        noun_set_mob(get_noun("Guy"), true);
         mob_move(noun_mob("Guy"), 'd');
         mob_move(noun_mob("Guy"), 'd');
         mob_move(noun_mob("Guy"), 'd');
 
-        set_mob(noun_mob("Killer"), true);
-        mob_move(noun_mob("Killer"), 'd');
+        noun_set_mob(get_noun("Killbot"), true);
+        mob_move(noun_mob("Killbot"), 'd');
 
 
         start_event_watchers(); /* Enter the event loop */

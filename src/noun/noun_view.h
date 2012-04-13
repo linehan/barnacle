@@ -1,5 +1,5 @@
 void view_vitals(int operand);
-void view_attributes(void);
+void view_attributes(int operand);
 void view_noun(int operand);
 void view_noun_grey(int operand);
 void *pattern_noun_menu(int op);

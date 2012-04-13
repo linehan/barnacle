@@ -72,7 +72,7 @@ void init_verb_menu(uint32_t bitmap)
         }
 
         stdmenu_win(verbmenu, VERB_H, VERB_W, VERB_Y, VERB_X);
-        stdmenu_color(verbmenu, PUR_DDP, PUR_GRE);
+        stdmenu_color(verbmenu, PUR_DDP, PUR_GRE, _PUR_PURPLE);
 
         stdmenu_cfg(verbmenu, DESC, true, NULL);
         stdmenu_cfg(verbmenu, MARK, false, NULL);

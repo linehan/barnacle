@@ -71,8 +71,19 @@ struct stdmenu_t *new_stdmenu(char **name, char **desc, void **usrptr, int n)
 
 void stdmenu_win(struct stdmenu_t *stdmenu, int h, int w, int y, int x)
 {
-        stdmenu->win = newwin(h, w, y, x);
-        stdpan(stdmenu->win, &stdmenu->sub, &stdmenu->buf, &stdmenu->pan);
+        #define winh(h) (h)
+        #define winw(w) (w)
+        #define subh(h) (winh(h)-2)
+        #define subw(w) ((winw(w))-2) 
+
+        stdmenu->win = newwin(winh(h), winw(w), y, x);
+        stdmenu->sub = derwin(stdmenu->win, subh(h), subw(w), 1, 1);
+
+        wbkgrnd(stdmenu->win, &PURPLE[2]);
+        wbkgrnd(stdmenu->sub, &PURPLE[2]);
+
+        stdmenu->pan = new_panel(stdmenu->win);
+
         hide_panel(stdmenu->pan);
 
         set_menu_win(stdmenu->menu, stdmenu->win);
@@ -91,13 +102,15 @@ void stdmenu_buf(struct stdmenu_t *stdmenu, WINDOW *buf)
 }
 
 
-void stdmenu_color(struct stdmenu_t *stdmenu, short fore, short back)
+void stdmenu_color(struct stdmenu_t *stdmenu, short fore, short back, short grey)
 {
         stdmenu->fore = fore;
         stdmenu->back = back;
+        stdmenu->grey = grey;
 
         set_menu_fore(stdmenu->menu, COLOR_PAIR(stdmenu->fore));
         set_menu_back(stdmenu->menu, COLOR_PAIR(stdmenu->back));
+        set_menu_grey(stdmenu->menu, COLOR_PAIR(stdmenu->grey));
 }
 
 void stdmenu_cfg(struct stdmenu_t *stdmenu, int opt, bool set, const char *ch)
