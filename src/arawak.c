@@ -66,7 +66,6 @@ int main()
         new_creature("Guy", PERSON, L"д", FLEX);
         new_creature("Killbot", MONSTER, L"⿍", FLEX);
 
-        /*set_mob(noun_mob("Guy"), true);*/
         noun_set_mob(get_noun("Guy"), true);
         mob_move(noun_mob("Guy"), 'd');
         mob_move(noun_mob("Guy"), 'd');

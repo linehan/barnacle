@@ -1,3 +1,5 @@
+#include "../gfx/ui/stdmenu.h"
+
 void view_vitals(int operand);
 void view_attributes(int operand);
 void view_noun(int operand);
@@ -13,4 +15,5 @@ void list_nouns(int which, int opt);
 
 enum list_noun_opts {ALL_NOUNS};
 
+struct stdmenu_t *get_noun_struct(int op);
 
