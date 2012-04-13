@@ -10,7 +10,7 @@
 #include "../lib/hash.h"
 #include "../mob/mob.h"
 
-enum nountypes {SAILBOAT, PERSON};
+enum nountypes {SAILBOAT, PERSON, MONSTER};
 
 /* The noun data structure 
 ``````````````````````````````````````````````````````````````````````````````*/

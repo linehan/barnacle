@@ -56,6 +56,13 @@ int prep_termio(void)
         keypad(stdscr, TRUE);  /* Enable special keys */
         curs_set(0);           /* Do not display cursor */
 
+        /* 
+         * ncurses sets the ESC key delay at 100ms by default, and this
+         * is way too slow. According to Wolfram Alpha, the duration of
+         * a typical human blink is 100ms-400ms.
+         */
+        if (getenv("ESCDELAY") == NULL) ESCDELAY = 25;
+
         return 1;
 }
 
@@ -95,7 +102,7 @@ int arawak_init(void)
         print_status("Twisting Mersenne...");
         init_stochastics();   /* Start the RNG and helpers */   
         print_status(SUCCESS);
-        init_surface_flow(100);
+        init_surface_flow(1);
 
         print_status("Test-o-plexing...");
         init_test();          /* Start test structures */

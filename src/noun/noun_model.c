@@ -131,7 +131,7 @@ void load_noun_test(void)
 
         int i;
         for (i=0; i<24; i++) {
-                new_person(name[i], j[i]);
+                new_creature(name[i], PERSON, L"?", PUR_GREEN);
         }
 
         for (i=0; i<numnoun; i++) {

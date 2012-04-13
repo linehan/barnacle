@@ -51,7 +51,15 @@
 #include <wchar.h>
 #include <locale.h>
 
-#define KEY_ESC 27 /* ESC keycode */
+
+
+/*
+ * The ESC key code is somewhat implementation-defined, and
+ * ncurses does not define a macro for it as such, although
+ * it supports many other special keys. '27' is common enough.
+ */
+#define KEY_ESC 27
+
 
 #define TOGPAN(pan)              \
         if (panel_hidden(pan))   \
@@ -85,7 +93,8 @@ enum fsm_reserved_modes {
         MODE_RELEASE=-5,
         MODE_RESTORE=-6,
         MODE_STARTED=-7,
-        NOTOUCH=-8
+        MODE_TYPING=-8,
+        NOTOUCH=-9
 };
 
 

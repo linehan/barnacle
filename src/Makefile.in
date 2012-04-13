@@ -57,11 +57,11 @@ am_arawak_OBJECTS = arawak.$(OBJEXT) eng/init.$(OBJEXT) \
 	eng/bytes.$(OBJEXT) eng/fsm.$(OBJEXT) eng/loop.$(OBJEXT) \
 	gfx/palette.$(OBJEXT) gfx/sprite.$(OBJEXT) gfx/gfx.$(OBJEXT) \
 	gfx/multiwin.$(OBJEXT) gfx/ui/dock.$(OBJEXT) \
-	gfx/ui/stdpan.$(OBJEXT) gfx/ui/titlecard.$(OBJEXT) \
-	map/terrain.$(OBJEXT) map/map.$(OBJEXT) map/snake.$(OBJEXT) \
-	map/arena.$(OBJEXT) map/particle.$(OBJEXT) \
-	txt/gloss_m.$(OBJEXT) txt/gloss_v.$(OBJEXT) \
-	txt/gloss_c.$(OBJEXT) mob/mob.$(OBJEXT) \
+	gfx/ui/stdpan.$(OBJEXT) gfx/ui/stdmenu.$(OBJEXT) \
+	gfx/ui/titlecard.$(OBJEXT) map/terrain.$(OBJEXT) \
+	map/map.$(OBJEXT) map/snake.$(OBJEXT) map/arena.$(OBJEXT) \
+	map/particle.$(OBJEXT) txt/gloss_m.$(OBJEXT) \
+	txt/gloss_v.$(OBJEXT) txt/gloss_c.$(OBJEXT) mob/mob.$(OBJEXT) \
 	noun/noun_model.$(OBJEXT) noun/noun_view.$(OBJEXT) \
 	noun/noun_control.$(OBJEXT) noun/types/boat/boat.$(OBJEXT) \
 	noun/types/boat/compass.$(OBJEXT) \
@@ -204,6 +204,7 @@ arawak_SOURCES = arawak.c                       \
                    gfx/multiwin.c               \
                    gfx/ui/dock.c                \
                    gfx/ui/stdpan.c              \
+                   gfx/ui/stdmenu.c             \
                    gfx/ui/titlecard.c           \
                    map/terrain.c                \
                    map/map.c                    \
@@ -391,6 +392,8 @@ gfx/ui/dock.$(OBJEXT): gfx/ui/$(am__dirstamp) \
 	gfx/ui/$(DEPDIR)/$(am__dirstamp)
 gfx/ui/stdpan.$(OBJEXT): gfx/ui/$(am__dirstamp) \
 	gfx/ui/$(DEPDIR)/$(am__dirstamp)
+gfx/ui/stdmenu.$(OBJEXT): gfx/ui/$(am__dirstamp) \
+	gfx/ui/$(DEPDIR)/$(am__dirstamp)
 gfx/ui/titlecard.$(OBJEXT): gfx/ui/$(am__dirstamp) \
 	gfx/ui/$(DEPDIR)/$(am__dirstamp)
 map/$(am__dirstamp):
@@ -492,6 +495,7 @@ mostlyclean-compile:
 	-rm -f gfx/palette.$(OBJEXT)
 	-rm -f gfx/sprite.$(OBJEXT)
 	-rm -f gfx/ui/dock.$(OBJEXT)
+	-rm -f gfx/ui/stdmenu.$(OBJEXT)
 	-rm -f gfx/ui/stdpan.$(OBJEXT)
 	-rm -f gfx/ui/titlecard.$(OBJEXT)
 	-rm -f lib/fifo.$(OBJEXT)
@@ -545,6 +549,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@gfx/$(DEPDIR)/palette.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@gfx/$(DEPDIR)/sprite.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@gfx/ui/$(DEPDIR)/dock.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@gfx/ui/$(DEPDIR)/stdmenu.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@gfx/ui/$(DEPDIR)/stdpan.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@gfx/ui/$(DEPDIR)/titlecard.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@lib/$(DEPDIR)/fifo.Po@am__quote@

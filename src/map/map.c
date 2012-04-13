@@ -77,8 +77,9 @@ struct map_t *new_map(int h, int w, int scr_h, int scr_w, int scr_y, int scr_x)
  * map_gen -- fill a new map with generated data that can be rendered
  * @map: pointer to a previously-allocated map
  * @pmap: matrix of doubles used for labeling. If NULL, simplex noise is used
+ * @opt: option parameter
  */
-void map_gen(struct map_t *map, double **pmap)
+void map_gen(struct map_t *map, double **pmap, int opt)
 {
         print_status("Generating noise...");
 
@@ -90,7 +91,7 @@ void map_gen(struct map_t *map, double **pmap)
 
         print_status(SUCCESS);
 
-        map_label(map);
+        map_label(map, opt); 
         map->render(map);
         map->restack(map);
 }

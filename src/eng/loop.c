@@ -17,21 +17,21 @@
 static bool loop_test_active;
 
 
-////////////////////////////////////////////////////////////////////////////////
+/* -------------------------------------------------------------------------- */
 void
 print_cb(EV_P_ ev_timer *w, int revents)
 {
-        /*static bool loop_ready;*/
-        /*static struct gloss_t *test;*/
+        static bool loop_ready;
+        static struct gloss_t *test;
 
-        /*if (!loop_ready || test == NULL) {*/
-                /*loop_ready = (roll_fair(40)==2) ? true : false;*/
-                /*if (!loop_ready) return;*/
-                /*else*/
-                        /*test = rand_gloss(dock_window(SUBJ_TX_WIN));*/
-        /*}*/
+        if (!loop_ready || test == NULL) {
+                loop_ready = (roll_fair(40)==2) ? true : false;
+                if (!loop_ready) return;
+                else
+                        test = rand_gloss(dock_window(SUBJ_TX_WIN));
+        }
 
-        /*loop_ready = say(test);*/
+        loop_ready = say(test);
 
         scr_refresh();
         ev_timer_again(EV_DEFAULT, w);

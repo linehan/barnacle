@@ -144,3 +144,42 @@ short cuco(WINDOW *win)
 }
 
 
+void take_bkgrnd(WINDOW *dst, WINDOW *src)
+{
+        cchar_t src_cch;
+        cchar_t dst_cch;
+        wchar_t src_wch;
+        wchar_t dst_wch;
+        short src_pair;
+        short dst_pair;
+        short src_bg;
+        short src_fg;
+        short dst_bg;
+        short dst_fg;
+        attr_t src_attr;
+        attr_t dst_attr;
+        int y;
+        int x; 
+
+        getbegyx(dst, y, x);               /* Get the position of src */
+        mvwin_wch(src, y, x, &src_cch);    /* Get the cch at position in src */
+        mvwin_wch(dst, y, x, &dst_cch);    /* Get the cch at position in dst */
+
+        /* Extract character renditions */
+        getcchar(&src_cch, &src_wch, &src_attr, &src_pair, NULL); /* src */ 
+        getcchar(&dst_cch, &dst_wch, &dst_attr, &dst_pair, NULL); /* dst */ 
+
+        /* Extract the fg and bg color components of the pairs */
+        pair_content(src_pair, &src_fg, &src_bg);
+        pair_content(dst_pair, &dst_fg, &dst_bg);
+
+        /* Re-init the FLEX pair's existing fg with the bg of src */
+        init_pair(FLEX, BLACK, src_bg);
+
+        /* ? when a pair changes, characters rendered with it are re-drawn */
+}
+
+
+
+
+

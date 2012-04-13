@@ -39,11 +39,13 @@ void label_shorelines(struct map_t *map);
  * some minimum amount of fussiness should be expected. Refer to the
  * documentation of the individual subroutines.
  */
-void map_label(struct map_t *map)
+void map_label(struct map_t *map, int opt)
 {
-        print_status("Smoothing noise...");
-        smooth_layers(map);
-        print_status(SUCCESS);
+        if (opt == MAP_DOSMOOTH) {
+                print_status("Smoothing noise...");
+                smooth_layers(map);
+                print_status(SUCCESS);
+        }
 
         print_status("Laying tiles...");
         label_regions(map);

@@ -41,23 +41,7 @@ enum grad_t {NIL=1,HI5=2,HI4=3,HI3=4,HI2=5,HI1=6,HI0=7,LO5=8,LO4=9,LO3=10,
 static const char *grad_tag[NSTATES] = {"XXX","NIL","HI5","HI4","HI3","HI2",
                                         "HI1","HI0","LO5","LO4","LO3","LO2",
                                         "LO1","LO0","ALL"};
-/* Stacking order */
-enum lay_t {
-        XXX = 0,  // failsafe background (default)
-        BGR = 1,  // background
-        HIG = 2,  // background highlights (animated)
-        RIM = 3,  // edge effects (animated)
-        DRP = 4,  // the "drop" of the perspective
-        TOP = 5,  // the "top" of the perspective 
-        SHO = 6,  // the ground
-        BEA = 7,  // the ground
-        TTO = 8,  // treetop
-        TTR = 9,  // treetrunk
-};                                                                      
 
-static const char *lay_tag[NSTATES] = {"XXX","BGR","HIG","RIM","DRP","TOP",
-                                       "GRO","HUT","VEG","SKY","XXX","XXX",
-                                       "XXX","XXX","XXX","XXX"};
 /* Scalar value */
 /* No enum is necessary, since it would be redundant. */
 //static const char *scal_tag[NSTATES] = {"XX","00","01","02","03","04","05",

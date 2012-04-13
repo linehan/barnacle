@@ -41,6 +41,7 @@ arawak_SOURCES = arawak.c                       \
                    gfx/multiwin.c               \
                    gfx/ui/dock.c                \
                    gfx/ui/stdpan.c              \
+                   gfx/ui/stdmenu.c             \
                    gfx/ui/titlecard.c           \
                    map/terrain.c                \
                    map/map.c                    \

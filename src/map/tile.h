@@ -77,6 +77,13 @@ static inline void place_treetrunk_label(uint32_t *val)
         set_nibble(val, LAY, layer);                            
         set_nibble(val, ALT, elev);
 }
+static inline void place_cave_label(uint32_t *val)
+{
+        const int layer = CAVE;
+        const int elev = 4;
+        set_nibble(val, LAY, layer);
+        set_nibble(val, ALT, elev);
+}
 
 /*
  * Write a blank tile, erasing any previous tiles.
@@ -179,6 +186,17 @@ static inline void place_treetrunk_tile(struct map_t *map, int y, int x)
         wipe_tile(map, y, x, TOP);
         mvwp(PLATE(map, layer), y, x, L"╹", color, attr);
 }
+/*
+ * Place a tile for a cave entrance
+ */
+static inline void place_cave_tile(struct map_t *map, int y, int x)
+{
+        const int layer = CAVE;
+        const short color = PUR_BROWN;
+        const attr_t attr = 0;
+        //wipe_tile(map, y, x, DRP);
+        mvwp(PLATE(map, layer), y, x, L"▔", color, attr);
+}
 
 /*
  * Place a tile 
@@ -213,6 +231,9 @@ static inline void place_tile(struct map_t *map, int y, int x, int type)
                 break;
         case TTR:
                 place_treetrunk_tile(map, y, x);
+                break;
+        case CAVE:
+                place_cave_tile(map, y, x);
                 break;
         }
 }

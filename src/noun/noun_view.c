@@ -1,196 +1,260 @@
-////////////////////////////////////////////////////////////////////////////////
-//              _                                                             //
-//            /(_))                                                           //
-//          _/   /                                                            //
-//         //   /                                                             //
-//        //   /                                                              //
-//        /\__/                                                               //
-//        \O_/=-.                                                             //
-//    _  / || \  ^o                                                           //
-//    \\/ ()_) \.                        noun_view.c                          //
-//     ^^ <__> \()                                                            //
-//       //||\\                                                               //
-//      //_||_\\                                                              //
-//     // \||/ \\                                                             //
-//    //   ||   \\                                                            //
-//   \/    |/    \/                                                           //
-//   /     |      \                                                           //
-//  /      |       \                                                          //
-//         |                                                                  //
-////////////////////////////////////////////////////////////////////////////////
-#define _XOPEN_SOURCE_EXTENDED = 1
-#include <stdbool.h>
-#include <menu.h>
+/* 
+ * noun_menus.c 
+ *
+ * Provides a set of handles for creating and querying the two main menus
+ * that display the set of loaded nouns, or a subset based on the application
+ * of a filter (query).
+ *
+ */
+
+#include "../com/arawak.h"
 #include "../gfx/gfx.h"
 #include "../gfx/ui/stdpan.h"
+#include "../gfx/ui/stdmenu.h"
 #include "../gfx/ui/dock.h"
-#include "../gfx/palette.h"
-#include "../gfx/sprite.h"
 #include "../test/test.h"
 #include "noun_model.h"
 #include "noun_view.h"
 
-////////////////////////////////////////////////////////////////////////////////
-//                                                                            //
-//                                                                            //
-//                                noun menu                                   //
-//                                                                            //
-//                                                                            //
-////////////////////////////////////////////////////////////////////////////////
+/* -------------------------------------------------------------------------- */
+
 #define MENU_W 20
 #define MENU_H (LINES/3)
-#define MENU_X 1
+#define MENU_X(op) (op == SUBJECT) ? 1 : COLS-(MENU_W+1)
 #define MENU_Y LINES-MENU_H-2
-WINDOW *subj_menu_win, *obj_menu_win;
-WINDOW *subj_menu_sub, *obj_menu_sub;
-WINDOW *subj_menu_buf, *obj_menu_buf;
-PANEL  *subj_menu_pan, *obj_menu_pan;
-MENU   *subj_menu, *obj_menu;
+
+#define NUM_NOUNMENUS 2
+
+struct stdmenu_t *nounmenu[NUM_NOUNMENUS];
 
 
-void buildview_nouns(void)
-{
-        subj_menu_win = newwin(MENU_H, MENU_W, MENU_Y, MENU_X);
-        stdpan(subj_menu_win, &subj_menu_sub, &subj_menu_buf, &subj_menu_pan);
-        hide_panel(subj_menu_pan);
-
-        obj_menu_win = newwin(MENU_H, MENU_W, MENU_Y, COLS-MENU_W-1);
-        stdpan(obj_menu_win, &obj_menu_sub, &obj_menu_buf, &obj_menu_pan);
-        hide_panel(obj_menu_pan);
-}
-
-void build_nouns(void)
+/*
+ * list_nouns -- generate the nouns list based queries and put them in a menu
+ * @op: the operand, either SUBJECT (left menu) or OBJECT (right menu)
+ * @query: the query, an optional filter that filters the nouns in some way
+ */
+void list_nouns(int op, int query)
 {
         #define ORIGINAL PUR_GRE
         #define STANDOUT PUR_DYE
         #define OTANDOUT PUR_RED
-        #define NROWS MENU_H-2
-        #define NCOLS 1 
 
-        uint32_t **skey;
-        uint32_t **okey;
-        char **subjects;
-        char **objects;
-        int nsubj;
-        int nobj;
+        uint32_t **key;
+        char **name;
+        int nitems;
         int i;
 
-        if (subj_menu_pan==NULL || obj_menu_pan==NULL) buildview_nouns();
-        // --------------------------------------------------------------
-        nsubj = numnoun;
-        nobj  = numnoun;
+        nitems = numnoun;
 
-        subjects = calloc(nsubj, sizeof(char *));
-        objects  = calloc(nobj, sizeof(char *));
+        name = calloc(nitems, sizeof(char *));      /* Noun names */
+        key  = calloc(nitems, sizeof(uint32_t *));  /* Noun ids */
 
-        skey = calloc(nsubj, sizeof(uint32_t *));
-        okey = calloc(nobj, sizeof(uint32_t *));
-        // --------------------------------------------------------------
-        for (i=0; i<nsubj; i++) {
-                subjects[i] = fullname(keyring[i]);
-                skey[i] = &keyring[i];
+        for (i=0; i<nitems; i++) {
+                name[i] = fullname(keyring[i]);
+                key[i]  = &keyring[i];
         }
-        for (i=0; i<nobj; i++) {
-                objects[i]  = fullname(keyring[i]);
-                okey[i] = &keyring[i];
-        }
-        // --------------------------------------------------------------
-        subj_menu = make_new_menu(subjects, subjects, (void **)skey, nsubj);
-        obj_menu = make_new_menu(objects, objects, (void **)okey, nobj);
 
-        menu_wins(subj_menu, subj_menu_win, subj_menu_sub);
-        menu_pair(subj_menu, STANDOUT, ORIGINAL);
-        menu_look(subj_menu, DESC, false, NULL);
-        menu_look(subj_menu, MARK, false, NULL);
-        set_menu_format(subj_menu, NROWS, NCOLS);
+        nounmenu[op] = new_stdmenu(name, name, (void **)key, nitems);
 
-        menu_wins(obj_menu, obj_menu_win, obj_menu_sub);
-        menu_pair(obj_menu, PUR_DYE, ORIGINAL);
-        menu_look(obj_menu, DESC, false, NULL);
-        menu_look(obj_menu, MARK, false, NULL);
-        set_menu_format(obj_menu, NROWS, NCOLS);
-        // --------------------------------------------------------------
-        menu_look(subj_menu, POST, true, NULL);
-        menu_look(obj_menu, POST, true, NULL);
+        stdmenu_win(nounmenu[op], MENU_H, MENU_W, MENU_Y, MENU_X(op));
+
+#define NOUNWIN(op) (op==SUBJECT) ? dock_window(SUBJ_ID_WIN) : dock_window(OBJ_ID_WIN) 
+
+        stdmenu_buf(nounmenu[op], NOUNWIN(op));
+        wcolor_set(nounmenu[op]->buf, PUR_YEL, NULL);
+
+        stdmenu_color(nounmenu[op], STANDOUT, ORIGINAL);
+        stdmenu_cfg(nounmenu[op], DESC, false, NULL);
+        stdmenu_cfg(nounmenu[op], MARK, false, NULL);
+
+        nounmenu[op]->post(nounmenu[op], true);
 }
 
 
-MENU *get_noun_menu(int operand)
+/*
+ * get_noun_menu -- return a pointer to the passed operand's MENU
+ * @op: the operand, either SUBJECT (left menu) or OBJECT (right menu)
+ */
+MENU *get_noun_menu(int op)
 {
-        return (operand == SUBJECT) ? subj_menu : obj_menu;
+        if (nounmenu[op] == NULL)
+                list_nouns(op, ALL_NOUNS);
+
+        return nounmenu[op]->menu;
 }
 
-void open_nouns(int operand)
+
+/*
+ * open_noun_menu -- call the noun menu's 'vis' method to open the menu
+ * @op: the operand, either SUBJECT (left menu) or OBJECT (right menu)
+ */
+void open_noun_menu(int op)
 {
-        PANEL *p = (operand==SUBJECT) ? subj_menu_pan : obj_menu_pan;
-        if (panel_hidden(p)) show_panel(p);
-        else                 hide_panel(p);
+        if (nounmenu[op] == NULL)
+                list_nouns(op, ALL_NOUNS);
+        else
+                nounmenu[op]->vis(nounmenu[op], true);
+
         vrt_refresh();
         scr_refresh();
 }
 
-void close_nouns(int operand)
-{
-        PANEL *p = (operand==SUBJECT) ? subj_menu_pan : obj_menu_pan;
 
-        hide_panel(p);
-        vrt_refresh();
-}
-////////////////////////////////////////////////////////////////////////////////
-//                                                                            //
-//                                                                            //
-//                             pattern matching                               //
-//                                                                            //
-//                                                                            //
-////////////////////////////////////////////////////////////////////////////////
-void *get_pattern(void)
+/*
+ * close_noun_menu -- call the noun menu's 'vis' method to close the menu
+ * @op: the operand, either SUBJECT (left menu) or OBJECT (right menu)
+ */
+void close_noun_menu(int op)
 {
-        #define PATTERN_WIN subj_menu_buf
-        #define PATTERN_PAN subj_menu_pan
-        #define PATTERN_MENU subj_menu
-        #define PATTERN (menu_pattern(PATTERN_MENU))
-        #define KEY_ESC 27 // int value of ESC keycode
+        if (nounmenu[op] == NULL)
+                list_nouns(op, ALL_NOUNS);
+        else
+                nounmenu[op]->vis(nounmenu[op], false);
+
+        scr_refresh();
+}
+
+
+/*
+ * tog_noun_menu -- call the noun menu's 'vis' method to toggle the menu
+ * @op: the operand, either SUBJECT (left menu) or OBJECT (right menu)
+ */
+void tog_noun_menu(int op)
+{
+        if (panel_hidden(nounmenu[op]->pan))
+                nounmenu[op]->vis(nounmenu[op], true);
+        else
+                nounmenu[op]->vis(nounmenu[op], false);
+}
+
+
+/*
+ * pattern_noun_menu -- perform pattern matching on a given noun menu
+ * @op: the operand, either SUBJECT (left menu) or OBJECT (right menu)
+ */
+void *pattern_noun_menu(int op)
+{
+        #define PATTERN (menu_pattern(nounmenu->menu))
+        #define COLOR_NO_MATCH PUR_RED 
 
         static bool firstcall;
+        static int status;
         int c;
 
-        if (firstcall == true) goto PATTERN_LISTEN;
-        else                   goto PATTERN_START;
+        if (firstcall == true) 
+                goto PATTERN_LISTEN;
+        else                   
+                goto PATTERN_START;
 
+        /* 
+         * Highlight the pattern buffer and draw 
+         * the prompt character
+         */
         PATTERN_START:
-                TOGPAN(PATTERN_PAN);
-                wbkgrnd(PATTERN_WIN, &PURPLE[1]);
-                wprintw(PATTERN_WIN, " /"); 
+                open_noun_menu(op);
+                wbkgrnd(nounmenu[op]->buf, &PURPLE[1]);
+                wprintw(nounmenu[op]->buf, " /"); 
                 firstcall = true;
+
                 goto PATTERN_LISTEN;
 
+        /*
+         * Feed input into the menu driver's 
+         * pattern handler
+         */
         PATTERN_LISTEN:
                 while ((c=getch()), c!='\n') {
                         switch (c) {
                         case KEY_ESC:
-                                if (*(PATTERN)=='\0') goto PATTERN_END;
-                                menu_driver(PATTERN_MENU, REQ_CLEAR_PATTERN);
+                                if (*(menu_pattern(nounmenu[op]->menu))=='\0') 
+                                        goto PATTERN_END;
+                                menu_driver(nounmenu[op]->menu, REQ_CLEAR_PATTERN);
                                 break;
                         case KEY_BACKSPACE:
-                                menu_driver(PATTERN_MENU, REQ_BACK_PATTERN);
+                                status = menu_driver(nounmenu[op]->menu, REQ_BACK_PATTERN);
                                 break;
                         default:
-                                menu_driver(PATTERN_MENU, c);
+                                status = menu_driver(nounmenu[op]->menu, c);
                                 break;
                         }
-                        werase(PATTERN_WIN);
-                        wprintw(PATTERN_WIN, " /%s", PATTERN);
-                        return (current_item(PATTERN_MENU));
+                        werase(nounmenu[op]->buf);
+                        if (status == E_NO_MATCH)
+                                wcolor_set(nounmenu[op]->buf, COLOR_NO_MATCH, NULL);
+                        else
+                                wcolor_set(nounmenu[op]->buf, PUR_WHITE, NULL);
+
+                        wprintw(nounmenu[op]->buf, " /%*s", ID_W, menu_pattern(nounmenu[op]->menu));
+                        wrefresh(nounmenu[op]->buf);
+                        return (current_item(nounmenu[op]->menu));
                 }
+
+        /*
+         * Erase the menu's internal pattern 
+         * buffer and the buffer window, then
+         * reinitialize the 'firstcall' bool.
+         */
         PATTERN_END:
-                menu_driver(PATTERN_MENU, REQ_CLEAR_PATTERN);
-                werase(PATTERN_WIN);
-                wbkgrnd(PATTERN_WIN, &PURPLE[3]);
-                win_refresh(PATTERN_WIN);
+                menu_driver(nounmenu[op]->menu, REQ_CLEAR_PATTERN);
+                werase(nounmenu[op]->buf);
+                wbkgrnd(nounmenu[op]->buf, &PURPLE[3]);
+                win_refresh(nounmenu[op]->buf);
                 scr_refresh();
                 firstcall = false;
                 return (NULL);
 }
+
+
+
+
+
+/*
+ * print_current_noun -- print the name of the currently selected noun
+ * @op: the operand, either SUBJECT (left menu) or OBJECT (right menu)
+ */
+void print_current_noun(int op)
+{
+        if (op > 1) return;
+        /*werase(NOUNWIN(op));*/
+
+        /*if (op==SUBJECT) {*/
+                /*wcolor_set(NOUNWIN(op), PUR_YEL, NULL);*/
+                /*wprintw(NOUNWIN(op), "%-*s", ID_W,  fullname(request_id(op)));*/
+        /*}*/
+        /*if (op==OBJECT) {*/
+                /*wcolor_set(NOUNWIN(op), PUR_YEL, NULL);*/
+                /*wprintw(NOUNWIN(op), "%*s", ID_W, fullname(request_id(op)));*/
+        /*}*/
+        /*win_refresh(NOUNWIN(op));*/
+}
+
+
+/*
+ * grey_current_noun -- grey out the name of the currently selected noun
+ * @op: the operand, either SUBJECT (left menu) or OBJECT (right menu)
+ */
+void grey_current_noun(int op)
+{
+        if (op > 1) return;
+        /*werase(NOUNWIN(op));*/
+        /*if (op==SUBJECT) {*/
+                /*wcolor_set(NOUNWIN(op), PUR_GRE, NULL);*/
+                /*wprintw(NOUNWIN(op), "%-*s", ID_W, fullname(request_id(op)));*/
+        /*}*/
+        /*if (op==OBJECT) {*/
+                /*wcolor_set(NOUNWIN(op), PUR_GRE, NULL);*/
+                /*wprintw(NOUNWIN(op), "%*s", ID_W, fullname(request_id(op)));*/
+        /*}*/
+        /*win_refresh(NOUNWIN(op));*/
+}
+
+
+
+/* -------------------------------------------------------------------------- */
+/* It's widgets the whole way down */
+/* -------------------------------------------------------------------------- */
+
+
+
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
 //                                                                            //
@@ -273,46 +337,4 @@ void view_attributes(void)
         }
         win_refresh(SUBJ_WIN);
 }
-////////////////////////////////////////////////////////////////////////////////
-//                                                                            //
-//                                                                            //
-//                              names widget                                  //
-//                                                                            //
-//                                                                            //
-////////////////////////////////////////////////////////////////////////////////
-#define NOUN_STANDOUT PUR_YEL
-#define NOUN_BRIGHTER PUR_GRE
-#define NOUN_ORIGINAL PUR_PUR
-#define NOUNWIN(op) (op==SUBJECT) ? dock_window(SUBJ_ID_WIN) : dock_window(OBJ_ID_WIN) 
 
-void view_noun(int op)
-{
-        if (op > 1) return;
-        werase(NOUNWIN(op));
-
-        if (op==SUBJECT) {
-                wcolor_set(NOUNWIN(op), PUR_YEL, NULL);
-                wprintw(NOUNWIN(op), "%-*s", ID_W,  fullname(request_id(op)));
-        }
-        if (op==OBJECT) {
-                wcolor_set(NOUNWIN(op), PUR_YEL, NULL);
-                wprintw(NOUNWIN(op), "%*s", ID_W, fullname(request_id(op)));
-        }
-        win_refresh(NOUNWIN(op));
-}
-
-
-void view_noun_grey(int op)
-{
-        if (op > 1) return;
-        werase(NOUNWIN(op));
-        if (op==SUBJECT) {
-                wcolor_set(NOUNWIN(op), PUR_GRE, NULL);
-                wprintw(NOUNWIN(op), "%-*s", ID_W, fullname(request_id(op)));
-        }
-        if (op==OBJECT) {
-                wcolor_set(NOUNWIN(op), PUR_GRE, NULL);
-                wprintw(NOUNWIN(op), "%*s", ID_W, fullname(request_id(op)));
-        }
-        win_refresh(NOUNWIN(op));
-}

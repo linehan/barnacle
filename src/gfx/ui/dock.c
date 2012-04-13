@@ -1,6 +1,7 @@
 #define _XOPEN_SOURCE_EXTENDED = 1  /* extended character sets */
 #include <menu.h>
 #include "../gfx.h"
+#include "../../noun/noun_model.h"
 #include "../../noun/noun_view.h"
 #include "dock.h"
 ////////////////////////////////////////////////////////////////////////////////
@@ -66,7 +67,10 @@ WINDOW *dock_window(int windowid)
 void view_dock(void)
 {
         if (dock_pan == NULL) init_dock();
-        if (get_noun_menu(0) == NULL || get_noun_menu(1) == NULL) build_nouns();
+        if (get_noun_menu(0) == NULL || get_noun_menu(1) == NULL)
+                list_nouns(SUBJECT, ALL_NOUNS);
+        /*if (get_noun_menu(1) == NULL) */
+                /*list_nouns(OBJECT, ALL_NOUNS);*/
         else    
                 top_panel(dock_pan);
 }

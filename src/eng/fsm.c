@@ -81,21 +81,21 @@ void operate_on(int input)
                 setmode(choose_verb(input));
                 break;
         case UI_WORLDMAP:
-                switch(input) 
-                {
-                case 'w':
-                        map_roll(GLOBE, 'u');
-                        break;
-                case 'a':
-                        map_roll(GLOBE, 'l');
-                        break;
-                case 's':
-                        map_roll(GLOBE, 'd');
-                        break;
-                case 'd':
-                        map_roll(GLOBE, 'r');
-                        break;
-                }
+                /*switch(input) */
+                /*{*/
+                /*case 'w':*/
+                        /*map_roll(GLOBE, 'u');*/
+                        /*break;*/
+                /*case 'a':*/
+                        /*map_roll(GLOBE, 'l');*/
+                        /*break;*/
+                /*case 's':*/
+                        /*map_roll(GLOBE, 'd');*/
+                        /*break;*/
+                /*case 'd':*/
+                        /*map_roll(GLOBE, 'r');*/
+                        /*break;*/
+                /*}*/
                 break;
         case UI_INSPECTOR:
                 inspect_control(input);
@@ -104,7 +104,7 @@ void operate_on(int input)
                 noun_modify(get_noun("Afarensis"), input);
                 break;
         case UI_MOB:
-                noun_modify(get_noun("Mr. E"), input);
+                noun_modify(get_noun("Guy"), input);
                 break;
         }
 }
@@ -144,7 +144,8 @@ void director(int input)
                         setmode(UI_BOAT);
                         setmode(MODE_STARTED);
                         break;
-                case 'c':
+                case 'i':
+                case 'o':
                         setmode(UI_NOUN);
                         setmode(MODE_STARTED);
                         break;

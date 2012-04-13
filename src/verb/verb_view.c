@@ -8,6 +8,7 @@ verb_view.c
 #include "../gfx/gfx.h"
 #include "../gfx/ui/dock.h"
 #include "../gfx/ui/stdpan.h"
+#include "../gfx/ui/stdmenu.h"
 #include "../test/test.h"
 #include "verb_model.h"
 #include "verb_control.h"
@@ -39,21 +40,8 @@ inline void put_n(WINDOW *win, int y, int x, wchar_t *wch, short pair, int n)
 #define VERB_X 0 
 #define VERB_Y LINES-VERB_H-3
 
-WINDOW *verb_menu_win;
-WINDOW *verb_menu_sub;
-WINDOW *verb_menu_buf;
-PANEL  *verb_menu_pan;
-MENU   *verb_menu;
+struct stdmenu_t *verbmenu;
 
-
-inline void init_verb_view(void)
-{
-        verb_menu_win = newwin(VERB_H, VERB_W, VERB_Y, VERB_X);
-        stdpan(verb_menu_win, 
-               &verb_menu_sub, 
-               &verb_menu_buf, 
-               &verb_menu_pan);
-}
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
 //                                                                            //
@@ -63,51 +51,43 @@ inline void init_verb_view(void)
 ////////////////////////////////////////////////////////////////////////////////
 void init_verb_menu(uint32_t bitmap)
 {
-        if (verb_menu_win == NULL) init_verb_view(); 
-
         static char *name[100];
         static char *desc[100];
-        static wchar_t *icon[100];
         int i, n;
         int *slice;
 
         n = ones32(bitmap);
         slice = bitind(bitmap, n);
 
-        /*werase(DIAGNOSTIC_WIN);*/
-        for (i=0; i<n; i++) {
-                /*wprintw(DIAGNOSTIC_WIN, "%i\n", slice[i]);*/
-        }
-                /*wprintw(DIAGNOSTIC_WIN, "n: %i\n", n);*/
         for (i=0; i<n; i++) {
                 name[i] = verbs[slice[i]].name;
                 desc[i] = verbs[slice[i]].desc;
         }
 
-        verb_menu = make_new_menu(name, desc, NULL, n);
+        verbmenu = new_stdmenu(name, desc, NULL, n); 
 
-        ITEM **item = menu_items(verb_menu);
+        /*verbmenu->item = menu_items(verbmenu->menu);*/
         for (i=0; i<n; i++) {
-                set_item_userptr(item[i], &verbs[slice[i]]);
+                set_item_userptr(verbmenu->item[i], &verbs[slice[i]]);
         }
 
-        menu_wins(verb_menu, verb_menu_win, verb_menu_sub);
-        menu_pair(verb_menu, PUR_DDP, PUR_GRE);
-        menu_look(verb_menu, DESC, true, NULL);
-        menu_look(verb_menu, MARK, false, NULL);
-        set_menu_format(verb_menu, VERB_H-2, 1);
-        menu_look(verb_menu, POST, true, NULL);
+        stdmenu_win(verbmenu, VERB_H, VERB_W, VERB_Y, VERB_X);
+        stdmenu_color(verbmenu, PUR_DDP, PUR_GRE);
 
+        stdmenu_cfg(verbmenu, DESC, true, NULL);
+        stdmenu_cfg(verbmenu, MARK, false, NULL);
+
+        verbmenu->post(verbmenu, true);
 }
 
 MENU *get_verb_menu(void)
 {
-        return (verb_menu);
+        return (verbmenu->menu);
 }
 
 PANEL *get_verb_panel(void)
 {
-        return (verb_menu_pan);
+        return (verbmenu->pan);
 }
 
 void post_verb_icon(ITEM *item)
@@ -118,17 +98,17 @@ void post_verb_icon(ITEM *item)
         int index;
         int top;
 
-        top  = top_row(verb_menu);
-        item = current_item(verb_menu);
+        top  = top_row(verbmenu->menu);
+        item = current_item(verbmenu->menu);
         index = item_index(item);
 
         verb = (struct verb_info *)item_userptr(item);
 
-        mvwdelch(verb_menu_sub, y, XPOS);
+        mvwdelch(verbmenu->sub, y, XPOS);
 
         y = (index-top);
-        put_n(verb_menu_sub, y, XPOS, verb->icon, verb->pair, 1);
-        win_refresh(verb_menu_sub);
+        put_n(verbmenu->sub, y, XPOS, verb->icon, verb->pair, 1);
+        win_refresh(verbmenu->sub);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
