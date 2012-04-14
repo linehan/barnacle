@@ -24,6 +24,7 @@
 #include "noun_view.h"
 #include "noun_model.h"
 #include "noun_control.h"
+#include "noun_discrim.h"
 #include "../verb/verb_model.h"
 
 
@@ -269,3 +270,4 @@ int choose_noun(int ch)
 
         return MODE_PERSIST;
 }
+

@@ -140,6 +140,11 @@ void *pattern_noun_menu(int op)
         static char patbuf[PATBUFLEN];  /* The pattern buffer */
         static int patlen;              /* Current length of the pattern */
         static short color;             /* Color of bufwin */
+        ITEM *match;
+        int match_row;
+        int menu_rows; 
+        int menu_cols;
+        int cur_top_row;
         int c;
 
         /* So much harm! */
@@ -158,7 +163,7 @@ void *pattern_noun_menu(int op)
                 patbuf[0]    = '\0';                /* Make patbuf a string */
                 open_noun_menu(op);                 /* Open menu */
 
-                goto PATTERN_LISTEN; /* Enter the main loop below */
+                goto PATTERN_PRINT; /* Enter the main loop at the bottom */
 
         /*
          * Feed input into the menu driver's 
@@ -166,6 +171,13 @@ void *pattern_noun_menu(int op)
          */
         PATTERN_LISTEN:
                 while ((c = getch()), c != '\n')  {
+                        /*
+                         * getch returns ERR if nothing is waiting
+                         * in the input stream (it's in non-blocking
+                         * mode)
+                         */
+                        if (c == ERR) 
+                                continue; /* Nothing to switch */
 
                         switch (c) {
                         /* 
@@ -197,7 +209,7 @@ void *pattern_noun_menu(int op)
                          * to patbuf 
                          */
                         default:
-                                if (isalpha(c)) {
+                                if (isalpha(c) || isspace(c)) {
                                         patlen = strlen(patbuf);
                                         patbuf[patlen] = c;
                                         patbuf[patlen+1] = '\0';
@@ -211,13 +223,36 @@ void *pattern_noun_menu(int op)
                          * and change the pattern buffer's text color
                          */
                         if (set_menu_pattern(menu, patbuf) == E_NO_MATCH) {
-                                menu_driver(menu, REQ_CLEAR_PATTERN);
-                                menu_driver(menu, REQ_FIRST_ITEM);
                                 color = PUR_RED;
-                        }
-                        else
+                        } else { 
                                 color = PUR_WHITE;
+                                /* 
+                                 * This requires a bit of explanation... 
+                                 * ncurses has what appears to be a bug in the 
+                                 * behavior of set_menu_pattern, in that if it 
+                                 * detects a match, it will set the top_row of 
+                                 * the menu to the row of the matching item. 
+                                 * However, if the matched item has a row 
+                                 * number > total_rows - window_height, the
+                                 * request to make it the top row will fail, 
+                                 * with an out-of-bounds error. Therefore we 
+                                 * must calculate the appropriate top_row 
+                                 * ourselves, until I have time to submit a 
+                                 * patch.
+                                 */
+                                menu_format(menu, &menu_rows, &menu_cols);
+                                match     = current_item(menu);
+                                match_row = item_index(match);
 
+                                if (match_row > menu_rows)
+                                        set_top_row(menu, match_row-(menu_rows-1));
+                                /* 
+                                 * The cursor is now on the top row, and we
+                                 * want it on the matching item.
+                                 */
+                                set_current_item(menu, match);
+                        }
+                PATTERN_PRINT:
                         /* Clear the buffer window and apply the coloring */
                         werase(bufwin);
                         wcolor_set(bufwin, color, NULL);
@@ -253,3 +288,4 @@ void *pattern_noun_menu(int op)
 
                 return (NULL); /* NULL tells the noun controller we're done */
 }
+
