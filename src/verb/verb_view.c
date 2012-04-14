@@ -307,12 +307,12 @@ void do_pulse(void)
         for (i=0; i<max; i++) {
 
                 if (keyring[i] == request_id(SUBJECT)) {
-                        view_vitals(SUBJECT);
+                        noun_print_vitals(SUBJECT);
                         verb_view(keyring[i], SUBJECT);
                 }
 
                 if (keyring[i] == request_id(OBJECT)) {
-                        view_vitals(OBJECT);
+                        noun_print_vitals(OBJECT);
                         verb_view(keyring[i], OBJECT);
                 }
 

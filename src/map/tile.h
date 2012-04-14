@@ -110,9 +110,9 @@ static inline void place_ocean_tile(struct map_t *map, int y, int x)
 static inline void place_swell_tile(struct map_t *map, int y, int x)
 {
         const int layer = BGR;
-        const short color = SEA_MED;
+        const short color = SEA__MED;
         const attr_t attr = 0;
-        mvwp(PLATE(map, layer), y, x, br_dis(2), color, attr); 
+        mvwp(PLATE(map, layer), y, x, br_dis(0), color, attr); 
 }
 /*
  * Place a tile of partially-submerged sand 
@@ -125,8 +125,8 @@ static inline void place_shoal_tile(struct map_t *map, int y, int x)
         const attr_t attr2 = A_REVERSE;
         if (flip_biased(0.7))
                 mvwp(PLATE(map, layer), y, x, br_atl(2), color, attr1);
-        else    
-                mvwp(PLATE(map, layer), y, x, L"█", color, attr2);
+        //else    
+                //mvwp(PLATE(map, layer), y, x, L"█", color, attr2);
 }
 /*
  * Place a tile of beach sand

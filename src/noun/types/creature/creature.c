@@ -1,6 +1,6 @@
 #include "../../../com/arawak.h"
 
-#include "person.h"
+#include "creature.h"
 #include "../../noun_model.h"
 #include "../../../eng/fsm.h"
 
@@ -35,15 +35,19 @@ int modify_creature(void *obj, int input)
         switch(input) 
         { 
         case 'j':
+        case 's':
                 mob_move(&noun->mob, 'd');
                 break;
         case 'k':
+        case 'w':
                 mob_move(&noun->mob, 'u');
                 break;
         case 'h':
+        case 'a':
                 mob_move(&noun->mob, 'l');
                 break;
         case 'l':
+        case 'd':
                 mob_move(&noun->mob, 'r');
                 break;
         case KEY_ESC:

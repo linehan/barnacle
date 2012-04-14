@@ -337,30 +337,34 @@ void label_shorelines(struct map_t *map)
 
                 /* Draw an edge if the following conditions apply... */
 
-                if (LAYER(*seed.n,  2, BEA, SHO) 
-                ||  LAYER(*seed.nw, 2, BEA, SHO)
-                ||  LAYER(*seed.ne, 2, BEA, SHO))
-                {
-                        wch = shore[0];
-                        color = D_SEA_LAGOON;
-                }
-                else if (LAYER(*seed.s,  2, BEA, SHO)
-                ||       LAYER(*seed.sw, 2, BEA, SHO)
-                ||       LAYER(*seed.se, 2, BEA, SHO))
-                {
-                        wch = shore[1];
-                        color = D_SEA_LAGOON;
-                }
-                else if (LAYER(*seed.w, 2, BEA, SHO)) 
-                {
-                        wch = shore[2];
-                        color = D_SEA_LAGOON;
-                }
-                else if (LAYER(*seed.e, 2, BEA, SHO)) 
-                {
-                        wch = shore[3];
-                        color = D_SEA_LAGOON;
-                }
+                /*if (LAYER(*seed.n,  2, BEA, SHO) */
+                /*||  LAYER(*seed.nw, 2, BEA, SHO)*/
+                /*||  LAYER(*seed.ne, 2, BEA, SHO))*/
+                /*{*/
+                        /*wch = shore[0];*/
+                        /*[>color = D_SEA_LAGOON;<]*/
+                        /*color = SEA__MED;*/
+                /*}*/
+                /*else if (LAYER(*seed.s,  2, BEA, SHO)*/
+                /*||       LAYER(*seed.sw, 2, BEA, SHO)*/
+                /*||       LAYER(*seed.se, 2, BEA, SHO))*/
+                /*{*/
+                        /*wch = shore[1];*/
+                        /*[>color = D_SEA_LAGOON;<]*/
+                        /*color = SEA__MED;*/
+                /*}*/
+                /*else if (LAYER(*seed.w, 2, BEA, SHO)) */
+                /*{*/
+                        /*wch = shore[2];*/
+                        /*[>color = D_SEA_LAGOON;<]*/
+                        /*color = SEA__MED;*/
+                /*}*/
+                /*else if (LAYER(*seed.e, 2, BEA, SHO)) */
+                /*{*/
+                        /*wch = shore[3];*/
+                        /*[>color = D_SEA_LAGOON;<]*/
+                        /*color = SEA__MED;*/
+                /*}*/
                 else if (LAYER(*seed.n, 1, DRP)) 
                 {
                         wch = shore[0];

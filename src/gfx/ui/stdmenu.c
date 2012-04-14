@@ -22,6 +22,14 @@ void stdmenu_destroy(void *self)
 }
 
 
+bool stdmenu_is_visible(void *self)
+{
+        struct stdmenu_t *stdmenu = (struct stdmenu_t *)self;
+
+        return (panel_hidden(stdmenu->pan)) ? false : true;
+}
+
+
 void stdmenu_visible(void *self, bool opt)
 {
         struct stdmenu_t *stdmenu = (struct stdmenu_t *)self; 
@@ -64,6 +72,7 @@ struct stdmenu_t *new_stdmenu(char **name, char **desc, void **usrptr, int n)
         new->die = &stdmenu_destroy;
         new->vis = &stdmenu_visible;
         new->post = &stdmenu_post;
+        new->isvis = &stdmenu_is_visible;
 
         return (new);
 }

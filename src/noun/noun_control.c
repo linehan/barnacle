@@ -21,6 +21,7 @@
 #include "../lib/stoc/stoc.h"
 #include "../gfx/gfx.h"
 
+#include "noun_widgets.h"
 #include "noun_view.h"
 #include "noun_model.h"
 #include "noun_control.h"
@@ -37,6 +38,8 @@
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
 enum operator_modes { 
+        OPSUBJECT,      /* Change operand to SUBJECT */
+        OPOBJECT,       /* Change operand to OBJECT */
         STARTING,       /* Initialize */
         EXITING,        /* Exit */
         LAST,           /* Restore mode to previous */
@@ -46,8 +49,6 @@ enum operator_modes {
         PATTERN,        /* Pattern matching in progress */
         ACTION,         /* Initiate verb action */
         CANCEL,         /* Cancel verb action in progress */
-        OPSUBJECT,      /* Change operand to SUBJECT */
-        OPOBJECT,       /* Change operand to OBJECT */
         POPMENU,        /* Open the operand's menu (if closed) */
         REFRESHMENU,    /* Refresh the noun menu with the query results */
         TOGMENU         /* Toggle the menu of the operand */
@@ -119,8 +120,8 @@ void operate_on(void *noun)
                 setmode(DEFAULT_MODE);
                 break;
         case EXITING:
-                grey_current_noun(SUBJECT);
-                grey_current_noun(OBJECT);
+                noun_print_name(SUBJECT, GREYCOLOR);
+                noun_print_name(OBJECT, GREYCOLOR);
                 close_noun_menu(SUBJECT);
                 close_noun_menu(OBJECT);
                 return;
@@ -139,7 +140,7 @@ void operate_on(void *noun)
                 break;
         case POPMENU:
                 open_noun_menu(op);
-                setmode(LAST);
+                setmode(DEFAULT_MODE);
                 break;
         case ACTION:
                 if (op != SUBJECT) {
@@ -155,15 +156,15 @@ void operate_on(void *noun)
         }
         switch(mode) {
         case ATTRIBUTES:
-                view_attributes(op);
+                noun_print_attributes(op);
                 break;
         case VITALS:
-                view_vitals(op);
-                view_vitals(op^1);
+                noun_print_vitals(op);
+                noun_print_vitals(op^1);
                 break;
         }
-        grey_current_noun(op^1);
-        print_current_noun(op);
+        noun_print_name(op^1, GREYCOLOR);
+        noun_print_name(op, NORMALCOLOR);
         scr_refresh();
 }
 ////////////////////////////////////////////////////////////////////////////////
@@ -207,23 +208,54 @@ int choose_noun(int ch)
 
         /* Select / open the subject or object menu ------- */
         case 'o':
-                if (op == OBJECT) setmode(TOGMENU);
-                else              setmode(OPOBJECT);
+                setmode(OPOBJECT);
+                if (isvis_noun_menu(OBJECT) == false)
+                        setmode(POPMENU);
+
+                focus_noun_menu(SUBJECT, false);
+                focus_noun_menu(OBJECT, true);
                 break;
         case 'i':
-                if (op == SUBJECT) setmode(TOGMENU);
-                else               setmode(OPSUBJECT);
+                setmode(OPSUBJECT);
+                if (isvis_noun_menu(SUBJECT) == false)
+                        setmode(POPMENU);
+
+                focus_noun_menu(SUBJECT, true);
+                focus_noun_menu(OBJECT, false);
+                break;
+        case '\t':
+                if (op==SUBJECT) {
+                        focus_noun_menu(SUBJECT, false);
+                        focus_noun_menu(OBJECT, true);
+                        setmode(OPOBJECT);
+                } else {
+                        focus_noun_menu(SUBJECT, true);
+                        focus_noun_menu(OBJECT, false);
+                        setmode(OPSUBJECT);
+                }
                 break;
 
         /* Toggle the selected menu ----------------------- */
         case '\n':
-        case 'u':
-                setmode(TOGMENU);
+        case ' ':
+                close_noun_menu(op);
+
+                if (isvis_noun_menu(op^1)) {
+                        focus_noun_menu(op^1, true);
+                        focus_noun_menu(op, false);
+                        setmode(op^1);
+                }
+
                 break;
 
         /* Refresh the contents of the selected menu ------ */
-        case 'r':
+        case 'u':
                 setmode(REFRESHMENU);
+                break;
+
+        /* Highlight (locate) the currently selected noun - */
+        case 'l':
+                noun_print_highlight(op);
                 break;
 
         /* Feed input to the pattern matcher -------------- */

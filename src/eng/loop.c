@@ -86,7 +86,8 @@ void move_cb(EV_P_ ev_timer *w, int revents)
         }
         do_pulse();
         noun_render(get_noun("Afarensis"));
-        surface_flow(GLOBE);
+        /*surface_flow(GLOBE);*/
+        sweet_flow(GLOBE);
 
         GLOBE->restack(GLOBE);
         map_refresh(GLOBE);

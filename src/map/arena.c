@@ -78,5 +78,31 @@ struct map_t *map_preset_arena(void)
 }
 
 
+struct map_t *map_preset_water(void)
+{
+        struct map_t *water;
+        double **watermap;
+        int i;
+        int j;
+
+        watermap = malloc(LINES * sizeof(double *));
+        for (i=0; i<LINES; i++)
+                watermap[i] = malloc(COLS * sizeof(double));
+       
+        for (i=0; i<LINES; i++) {
+        for (j=0; j<COLS; j++) {
+                if (i >= (LINES/2)-3 && i <= LINES-(LINES/2)+3
+                &&  j >= (COLS/2)-5 && j <= COLS-(COLS/2)+5)
+                        watermap[i][j] = BEACH_F;
+                else
+                        watermap[i][j] = -0.05;
+        }
+        }
+       
+        water = new_map(LINES+1, COLS+1, LINES, COLS, 0, 0);
+        map_gen(water, watermap, MAP_NOSMOOTH);
+
+        return water;
+}
 
 
