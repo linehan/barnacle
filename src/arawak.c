@@ -28,18 +28,27 @@
 #include "mob/mob.h"
 #include "noun/noun_view.h"
 #include "noun/types/boat/boat.h"
-#include "noun/types/person/person.h"
+#include "noun/types/creature/creature.h"
 #include "gfx/ui/titlecard.h"
 
-/* Day-toh-nah */
-int main() 
+/* Rolling start */
+int main(int argc, char *argv[]) 
 {
+        struct map_t *pad;
+
         arawak_init();
 
-        /*struct map_t *pad = new_map((LINES*3), (COLS*3), LINES, COLS, 0, 0);*/
-        /*map_gen(pad, NULL, MAP_DOSMOOTH);*/
+        if (argc == 2) {
+                if (strcmp(argv[1], "-water")) 
+                        pad = map_preset_arena();
+                else if (strcmp(argv[1], "-arena"))
+                        pad = map_preset_water();
+        }
+        if (pad == NULL) {
+                pad = new_map((LINES*3), (COLS*3), LINES, COLS, 0, 0);
+                      map_gen(pad, NULL, MAP_DOSMOOTH);
+        }
 
-        struct map_t *pad = map_preset_arena();
         GLOBE = pad;
 
         print_status("\n ALL OK\n");
@@ -64,15 +73,15 @@ int main()
         init_pair(FLEX2, BLACK, WHITE);
 
         new_creature("Guy", PERSON, L"д", FLEX);
-        new_creature("Killbot", MONSTER, L"⿍", FLEX);
+        /*new_creature("Killbot", MONSTER, L"⿍", FLEX);*/
 
         noun_set_mob(get_noun("Guy"), true);
         mob_move(noun_mob("Guy"), 'd');
         mob_move(noun_mob("Guy"), 'd');
-        mob_move(noun_mob("Guy"), 'd');
+        /*mob_move(noun_mob("Guy"), 'd');*/
 
-        noun_set_mob(get_noun("Killbot"), true);
-        mob_move(noun_mob("Killbot"), 'd');
+        /*noun_set_mob(get_noun("Killbot"), true);*/
+        /*mob_move(noun_mob("Killbot"), 'd');*/
 
 
         start_event_watchers(); /* Enter the event loop */

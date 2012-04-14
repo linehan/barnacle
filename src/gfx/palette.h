@@ -103,6 +103,7 @@ enum arne_shadow2 {
         B_CLIFF = 108,
         C_CLIFF = 109,
         D_CLIFF = 110,
+        WATER_HINT = 111,
 };
 
 /* FG_BG color pairs; odd ones are swaps of even ones. */

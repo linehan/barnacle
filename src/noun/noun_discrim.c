@@ -116,6 +116,7 @@ void query_noun_menu(int op, uint32_t query, int sort)
  * @op: the operand, either SUBJECT (left menu) or OBJECT (right menu)
  *
  * Notes
+ * This is a big, bad function, arcane and unrepentant.
  * This is one of the pseudo-coroutines employed by the noun controller.
  * Once the appropriate mode is triggered, the master FSM is locked out
  * temporarily, and this function will be interpreting all keyboard input.
@@ -144,10 +145,9 @@ void *pattern_noun_menu(int op)
         int match_row;
         int menu_rows; 
         int menu_cols;
-        int cur_top_row;
-        int c;
+        int c;                          /* Input from getch() */
 
-        /* So much harm! */
+        /* The harmanity! */
         if (is_firstcall) goto PATTERN_START; else goto PATTERN_LISTEN;
 
         /* 
@@ -179,6 +179,7 @@ void *pattern_noun_menu(int op)
                         if (c == ERR) 
                                 continue; /* Nothing to switch */
 
+                        /* ------------------------------------------------ */
                         switch (c) {
                         /* 
                          * ESC ends pattern matching mode 
@@ -216,14 +217,14 @@ void *pattern_noun_menu(int op)
                                 }
                                 break;
                         }
-
+                        /* ------------------------------------------------ */
                         /* 
                          * If the pattern fails to match, clear the MENU's
                          * pattern buffer, set the cursor to the first item,
                          * and change the pattern buffer's text color
                          */
                         if (set_menu_pattern(menu, patbuf) == E_NO_MATCH) {
-                                color = PUR_RED;
+                                color = PUR_LRED;
                         } else { 
                                 color = PUR_WHITE;
                                 /* 

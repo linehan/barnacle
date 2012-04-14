@@ -102,7 +102,7 @@ int arawak_init(void)
         print_status("Twisting Mersenne...");
         init_stochastics();   /* Start the RNG and helpers */   
         print_status(SUCCESS);
-        init_surface_flow(1);
+        init_surface_flow(100);
 
         print_status("Test-o-plexing...");
         init_test();          /* Start test structures */

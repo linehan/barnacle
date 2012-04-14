@@ -250,3 +250,69 @@ inline void RULE_UL(struct yx_t *yx)
         RULE_L(yx);
 }
 
+
+double **z;
+double **z1;
+
+/*
+ * sweet_flow -- hacky in-place DFT with matrix swap 
+ * @map: pointer to an allocated struct map_t
+ */
+void sweet_flow(struct map_t *map)
+{
+        const float c  = 1.0;  /* Wave velocity */
+        const float h  = 2.0;  /* Field height, the distance b/t two vertices */
+        const float dt = 0.8;  /* The time/sampling interval */
+        const float d = 1.18;  /* A "dampening" factor, for collisions */
+
+        /* We precompute the two wave equation integral coefficients */
+        const float A = (c * dt/h)*(c * dt/h);   
+        const float B = (2 - 4*A);   
+
+        double **tmp; /* For when we swap matrices at the end */
+        int i;
+        int j;
+
+
+        if (z == NULL) {
+                z = simplex_matrix(map->ufo.box.h, map->ufo.box.w);
+                z1 = malloc(map->ufo.box.h * sizeof(double *));
+                for (i=0; i<map->ufo.box.h; i++)
+                        z1[i] = malloc(map->ufo.box.w * sizeof(double));
+        }
+
+        for (i=1; i<map->ufo.box.h-1; i++) {
+                for (j=1; j<map->ufo.box.w-1; j++) {
+                        place_ocean_tile(map, i, j);
+
+                        z1[i][j] = A*(z[i-1][j] + z[i+1][j] + z[i][j+1])
+                                 + B*z[i][j] - z1[i][j];
+
+                        if ((get_nibble(map->mx->mx[i][j], ALT)) != 0)
+                                z1[i][j] *= d;
+
+                        if (z1[i][j] > 0.00) 
+                                place_swell_tile(map, i, j);
+                }
+        }
+        
+        tmp = z1;
+        z1  = z;
+        z   = tmp;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

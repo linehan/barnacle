@@ -25,6 +25,12 @@ static inline WINDOW *mob_win(struct mob_t *mob)
         return panel_window(mob->pan);
 }
 
+static inline void mob_pos(struct mob_t *mob, uint32_t *y, uint32_t *x)
+{
+        *y = ufo_y(mob, ufo);
+        *x = ufo_x(mob, ufo);
+}
+
 
 void mob_cfg(struct mob_t *mob, struct map_t *map, int h, int w, int y0, int x0);
 void set_mob(struct mob_t *mob, bool onoff);

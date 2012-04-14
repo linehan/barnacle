@@ -239,6 +239,7 @@ void init_palette(int set)
         init_color(B_SAND_LAGOON, 635, 623, 506);
         init_color(C_SAND_LAGOON, 259, 361, 318);
         init_color(D_SAND_LAGOON, 188, 267, 235);
+        init_color(WATER_HINT, 223, 310, 274);
 
         /*init_color(SANDY, 886,  737,  557);*/
 
@@ -419,6 +420,6 @@ void init_palette(int set)
         init_pair(__SEA_DARK,   __GREEN,  __DSEA);
         init_pair(__SEA_MED,    __SEA,    __DSEA);
         init_pair(__SEA_LIG,    __LSEA,   __DSEA);
-        init_pair(SEA__MED, _SEA, DSEA);
+        init_pair(SEA__MED, WATER_HINT, DSEA);
         init_pair(SEA___MED, __LSEA, DSEA);
 }

@@ -56,9 +56,10 @@ arawak_SOURCES = arawak.c                       \
                    noun/noun_discrim.c          \
                    noun/noun_view.c             \
                    noun/noun_control.c          \
+                   noun/noun_widgets.c          \
                    noun/types/boat/boat.c       \
                    noun/types/boat/compass.c    \
-                   noun/types/person/person.c   \
+                   noun/types/creature/creature.c   \
                    verb/verb_model.c            \
                    verb/verb_view.c             \
                    verb/verb_control.c          \

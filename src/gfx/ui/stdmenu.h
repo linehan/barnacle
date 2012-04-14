@@ -42,6 +42,7 @@ struct stdmenu_t {
         int ncols;
         void (*die)(void *self);
         void (*vis)(void *self, bool opt);
+        bool (*isvis)(void *self);
         void (*build)(void *self, int opt);
         void (*post)(void *self, bool opt);
 };
