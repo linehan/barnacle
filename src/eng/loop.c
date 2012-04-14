@@ -171,8 +171,8 @@ int start_event_watchers(void)
         ev_init(&move, &move_cb);
         ev_init(&animate, &animate_cb);
 
-        /*render.repeat    = .02;*/
-        render.repeat    = .04;
+        render.repeat    = .02;
+        /*render.repeat    = .04;*/
         move.repeat      = .08;
         animate.repeat   = 3.5;
 
