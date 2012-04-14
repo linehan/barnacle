@@ -255,13 +255,13 @@ double **z;
 double **z1;
 
 /*
- * sweet_flow -- hacky in-place DFT with matrix swap 
+ * sweet_flow -- hacky in-place shallow water DFT with matrix swap 
  * @map: pointer to an allocated struct map_t
  */
 void sweet_flow(struct map_t *map)
 {
         const float c  = 1.0;  /* Wave velocity */
-        const float h  = 2.0;  /* Field height, the distance b/t two vertices */
+        const float h  = 2.0;  /* Field height; distance b/t two vertices */
         const float dt = 0.8;  /* The time/sampling interval */
         const float d = 1.18;  /* A "dampening" factor, for collisions */
 
@@ -273,9 +273,9 @@ void sweet_flow(struct map_t *map)
         int i;
         int j;
 
-
+        /* Allocate the matrices z and z1, to hold the water surface data. */
         if (z == NULL) {
-                z = simplex_matrix(map->ufo.box.h, map->ufo.box.w);
+                z  = simplex_matrix(map->ufo.box.h, map->ufo.box.w);
                 z1 = malloc(map->ufo.box.h * sizeof(double *));
                 for (i=0; i<map->ufo.box.h; i++)
                         z1[i] = malloc(map->ufo.box.w * sizeof(double));
@@ -283,19 +283,28 @@ void sweet_flow(struct map_t *map)
 
         for (i=1; i<map->ufo.box.h-1; i++) {
                 for (j=1; j<map->ufo.box.w-1; j++) {
+
+                        /* Re-set the position to plain ocean */
                         place_ocean_tile(map, i, j);
 
+                        /* Compute the integral */
                         z1[i][j] = A*(z[i-1][j] + z[i+1][j] + z[i][j+1])
                                  + B*z[i][j] - z1[i][j];
 
+                        /* 
+                         * If the value corresponds to a map tile above
+                         * sea level, multiply it by the dampening
+                         * factor
+                         */
                         if ((get_nibble(map->mx->mx[i][j], ALT)) != 0)
                                 z1[i][j] *= d;
 
+                        /* These are the "waves" on the map */
                         if (z1[i][j] > 0.00) 
                                 place_swell_tile(map, i, j);
                 }
         }
-        
+        /* Swap the matrices */ 
         tmp = z1;
         z1  = z;
         z   = tmp;
