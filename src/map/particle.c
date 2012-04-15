@@ -270,8 +270,13 @@ void sweet_flow(struct map_t *map)
         const float B = (2 - 4*A);   
 
         double **tmp; /* For when we swap matrices at the end */
+        int rows;
+        int cols;
         int i;
         int j;
+
+        rows = map->ufo.box.h-1;
+        cols = map->ufo.box.w-1;
 
         /* Allocate the matrices z and z1, to hold the water surface data. */
         if (z == NULL) {
@@ -281,8 +286,8 @@ void sweet_flow(struct map_t *map)
                         z1[i] = malloc(map->ufo.box.w * sizeof(double));
         }
 
-        for (i=1; i<map->ufo.box.h-1; i++) {
-                for (j=1; j<map->ufo.box.w-1; j++) {
+        for (i=1; i<rows; i++) {
+                for (j=1; j<cols; j++) {
 
                         /* Re-set the position to plain ocean */
                         place_ocean_tile(map, i, j);
@@ -309,19 +314,5 @@ void sweet_flow(struct map_t *map)
         z1  = z;
         z   = tmp;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 

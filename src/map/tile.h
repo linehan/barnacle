@@ -16,6 +16,20 @@
  * Labels identify the tile's rendering
  */
 
+static wchar_t base[]=L"⠀";
+cchar_t lobase;
+cchar_t hibase;
+
+static inline void init_tiles(void)
+{
+        #define lobase_pair SEA_MED
+        #define hibase_pair SEA__MED
+
+        setcchar(&lobase, base, 0, lobase_pair, NULL);
+        setcchar(&hibase, base, 0, hibase_pair, NULL);
+}
+
+
 static inline void wipe_label(uint32_t *val)
 {
         set_nibble(val, LAY, 0);
@@ -23,66 +37,48 @@ static inline void wipe_label(uint32_t *val)
 }
 static inline void place_ocean_label(uint32_t *val)
 {
-        const int layer = BGR;
-        const int elev  = 0;
-        set_nibble(val, LAY, layer);                            
-        set_nibble(val, ALT, elev);
+        set_nibble(val, LAY, BGR);                            
+        set_nibble(val, ALT, 0);
 }
 static inline void place_swell_label(uint32_t *val)
 {
-        const int layer = BGR;
-        const int elev  = 0;
-        set_nibble(val, LAY, layer);                            
-        set_nibble(val, ALT, elev);
+        set_nibble(val, LAY, BGR);                            
+        set_nibble(val, ALT, 0);
 }
 static inline void place_shoal_label(uint32_t *val)
 {
-        const int layer = SHO;
-        const int elev  = 1;
-        set_nibble(val, LAY, layer);                            
-        set_nibble(val, ALT, elev);
+        set_nibble(val, LAY, SHO);                            
+        set_nibble(val, ALT, 1);
 }
 static inline void place_beach_label(uint32_t *val)
 {
-        const int layer = BEA;
-        const int elev  = 2;
-        set_nibble(val, LAY, layer);                            
-        set_nibble(val, ALT, elev);
+        set_nibble(val, LAY, BEA);                            
+        set_nibble(val, ALT, 2);
 }
 static inline void place_terra_label(uint32_t *val)
 {
-        const int layer = TOP;
-        const int elev  = 4;
-        set_nibble(val, LAY, layer);                            
-        set_nibble(val, ALT, elev);
+        set_nibble(val, LAY, TOP);                            
+        set_nibble(val, ALT, 4);
 }
 static inline void place_cliff_label(uint32_t *val)
 {
-        const int layer = DRP;
-        const int elev  = 4;
-        set_nibble(val, LAY, layer);                            
-        set_nibble(val, ALT, elev);
+        set_nibble(val, LAY, DRP);                            
+        set_nibble(val, ALT, 4);
 }
 static inline void place_treetop_label(uint32_t *val)
 {
-        const int layer = TTO;
-        const int elev  = 4;
-        set_nibble(val, LAY, layer);                            
-        set_nibble(val, ALT, elev);
+        set_nibble(val, LAY, TTO);                            
+        set_nibble(val, ALT, 4);
 }
 static inline void place_treetrunk_label(uint32_t *val)
 {
-        const int layer = TTR;
-        const int elev  = 4;
-        set_nibble(val, LAY, layer);                            
-        set_nibble(val, ALT, elev);
+        set_nibble(val, LAY, TTR);                            
+        set_nibble(val, ALT, 4);
 }
 static inline void place_cave_label(uint32_t *val)
 {
-        const int layer = CAVE;
-        const int elev = 4;
-        set_nibble(val, LAY, layer);
-        set_nibble(val, ALT, elev);
+        set_nibble(val, LAY, CAVE);
+        set_nibble(val, ALT, 4);
 }
 
 /*
@@ -90,89 +86,112 @@ static inline void place_cave_label(uint32_t *val)
  */
 static inline void wipe_tile(struct map_t *map, int y, int x, int layer)
 {
-        const short color = 0;
-        const attr_t attr = 0;
-        mvwp(PLATE(map, layer), y, x, L" ", color, attr);
+        mvwp(PLATE(map, layer), y, x, L" ", 0, 0);
 }
 /*
  * Place a tile of static ocean
  */
 static inline void place_ocean_tile(struct map_t *map, int y, int x)
 {
-        const int layer = BGR;
-        const short color = SEA_MED;
-        const attr_t attr = 0;
-        mvwp(PLATE(map, layer), y, x, br_dis(0), color, attr); 
+        #define layer BGR 
+
+        mvwadd_wch(PLATE(map, layer), y, x, &lobase);
+
+        #undef layer
 }
 /*
  * Place a tile of dynamic ocean
  */
 static inline void place_swell_tile(struct map_t *map, int y, int x)
 {
-        const int layer = BGR;
-        const short color = SEA__MED;
-        const attr_t attr = 0;
-        mvwp(PLATE(map, layer), y, x, br_dis(0), color, attr); 
+        #define layer BGR 
+
+        mvwadd_wch(PLATE(map, layer), y, x, &hibase);
+
+        #undef layer
 }
 /*
  * Place a tile of partially-submerged sand 
  */
 static inline void place_shoal_tile(struct map_t *map, int y, int x)
 {
-        const int layer = SHO;
-        const short color  = SEA_MED;
-        const attr_t attr1 = 0;
-        const attr_t attr2 = A_REVERSE;
+        #define layer SHO
+        #define color SEA_MED
+        #define attr  0
+
         if (flip_biased(0.7))
-                mvwp(PLATE(map, layer), y, x, br_atl(2), color, attr1);
-        //else    
-                //mvwp(PLATE(map, layer), y, x, L"█", color, attr2);
+                mvwp(PLATE(map, layer), y, x, br_atl(2), color, attr);
+
+        #undef layer
+        #undef color
+        #undef attr
 }
 /*
  * Place a tile of beach sand
  */
 static inline void place_beach_tile(struct map_t *map, int y, int x)
 {
-        const int layer = BEA;
-        const short color  = A_SEA_LAGOON;
-        const attr_t attr1 = 0;
-        const attr_t attr2 = A_REVERSE;
+        #define layer BEA
+        #define color A_SEA_LAGOON
+        #define attr1 0
+        #define attr2 A_REVERSE
+
         if (flip_biased(0.3))
                 mvwp(PLATE(map, layer), y, x, br_dis(1), color, attr1);
         else    
                 mvwp(PLATE(map, layer), y, x, L"█", color, attr2);
+
+        #undef layer
+        #undef color
+        #undef attr1
+        #undef attr2
 }
 /*
  * Place whatever "basic" ground tile is currently active
  */
 static inline void place_terra_tile(struct map_t *map, int y, int x)
 {
-        const int layer = TOP;
-        const short color = GRASSY;
-        const attr_t attr = 0;
+        #define layer TOP
+        #define color GRASSY
+        #define attr 0
+
         mvwp(PLATE(map, layer), y, x, L"▒", color, attr);
+
+        #undef layer
+        #undef color
+        #undef attr
 }
 /*
  * Place a perspective tile to indicate a drop of elevation
  */
 static inline void place_cliff_tile(struct map_t *map, int y, int x)
 {
-        const int layer = DRP;
-        const short color = LAND;
-        const attr_t attr = 0;
+        #define layer DRP
+        #define color LAND
+        #define attr 0
+
         wipe_tile(map, y, x, TOP);
         mvwp(PLATE(map, layer), y, x, L"▓", color, attr);
+
+        #undef layer
+        #undef color
+        #undef attr
 }
 /*
  * Place a tile corresponding to the "top" of a tree
  */
 static inline void place_treetop_tile(struct map_t *map, int y, int x)
 {
-        const int layer = TTO;
-        const short color = TREETOP;
-        const attr_t attr = 0;
+        #define layer TTO
+        #define color TREETOP
+        #define attr 0
+
         wipe_tile(map, y, x, TOP);
         mvwp(PLATE(map, layer), y, x, L"⬢", color, attr);
+
+        #undef layer
+        #undef color
+        #undef attr
 }
 /*
  * Place a tile corresponding to the "trunk" of a tree, analagous
@@ -180,22 +199,31 @@ static inline void place_treetop_tile(struct map_t *map, int y, int x)
  */
 static inline void place_treetrunk_tile(struct map_t *map, int y, int x)
 {
-        const int layer = TTR;
-        const short color = TREETRUNK;
-        const attr_t attr = 0;
+        #define layer TTR
+        #define color TREETRUNK 
+        #define attr 0
+
         wipe_tile(map, y, x, TOP);
         mvwp(PLATE(map, layer), y, x, L"╹", color, attr);
+
+        #undef layer
+        #undef color
+        #undef attr
 }
 /*
  * Place a tile for a cave entrance
  */
 static inline void place_cave_tile(struct map_t *map, int y, int x)
 {
-        const int layer = CAVE;
-        const short color = PUR_BROWN;
-        const attr_t attr = 0;
-        //wipe_tile(map, y, x, DRP);
+        #define layer CAVE 
+        #define color PUR_BROWN 
+        #define attr 0
+
         mvwp(PLATE(map, layer), y, x, L"▔", color, attr);
+
+        #undef layer
+        #undef color
+        #undef attr
 }
 
 /*

@@ -78,7 +78,7 @@ int main(int argc, char *argv[])
         noun_set_mob(get_noun("Guy"), true);
         mob_move(noun_mob("Guy"), 'd');
         mob_move(noun_mob("Guy"), 'd');
-        /*mob_move(noun_mob("Guy"), 'd');*/
+        mob_move(noun_mob("Guy"), 'd');
 
         /*noun_set_mob(get_noun("Killbot"), true);*/
         /*mob_move(noun_mob("Killbot"), 'd');*/
