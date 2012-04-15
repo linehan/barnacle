@@ -1,3 +1,11 @@
+/*
+ *
+ * noun_descrim.c -- supplies "discriminator" functions that allow the
+ *                   user to filter and query nouns in various ways. 
+ *
+ */
+
+
 #include <stdlib.h>
 #include "../com/arawak.h"
 #include "../gfx/ui/stdmenu.h"
@@ -5,13 +13,9 @@
 #include "noun_control.h"
 
 
-
-
 void sort_noun_menu(int op, uint32_t sort);
 void query_noun_menu(int op, uint32_t query, int sort);
 void *pattern_noun_menu(int op);
-
-
 
 
 /*
@@ -144,7 +148,7 @@ void *pattern_noun_menu(int op)
         ITEM *match;
         int match_row;
         int menu_rows; 
-        int menu_cols;
+        int menu_cols; 
         int c;                          /* Input from getch() */
 
         /* The harmanity! */

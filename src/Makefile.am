@@ -1,16 +1,16 @@
 AUTOMAKE_OPTIONS = foreign subdir-objects
 #                      |            \
-#         gprof       non-GNU     compile objects in the 
-#           |                      indicated relative paths
-# optimize  | warnings
-# lvl 3 \   |    /    
-CFLAGS=-O3 -pg -Wall -DVERSION=\"$(VERSION)\" -DPROG="\"$(PACKAGE)\""
-LDFLAGS=-pg -lm -lpthread -lmenu -lpanel -lform -lncursesw -lev
-#       /    /      |        \         |       \       \       \__________
-#      / math.h     |       menu     panels   forms     \                 \
-#  gprof         POSIX     (curses)  (curses) (curses) ncurses with      libev   
-#                threads                               wide character  
-#                                                      support
+#         gprof       non-GNU        compile objects in the 
+#           |                        indicated relative paths
+# optimize  | warnings  debug info
+# lvl 3 \   |    /     /  
+CFLAGS=-O3 -pg -Wall -g -DVERSION=\"$(VERSION)\" -DPROG="\"$(PACKAGE)\""
+LDFLAGS=-pg -lm -lrt -lpthread -lmenu -lpanel -lform -lncursesw -lev
+#       /    /    |    |         \        |       \        \       \_______
+#      / math.h   |    |        menu     panels   forms     \              \
+#  gprof        time  POSIX    (curses)  (curses) (curses) ncurses with   libev   
+#                     threads                              wide character  
+#                                                          support
 bin_PROGRAMS = arawak
 arawak_SOURCES = arawak.c                       \
                    (wildcard lib/ccan/*/*.c)    \
@@ -35,6 +35,7 @@ arawak_SOURCES = arawak.c                       \
                    eng/bytes.c                  \
                    eng/fsm.c                    \
                    eng/loop.c                   \
+                   thr/thr_pool.c               \
                    gfx/palette.c                \
                    gfx/sprite.c                 \
                    gfx/gfx.c                    \
