@@ -127,15 +127,15 @@ void director(int input)
                 /*case '%':*/
                         /*testplex(0);*/
                         /*break;*/
-                case ')':
-                        inc_surface_flow();
-                        break;
-                case '(':
-                        dec_surface_flow();
-                        break;
-                case '_':
-                        rot_surface_rule();
-                        break;
+                /*case ')':*/
+                        /*inc_surface_flow();*/
+                        /*break;*/
+                /*case '(':*/
+                        /*dec_surface_flow();*/
+                        /*break;*/
+                /*case '_':*/
+                        /*rot_surface_rule();*/
+                        /*break;*/
                 case 'm':
                         setmode(UI_MOB);
                         setmode(MODE_STARTED);

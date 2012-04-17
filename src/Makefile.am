@@ -48,7 +48,7 @@ arawak_SOURCES = arawak.c                       \
                    map/map.c                    \
                    map/snake.c                  \
                    map/arena.c                  \
-                   map/particle.c               \
+                   map/sweet_flow.c             \
                    txt/gloss_m.c                \
                    txt/gloss_v.c                \
                    txt/gloss_c.c                \

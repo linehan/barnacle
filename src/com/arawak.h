@@ -71,6 +71,20 @@
 
 
 
+/* Macros for macros ... yes that's right folks */
+
+/*
+ * Make sure a macro argument is a variable:
+ * declare an enumeration inside a new scope with the same name
+ * as the variable.
+ */
+#define VARIABLE(v) { enum v { }; }
+
+#define ASSIGN(variable, value) \
+        VARIABLE(variable) \
+        { enum { E = value }; } \
+        variable = value;
+
 
 /*
  * e.g.
@@ -99,6 +113,12 @@ enum fsm_reserved_modes {
 
 
 #define ARRAY_SIZE(arr) (sizeof(arr) / sizeof((arr)[0]) + __must_be_array(arr))
+
+
+
+
+
+
 
 /*
  * abs() handles unsigned and signed longs, ints, shorts and chars.  For all

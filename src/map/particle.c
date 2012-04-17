@@ -260,28 +260,27 @@ double **z1;
  */
 void sweet_flow(struct map_t *map)
 {
-        const float c  = 1.0;  /* Wave velocity */
-        const float h  = 2.0;  /* Field height; distance b/t two vertices */
-        const float dt = 0.8;  /* The time/sampling interval */
-        const float d = 1.18;  /* A "dampening" factor, for collisions */
+        static const float c  = 1.0;  /* Wave velocity */
+        static const float h  = 2.0;  /* Field height; distance b/t two vertices */
+        static const float dt = 0.8;  /* The time/sampling interval */
+        static const float d = 1.18;  /* A "dampening" factor, for collisions */
 
         /* We precompute the two wave equation integral coefficients */
-        const float A = (c * dt/h)*(c * dt/h);   
-        const float B = (2 - 4*A);   
+        float A = (c * dt/h)*(c * dt/h);
+        float B = (2 - 4*A);
+
+        /* Map size */
+        int rows = map->ufo.box.h-1;
+        int cols = map->ufo.box.w-1;
 
         double **tmp; /* For when we swap matrices at the end */
-        int rows;
-        int cols;
         int i;
         int j;
 
-        rows = map->ufo.box.h-1;
-        cols = map->ufo.box.w-1;
-
         /* Allocate the matrices z and z1, to hold the water surface data. */
         if (z == NULL) {
-                z  = simplex_matrix(map->ufo.box.h, map->ufo.box.w);
-                z1 = malloc(map->ufo.box.h * sizeof(double *));
+                z    = simplex_matrix(map->ufo.box.h, cols+1);
+                z1   = malloc(map->ufo.box.h * sizeof(double *));
                 for (i=0; i<map->ufo.box.h; i++)
                         z1[i] = malloc(map->ufo.box.w * sizeof(double));
         }
@@ -290,7 +289,8 @@ void sweet_flow(struct map_t *map)
                 for (j=1; j<cols; j++) {
 
                         /* Re-set the position to plain ocean */
-                        place_ocean_tile(map, i, j);
+                        /*place_ocean_tile(map, i, j);*/
+                        mvwchgat(PLATE(GLOBE, BGR), i, j, 1, 0, SEA_MED, NULL);
 
                         /* Compute the integral */
                         z1[i][j] = A*(z[i-1][j] + z[i+1][j] + z[i][j+1])

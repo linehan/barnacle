@@ -155,3 +155,4 @@ void map_roll(struct map_t *map, int dir)
         }
         map_refresh(map);
 }
+

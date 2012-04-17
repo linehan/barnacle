@@ -104,7 +104,6 @@ int arawak_init(void)
         init_stochastics();   /* Start the RNG and helpers */   
         print_status(SUCCESS);
         init_tiles();
-        init_surface_flow(100);
 
         print_status("Test-o-plexing...");
         init_test();          /* Start test structures */

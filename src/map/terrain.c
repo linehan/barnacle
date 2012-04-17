@@ -104,15 +104,6 @@ void map_render(void *mymap)
 
 
 
-/* Constants */
-static const int   OCTAVES =  6;      /* Number of octaves to smooth */
-static const float PERSIST =  0.99;   /* Persistence factor */
-static const float SHOAL   = -0.003;  /* Shoal isoline */
-static const float BEACH   =  0.00;   /* Beach isoline */
-static const float TERRA   =  0.45;   /* Ground isoline */
-
-
-
 /*
  * Perform a series of low-pass filters on the perlin noise matrix
  * contained in 'map'. The goal is to reduce jitter and consolodate

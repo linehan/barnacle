@@ -59,7 +59,7 @@ void render_cb(EV_P_ ev_timer *w, int revents)
         draw_compass();
         approach_helm();
 
-        update_panels();
+        update_panels();  /* Were slowing down performance, unnecessary */
         doupdate();
 
         ev_timer_again(EV_DEFAULT, w);
@@ -68,6 +68,29 @@ void render_cb(EV_P_ ev_timer *w, int revents)
 
 /* -------------------------------------------------------------------------- */
 
+/*
+ * flow_cb
+ *
+ * This callback calculates the next iteration of the surface flow and renders
+ * them on the screen.
+ * Repeat: 0.1 seconds
+ */
+void flow_cb(EV_P_ ev_timer *w, int revents)
+{
+        static int spindex;
+        if (loop_test_active) {
+                mvwprintw(CONSOLE_WIN, 2, 0, "(%c) flow_cb\n", 
+                          SPINNER(spindex++));
+        }
+        sweet_flow(GLOBE);
+
+        GLOBE->restack(GLOBE);
+        map_refresh(GLOBE);
+
+        ev_timer_again(EV_DEFAULT, w);
+}
+
+/* -------------------------------------------------------------------------- */
 
 /*
  * move_cb
@@ -81,16 +104,11 @@ void move_cb(EV_P_ ev_timer *w, int revents)
 {
         static int spindex;
         if (loop_test_active) {
-                mvwprintw(CONSOLE_WIN, 2, 0, "(%c) move_cb\n", 
+                mvwprintw(CONSOLE_WIN, 3, 0, "(%c) move_cb\n", 
                           SPINNER(spindex++));
         }
         do_pulse();
         noun_render(get_noun("Afarensis"));
-        /*surface_flow(GLOBE);*/
-        sweet_flow(GLOBE);
-
-        GLOBE->restack(GLOBE);
-        map_refresh(GLOBE);
 
         ev_timer_again(EV_DEFAULT, w);
 }
@@ -111,12 +129,10 @@ void animate_cb(EV_P_ ev_timer *w, int revents)
 {
         static int spindex;
         if (loop_test_active) {
-                mvwprintw(CONSOLE_WIN, 3, 0, "(%c) animate_cb\n", 
+                mvwprintw(CONSOLE_WIN, 4, 0, "(%c) animate_cb\n", 
                           SPINNER(spindex++));
         }
         NEXT(GLOBE->L[RIM]);
-        GLOBE->restack(GLOBE);
-        map_refresh(GLOBE);
 
         ev_timer_again(EV_DEFAULT, w);
 }
@@ -137,7 +153,7 @@ void *iolisten_cb(EV_P_ ev_io *w, int revents)
 {
         static int spindex;
         if (loop_test_active) {
-                mvwprintw(CONSOLE_WIN, 4, 0, "(%c) iolisten_cb\n", 
+                mvwprintw(CONSOLE_WIN, 5, 0, "(%c) iolisten_cb\n", 
                           SPINNER(spindex++));
         }
         ev_io_stop (EV_A, w);
@@ -148,8 +164,8 @@ void *iolisten_cb(EV_P_ ev_io *w, int revents)
                 ev_break(EV_A_ EVBREAK_ALL);
                 return NULL;
         }
-
         director(ch);
+
         ev_io_start(EV_A, w);
 }
 
@@ -163,6 +179,7 @@ int start_event_watchers(void)
 
         ev_io read;         // stdin is readable
         ev_timer render;    // boat state & compass state
+        ev_timer flow;      /* The water effects */
         ev_timer move;      // weather state shift (particles)
         ev_timer animate;   // map state shift
 
@@ -170,17 +187,21 @@ int start_event_watchers(void)
         ev_init(&render, &render_cb);
         ev_init(&move, &move_cb);
         ev_init(&animate, &animate_cb);
+        ev_init(&flow, &flow_cb);
 
         render.repeat    = .025;
         /*render.repeat    = .04;*/
+        /*move.repeat      = .08;*/
         move.repeat      = .08;
         animate.repeat   = 3.5;
+        flow.repeat      = .1;
 
 
         ev_io_start(readloop, &read);
         ev_timer_again(execloop, &render);
         ev_timer_again(execloop, &move);
         ev_timer_again(execloop, &animate);
+        ev_timer_again(execloop, &flow);
 
         ev_run(execloop, 0);
         ev_run(drawloop, 0);
