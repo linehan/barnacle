@@ -77,7 +77,7 @@ am_arawak_OBJECTS = arawak.$(OBJEXT) eng/init.$(OBJEXT) \
 	gfx/ui/dock.$(OBJEXT) gfx/ui/stdpan.$(OBJEXT) \
 	gfx/ui/stdmenu.$(OBJEXT) gfx/ui/titlecard.$(OBJEXT) \
 	map/terrain.$(OBJEXT) map/map.$(OBJEXT) map/snake.$(OBJEXT) \
-	map/arena.$(OBJEXT) map/particle.$(OBJEXT) \
+	map/arena.$(OBJEXT) map/sweet_flow.$(OBJEXT) \
 	txt/gloss_m.$(OBJEXT) txt/gloss_v.$(OBJEXT) \
 	txt/gloss_c.$(OBJEXT) mob/mob.$(OBJEXT) \
 	noun/noun_model.$(OBJEXT) noun/noun_discrim.$(OBJEXT) \
@@ -236,7 +236,7 @@ arawak_SOURCES = arawak.c                       \
                    map/map.c                    \
                    map/snake.c                  \
                    map/arena.c                  \
-                   map/particle.c               \
+                   map/sweet_flow.c             \
                    txt/gloss_m.c                \
                    txt/gloss_v.c                \
                    txt/gloss_c.c                \
@@ -446,7 +446,7 @@ map/terrain.$(OBJEXT): map/$(am__dirstamp) \
 map/map.$(OBJEXT): map/$(am__dirstamp) map/$(DEPDIR)/$(am__dirstamp)
 map/snake.$(OBJEXT): map/$(am__dirstamp) map/$(DEPDIR)/$(am__dirstamp)
 map/arena.$(OBJEXT): map/$(am__dirstamp) map/$(DEPDIR)/$(am__dirstamp)
-map/particle.$(OBJEXT): map/$(am__dirstamp) \
+map/sweet_flow.$(OBJEXT): map/$(am__dirstamp) \
 	map/$(DEPDIR)/$(am__dirstamp)
 txt/$(am__dirstamp):
 	@$(MKDIR_P) txt
@@ -561,8 +561,8 @@ mostlyclean-compile:
 	-rm -f lib/ufo.$(OBJEXT)
 	-rm -f map/arena.$(OBJEXT)
 	-rm -f map/map.$(OBJEXT)
-	-rm -f map/particle.$(OBJEXT)
 	-rm -f map/snake.$(OBJEXT)
+	-rm -f map/sweet_flow.$(OBJEXT)
 	-rm -f map/terrain.$(OBJEXT)
 	-rm -f mob/mob.$(OBJEXT)
 	-rm -f noun/noun_control.$(OBJEXT)
@@ -618,8 +618,8 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@lib/stoc/$(DEPDIR)/stoc.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@map/$(DEPDIR)/arena.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@map/$(DEPDIR)/map.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@map/$(DEPDIR)/particle.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@map/$(DEPDIR)/snake.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@map/$(DEPDIR)/sweet_flow.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@map/$(DEPDIR)/terrain.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@mob/$(DEPDIR)/mob.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@noun/$(DEPDIR)/noun_control.Po@am__quote@
