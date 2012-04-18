@@ -1,32 +1,72 @@
 #include <stdlib.h>
 #include "../com/arawak.h"
+#include "../lib/bheap.h"
+#include "../map/map.h"
+#include "../lib/matrix.h"
+#include "../lib/llist/list.h"
 
 
-
-#define SETSIZE 1000
+#define SETSIZE 9000
 
 struct bh_t *OPEN;
 struct bh_t *CLOSED;
 
-struct cell_t { int y; int x; };
+struct cell_t { 
+        int y; 
+        int x; 
+        int g; 
+        int h;
+        int f;
+};
 
-/* Allocate and stuff */
-inline void astar_init(void)
-{
-        int i;
+struct return_path {
+        int y;
+        int x;
+        struct list_node node;
+};
 
-        OPEN   = new_bh(SETSIZE);
-        CLOSED = new_bh(SETSIZE);
-}
+
+struct astar_t { 
+        struct map_t *map;
+        struct cell_t *start; 
+        struct cell_t *goal; 
+        struct cell_t *neighbor[4];
+        struct bh_t *OPEN;
+        struct bh_t *CLOSED;
+};
+
 
 struct cell_t *new_cell(int y, int x)
 {
         struct cell_t *new = malloc(sizeof(struct cell_t));
-
         new->y = y;
         new->x = x;
+        return (new);
+}
+
+
+/* Allocate and stuff */
+struct astar_t *new_astar(struct map_t *map, int st_y, int st_x, int go_y, int go_x)
+{
+        struct astar_t *new = malloc(sizeof(*new));
+        
+        new->map    = map;
+        new->start  = new_cell(st_y, st_x);
+        new->goal   = new_cell(go_y, go_x);
+        new->OPEN   = new_bh(SETSIZE);
+        new->CLOSED = new_bh(SETSIZE);
 
         return (new);
+}
+
+
+void init_astar(struct astar_t *astar, struct map_t *map, int st_y, int st_x, int go_y, int go_x)
+{
+        astar->map    = map;
+        astar->start  = new_cell(st_y, st_x);
+        astar->goal   = new_cell(go_y, go_x);
+        astar->OPEN   = new_bh(SETSIZE);
+        astar->CLOSED = new_bh(SETSIZE);
 }
 
 
@@ -43,100 +83,103 @@ inline bool same_cell(struct cell_t *a, struct cell_t *b)
 
 
 /*
- * distance_to_goal -- estimate distance from current cell to goal cell
- * @current: pointer to the current cell
- * @goal: pointer to the goal cell
- * Returns: distance between current and goal, as a float
+ * g_cost -- estimate movement cost from one cell to another  
+ * @a: pointer to a cell
+ * @b: pointer to a cell
+ * Returns: distance between a and b, as a float
  */
-inline float distance_to_goal(struct cell_t *current, struct cell_t *goal)
+inline int mov_cost(struct cell_t *a, struct cell_t *b)
 {
-        float xd;
-        float yd;
+        int xd;
+        int yd;
 
-        xd = (float)current->x - (float)goal->x;
-        yd = (float)current->y - (float)goal->y;
+        xd = abs(a->x - b->x);
+        yd = abs(a->y - b->y);
 
         return (xd + yd);
 }
 
 
 /*
- * get_cost -- get the cost (priority) of a cell on the map
+ * g_cost -- return the movement cost between a cell and the goal
+ * @astar: pointer to an astar type
+ * @cell: pointer to a cell
+ */
+inline int g_cost(struct astar_t *astar, struct cell_t *cell)
+{
+        return (mov_cost(astar->goal, cell));
+}
+
+
+/*
+ * h_cost -- return the heuristic cost of a cell on the map
  * @x: the x-coordinate of the cell
  * @y: the y-coordinate of the cell
  * Returns: an integer value from 1 to MAXPRI 
  */
-inline int get_cost(struct map_t *map, int x, int y)
+inline int h_cost(struct astar_t *astar, struct cell_t *cell)
 {
-        if (x < 0 || x >= map->ufo.box.w
-        ||  y < 0 || y >= map->ufo.box.h
+        int y = cell->y;
+        int x = cell->x;
+
+        if (x < 0 || x >= astar->map->ufo.box.w
+        ||  y < 0 || y >= astar->map->ufo.box.h)
                 return MAXPRI;
         else
-                return (int)(get_nibble(map->mx->mx[y][x], ALT))
+                /*return (int)(get_nibble(astar->map->mx->mx[y][x], ALT));*/
+                return 1;
 }
 
 
 
 
-/*
- * gen_successors -- add the next successors to the priority queue
- * @bh: the binary heap priority queue
- * @current: the cell for which to generate the successors
- */
-void gen_successors(struct bh_t *bh, struct cell_t *current)
+
+
+void fill_costs(struct astar_t *astar, struct cell_t *cell)
 {
-        int parent_x; 
-        int parent_y; 
-        int pri;
+        cell->g = mov_cost(cell, astar->start);
+        cell->h = h_cost(astar, cell);
+        cell->f = cell->g + cell->h;
+}
 
-        if (current) {
-                parent_x = current->x;
-                parent_y = current->y;
+
+bool member_of(struct bh_t *bh, struct cell_t *cell)
+{
+        struct cell_t *tmp;
+        int i;
+
+        for (i=0; i<bh->n; i++) {
+                tmp = (struct cell_t *)bh_peek(bh, i);
+                if (tmp && same_cell(tmp, cell))
+                        return true;
         }
-        
-        /* 
-         * Add each of the four possible directions to the OPEN queue,
-         * unless any of these directions cause the search to backtrack. 
-         */
-
-        if (pri=(get_cost(x-1, y), pri < MAXPRI) 
-        && !(parent_x == x-1) 
-        &&  (parent_y == y))
-        {
-                struct cell_t new = new_cell(x-1, y);
-                bh_add(bh, new, pri);
-        }       
-
-        if (pri=(get_cost(x, y-1), pri < MAXPRI) 
-        && !(parent_x == x) 
-        &&  (parent_y == y-1))
-        {
-                struct cell_t new = new_cell(x, y-1);
-                bh_add(bh, new, pri);
-        }       
-
-        if ((pri=get_cost(x+1, y), pri < MAXPRI)
-        && !(parent_x == x+1) 
-        &&  (parent_y == y))
-        {
-                struct cell_t new = new_cell(x+1, y);
-                bh_add(bh, new, pri);
-        }       
-
-        if ((pri=get_cost(x, y+1), pri < MAXPRI) 
-        && !(parent_x == x) 
-        &&  (parent_y == y+1))
-        {
-                struct cell_t new = new_cell(x, y+1);
-                bh_add(bh, new, pri);
-        }       
-
-        return true;
+        return false;
 }
 
 
 
+
+struct cell_t **gen_neighbors(struct cell_t *cell)
+{
+        struct cell_t **neighbor = malloc(4 * sizeof(struct cell_t *));
+
+        neighbor[0] = new_cell(cell->y, cell->x-1);
+        neighbor[1] = new_cell(cell->y-1, cell->x);
+        neighbor[2] = new_cell(cell->y, cell->x+1);
+        neighbor[3] = new_cell(cell->y+1, cell->x);
+
+        return (neighbor);
+}
+
+
+
+inline void spit(struct cell_t *cell)
+{
+        wprintw(DIAGNOSTIC_WIN, "cell: y:%d x:%d\n", cell->y, cell->x);
+}
+
 /*
+ *
 OPEN = priority queue containing START
 CLOSED = empty set
 while lowest rank in OPEN is not the GOAL:
@@ -153,29 +196,81 @@ while lowest rank in OPEN is not the GOAL:
       add neighbor to OPEN
       set priority queue rank to g(neighbor) + h(neighbor)
       set neighbor's parent to current
-
-reconstruct reverse path from goal to start
-by following parent pointers
 */
-void astar(int starty, int startx, int goaly, int goalx)
+
+bool astar(struct map_t *map, int starty, int startx, int goaly, int goalx)
 {
-        if (!OPEN || !CLOSED || !square)
-                astar_init();
-
-        struct cell_t *start;
-        struct cell_t *goal;
         struct cell_t *current;
+        struct astar_t *astar;
+        struct cell_t *neighbor[4];
+        int tentative_g_score;
+        bool tentative_is_better;
+        int i;
+        int breakout=0;
 
-        start = new_cell(starty, startx); 
-        goal  = new_cell(goaly, goalx); 
+        astar = new_astar(map, starty, startx, goaly, goalx);
 
-        /* Here we go */
-        gen_successors(OPEN, start);
+        astar->start->g = 0;
+        astar->start->h = h_cost(astar, astar->start);
+        astar->start->f = astar->start->g + astar->start->h;
 
-        while (current = bh_pop(OPEN), !same_cell(current, goal)) {
-         
+        bh_add(astar->OPEN, astar->start->f, astar->start);
+
+        /*while (!bh_is_empty(astar->OPEN)) {*/
+        while (current = bh_pop(astar->OPEN), current) {
+
+                /*current = bh_pop(astar->OPEN);*/
+
+                /* If we're at the goal, we're done */
+                if (same_cell(current, astar->goal))
+                        return true;
+                else
+                        bh_add(astar->CLOSED, current->f, current);
+
+                neighbor[0] = new_cell(current->y, current->x-1);
+                neighbor[1] = new_cell(current->y-1, current->x);
+                neighbor[2] = new_cell(current->y, current->x+1);
+                neighbor[3] = new_cell(current->y+1, current->x);
+
+                for (i=0; i<4; i++) {
+
+                        /* If neighbor[i] in closed set, continue */
+                        if (member_of(astar->CLOSED, neighbor[i])) 
+                                continue;
+
+                        tentative_g_score = current->g+mov_cost(current, neighbor[i]);
+
+                        /* If neighbor[i] not in open set */ 
+                        if (!member_of(astar->OPEN, neighbor[i])) {
+
+                                bh_add(astar->OPEN, neighbor[i]->f, neighbor[i]);
+                                neighbor[i]->h = h_cost(astar, neighbor[i]);
+                                tentative_is_better = true;
+
+                        } else if (tentative_g_score < neighbor[i]->g) {
+                                tentative_is_better = true;
+                        } else {
+                                tentative_is_better = false;
+                        }
+
+                        if (tentative_is_better) {
+                                neighbor[i]->g = tentative_g_score;
+                                neighbor[i]->f = neighbor[i]->g + neighbor[i]->h;
+                        }
+                }
+
+                wprintw(DIAGNOSTIC_WIN, "Items in OPEN:   %d\n"
+                                        "Items in CLOSED: %d\n", 
+                                        astar->OPEN->n,
+                                        astar->CLOSED->n);
+                if (breakout++ > 20)
+                        break;
+        }
+        return false;
+}
 
 
+        
 
 
 

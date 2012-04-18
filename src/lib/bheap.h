@@ -54,6 +54,7 @@
 #define parentof(i) ((i) >> 1)
 
 #define ROOT 1 /* The index of the root node */
+#define MAXPRI 10
 
 /* -------------------------------------------------------------------------- */
 /*
@@ -63,17 +64,11 @@
  *         nor suffer the function overhead. 
  */
 struct bh_node {
-        int pri;
+        float pri;
         void *data;
 };
 /*
  * Container for a binary heap
- * In this implementation, the root index begins at 1, because this choice 
- * simplifies the three arithmetic operations that these algorithms use to 
- * determine the indices of the parent or child nodes for a given index. 
- *
- * The binary heap is an /implicit/ data structure, so in a very real way, 
- * these operations *are* the binary heap. 
  */
 struct bh_t {
         int max;              /* Maximum number of nodes in the 'item' array */
@@ -200,12 +195,12 @@ static inline void bh_siftdown(struct bh_t *bh, int i)
  * @x: caller-defined data that will be stored at the node (can be NULL)
  * Returns: FALSE if heap is full, else returns TRUE 
  */
-static inline bool bh_add(struct bh_t *bh, int pri, void *x) 
+static inline bool bh_add(struct bh_t *bh, float pri, void *x) 
 {
         if (bh->n+1 > bh->max) 
                 return false;
 
-        bh->item[bh->n].pri    = pri;
+        bh->item[bh->n].pri  = pri;
         bh->item[bh->n].data = x;
         bh_siftup(bh, bh->n++);
 
@@ -230,5 +225,21 @@ static inline void *bh_pop(struct bh_t *bh)
                 return NULL;
 
         return (top->data);
+}
+
+
+static inline void *bh_peek(struct bh_t *bh, int i)
+{
+        return (i < bh->n) ? (bh->item[i].data) : NULL;
+}
+
+static inline bool bh_is_empty(struct bh_t *bh)
+{
+        return (bh->n <= ROOT) ? true : false;
+}
+
+static inline bool bh_is_full(struct bh_t *bh)
+{
+        return (bh->n >= bh->max) ? true : false;
 }
 

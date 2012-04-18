@@ -17,7 +17,7 @@
  * In max-heaps, the comparison predicate seeks "greater than or equal to"
  * In min-heaps, the comparison predicate seeks "less than or equal to" 
  *
- * This file implements a binary min-heap with a priority predicate; this 
+ * This file implements a binary max-heap with a priority predicate; this 
  * arrangement is better known as a "priority queue".
  *
  * In an array-based binary heap, it can be shown that given any index i into
@@ -64,6 +64,7 @@
  */
 struct bh_node {
         int pri;
+        uint32_t key;
         void *data;
 };
 /*
@@ -76,9 +77,9 @@ struct bh_node {
  * these operations *are* the binary heap. 
  */
 struct bh_t {
-        int max;              /* Maximum number of nodes in the 'item' array */
-        int n;                /* Current number of nodes in the 'item' array */
-        struct bh_node *item;
+        int max;              /* Maximum number of nodes in the 'node' array */
+        int n;                /* Current number of nodes in the 'node' array */
+        struct bh_node **node;
 };
 
 
@@ -91,10 +92,14 @@ struct bh_t {
 static inline struct bh_t *new_bh(int maxsize)
 {
         struct bh_t *new = malloc(sizeof(struct bh_t));
+        int i;
 
         new->max  = ROOT+maxsize; /* Remember, we are starting at 1 */
         new->n    = ROOT;
-        new->item = malloc(new->max * sizeof(struct bh_node));
+        new->node = malloc(new->max * sizeof(struct bh_node *));
+
+        for (i=0; i<new->max; i++) 
+                new->node[i] = malloc(sizeof(struct bh_node));
 
         return (new);
 }
@@ -126,16 +131,11 @@ static inline struct bh_t *new_bh(int maxsize)
  */
 static inline void bh_swap(struct bh_t *bh, int a, int b)
 {
-        struct bh_node tmp;
+        void *tmp;
 
-        tmp.pri = bh->item[a].pri;
-        tmp.data = bh->item[a].data;
-
-        bh->item[a].pri = bh->item[b].pri;
-        bh->item[a].data = bh->item[b].data;
-
-        bh->item[b].pri = tmp.pri;
-        bh->item[b].data = tmp.data;
+        tmp = bh->node[a];
+        bh->node[a] = bh->node[b];
+        bh->node[b] = tmp;
 }
 
 
@@ -144,15 +144,15 @@ static inline void bh_swap(struct bh_t *bh, int a, int b)
  * @bh: pointer to a binary heap
  * @i: index of the node which is "breaking" the heap
  */
-static inline void bh_siftup(struct bh_t *bh, int i) 
+static inline void bh_siftup(struct bh_t *bh, int end, int start) 
 {
         int p;
 
-        while (i > ROOT) {
-                p = parentof(i);
-                if (bh->item[p].pri < bh->item[i].pri) {
-                        bh_swap(bh, i, p);
-                        i = p;
+        while (end > start) {
+                p = parentof(end);
+                if (bh->node[p]->pri < bh->node[end]->pri) {
+                        bh_swap(bh, p, end);
+                        end = p;
                 }
                 else
                         return;
@@ -166,25 +166,25 @@ static inline void bh_siftup(struct bh_t *bh, int i)
  * @bh: pointer to a binary heap
  * @i: index of the node which is "breaking" the heap
  */
-static inline void bh_siftdown(struct bh_t *bh, int i) 
+static inline void bh_siftdown(struct bh_t *bh, int end, int start) 
 {
         int r;
         int l;
         int swap;
 
-        while (i <= bh->n) {
+        while (end <= start) {
 
-                r = rightof(i);
-                l = leftof(i);
-                swap = i;
+                r = rightof(end);
+                l = leftof(end);
+                swap = end;
 
-                if (&bh->item[swap].pri < &bh->item[l].pri)
+                if (bh->node[swap]->pri < bh->node[l]->pri)
                         swap = l;
-                if (r <= bh->n && bh->item[swap].pri < bh->item[r].pri)
+                if (r <= bh->n && bh->node[swap]->pri < bh->node[r]->pri)
                         swap = r;
-                if (swap != i) {
-                        bh_swap(bh, i, swap);
-                        i = swap;
+                if (swap != end) {
+                        bh_swap(bh, end, swap);
+                        end = swap;
                 }
                 else
                         return;
@@ -200,14 +200,16 @@ static inline void bh_siftdown(struct bh_t *bh, int i)
  * @x: caller-defined data that will be stored at the node (can be NULL)
  * Returns: FALSE if heap is full, else returns TRUE 
  */
-static inline bool bh_add(struct bh_t *bh, int pri, void *x) 
+static inline bool bh_add(struct bh_t *bh, int pri, uint32_t key, void *x) 
 {
-        if (bh->n+1 > bh->max) 
+        if (bh->n >= bh->max) 
                 return false;
 
-        bh->item[bh->n].pri    = pri;
-        bh->item[bh->n].data = x;
-        bh_siftup(bh, bh->n++);
+        bh->node[bh->n]->key  = key;
+        bh->node[bh->n]->pri  = pri;
+        bh->node[bh->n]->data = x;
+        bh_siftup(bh, bh->n++, ROOT);
+        printf("added at bh->node[%d]\n", bh->n-1);
 
         return true;
 }
@@ -221,10 +223,10 @@ static inline void *bh_pop(struct bh_t *bh)
 {
         struct bh_node *top;
        
-        top = &bh->item[0];
-        bh->item[0] = bh->item[--bh->n];
+        top = bh->node[ROOT];
+        bh->node[ROOT] = bh->node[--bh->n];
 
-        bh_siftdown(bh, 0);
+        bh_siftdown(bh, ROOT, bh->n);
 
         if (bh->n < ROOT) 
                 return NULL;
@@ -232,6 +234,11 @@ static inline void *bh_pop(struct bh_t *bh)
         return (top->data);
 }
 
+
+static inline void *bh_peek(struct bh_t *bh, int i)
+{
+        return (i < bh->n) ? (bh->node[i]->data) : NULL;
+}
 
 static inline bool bh_empty(struct bh_t *bh)
 {
@@ -242,6 +249,53 @@ static inline bool bh_full(struct bh_t *bh)
 {
         return (bh->n >= bh->max) ? true : false;
 }
+
+static inline void heapify(struct bh_t *bh)
+{
+        int i;
+        for (i=ROOT; i<bh->n; i++) {
+                bh_siftup(bh, i, ROOT);
+        }
+}
+
+static inline bool bh_member_of(struct bh_t *bh, uint32_t key)
+{
+        int i;
+        for (i=ROOT; i<bh->n; i++) {
+                if (bh->node[i]->key == key)
+                        return true;
+        }
+        return false;
+}
+
+static inline bool bh_setpri(struct bh_t *bh, uint32_t key, int pri)
+{
+        int i;
+        for (i=ROOT; i<bh->n; i++) {
+                if (bh->node[i]->key == key) {
+                        bh->node[i]->pri = pri;
+                        heapify(bh);
+                        return true;
+                }
+        }
+        return false;
+}
+
+static inline int bh_getpri(struct bh_t *bh, int i)
+{
+        return (bh->node[i]->pri);
+}
+
+static inline uint32_t bh_getkey(struct bh_t *bh, int i)
+{
+        return (bh->node[i]->key);
+}
+
+
+
+
+
+
 
 
 
