@@ -11,7 +11,7 @@ LDFLAGS=-pg -lm -lncursesw
 #       
 #                                  
 
-SOURCES=test.c unittests.c morton.c matrix.c pathfind.c
+SOURCES=test.c morton.c matrix.c a_star.c
 OBJECTS=$(SOURCES:.c=.o)
 
 EXECUTABLE=test
