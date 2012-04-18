@@ -18,9 +18,9 @@ struct cell_t {
         uint32_t key;
         int y; 
         int x; 
-        int g; 
-        int h;
-        int f;
+        float g; 
+        float h;
+        float f;
 };
 
 struct astar_t { 
@@ -81,9 +81,9 @@ bool same_cell(struct cell_t *a, struct cell_t *b)
  * @b: pointer to a cell
  * Returns: distance between a and b, as a float
  */
-int mov_cost(struct cell_t *a, struct cell_t *b)
+float mov_cost(struct cell_t *a, struct cell_t *b)
 {
-        return abs((a->x - b->x)) + abs((a->y - b->y));
+        return MAXPRI - (float) abs(((float)a->x - (float)b->x)) + abs(((float)a->y - (float)b->y));
 }
 
 
@@ -92,9 +92,9 @@ int mov_cost(struct cell_t *a, struct cell_t *b)
  * @astar: pointer to the astar object (contains start cell)
  * @cell: pointer to the current cell
  */
-int g_cost(struct astar_t *astar, struct cell_t *cell)
+float g_cost(struct astar_t *astar, struct cell_t *cell)
 {
-        return mov_cost(astar->start, cell);
+        return MAXPRI - mov_cost(astar->start, cell);
 }
 
 
@@ -103,18 +103,9 @@ int g_cost(struct astar_t *astar, struct cell_t *cell)
  * @astar: pointer to the astar object (contains goal cell)
  * @cell: pointer to the current cell 
  */
-int h_cost(struct astar_t *astar, struct cell_t *cell)
+float h_cost(struct astar_t *astar, struct cell_t *cell)
 {
-        int move_cost;
-        int D;          /* The heuristic coefficient */
-
-        if (cell->x < 0 || cell->x >= astar->cols
-        ||  cell->y < 0 || cell->y >= astar->rows)
-                return 0;
-        else {
-                move_cost = mov_cost(cell, astar->goal);
-                return move_cost; 
-        }
+        return MAXPRI - mov_cost(cell, astar->goal); 
 }
 
 
@@ -143,7 +134,7 @@ void lookheap(struct bh_t *bh, const char *name)
         for (i=ROOT; i<bh->n; i++) {
                 struct cell_t *tmp = (struct cell_t *)bh_peek(bh, i);
                 if (tmp) {
-                        printf("y:%d x:%d g:%d h:%d f:%d\n", 
+                        printf("y:%d x:%d g:%g h:%g f:%g\n", 
                                tmp->y, tmp->x, tmp->g, tmp->h, tmp->f);
                 } else {
                         printf("NULL\n");
@@ -161,7 +152,7 @@ void peekheap(struct astar_t *astar, struct cell_t *cell)
                  astar->OPEN->n-1, astar->OPEN->max);
         for (i=ROOT; i<astar->OPEN->n && i<PEEKSIZE; i++) {
                 uint32_t key = bh_getkey(astar->OPEN, i);
-                mvprintw(yofs++, 0, "(%d) has priority %d (y:%u x:%u)\n", 
+                mvprintw(yofs++, 0, "(%d) has priority %g (y:%u x:%u)\n", 
                          i, bh_getpri(astar->OPEN, i), 
                          trom_y(key), trom_x(key));
         }
@@ -169,11 +160,11 @@ void peekheap(struct astar_t *astar, struct cell_t *cell)
                  astar->CLOSED->n-1, astar->CLOSED->max);
         for (i=ROOT; i<astar->CLOSED->n && i<PEEKSIZE; i++) {
                 uint32_t key = bh_getkey(astar->CLOSED, i);
-                mvprintw(yofs++, 0, "(%d) has priority %d (y:%u x:%u)\n", 
+                mvprintw(yofs++, 0, "(%d) has priority %g (y:%u x:%u)\n", 
                          i, bh_getpri(astar->CLOSED, i),
                          trom_y(key), trom_x(key));
         }
-        mvprintw(yofs++, 0, "Current cell: y:%d x:%d g:%d h:%d f:%d\n", 
+        mvprintw(yofs++, 0, "Current cell: y:%d x:%d g:%g h:%g f:%g\n", 
                  cell->y, cell->x, cell->g, cell->h, cell->f);
 }
 
@@ -190,11 +181,11 @@ void print_map(struct astar_t *astar)
                                 mvprintw(i, j, "S");
                         else if (i == astar->goal->y && j == astar->goal->x)
                                 mvprintw(i, j, "G");
-                        else if (mx_val(astar->map, i, j) >= 3)
+                        else if (mx_val(astar->map, i, j) < 1)
                                 mvprintw(i, j, ".");
                         else if (mx_val(astar->map, i, j) == 2)
                                 mvprintw(i, j, "*");
-                        else if (mx_val(astar->map, i, j) < 1)
+                        else if (mx_val(astar->map, i, j) > 2)
                                 mvprintw(i, j, "#");
                 }
         }
@@ -229,26 +220,37 @@ void gen_neighbors(struct astar_t *astar, struct cell_t *cell)
         int tentative_g_score;
         bool tentative_is_better;
         int i;
+        int parent_x = -1;
+        int parent_y = -1;
+
+        if (cell->parent) {
+                parent_x = cell->parent->x;
+                parent_y = cell->parent->y;
+        }
 
         neighbor = malloc(4 * sizeof(struct cell_t *));
 
         if (((cell->x > 0)
-        && (mapval(astar, cell->y, cell->x-1) > 0)))
+        && (mapval(astar, cell->y, cell->x-1) < 2))
+        && !((parent_x == cell->x-1) && (parent_y == cell->y)))
         {
                 neighbor[0] = new_cell(cell->y, cell->x-1);
         }
         if (((cell->y > 0)
-        && (mapval(astar, cell->y-1, cell->x) > 0)))
+        && (mapval(astar, cell->y-1, cell->x) < 2))
+        && !((parent_x == cell->x) && (parent_y == cell->y-1)))
         {
                 neighbor[1] = new_cell(cell->y-1, cell->x);
         }
         if (((cell->x < astar->cols-1)
-        && (mapval(astar, cell->y, cell->x+1) > 0)))
+        && (mapval(astar, cell->y, cell->x+1) < 2))
+        && !((parent_x == cell->x+1) && (parent_y == cell->y)))
         {
                 neighbor[2] = new_cell(cell->y, cell->x+1);
         }
         if (((cell->y < astar->rows-1)
-        && (mapval(astar, cell->y+1, cell->x) > 0)))
+        && (mapval(astar, cell->y+1, cell->x) < 2))
+        && !((parent_x == cell->x) && (parent_y == cell->y+1)))
         {
                 neighbor[3] = new_cell(cell->y+1, cell->x);
         }
@@ -267,7 +269,7 @@ void gen_neighbors(struct astar_t *astar, struct cell_t *cell)
                 /* Add to OPEN if it's not there already */
                 if (!bh_member_of(astar->OPEN, neighbor[i]->key)) {
                         bh_add(astar->OPEN, 0, neighbor[i]->key, neighbor[i]);
-                        neighbor[i]->h = h_cost(astar, neighbor[i]);
+                        neighbor[i]->h = mov_cost(neighbor[i], astar->goal);
                         tentative_is_better = true;
                 } else if (tentative_g_score < g_cost(astar, neighbor[i])) {
                         tentative_is_better = true; 
@@ -280,11 +282,10 @@ void gen_neighbors(struct astar_t *astar, struct cell_t *cell)
                         neighbor[i]->parent = cell;
                         neighbor[i]->g = tentative_g_score;
                         neighbor[i]->f = neighbor[i]->g + neighbor[i]->h;
-                        bh_setpri(astar->OPEN, neighbor[i]->key, neighbor[i]->f);
+                        bh_setpri(astar->OPEN, neighbor[i]->f, neighbor[i]->key);
                 }
         }
 }
-
 
 
 
@@ -301,8 +302,7 @@ bool astar(struct matrix_t *map, int rows, int cols, int starty, int startx, int
         astar->start->h = h_cost(astar, astar->start);
         astar->start->f = astar->start->g + astar->start->h;
 
-        bh_add(astar->OPEN, astar->start->key, astar->start->f, astar->start);
-        
+        bh_add(astar->OPEN, astar->start->f, astar->start->key, astar->start);
 
         while (!bh_empty(astar->OPEN)) {
 
@@ -317,20 +317,14 @@ bool astar(struct matrix_t *map, int rows, int cols, int starty, int startx, int
 
                 gen_neighbors(astar, current);
 
-                
-                /*if (esc++ > 200)*/
-                        /*return false;*/
 
-                clear();
+                refresh();
                 doupdate();
                 print_map(astar);
                 print_path(current);
                 peekheap(astar, current);
                 getch();
-
         }
-
-
         return false;
 }
 

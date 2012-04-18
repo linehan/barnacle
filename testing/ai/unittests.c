@@ -105,7 +105,7 @@ void heap_test(void)
 
         for (i=0; i<10; i++) {
                 uint32_t len = strlen(foostring[i]);
-                if (bh_add(mybh, len, i, foostring[i]))
+                if (bh_add(mybh, i, i, foostring[i]))
                         printf("Added foostring[%d] to heap\n", i);
                 else
                         printf("Could not add foostring[%d] to heap!\n", i);
