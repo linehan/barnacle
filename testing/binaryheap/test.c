@@ -27,6 +27,7 @@ int main(void)
 
 
         printf("Heap size: %d\nMax size: %d\n", mybh->n, mybh->max);
+        printf("Heap empty? %d\n", bh_empty(mybh));
 
 
 
@@ -37,9 +38,11 @@ int main(void)
                 if (tmp) {
                         printf("Popped %d: %s\n", i, tmp);
                         printf("Heap size: %d\nMax size: %d\n", mybh->n, mybh->max);
+                        printf("Heap empty? %d\n", bh_empty(mybh));
                 } else {
                         printf("Could not pop item %d!\n", i);
                         printf("Heap size: %d\nMax size: %d\n", mybh->n, mybh->max);
+                        printf("Heap empty? %d\n", bh_empty(mybh));
                 }
         }
 

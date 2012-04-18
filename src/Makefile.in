@@ -78,8 +78,8 @@ am_arawak_OBJECTS = arawak.$(OBJEXT) eng/init.$(OBJEXT) \
 	gfx/ui/stdmenu.$(OBJEXT) gfx/ui/titlecard.$(OBJEXT) \
 	map/terrain.$(OBJEXT) map/map.$(OBJEXT) map/snake.$(OBJEXT) \
 	map/arena.$(OBJEXT) map/sweet_flow.$(OBJEXT) \
-	txt/gloss_m.$(OBJEXT) txt/gloss_v.$(OBJEXT) \
-	txt/gloss_c.$(OBJEXT) mob/mob.$(OBJEXT) \
+	ai/pathfind.$(OBJEXT) txt/gloss_m.$(OBJEXT) \
+	txt/gloss_v.$(OBJEXT) txt/gloss_c.$(OBJEXT) mob/mob.$(OBJEXT) \
 	noun/noun_model.$(OBJEXT) noun/noun_discrim.$(OBJEXT) \
 	noun/noun_view.$(OBJEXT) noun/noun_control.$(OBJEXT) \
 	noun/noun_widgets.$(OBJEXT) noun/types/boat/boat.$(OBJEXT) \
@@ -237,6 +237,7 @@ arawak_SOURCES = arawak.c                       \
                    map/snake.c                  \
                    map/arena.c                  \
                    map/sweet_flow.c             \
+                   ai/pathfind.c                \
                    txt/gloss_m.c                \
                    txt/gloss_v.c                \
                    txt/gloss_c.c                \
@@ -448,6 +449,13 @@ map/snake.$(OBJEXT): map/$(am__dirstamp) map/$(DEPDIR)/$(am__dirstamp)
 map/arena.$(OBJEXT): map/$(am__dirstamp) map/$(DEPDIR)/$(am__dirstamp)
 map/sweet_flow.$(OBJEXT): map/$(am__dirstamp) \
 	map/$(DEPDIR)/$(am__dirstamp)
+ai/$(am__dirstamp):
+	@$(MKDIR_P) ai
+	@: > ai/$(am__dirstamp)
+ai/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) ai/$(DEPDIR)
+	@: > ai/$(DEPDIR)/$(am__dirstamp)
+ai/pathfind.$(OBJEXT): ai/$(am__dirstamp) ai/$(DEPDIR)/$(am__dirstamp)
 txt/$(am__dirstamp):
 	@$(MKDIR_P) txt
 	@: > txt/$(am__dirstamp)
@@ -530,6 +538,7 @@ arawak$(EXEEXT): $(arawak_OBJECTS) $(arawak_DEPENDENCIES) $(EXTRA_arawak_DEPENDE
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
+	-rm -f ai/pathfind.$(OBJEXT)
 	-rm -f eng/bytes.$(OBJEXT)
 	-rm -f eng/fsm.$(OBJEXT)
 	-rm -f eng/init.$(OBJEXT)
@@ -587,6 +596,7 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/arawak.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@ai/$(DEPDIR)/pathfind.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@eng/$(DEPDIR)/bytes.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@eng/$(DEPDIR)/fsm.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@eng/$(DEPDIR)/init.Po@am__quote@
@@ -771,6 +781,8 @@ clean-generic:
 distclean-generic:
 	-test -z "$(CONFIG_CLEAN_FILES)" || rm -f $(CONFIG_CLEAN_FILES)
 	-test . = "$(srcdir)" || test -z "$(CONFIG_CLEAN_VPATH_FILES)" || rm -f $(CONFIG_CLEAN_VPATH_FILES)
+	-rm -f ai/$(DEPDIR)/$(am__dirstamp)
+	-rm -f ai/$(am__dirstamp)
 	-rm -f eng/$(DEPDIR)/$(am__dirstamp)
 	-rm -f eng/$(am__dirstamp)
 	-rm -f gfx/$(DEPDIR)/$(am__dirstamp)
@@ -814,7 +826,7 @@ clean: clean-am
 clean-am: clean-binPROGRAMS clean-generic mostlyclean-am
 
 distclean: distclean-am
-	-rm -rf ./$(DEPDIR) eng/$(DEPDIR) gfx/$(DEPDIR) gfx/ui/$(DEPDIR) lib/$(DEPDIR) lib/ncolor/src/$(DEPDIR) lib/redblack/$(DEPDIR) lib/sort/$(DEPDIR) lib/stoc/$(DEPDIR) map/$(DEPDIR) mob/$(DEPDIR) noun/$(DEPDIR) noun/types/boat/$(DEPDIR) noun/types/creature/$(DEPDIR) test/$(DEPDIR) thr/$(DEPDIR) txt/$(DEPDIR) verb/$(DEPDIR)
+	-rm -rf ./$(DEPDIR) ai/$(DEPDIR) eng/$(DEPDIR) gfx/$(DEPDIR) gfx/ui/$(DEPDIR) lib/$(DEPDIR) lib/ncolor/src/$(DEPDIR) lib/redblack/$(DEPDIR) lib/sort/$(DEPDIR) lib/stoc/$(DEPDIR) map/$(DEPDIR) mob/$(DEPDIR) noun/$(DEPDIR) noun/types/boat/$(DEPDIR) noun/types/creature/$(DEPDIR) test/$(DEPDIR) thr/$(DEPDIR) txt/$(DEPDIR) verb/$(DEPDIR)
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
 	distclean-tags
@@ -860,7 +872,7 @@ install-ps-am:
 installcheck-am:
 
 maintainer-clean: maintainer-clean-am
-	-rm -rf ./$(DEPDIR) eng/$(DEPDIR) gfx/$(DEPDIR) gfx/ui/$(DEPDIR) lib/$(DEPDIR) lib/ncolor/src/$(DEPDIR) lib/redblack/$(DEPDIR) lib/sort/$(DEPDIR) lib/stoc/$(DEPDIR) map/$(DEPDIR) mob/$(DEPDIR) noun/$(DEPDIR) noun/types/boat/$(DEPDIR) noun/types/creature/$(DEPDIR) test/$(DEPDIR) thr/$(DEPDIR) txt/$(DEPDIR) verb/$(DEPDIR)
+	-rm -rf ./$(DEPDIR) ai/$(DEPDIR) eng/$(DEPDIR) gfx/$(DEPDIR) gfx/ui/$(DEPDIR) lib/$(DEPDIR) lib/ncolor/src/$(DEPDIR) lib/redblack/$(DEPDIR) lib/sort/$(DEPDIR) lib/stoc/$(DEPDIR) map/$(DEPDIR) mob/$(DEPDIR) noun/$(DEPDIR) noun/types/boat/$(DEPDIR) noun/types/creature/$(DEPDIR) test/$(DEPDIR) thr/$(DEPDIR) txt/$(DEPDIR) verb/$(DEPDIR)
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 

@@ -49,6 +49,7 @@ arawak_SOURCES = arawak.c                       \
                    map/snake.c                  \
                    map/arena.c                  \
                    map/sweet_flow.c             \
+                   ai/pathfind.c                \
                    txt/gloss_m.c                \
                    txt/gloss_v.c                \
                    txt/gloss_c.c                \
