@@ -54,6 +54,7 @@
 #define parentof(i) ((i) >> 1)
 
 #define ROOT 1 /* The index of the root node */
+#define MAXPRI 999
 
 /* -------------------------------------------------------------------------- */
 /*
@@ -63,7 +64,7 @@
  *         nor suffer the function overhead. 
  */
 struct bh_node {
-        int pri;
+        float pri;
         uint32_t key;
         void *data;
 };
@@ -209,7 +210,7 @@ static inline bool bh_add(struct bh_t *bh, int pri, uint32_t key, void *x)
         bh->node[bh->n]->pri  = pri;
         bh->node[bh->n]->data = x;
         bh_siftup(bh, bh->n++, ROOT);
-        printf("added at bh->node[%d]\n", bh->n-1);
+        //printf("added at bh->node[%d]\n", bh->n-1);
 
         return true;
 }
@@ -268,7 +269,7 @@ static inline bool bh_member_of(struct bh_t *bh, uint32_t key)
         return false;
 }
 
-static inline bool bh_setpri(struct bh_t *bh, uint32_t key, int pri)
+static inline bool bh_setpri(struct bh_t *bh, int pri, uint32_t key)
 {
         int i;
         for (i=ROOT; i<bh->n; i++) {
