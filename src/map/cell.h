@@ -16,6 +16,7 @@ struct cell_t {
         struct cell_t *parent;
 };
 
+
 struct cellpath_t {
         struct list_head path;
         int n;
@@ -24,9 +25,11 @@ struct cellpath_t {
 
 bool same_cell(struct cell_t *a, struct cell_t *b);
 struct cell_t *new_cell(uint32_t y, uint32_t x);
-struct cell_t *cellpath_goal(struct cellpath_t *path);
-struct cell_t *cellpath_start(struct cellpath_t *path);
+struct cell_t *cellpath_goal(struct list_head *path);
+struct cell_t *cellpath_start(struct list_head *path);
 struct cell_t *cell_parent(struct cell_t *cell);
 struct cell_t *cell_after(struct cell_t *cell, struct cell_t *match);
+struct cell_t *cell_dup(struct cell_t *cell);
+struct cell_t *cellpath_next(struct list_head *path);
 
 #endif

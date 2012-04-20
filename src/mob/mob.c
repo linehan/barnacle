@@ -126,7 +126,11 @@ void mob_path(struct mob_t *mob)
 }
 
 
-void mob_seek(struct mob_t *s, struct mob_t *g)
+
+
+
+
+void mob_seek_test(struct mob_t *s, struct mob_t *g)
 {
         struct cell_t *tmp;
 
@@ -141,8 +145,7 @@ void mob_seek(struct mob_t *s, struct mob_t *g)
                         return;
                 }
         }
-        /*return;*/
-
+        tmp = cellpath_next(&s->astar->path);
 
         werase(CONSOLE_WIN);
         wprintw(CONSOLE_WIN, 
@@ -151,28 +154,60 @@ void mob_seek(struct mob_t *s, struct mob_t *g)
                 " Thinks goal:   y:%u, x:%u key:%u\n"
                 " Actual goal:   y:%u, x:%u key:%u\n"
                 " Next move:     y:%u, x:%u key:%u\n"
-                " Next move:     y:%u, x:%u key:%u\n"
-                " OPEN set:      n:%d\n"
-                " CLOSED set:    n:%d\n",
-                g->astar->start->y,
+                " Screen dims:   c:%u, r:%u, l:%u\n"
+                " OPEN set:      n:%u, max:%u\n"
+                " CLOSED set:    n:%u, max:%u\n",
+                g->astar->start->y,             
                 g->astar->start->x,
                 g->astar->start->key,
-                s->astar->start->y,
+                s->astar->start->y,            
                 s->astar->start->x,
                 s->astar->start->key,
-                s->astar->goal->y,
+                s->astar->goal->y,            
                 s->astar->goal->x,
                 s->astar->goal->key,
-                s->astar->current->y,
+                s->astar->current->y,        
                 s->astar->current->x,
                 s->astar->current->key,
-                s->astar->current->parent->y,
-                s->astar->current->parent->x,
-                s->astar->current->parent->key,
+                tmp->y,
+                tmp->x,
+                tmp->key,
+                s->astar->map->cols,
+                s->astar->map->rows,
+                s->astar->map->len,
                 s->astar->OPEN->n,
-                s->astar->CLOSED->n);
+                s->astar->OPEN->max,
+                s->astar->CLOSED->n,
+                s->astar->CLOSED->max);
 }
-         
 
+
+
+
+void mob_seek(struct mob_t *s, struct mob_t *g)
+{
+        if ((s->astar->current == NULL) 
+        || !(same_cell(s->astar->current, g->astar->start))) 
+        {
+                if (a_star(s->astar, g->astar->start)) {
+                        /*wprintw(CONSOLE_WIN, "Yep\n");*/
+                        /*print_path(s->astar->current);*/
+                } else {
+                        /*wprintw(CONSOLE_WIN, "Nope\n");*/
+                        return;
+                }
+        }
+        struct cell_t *tmp;
+        tmp = cellpath_next(&s->astar->path);
+
+        if (tmp->x > s->astar->start->x)
+                mob_move(s, 'r');
+        if (tmp->x < s->astar->start->x)
+                mob_move(s, 'l');
+        if (tmp->y > s->astar->start->y)
+                mob_move(s, 'd');
+        if (tmp->y < s->astar->start->y)
+                mob_move(s, 'u');
+}
 
 

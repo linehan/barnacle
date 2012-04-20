@@ -48,30 +48,59 @@ struct cell_t *cell_parent(struct cell_t *cell)
 }
 
 
+struct cell_t *cell_dup(struct cell_t *cell)
+{
+        struct cell_t *new = new_cell(cell->y, cell->x);
+
+        new->g = cell->g;
+        new->h = cell->h;
+        new->f = cell->f;
+        new->parent = NULL;
+
+        return (new);
+}
+
 
 /**
  * cellpath_start -- if the cell is a node in a path list, return the start node
  * @path: pointer to a path
  */
-struct cell_t *cellpath_start(struct cellpath_t *path)
+struct cell_t *cellpath_start(struct list_head *path)
 {
-        if (list_empty(&path->path))
+        if (list_empty(path))
                 return NULL;
         else
-                return list_top(&path->path, struct cell_t, node);
+                return list_top(path, struct cell_t, node);
 }
+
+
+struct cell_t *cellpath_next(struct list_head *path)
+{
+        struct cell_t *tmp;
+        int i=0;
+
+        if (list_empty(path))
+                return NULL;
+
+        tmp = list_top(path, struct cell_t, node);
+        list_del_from(path, &tmp->node);
+        tmp = list_top(path, struct cell_t, node);
+
+        return tmp;
+}
+
 
 
 /**
  * cellpath_goal -- if a path list is not empty, return the goal node
  * @path: pointer to a path
  */
-struct cell_t *cellpath_goal(struct cellpath_t *path)
+struct cell_t *cellpath_goal(struct list_head *path)
 {
-        if (list_empty(&path->path))
+        if (list_empty(path))
                 return NULL;
         else
-                return list_tail(&path->path, struct cell_t, node);
+                return list_tail(path, struct cell_t, node);
 }
 
 

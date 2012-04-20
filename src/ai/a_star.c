@@ -24,8 +24,9 @@ void astar_init(struct astar_t *astar, struct matrix_t *map,
         astar->map    = map;
         astar->start  = start; 
         astar->goal   = NULL;
-        astar->OPEN   = new_bh(astar->map->rows * astar->map->cols);
-        astar->CLOSED = new_bh(astar->map->rows * astar->map->cols);
+        list_head_init(&astar->path);
+        astar->OPEN   = new_bh(astar->map->len);
+        astar->CLOSED = new_bh(astar->map->len);
 }
 
 
@@ -48,11 +49,14 @@ uint32_t mapval(struct astar_t *astar, int y, int x)
 
 
 
-inline void copy_path(struct cell_t *cell, struct cell_t *copy)
+int make_path(struct astar_t *astar)
 {
-        if (cell) {
-                copy->parent = cell->parent;
-                copy_path(cell->parent, copy->parent);
+        struct cell_t *tmp = astar->current;
+        int i;
+
+        while (tmp) {
+                list_add(&astar->path, &tmp->node);
+                tmp = tmp->parent;
         }
 }
 
@@ -94,7 +98,7 @@ void rev_path(struct cell_t *cell)
  */
 float mov_cost(struct cell_t *a, struct cell_t *b)
 {
-        return (float) MAXPRI - abs((a->x - b->x)) + abs((a->y - b->y));
+        return (float) abs((a->x - b->x)) + abs((a->y - b->y));
 }
 
 
@@ -105,7 +109,7 @@ float mov_cost(struct cell_t *a, struct cell_t *b)
  */
 float gn(struct astar_t *astar, struct cell_t *cell)
 {
-        return MAXPRI - mov_cost(astar->start, cell);
+        return (float) mov_cost(astar->start, cell);
 }
 
 
@@ -116,7 +120,7 @@ float gn(struct astar_t *astar, struct cell_t *cell)
  */
 float hn(struct astar_t *astar, struct cell_t *cell)
 {
-        return MAXPRI - mov_cost(cell, astar->goal); 
+        return (float) mov_cost(astar->goal, cell); 
 }
 
 
@@ -233,7 +237,7 @@ void groom_neighbors(struct astar_t *astar, struct cell_t *cell)
                 if (estimate_is_better) {
                         neighbor[i]->parent = cell;
                         neighbor[i]->g = estimated_g;
-                        neighbor[i]->f = neighbor[i]->g + neighbor[i]->h;
+                        neighbor[i]->f = MAXPRI - (neighbor[i]->g + neighbor[i]->h);
                         bh_setpri(astar->OPEN, neighbor[i]->f, neighbor[i]->key);
                 }
         }
@@ -287,8 +291,10 @@ bool a_star(struct astar_t *astar, struct cell_t *goal)
                 current = bh_pop(astar->OPEN); 
 
                 if (same_cell(astar->goal, current)) {
-                        bh_destroy(astar->CLOSED);
                         astar->current = current;
+                        make_path(astar);
+                        bh_empty(astar->CLOSED);
+                        bh_empty(astar->OPEN);
                         return true;
                 }
 
