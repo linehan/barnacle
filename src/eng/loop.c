@@ -82,7 +82,7 @@ void flow_cb(EV_P_ ev_timer *w, int revents)
                 mvwprintw(CONSOLE_WIN, 2, 0, "(%c) flow_cb\n", 
                           SPINNER(spindex++));
         }
-        sweet_flow(GLOBE);
+        render_sweet_flow(GLOBE);
 
         GLOBE->restack(GLOBE);
         map_refresh(GLOBE);
