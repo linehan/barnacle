@@ -100,6 +100,20 @@ static inline struct bh_t *new_bh(int maxsize)
         return (new);
 }
 
+
+/**
+ * bh_destroy -- free all memory associated with a binary heap
+ * @bh: pointer to an allocated binary heap
+ */
+static inline void bh_destroy(struct bh_t *bh)
+{
+        int i; 
+        for (i=ROOT; i<bh->n; i++) {
+                free(bh->node[i]);
+        }
+        free(bh);
+}
+
 /****************************************************************************** 
  * Heap-keeping operations
  *
@@ -132,7 +146,6 @@ static inline void bh_swap(struct bh_t *bh, int a, int b)
         bh->node[b] = tmp;
 }
 
-
 /**
  * bh_siftup -- draw node i up; heapify until the heap property is restored
  * @bh: pointer to a binary heap
@@ -152,7 +165,6 @@ static inline void bh_siftup(struct bh_t *bh, int end, int start)
                         return;
         }
 }
-
 
 /**
  * bh_siftdown -- draw node i down; heapify until the heap property is restored
@@ -183,7 +195,6 @@ static inline void bh_siftdown(struct bh_t *bh, int end, int start)
                         return;
         }
 }
-
 
 /**
  * heapify -- the famous heapify operation restores the heap property 
@@ -250,7 +261,6 @@ static inline void *bh_pop(struct bh_t *bh)
         return (top->data);
 }
 
-
 /**
  * bh_peek -- Reference the top item of the heap; the item is not removed
  * @bh: pointer to a binary heap
@@ -280,7 +290,6 @@ static inline bool bh_is_empty(struct bh_t *bh)
         return (bh->n <= ROOT) ? true : false;
 }
 
-
 /**
  * bh_is_full -- TRUE if the number of nodes is >= the maximum number of nodes
  * @bh: pointer to a binary heap
@@ -289,7 +298,6 @@ static inline bool bh_is_full(struct bh_t *bh)
 {
         return (bh->n >= bh->max) ? true : false;
 }
-
 
 /**
  * bh_has_member -- TRUE if there exists a node with key 'key' in the heap
@@ -309,15 +317,15 @@ static inline bool bh_has_member(struct bh_t *bh, uint32_t key)
 /******************************************************************************
  * Priority operations 
  *
- * bh_set_pri (linear probe + heapify)
- * bh_get_pri 
- * bh_get_key 
+ * bh_setpri (linear probe + heapify)
+ * bh_getpri 
+ * bh_getkey 
  *
  * These are priority-specific operations that modify or report the priority
  * status of nodes in the heap. 
  ******************************************************************************/
 /**
- * bh_set_pri -- set the priority of an item with key 'key' to 'pri'
+ * bh_setpri -- set the priority of an item with key 'key' to 'pri'
  * @bh: pointer to a binary heap
  * @pri: new priority of node
  * @key: key to match against the desired node
@@ -335,9 +343,8 @@ static inline bool bh_setpri(struct bh_t *bh, int pri, uint32_t key)
         return false;
 }
 
-
 /**
- * bh_get_pri -- return the priority of the node stored at index 'i'
+ * bh_getpri -- return the priority of the node stored at index 'i'
  * @bh: pointer to a binary heap
  * @i: index of the node
  */
@@ -346,9 +353,8 @@ static inline int bh_getpri(struct bh_t *bh, int i)
         return (bh->node[i]->pri);
 }
 
-
 /**
- * bh_get_key -- return the key of the node stored at index 'i'
+ * bh_getkey -- return the key of the node stored at index 'i'
  * @bh: pointer to a binary heap
  * @i: index of the node
  */
@@ -356,15 +362,5 @@ static inline uint32_t bh_getkey(struct bh_t *bh, int i)
 {
         return (bh->node[i]->key);
 }
-
-
-
-
-
-
-
-
-
-
 
 

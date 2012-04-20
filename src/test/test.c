@@ -29,9 +29,16 @@ WINDOW *CONSOLE_INPUT;
 
 /* Dump print statements */
 #define DIAGNOSTIC_W (COLS)
-#define DIAGNOSTIC_H (LINES/2)
+#define DIAGNOSTIC_H (LINES)
 WINDOW *DIAGNOSTIC_WIN;
 PANEL  *DIAGNOSTIC_PAN;
+
+
+/* Screen overlay */
+#define HUD_W (COLS)
+#define HUD_H (LINES)
+WINDOW *HUD_WIN;
+PANEL  *HUD_PAN;
 
 /* Cursor and message strip */
 WINDOW *INSPECTORWIN;
@@ -57,6 +64,9 @@ void init_test(void)
 {
 	DIAGNOSTIC_WIN = newwin(DIAGNOSTIC_H, DIAGNOSTIC_W, 0, 0);
         DIAGNOSTIC_PAN = new_panel(DIAGNOSTIC_WIN);
+
+	HUD_WIN = newwin(HUD_H, HUD_W, 0, 0);
+        HUD_PAN = new_panel(HUD_WIN);
 
         CONSOLE_WIN = newwin(CONSOLE_H, CONSOLE_W, 0, 0);
         CONSOLE_PAN = new_panel(CONSOLE_WIN);
@@ -89,6 +99,16 @@ void test_request(void)
         /*p = fgets(buf, 80, stdin);*/
 
         doupdate();
+}
+
+void lay_hud(void)
+{
+        overlay(HUD_WIN, GLOBE->win);
+}
+
+void hud_win(WINDOW *win)
+{
+        overlay(HUD_WIN, win);
 }
 
 /* -------------------------------------------------------------------------- */

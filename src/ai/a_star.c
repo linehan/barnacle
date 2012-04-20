@@ -1,59 +1,29 @@
-#include <stdlib.h>
-#include <stdio.h>
-#include <stdbool.h>
-#include <math.h>
-#include "morton.h"
-#include "matrix.h"
-#include "bh.h"
+#include <assert.h>
+#include "../com/arawak.h"
 #include "a_star.h"
 #include "a_star_test.h"
+#include "../map/cell.h"
+#include "../eng/bytes.h"
+#include "../map/map.h"
 
 
 
-// 
-//   ALLOCATORS, INITIALIZERS, DESTRUCTORS
-//   ``````````  ````````````  ````````````  
-
-
-
-/*
- * new_cell -- allocate and initialize a new struct cell_t
- * @y: y-coordinate of cell
- * @x: x-coordinate of cell
- *
- * Notes
- * The 'key' member is used to perform lookups and identification of cells
- * in the OPEN or CLOSED sets. Each cell is identified by a kind of perfect 
- * hash called a Morton code, or Z-order code, which can be quickly computed 
- * by interleaving a pair of y and x coordinates. See "morton.h"
- */
-struct cell_t *new_cell(uint32_t y, uint32_t x)
-{
-        struct cell_t *new = malloc(sizeof(struct cell_t));
-
-        new->y   = y;
-        new->x   = x;
-        new->key = mort(y,x); 
-
-        return (new);
-}
+/* ALLOCATORS, INITIALIZERS, AND DESTRUCTORS
+````````````````````````````````````````````````````````````````````````````` */
 
 
 /*
  * astar_init -- initialize the A* object with the conditions for the run 
  * @astar: pointer to an allocated struct astar_t
  * @map: pointer to an allocated and populated matrix
- * @st_y: y-coordinate of the starting position
- * @st_x: x-coordinate of the starting position
- * @go_y: y-coordinate of the goal position
- * @go_x: x-coordinate of the goal position
+ * @start: pointer to a cell with the coordinates of the starting node 
  */
 void astar_init(struct astar_t *astar, struct matrix_t *map, 
-                int st_y, int st_x, int go_y, int go_x)
+                struct cell_t *start)
 {
         astar->map    = map;
-        astar->start  = new_cell(st_y, st_x);
-        astar->goal   = new_cell(go_y, go_x);
+        astar->start  = start; 
+        astar->goal   = NULL;
         astar->OPEN   = new_bh(astar->map->rows * astar->map->cols);
         astar->CLOSED = new_bh(astar->map->rows * astar->map->cols);
 }
@@ -61,22 +31,8 @@ void astar_init(struct astar_t *astar, struct matrix_t *map,
 
 
 
-//
-//      INLINE HELPER FUNCTIONS
-//      `````` `````` `````````
-
-
-
-
-/*
- * same_cell -- if the keys of both cells match, they are the same 
- * @a: pointer to a cell
- * @b: pointer to a cell
- */
-bool same_cell(struct cell_t *a, struct cell_t *b)
-{
-        return (a->key == b->key) ? true : false;
-}
+/* HELPER FUNCTIONS 
+````````````````````````````````````````````````````````````````````````````` */
 
 
 /*
@@ -87,16 +43,47 @@ bool same_cell(struct cell_t *a, struct cell_t *b)
  */
 uint32_t mapval(struct astar_t *astar, int y, int x)
 {
-        return mx_val(astar->map, y, x);
+        return get_nibble(mx_val(astar->map, y, x), ALT);
 }
 
 
 
+inline void copy_path(struct cell_t *cell, struct cell_t *copy)
+{
+        if (cell) {
+                copy->parent = cell->parent;
+                copy_path(cell->parent, copy->parent);
+        }
+}
 
-//
-//      COST FUNCTIONS AND HEURISTICS 
-//      ```` ````````` ``` ``````````
 
+
+/*
+ * rev_path -- reverse the path's linked list
+ * @astar: pointer to the A* object
+ */
+void rev_path(struct cell_t *cell)
+{
+        struct cell_t *tmp;
+        struct cell_t *next;
+        struct cell_t *last;
+
+        next = cell;
+        last = NULL;
+
+        while (next != NULL) {
+                tmp = next->parent;
+                next->parent = last;
+                last = next; 
+                next = tmp;
+        }
+        cell = last;
+} 
+
+
+
+/* COST FUNCTIONS AND HEURISTICS 
+````````````````````````````````````````````````````````````````````````````` */
 
 
 
@@ -134,11 +121,8 @@ float hn(struct astar_t *astar, struct cell_t *cell)
 
 
 
-
-//
-//      THE A* ALGORITHM
-//      ``` `` `````````
-
+/* THE A* ALGORITHM 
+````````````````````````````````````````````````````````````````````````````` */
 
 
 
@@ -149,6 +133,7 @@ float hn(struct astar_t *astar, struct cell_t *cell)
  */
 struct cell_t **gen_neighbors(struct astar_t *astar, struct cell_t *cell)
 {
+        #define WALL_VALUE 4
         struct cell_t **neighbor;  /* array of neighbor cell pointers */
         int parent_y;              /* y-position of current cell's parent */
         int parent_x;              /* x-position of current cell's parent */
@@ -167,28 +152,28 @@ struct cell_t **gen_neighbors(struct astar_t *astar, struct cell_t *cell)
 
         /* Neighbor to the west of cell */
         if (((cell->x > 0)                                       // In-bounds  
-        && (mapval(astar, cell->y, cell->x-1) < 2))              // Not wall   
+        && (mapval(astar, cell->y, cell->x-1) < WALL_VALUE))     // Not wall   
         && !((parent_x == cell->x-1) && (parent_y == cell->y)))  // Not parent
         {
                 neighbor[0] = new_cell(cell->y, cell->x-1);
         }
         /* Neighbor to the north of cell */
         if (((cell->y > 0)                                       // In-bounds
-        && (mapval(astar, cell->y-1, cell->x) < 2))              // Not wall
+        && (mapval(astar, cell->y-1, cell->x) < WALL_VALUE))     // Not wall
         && !((parent_x == cell->x) && (parent_y == cell->y-1)))  // Not parent
         {
                 neighbor[1] = new_cell(cell->y-1, cell->x);
         }
         /* Neighbor to the east of cell */
         if (((cell->x < astar->map->cols-1)                      // In-bounds
-        && (mapval(astar, cell->y, cell->x+1) < 2))              // Not wall
+        && (mapval(astar, cell->y, cell->x+1) < WALL_VALUE))     // Not wall
         && !((parent_x == cell->x+1) && (parent_y == cell->y)))  // Not parent
         {
                 neighbor[2] = new_cell(cell->y, cell->x+1);
         }
         /* Neighbor to the south of cell */
         if (((cell->y < astar->map->rows-1)                      // In-bounds
-        && (mapval(astar, cell->y+1, cell->x) < 2))              // Not wall
+        && (mapval(astar, cell->y+1, cell->x) < WALL_VALUE))     // Not wall
         && !((parent_x == cell->x) && (parent_y == cell->y+1)))  // Not parent
         {
                 neighbor[3] = new_cell(cell->y+1, cell->x);
@@ -257,12 +242,10 @@ void groom_neighbors(struct astar_t *astar, struct cell_t *cell)
 
 
 /******************************************************************************
- * a_star -- generate an efficient path from a start node to a goal node
+ * a_star -- generate an efficient path between a start node and a goal node
  * @map: pointer to a populated matrix
- * @st_y: y-coordinate of the starting position
- * @st_x: x-coordinate of the starting position
- * @go_y: y-coordinate of the goal position
- * @go_x: x-coordinate of the goal position
+ * @start: pointer to a cell with the coordinates of the starting node 
+ * @goal: pointer to a cell with the coordinates of the goal node
  *
  * This is the main entry point to the A* module. Here is a brief outline:
  ******************************************************************************
@@ -285,31 +268,36 @@ void groom_neighbors(struct astar_t *astar, struct cell_t *cell)
  *
  * 3. Return
  ******************************************************************************/
-bool a_star(struct matrix_t *map, int st_y, int st_x, int go_y, int go_x)
+bool a_star(struct astar_t *astar, struct cell_t *goal)
 {
+        assert(astar != NULL && goal != NULL);
+
         struct cell_t *current;
-        struct astar_t astar;
-       
-        astar_init(&astar, map, st_y, st_x, go_y, go_x);
+
+        astar->goal = goal;
 
         /* Set up the start tile and add to OPEN */
-        astar.start->g = 0;                               // g(n)
-        astar.start->h = hn(&astar, astar.start);         // h(n)
-        astar.start->f = astar.start->g + astar.start->h; // f(n) 
-        bh_add(astar.OPEN, astar.start->f, astar.start->key, astar.start);
+        astar->start->g = 0;                                 // g(n)
+        astar->start->h = hn(astar, astar->start);           // h(n)
+        astar->start->f = astar->start->g + astar->start->h; // f(n) 
+        bh_add(astar->OPEN, astar->start->f, astar->start->key, astar->start);
 
-        while (!bh_is_empty(astar.OPEN)) {
+        while (!bh_is_empty(astar->OPEN)) {
 
-                current = bh_pop(astar.OPEN); 
+                current = bh_pop(astar->OPEN); 
 
-                if (same_cell(astar.goal, current))
+                if (same_cell(astar->goal, current)) {
+                        bh_destroy(astar->CLOSED);
+                        astar->current = current;
                         return true;
+                }
 
-                bh_add(astar.CLOSED, current->f, current->key, current);
-                groom_neighbors(&astar, current);
+                bh_add(astar->CLOSED, current->f, current->key, current);
+                groom_neighbors(astar, current);
 
-                test_rig(&astar, current); // displays test output
+                test_rig(astar, current); // displays test output
         }
+        astar->current = NULL;
         return false;
 }
 

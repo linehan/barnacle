@@ -76,10 +76,11 @@ am_arawak_OBJECTS = arawak.$(OBJEXT) eng/init.$(OBJEXT) \
 	gfx/sprite.$(OBJEXT) gfx/gfx.$(OBJEXT) gfx/multiwin.$(OBJEXT) \
 	gfx/ui/dock.$(OBJEXT) gfx/ui/stdpan.$(OBJEXT) \
 	gfx/ui/stdmenu.$(OBJEXT) gfx/ui/titlecard.$(OBJEXT) \
-	map/terrain.$(OBJEXT) map/map.$(OBJEXT) map/snake.$(OBJEXT) \
-	map/arena.$(OBJEXT) map/sweet_flow.$(OBJEXT) \
-	ai/pathfind.$(OBJEXT) txt/gloss_m.$(OBJEXT) \
-	txt/gloss_v.$(OBJEXT) txt/gloss_c.$(OBJEXT) mob/mob.$(OBJEXT) \
+	map/terrain.$(OBJEXT) map/map.$(OBJEXT) map/cell.$(OBJEXT) \
+	map/snake.$(OBJEXT) map/arena.$(OBJEXT) \
+	map/sweet_flow.$(OBJEXT) ai/a_star.$(OBJEXT) \
+	txt/gloss_m.$(OBJEXT) txt/gloss_v.$(OBJEXT) \
+	txt/gloss_c.$(OBJEXT) mob/mob.$(OBJEXT) \
 	noun/noun_model.$(OBJEXT) noun/noun_discrim.$(OBJEXT) \
 	noun/noun_view.$(OBJEXT) noun/noun_control.$(OBJEXT) \
 	noun/noun_widgets.$(OBJEXT) noun/types/boat/boat.$(OBJEXT) \
@@ -234,10 +235,11 @@ arawak_SOURCES = arawak.c                       \
                    gfx/ui/titlecard.c           \
                    map/terrain.c                \
                    map/map.c                    \
+                   map/cell.c                   \
                    map/snake.c                  \
                    map/arena.c                  \
                    map/sweet_flow.c             \
-                   ai/pathfind.c                \
+                   ai/a_star.c                  \
                    txt/gloss_m.c                \
                    txt/gloss_v.c                \
                    txt/gloss_c.c                \
@@ -445,6 +447,7 @@ map/$(DEPDIR)/$(am__dirstamp):
 map/terrain.$(OBJEXT): map/$(am__dirstamp) \
 	map/$(DEPDIR)/$(am__dirstamp)
 map/map.$(OBJEXT): map/$(am__dirstamp) map/$(DEPDIR)/$(am__dirstamp)
+map/cell.$(OBJEXT): map/$(am__dirstamp) map/$(DEPDIR)/$(am__dirstamp)
 map/snake.$(OBJEXT): map/$(am__dirstamp) map/$(DEPDIR)/$(am__dirstamp)
 map/arena.$(OBJEXT): map/$(am__dirstamp) map/$(DEPDIR)/$(am__dirstamp)
 map/sweet_flow.$(OBJEXT): map/$(am__dirstamp) \
@@ -455,7 +458,7 @@ ai/$(am__dirstamp):
 ai/$(DEPDIR)/$(am__dirstamp):
 	@$(MKDIR_P) ai/$(DEPDIR)
 	@: > ai/$(DEPDIR)/$(am__dirstamp)
-ai/pathfind.$(OBJEXT): ai/$(am__dirstamp) ai/$(DEPDIR)/$(am__dirstamp)
+ai/a_star.$(OBJEXT): ai/$(am__dirstamp) ai/$(DEPDIR)/$(am__dirstamp)
 txt/$(am__dirstamp):
 	@$(MKDIR_P) txt
 	@: > txt/$(am__dirstamp)
@@ -538,7 +541,7 @@ arawak$(EXEEXT): $(arawak_OBJECTS) $(arawak_DEPENDENCIES) $(EXTRA_arawak_DEPENDE
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
-	-rm -f ai/pathfind.$(OBJEXT)
+	-rm -f ai/a_star.$(OBJEXT)
 	-rm -f eng/bytes.$(OBJEXT)
 	-rm -f eng/fsm.$(OBJEXT)
 	-rm -f eng/init.$(OBJEXT)
@@ -569,6 +572,7 @@ mostlyclean-compile:
 	-rm -f lib/textutils.$(OBJEXT)
 	-rm -f lib/ufo.$(OBJEXT)
 	-rm -f map/arena.$(OBJEXT)
+	-rm -f map/cell.$(OBJEXT)
 	-rm -f map/map.$(OBJEXT)
 	-rm -f map/snake.$(OBJEXT)
 	-rm -f map/sweet_flow.$(OBJEXT)
@@ -596,7 +600,7 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/arawak.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@ai/$(DEPDIR)/pathfind.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@ai/$(DEPDIR)/a_star.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@eng/$(DEPDIR)/bytes.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@eng/$(DEPDIR)/fsm.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@eng/$(DEPDIR)/init.Po@am__quote@
@@ -627,6 +631,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@lib/stoc/$(DEPDIR)/smooth.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@lib/stoc/$(DEPDIR)/stoc.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@map/$(DEPDIR)/arena.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@map/$(DEPDIR)/cell.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@map/$(DEPDIR)/map.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@map/$(DEPDIR)/snake.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@map/$(DEPDIR)/sweet_flow.Po@am__quote@

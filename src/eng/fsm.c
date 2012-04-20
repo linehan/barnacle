@@ -136,6 +136,9 @@ void director(int input)
                 /*case '_':*/
                         /*rot_surface_rule();*/
                         /*break;*/
+                case 'h':
+                        lay_hud();
+                        break;
                 case 'm':
                         setmode(UI_MOB);
                         setmode(MODE_STARTED);
