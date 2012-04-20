@@ -1,5 +1,7 @@
 #include <stdlib.h>
 #include "mob.h"
+#include "../ai/a_star_test.h"
+#include "../map/cell.h"
 
 
 
@@ -17,9 +19,14 @@ void mob_cfg(struct mob_t *mob, struct map_t *map, int h, int w, int y, int x)
 {
         #define MOB_PATH_LEN 13
 
+        struct cell_t *start = new_cell((uint32_t)y, (uint32_t)x);
+
+        mob->astar = malloc(sizeof(struct astar_t));
+
         set_ufo(&mob->ufo, h, w, y, x, 
                            map->ufo.obj.h, map->ufo.obj.w, 0, 0);
 
+        astar_init(mob->astar, map->mx, start);
         init_path(&mob->path, 0, 0, MOB_PATH_LEN);
         WINDOW *win = newwin(h, w, y, x);
         mob->pan    = new_panel(win);
@@ -93,6 +100,10 @@ void mob_move(struct mob_t *mob, int dir)
                 ufo_left(mob, ufo);
         }
 
+        mob->astar->start->y = (uint32_t)ufo_y(mob, ufo);
+        mob->astar->start->x = (uint32_t)ufo_x(mob, ufo);
+        mob->astar->start->key = mort(mob->astar->start->y, mob->astar->start->x);
+
         move_panel(mob->pan, ufo_y(mob, ufo), ufo_x(mob, ufo));
         update_panels();
 
@@ -113,6 +124,55 @@ void mob_path(struct mob_t *mob)
         wrefresh((PEEK(GLOBE->L[HIG])));
         doupdate();
 }
+
+
+void mob_seek(struct mob_t *s, struct mob_t *g)
+{
+        struct cell_t *tmp;
+
+        if ((s->astar->current == NULL) 
+        || !(same_cell(s->astar->current, g->astar->start))) 
+        {
+                if (a_star(s->astar, g->astar->start)) {
+                        wprintw(CONSOLE_WIN, "Yep\n");
+                        print_path(s->astar->current);
+                } else {
+                        wprintw(CONSOLE_WIN, "Nope\n");
+                        return;
+                }
+        }
+        /*return;*/
+
+
+        werase(CONSOLE_WIN);
+        wprintw(CONSOLE_WIN, 
+                " Your position: y:%u, x:%u key:%u\n"
+                " His position:  y:%u, x:%u key:%u\n"
+                " Thinks goal:   y:%u, x:%u key:%u\n"
+                " Actual goal:   y:%u, x:%u key:%u\n"
+                " Next move:     y:%u, x:%u key:%u\n"
+                " Next move:     y:%u, x:%u key:%u\n"
+                " OPEN set:      n:%d\n"
+                " CLOSED set:    n:%d\n",
+                g->astar->start->y,
+                g->astar->start->x,
+                g->astar->start->key,
+                s->astar->start->y,
+                s->astar->start->x,
+                s->astar->start->key,
+                s->astar->goal->y,
+                s->astar->goal->x,
+                s->astar->goal->key,
+                s->astar->current->y,
+                s->astar->current->x,
+                s->astar->current->key,
+                s->astar->current->parent->y,
+                s->astar->current->parent->x,
+                s->astar->current->parent->key,
+                s->astar->OPEN->n,
+                s->astar->CLOSED->n);
+}
+         
 
 
 

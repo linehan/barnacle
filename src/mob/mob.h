@@ -6,12 +6,14 @@
 #include "../map/map.h"
 #include "../lib/ufo.h"
 #include "../map/snake.h"
+#include "../ai/a_star.h"
 
 
 struct mob_t {
         PANEL *pan;
         struct ufo_t ufo;
         struct path_t path;
+        struct astar_t *astar;
         bool active;
 };
 

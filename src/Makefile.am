@@ -46,10 +46,11 @@ arawak_SOURCES = arawak.c                       \
                    gfx/ui/titlecard.c           \
                    map/terrain.c                \
                    map/map.c                    \
+                   map/cell.c                   \
                    map/snake.c                  \
                    map/arena.c                  \
                    map/sweet_flow.c             \
-                   ai/pathfind.c                \
+                   ai/a_star.c                  \
                    txt/gloss_m.c                \
                    txt/gloss_v.c                \
                    txt/gloss_c.c                \

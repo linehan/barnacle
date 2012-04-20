@@ -50,6 +50,9 @@ int modify_creature(void *obj, int input)
         case 'd':
                 mob_move(&noun->mob, 'r');
                 break;
+        case 't':
+                mob_seek(noun_mob("Beefman"), &noun->mob);
+                break;
         case KEY_ESC:
                 return (MODE_RELEASE);
         }

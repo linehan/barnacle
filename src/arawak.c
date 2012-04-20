@@ -1,5 +1,4 @@
-// vim:fdm=marker
-/*******************************************************************************
+/******************************************************************************
   FILENAME:  dork.c
   This is the main program. 
 *******************************************************************************/
@@ -30,7 +29,7 @@
 #include "noun/types/boat/boat.h"
 #include "noun/types/creature/creature.h"
 #include "gfx/ui/titlecard.h"
-#include "lib/bheap.h"
+#include "ai/a_star_test.h"
 
 /* Rolling start */
 int main(int argc, char *argv[]) 
@@ -73,19 +72,19 @@ int main(int argc, char *argv[])
         init_pair(FLEX, BLACK, WHITE);
         init_pair(FLEX2, BLACK, WHITE);
 
-        new_creature("Guy", PERSON, L"д", FLEX);
-        /*new_creature("Killbot", MONSTER, L"⿍", FLEX);*/
+        new_creature("Guy", PERSON, L"ⰾ", FLEX);
+        /*new_creature("Guy", PERSON, L"д", FLEX);*/
+        new_creature("Beefman", MONSTER, L"Ⰾ", FLEX);
+
+        /*astar_test();*/
 
         noun_set_mob(get_noun("Guy"), true);
         mob_move(noun_mob("Guy"), 'd');
         mob_move(noun_mob("Guy"), 'd');
         mob_move(noun_mob("Guy"), 'd');
 
-        /*noun_set_mob(get_noun("Killbot"), true);*/
-        /*mob_move(noun_mob("Killbot"), 'd');*/
-
-        astar(GLOBE, 8, 8, 13, 13);
-
+        noun_set_mob(get_noun("Beefman"), true);
+        mob_move(noun_mob("Beefman"), 'd');
 
         fork_sweet_flow();
 
