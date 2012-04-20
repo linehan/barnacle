@@ -54,6 +54,11 @@ int main(int argc, char *argv[])
         print_status("\n ALL OK\n");
         print_hold("Press any key to continue");
 
+        wprintw(CONSOLE_WIN, "rows:%u cols:%u len: %u\n", 
+                GLOBE->mx->rows,
+                GLOBE->mx->cols,
+                GLOBE->mx->len);
+
         map_roll(pad, 0);
         map_roll(pad, 0);
 
@@ -73,10 +78,7 @@ int main(int argc, char *argv[])
         init_pair(FLEX2, BLACK, WHITE);
 
         new_creature("Guy", PERSON, L"ⰾ", FLEX);
-        /*new_creature("Guy", PERSON, L"д", FLEX);*/
         new_creature("Beefman", MONSTER, L"Ⰾ", FLEX);
-
-        /*astar_test();*/
 
         noun_set_mob(get_noun("Guy"), true);
         mob_move(noun_mob("Guy"), 'd');

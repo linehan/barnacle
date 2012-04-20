@@ -53,7 +53,7 @@
 #define rightof(i) (((i) << 1) + 1)
 #define parentof(i) ((i) >> 1)
 
-#define ROOT 1      /* The index of the root node */
+#define BH_ROOT 1      /* The index of the root node */
 #define MAXPRI 999  /* The maximum admissible priority of a node */
 
 /******************************************************************************
@@ -74,8 +74,8 @@ struct bh_node {
 
 
 struct bh_t {
-        int max;                /* Maximum number of nodes in the tree */
-        int n;                  /* Current number of nodes in the tree */
+        uint32_t max;                /* Maximum number of nodes in the tree */
+        uint32_t n;                  /* Current number of nodes in the tree */
         struct bh_node **node;
 };
 
@@ -85,13 +85,13 @@ struct bh_t {
  * @maxsize: The maximum number of nodes that the heap can contain
  * Returns: pointer to a new binary heap
  */
-static inline struct bh_t *new_bh(int maxsize)
+static inline struct bh_t *new_bh(uint32_t maxsize)
 {
         struct bh_t *new = malloc(sizeof(struct bh_t));
         int i;
 
-        new->max  = ROOT+maxsize;
-        new->n    = ROOT;
+        new->max  = BH_ROOT+maxsize;
+        new->n    = BH_ROOT;
         new->node = malloc(new->max * sizeof(struct bh_node *));
 
         for (i=0; i<new->max; i++) 
@@ -108,11 +108,23 @@ static inline struct bh_t *new_bh(int maxsize)
 static inline void bh_destroy(struct bh_t *bh)
 {
         int i; 
-        for (i=ROOT; i<bh->n; i++) {
+        for (i=BH_ROOT; i<bh->n; i++) {
                 free(bh->node[i]);
         }
         free(bh);
 }
+
+
+/**
+ * bh_empty -- free certain memory associated with the binary heap,
+ * @bh: pointer to an allocated binary heap
+ */
+static inline void bh_empty(struct bh_t *bh)
+{
+        bh->n = BH_ROOT;
+}
+
+
 
 /****************************************************************************** 
  * Heap-keeping operations
@@ -203,8 +215,8 @@ static inline void bh_siftdown(struct bh_t *bh, int end, int start)
 static inline void heapify(struct bh_t *bh)
 {
         int i;
-        for (i=ROOT; i<bh->n; i++) {
-                bh_siftup(bh, i, ROOT);
+        for (i=BH_ROOT; i<bh->n; i++) {
+                bh_siftup(bh, i, BH_ROOT);
         }
 }
 
@@ -236,7 +248,7 @@ static inline bool bh_add(struct bh_t *bh, int pri, uint32_t key, void *x)
         bh->node[bh->n]->key  = key;
         bh->node[bh->n]->pri  = pri;
         bh->node[bh->n]->data = x;
-        bh_siftup(bh, bh->n++, ROOT);
+        bh_siftup(bh, bh->n++, BH_ROOT);
 
         return true;
 }
@@ -250,12 +262,12 @@ static inline void *bh_pop(struct bh_t *bh)
 {
         struct bh_node *top;
        
-        top = bh->node[ROOT];
-        bh->node[ROOT] = bh->node[--bh->n];
+        top = bh->node[BH_ROOT];
+        bh->node[BH_ROOT] = bh->node[--bh->n];
 
-        bh_siftdown(bh, ROOT, bh->n);
+        bh_siftdown(bh, BH_ROOT, bh->n);
 
-        if (bh->n < ROOT) 
+        if (bh->n < BH_ROOT) 
                 return NULL;
 
         return (top->data);
@@ -282,12 +294,12 @@ static inline void *bh_peek(struct bh_t *bh, int i)
  * about the structure or status of the heap. 
  ******************************************************************************/
 /**
- * bh_is_empty -- TRUE if the number of nodes is <= the ROOT index
+ * bh_is_empty -- TRUE if the number of nodes is <= the BH_ROOT index
  * @bh: pointer to a binary heap
  */
 static inline bool bh_is_empty(struct bh_t *bh)
 {
-        return (bh->n <= ROOT) ? true : false;
+        return (bh->n <= BH_ROOT) ? true : false;
 }
 
 /**
@@ -306,7 +318,7 @@ static inline bool bh_is_full(struct bh_t *bh)
 static inline bool bh_has_member(struct bh_t *bh, uint32_t key)
 {
         int i;
-        for (i=ROOT; i<bh->n; i++) {
+        for (i=BH_ROOT; i<bh->n; i++) {
                 if (bh->node[i]->key == key)
                         return true;
         }
@@ -333,7 +345,7 @@ static inline bool bh_has_member(struct bh_t *bh, uint32_t key)
 static inline bool bh_setpri(struct bh_t *bh, int pri, uint32_t key)
 {
         int i;
-        for (i=ROOT; i<bh->n; i++) {
+        for (i=BH_ROOT; i<bh->n; i++) {
                 if (bh->node[i]->key == key) {
                         bh->node[i]->pri = pri;
                         heapify(bh);

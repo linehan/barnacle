@@ -143,10 +143,12 @@ int inspect_control(int dir)
         vrt_refresh();
 
         werase(INSPECTORMSGWIN);
-        wprintw(INSPECTORMSGWIN, "Y: %2u X: %2u M: %2u\t"
+        wprintw(INSPECTORMSGWIN, "LINES: %d COLS: %d\tY: %2u X: %2u M: %2u\t"
                                  "LAYER: %s\t"
                                  "ELEV: %2u\t"
                                  "PERLIN: %+5f", 
+                        LINES,
+                        COLS,
                         i_yy, 
                         i_xx, 
                         z,
