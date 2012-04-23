@@ -292,3 +292,22 @@ double **simplex_matrix(uint32_t h, uint32_t w)
         return pmap;
 }
 
+
+/*
+ * Return a matrix with no values
+ */
+double **empty_simplex_matrix(uint32_t h, uint32_t w)
+{
+        double **new;
+        int i;
+
+        new = malloc(h * sizeof(double *));
+
+        for (i=0; i<h; i++)
+                new[i] = malloc(w * sizeof(double));
+
+        return (new);
+}
+
+
+

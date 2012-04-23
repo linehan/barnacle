@@ -7,6 +7,7 @@
 #include "../noun/noun_model.h"
 #include "../gfx/gfx.h"
 #include "../mob/mob.h"
+#include "../map/map.h"
 #include "../test/test.h"
 #include "fsm.h"
 
@@ -136,8 +137,26 @@ void director(int input)
                 /*case '_':*/
                         /*rot_surface_rule();*/
                         /*break;*/
-                case 'h':
-                        lay_hud();
+                case '1':
+                        tab_sig(1);
+                        break;
+                case '2':
+                        tab_sig(2);
+                        break;
+                case '3':
+                        tab_cur(1);
+                        break;
+                case '4':
+                        tab_cur(2);
+                        break;
+                case 'f':
+                        set_screen_falling(true);
+                        break;
+                case 'F':
+                        fall_screen();
+                        break;
+                case '^':
+                        map_swap();
                         break;
                 case 'm':
                         setmode(UI_MOB);

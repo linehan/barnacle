@@ -56,7 +56,6 @@ void noun_print_highlight(int op)
                 wattr_on(mob_win(&noun->mob), WA_REVERSE, NULL);
                 wchgat(mob_win(&noun->mob), -1, WA_REVERSE, pair, NULL);
         }
-        scr_refresh();
 }
 
 
@@ -95,9 +94,11 @@ enum box_styles{DBOX,MBOX,LBOX,XBOX,FBOX,EBOX,LGVBAR,SMVBAR,LGHBAR,SMHBAR};   //
 //                        checkerboard   empty  small vert.        small hoz. //
 
 
-static const short   VIT_PAIR[]={PUR_RED, PUR_BRZ, PUR_BLU, PUR_GRE};
+static const short   VIT_PAIR[]={PUR_RED, PUR_BRONZE, PUR_BLU, PUR_GRE};
 static const char   *VIT_TAGS[]={   "HP",    "SP",    "LP",    "EP"};
-static const wchar_t  BOX_WCH[]=L"▩▨▧▦▣□ⲾⲿⲺⲻ";
+/*static const wchar_t  BOX_WCH[]=L"▩▨▧▦▣□ⲾⲿⲺⲻ";*/
+static const wchar_t  BOX_WCH[]=L"▩ⲿⲾ■▦▩■▩▦■▣⬜⬜∎⦀⬛∎■ℾⲅⲄⲅℾ⅂⅃▣▩⎚⦀▩▨▧▦▣□Ⲿⲿⵙⵔ";
+
 static cchar_t BOX_CCH;
 
 

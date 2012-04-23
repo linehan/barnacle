@@ -31,12 +31,12 @@ struct matrix_t *new_matrix(uint32_t nrows, uint32_t ncols)
                 exit(0);
         }
         /* Allocate the 1D array to contain all values in contiguous memory */
-        if (new->ar = malloc(nrows * ncols * sizeof(double)), new == NULL) {
+        if (new->ar = malloc(nrows * ncols * sizeof(uint32_t)), new == NULL) {
                 puts("\nFailure to allocate memory for the matrix array");
                 exit(0);
         }
         /* Allocate the array of row pointers, one for each row of the matrix */
-        if (new->mx= malloc(nrows * sizeof(double *)), new->mx == NULL) {
+        if (new->mx= malloc(nrows * sizeof(uint32_t *)), new->mx == NULL) {
                 puts("\nFailure to allocate memory for matrix pointers.");
                 exit(0);
         }

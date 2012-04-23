@@ -17,11 +17,6 @@
 
 
 
-struct map_t *GLOBE;
-
-
-
-
 attr_t saved_attr;
 short saved_pair;
 #define SAVED_ATTR saved_attr
@@ -58,7 +53,7 @@ void mvwsnpaint(WINDOW *win, int y, int x, wchar_t *wcs, short pair, int n)
 
 void geojug_start(void)
 {
-        GLOBE = malloc(sizeof(struct map_t)); // initialize the global map
+        /*GLOBE = malloc(sizeof(struct map_t)); // initialize the global map*/
 }
 
 

@@ -14,7 +14,7 @@ void new_creature(const char *name, int job, const wchar_t *wch, short pair)
 
         noun = new_noun(name, job, 0, new);
         noun_set_modify(noun, modify_creature);
-        mob_cfg(&noun->mob, GLOBE, 1, 1, CENTERED);
+        mob_cfg(&noun->mob, FIELD, 1, 1, CENTERED);
 
         noun->options |= NOUN_CREATURE;
 

@@ -144,7 +144,7 @@ void new_boat(struct map_t *map, int type, const char *name)
         noun_set_modify(noun, boat_control);
 
         mob_cfg(&noun->mob, map, BOAT_H, BOAT_W, 0, 0);
-        init_path(&noun->mob.path, BOAT_PATH_Y, BOAT_PATH_X, BOAT_PATH_LEN);
+        init_path(noun->mob.path, BOAT_PATH_Y, BOAT_PATH_X, BOAT_PATH_LEN);
         wbkgrnd(mob_win(&noun->mob), mkcch(br_dis(0), 0, SEA_MED));
 }
 
@@ -218,7 +218,7 @@ void sail_boat(void *mynoun)
                 else if SOUTHING(H)     mob_move(&noun->mob, 'd');
                 else if WESTING(H)      mob_move(&noun->mob, 'l');
         }
-        else path_pop(&noun->mob.path);
+        else path_pop(noun->mob.path);
 
         mob_path(&noun->mob); // If it's down here, after draw_boat(), it makes
                          // a neat "tugging" effect as the boat moves

@@ -121,9 +121,9 @@ void operate_on(void *noun)
                 break;
         case EXITING:
                 noun_print_name(SUBJECT, GREYCOLOR);
-                noun_print_name(OBJECT, GREYCOLOR);
+                /*noun_print_name(OBJECT, GREYCOLOR);*/
                 close_noun_menu(SUBJECT);
-                close_noun_menu(OBJECT);
+                /*close_noun_menu(OBJECT);*/
                 return;
         case PATTERN:
                 scr_refresh();
@@ -160,10 +160,10 @@ void operate_on(void *noun)
                 break;
         case VITALS:
                 noun_print_vitals(op);
-                noun_print_vitals(op^1);
+                /*noun_print_vitals(op^1);*/
                 break;
         }
-        noun_print_name(op^1, GREYCOLOR);
+        /*noun_print_name(op^1, GREYCOLOR);*/
         noun_print_name(op, NORMALCOLOR);
         scr_refresh();
 }

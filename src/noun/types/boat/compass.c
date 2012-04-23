@@ -74,8 +74,10 @@ void init_instruments(void)
                         setcchar(&RIB[i], &gfxRIB[i], 0, PUR_GRE, NULL);
         }
 
-        cmpbox_win = newwin(3, BOX_W, LINES-3, ((COLS/2)-(BOX_CENTER)));
-        cmprib_win = newwin(1, 13, LINES-2, ((COLS/2)-(RIB_CENTER)));
+        /*cmpbox_win = newwin(3, BOX_W, LINES-3, ((COLS/2)-(BOX_CENTER)));*/
+        /*cmprib_win = newwin(1, 13, LINES-2, ((COLS/2)-(RIB_CENTER)));*/
+        cmpbox_win = newwin(3, BOX_W, LINES-3, ((COLS)-(BOX_W)));
+        cmprib_win = newwin(1, 13, LINES-2, ((COLS)-(RIB_W+1)));
         cmpbox_pan = new_panel(cmpbox_win);
         cmprib_pan = new_panel(cmprib_win);
 
@@ -189,8 +191,8 @@ void draw_compass(void)
 
         if (panel_hidden(cmpbox_pan)) return;
 
-        top_panel(cmpbox_pan);
-        top_panel(cmprib_pan);
+        /*top_panel(cmpbox_pan);*/
+        /*top_panel(cmprib_pan);*/
 
         werase(cmprib_win);
         werase(cmpbox_win);

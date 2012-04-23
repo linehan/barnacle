@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include "mob.h"
+#include "../map/snake.h"
 #include "../ai/a_star_test.h"
 #include "../map/cell.h"
 
@@ -27,7 +28,8 @@ void mob_cfg(struct mob_t *mob, struct map_t *map, int h, int w, int y, int x)
                            map->ufo.obj.h, map->ufo.obj.w, 0, 0);
 
         astar_init(mob->astar, map->mx, start);
-        init_path(&mob->path, 0, 0, MOB_PATH_LEN);
+        mob->path = new_path(0, 0, MOB_PATH_LEN);
+        init_path(mob->path, 0, 0, MOB_PATH_LEN);
         WINDOW *win = newwin(h, w, y, x);
         mob->pan    = new_panel(win);
 
@@ -69,34 +71,34 @@ void mob_move(struct mob_t *mob, int dir)
         switch (dir) {
         case 'u':       
                 ufo_up(mob, ufo);
-                if (map_hit(GLOBE, &mob->ufo.obj))
+                if (map_hit(ACTIVE, &mob->ufo.obj))
                         ufo_down(mob, ufo);
                 break;
         case 'd':       
                 ufo_down(mob, ufo);
-                if (map_hit(GLOBE, &mob->ufo.obj)) 
+                if (map_hit(ACTIVE, &mob->ufo.obj)) 
                         ufo_up(mob, ufo);
                 break;
         case 'l':       
                 ufo_left(mob, ufo);
-                if (map_hit(GLOBE, &mob->ufo.obj))
+                if (map_hit(ACTIVE, &mob->ufo.obj))
                         ufo_right(mob, ufo);
                 break;
         case 'r':      
                 ufo_right(mob, ufo);
-                if (map_hit(GLOBE, &mob->ufo.obj))
+                if (map_hit(ACTIVE, &mob->ufo.obj))
                         ufo_left(mob, ufo);
                 break;
         }
 
         // Scroll down at bottom boundary
         if (ufo_y(mob, ufo) == LINES-10) {
-                map_roll(GLOBE, 'd');
+                map_roll(ACTIVE, 'd');
                 ufo_up(mob, ufo);
         }
         // Scroll right at right boundary
         if (ufo_x(mob, ufo) == COLS-10) {
-                map_roll(GLOBE, 'r');
+                map_roll(ACTIVE, 'r');
                 ufo_left(mob, ufo);
         }
 
@@ -107,10 +109,14 @@ void mob_move(struct mob_t *mob, int dir)
         move_panel(mob->pan, ufo_y(mob, ufo), ufo_x(mob, ufo));
         update_panels();
 
-        take_bkgrnd(panel_window(mob->pan), PEEK(GLOBE->W));
 
-        path_push(&mob->path, y, x);
+
+        take_bkgrnd(panel_window(mob->pan), PEEK(ACTIVE->W));
+
+        path_push(mob->path, y, x);
         doupdate();
+
+        map_trigger(ACTIVE, mob);
 }
 
 
@@ -119,9 +125,9 @@ void mob_move(struct mob_t *mob, int dir)
  */
 void mob_path(struct mob_t *mob)
 {
-        werase(PEEK(GLOBE->L[HIG]));
-        draw_path((PEEK(GLOBE->L[HIG])), &mob->path);
-        wrefresh((PEEK(GLOBE->L[HIG])));
+        werase(PEEK(ACTIVE->L[HIG]));
+        draw_path((PEEK(ACTIVE->L[HIG])), mob->path);
+        wrefresh((PEEK(ACTIVE->L[HIG])));
         doupdate();
 }
 

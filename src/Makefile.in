@@ -76,8 +76,8 @@ am_arawak_OBJECTS = arawak.$(OBJEXT) eng/init.$(OBJEXT) \
 	gfx/sprite.$(OBJEXT) gfx/gfx.$(OBJEXT) gfx/multiwin.$(OBJEXT) \
 	gfx/ui/dock.$(OBJEXT) gfx/ui/stdpan.$(OBJEXT) \
 	gfx/ui/stdmenu.$(OBJEXT) gfx/ui/titlecard.$(OBJEXT) \
-	map/terrain.$(OBJEXT) map/map.$(OBJEXT) map/cell.$(OBJEXT) \
-	map/snake.$(OBJEXT) map/arena.$(OBJEXT) \
+	gfx/fall.$(OBJEXT) map/terrain.$(OBJEXT) map/map.$(OBJEXT) \
+	map/cell.$(OBJEXT) map/snake.$(OBJEXT) map/arena.$(OBJEXT) \
 	map/sweet_flow.$(OBJEXT) ai/a_star.$(OBJEXT) \
 	txt/gloss_m.$(OBJEXT) txt/gloss_v.$(OBJEXT) \
 	txt/gloss_c.$(OBJEXT) mob/mob.$(OBJEXT) \
@@ -233,6 +233,7 @@ arawak_SOURCES = arawak.c                       \
                    gfx/ui/stdpan.c              \
                    gfx/ui/stdmenu.c             \
                    gfx/ui/titlecard.c           \
+                   gfx/fall.c                   \
                    map/terrain.c                \
                    map/map.c                    \
                    map/cell.c                   \
@@ -438,6 +439,7 @@ gfx/ui/stdmenu.$(OBJEXT): gfx/ui/$(am__dirstamp) \
 	gfx/ui/$(DEPDIR)/$(am__dirstamp)
 gfx/ui/titlecard.$(OBJEXT): gfx/ui/$(am__dirstamp) \
 	gfx/ui/$(DEPDIR)/$(am__dirstamp)
+gfx/fall.$(OBJEXT): gfx/$(am__dirstamp) gfx/$(DEPDIR)/$(am__dirstamp)
 map/$(am__dirstamp):
 	@$(MKDIR_P) map
 	@: > map/$(am__dirstamp)
@@ -546,6 +548,7 @@ mostlyclean-compile:
 	-rm -f eng/fsm.$(OBJEXT)
 	-rm -f eng/init.$(OBJEXT)
 	-rm -f eng/loop.$(OBJEXT)
+	-rm -f gfx/fall.$(OBJEXT)
 	-rm -f gfx/gfx.$(OBJEXT)
 	-rm -f gfx/multiwin.$(OBJEXT)
 	-rm -f gfx/palette.$(OBJEXT)
@@ -605,6 +608,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@eng/$(DEPDIR)/fsm.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@eng/$(DEPDIR)/init.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@eng/$(DEPDIR)/loop.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@gfx/$(DEPDIR)/fall.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@gfx/$(DEPDIR)/gfx.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@gfx/$(DEPDIR)/multiwin.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@gfx/$(DEPDIR)/palette.Po@am__quote@

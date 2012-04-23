@@ -101,11 +101,6 @@ void test_request(void)
         doupdate();
 }
 
-void lay_hud(void)
-{
-        overlay(HUD_WIN, GLOBE->win);
-}
-
 void hud_win(WINDOW *win)
 {
         overlay(HUD_WIN, win);
@@ -133,8 +128,8 @@ int inspect_control(int dir)
                 return MODE_RELEASE;
         }
 
-        i_yy = ufo_y(GLOBE, ufo)+(inspector_y);
-        i_xx = ufo_x(GLOBE, ufo)+(inspector_x);
+        i_yy = ufo_y(ACTIVE, ufo)+(inspector_y);
+        i_xx = ufo_x(ACTIVE, ufo)+(inspector_x);
 
         z = MORT(i_yy, i_xx);
         move_panel(INSPECTORPAN, inspector_y, inspector_x);
@@ -146,15 +141,17 @@ int inspect_control(int dir)
         wprintw(INSPECTORMSGWIN, "LINES: %d COLS: %d\tY: %2u X: %2u M: %2u\t"
                                  "LAYER: %s\t"
                                  "ELEV: %2u\t"
-                                 "PERLIN: %+5f", 
+                                 "PERLIN: %+5f\t" 
+                                 "HOOK: %u",
                         LINES,
                         COLS,
                         i_yy, 
                         i_xx, 
                         z,
-                        lay_tag[get_nibble(mx_val(GLOBE->mx, i_yy, i_xx), LAY)], 
-                        get_nibble(mx_val(GLOBE->mx, i_yy, i_xx), ALT), 
-                        GLOBE->pmap[i_yy][i_xx]);
+                        lay_tag[get_nibble(mx_val(ACTIVE->mx, i_yy, i_xx), LAY)], 
+                        get_nibble(mx_val(ACTIVE->mx, i_yy, i_xx), ALT), 
+                        ACTIVE->pmap[i_yy][i_xx],
+                        mx_val(ACTIVE->hook, i_yy, i_xx));
         scr_refresh();
         return MODE_PERSIST;
 }

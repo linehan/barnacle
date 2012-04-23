@@ -88,14 +88,14 @@ uint32_t mx_val(struct matrix_t *matrix, int y, int x)
 }
 
 /*
- * mx_put -- set the word at [y][x] to new value 
+ * mx_set -- set the word at [y][x] to new value 
  * @matrix: pointer to a struct matrix_t 
  * @y: y coordinate index
  * @x: x coordinate index
  * @val: new value of matrix->mx[y][x]
  */
 static inline
-void mx_put(struct matrix_t *matrix, int y, int x, uint32_t val)
+void mx_set(struct matrix_t *matrix, int y, int x, uint32_t val)
 {
         matrix->mx[y][x] = val;
 }

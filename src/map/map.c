@@ -24,6 +24,7 @@
 #include "../gfx/gfx.h"
 #include "../gfx/ui/titlecard.h"
 #include "../lib/stoc/stoc.h"
+#include "../mob/mob.h"
 #include "../test/test.h"
 #include "map.h"
 #include "terrain.h"
@@ -31,6 +32,8 @@
 /* -------------------------------------------------------------------------- */
 
 void map_restack(void *mymap);
+void map_show(void *mymap);
+void map_hide(void *mymap);
 
 /* -------------------------------------------------------------------------- */
 
@@ -38,13 +41,14 @@ void map_restack(void *mymap);
  * new_map -- allocate and initialize new map structure 
  * @h: the desired map height
  * @w: the desired map width
- * @scr_h: the screen height for the pad window 
- * @scr_w: the screen width for the pad window
- * @scr_y: the screen y-offset for the pad window 
- * @scr_x: the screen x-offset for the pad window 
  */
-struct map_t *new_map(int h, int w, int scr_h, int scr_w, int scr_y, int scr_x)
+struct map_t *new_map(int h, int w)
 {
+        #define SCR_WIDTH COLS 
+        #define SCR_HEIGHT LINES
+        #define SCR_X0 0
+        #define SCR_Y0 0
+
         struct map_t *new;
         int i;
        
@@ -52,11 +56,8 @@ struct map_t *new_map(int h, int w, int scr_h, int scr_w, int scr_y, int scr_x)
 
         /* Build some stuff */
         new->mx = new_matrix(h, w);
-        set_ufo(&new->ufo, scr_h, scr_w, scr_y, scr_x, h, w, 0, 0);
-
-        /* Add methods */
-        new->render  = &map_render;  /* see terrain.c */
-        new->restack = &map_restack;
+        new->hook = new_matrix(h, w);
+        set_ufo(&new->ufo, SCR_HEIGHT, SCR_WIDTH, SCR_Y0, SCR_X0, h, w, 0, 0);
 
         /* Build windows, pads, and panels */
         new->win = newwin(LINES, COLS, 0, 0); /* Fullscreen */
@@ -92,8 +93,7 @@ void map_gen(struct map_t *map, double **pmap, int opt)
         print_status(SUCCESS);
 
         map_label(map, opt); 
-        map->render(map);
-        map->restack(map);
+
 }
 
 
@@ -136,6 +136,34 @@ int map_hit(struct map_t *map, struct rec_t *rec)
 }
 
 
+void map_hide(void *mymap)
+{
+        struct map_t *map = (struct map_t *)mymap;
+        hide_panel(map->pan);
+}
+
+void map_show(void *mymap)
+{
+        struct map_t *map = (struct map_t *)mymap;
+        show_panel(map->pan);
+}
+
+
+void map_trigger(struct map_t *map, struct mob_t *mob)
+{
+        int y;
+        int x;
+        int i;
+
+        y = ufo_y(mob, ufo);
+        x = ufo_x(mob, ufo);
+
+        i = mx_val(map->hook, y, x);
+        
+        if (map->asset[i] != NULL)
+                map->asset[i]->trigger();
+}
+
 
 void map_roll(struct map_t *map, int dir)
 {
@@ -155,4 +183,53 @@ void map_roll(struct map_t *map, int dir)
         }
         map_refresh(map);
 }
+
+
+void map_swap(void)
+{
+        MAPBOOK->hide(ACTIVE);
+
+        MAPBOOK->field_is_active ^= true;
+
+        ACTIVE = (MAPBOOK->field_is_active) ? FIELD : WORLD;
+
+        map_refresh(ACTIVE);
+        MAPBOOK->show(ACTIVE);
+}
+
+
+struct mapbook *new_mapbook(void)
+{
+        struct mapbook *new;
+        new = malloc(sizeof(struct mapbook));
+
+        /* Methods */
+        new->render  = &map_render;  /* see terrain.c */
+        new->restack = &map_restack;
+        new->show    = &map_show;
+        new->hide    = &map_hide;
+
+        /* World map */
+        new->world = new_map(WORLD_HEIGHT, WORLD_WIDTH);
+        map_gen(new->world, NULL, MAP_DOSMOOTH);
+
+        /* Field map */
+        new->field = map_inset(new->world, FIELD_HEIGHT, FIELD_WIDTH, 0, 0);
+
+        /* Render and restack both */
+        new->render(new->world);
+        new->restack(new->world);
+        new->render(new->field);
+        new->restack(new->field);
+
+        /* Set world as the active map */
+        new->active = new->world;
+        new->field_is_active = false;
+
+        return (new);
+}
+
+
+
+
 
