@@ -78,9 +78,9 @@ am_arawak_OBJECTS = arawak.$(OBJEXT) eng/init.$(OBJEXT) \
 	gfx/ui/stdmenu.$(OBJEXT) gfx/ui/titlecard.$(OBJEXT) \
 	gfx/fall.$(OBJEXT) map/terrain.$(OBJEXT) map/map.$(OBJEXT) \
 	map/cell.$(OBJEXT) map/snake.$(OBJEXT) map/arena.$(OBJEXT) \
-	map/sweet_flow.$(OBJEXT) ai/a_star.$(OBJEXT) \
-	txt/gloss_m.$(OBJEXT) txt/gloss_v.$(OBJEXT) \
-	txt/gloss_c.$(OBJEXT) mob/mob.$(OBJEXT) \
+	map/asset.$(OBJEXT) map/sweet_flow.$(OBJEXT) \
+	ai/a_star.$(OBJEXT) txt/gloss_m.$(OBJEXT) \
+	txt/gloss_v.$(OBJEXT) txt/gloss_c.$(OBJEXT) mob/mob.$(OBJEXT) \
 	noun/noun_model.$(OBJEXT) noun/noun_discrim.$(OBJEXT) \
 	noun/noun_view.$(OBJEXT) noun/noun_control.$(OBJEXT) \
 	noun/noun_widgets.$(OBJEXT) noun/types/boat/boat.$(OBJEXT) \
@@ -239,6 +239,7 @@ arawak_SOURCES = arawak.c                       \
                    map/cell.c                   \
                    map/snake.c                  \
                    map/arena.c                  \
+                   map/asset.c                  \
                    map/sweet_flow.c             \
                    ai/a_star.c                  \
                    txt/gloss_m.c                \
@@ -452,6 +453,7 @@ map/map.$(OBJEXT): map/$(am__dirstamp) map/$(DEPDIR)/$(am__dirstamp)
 map/cell.$(OBJEXT): map/$(am__dirstamp) map/$(DEPDIR)/$(am__dirstamp)
 map/snake.$(OBJEXT): map/$(am__dirstamp) map/$(DEPDIR)/$(am__dirstamp)
 map/arena.$(OBJEXT): map/$(am__dirstamp) map/$(DEPDIR)/$(am__dirstamp)
+map/asset.$(OBJEXT): map/$(am__dirstamp) map/$(DEPDIR)/$(am__dirstamp)
 map/sweet_flow.$(OBJEXT): map/$(am__dirstamp) \
 	map/$(DEPDIR)/$(am__dirstamp)
 ai/$(am__dirstamp):
@@ -575,6 +577,7 @@ mostlyclean-compile:
 	-rm -f lib/textutils.$(OBJEXT)
 	-rm -f lib/ufo.$(OBJEXT)
 	-rm -f map/arena.$(OBJEXT)
+	-rm -f map/asset.$(OBJEXT)
 	-rm -f map/cell.$(OBJEXT)
 	-rm -f map/map.$(OBJEXT)
 	-rm -f map/snake.$(OBJEXT)
@@ -635,6 +638,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@lib/stoc/$(DEPDIR)/smooth.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@lib/stoc/$(DEPDIR)/stoc.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@map/$(DEPDIR)/arena.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@map/$(DEPDIR)/asset.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@map/$(DEPDIR)/cell.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@map/$(DEPDIR)/map.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@map/$(DEPDIR)/snake.Po@am__quote@

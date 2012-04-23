@@ -12,7 +12,4 @@ static const float BEACH   =  0.00;   /* Beach isoline */
 static const float TERRA   =  0.45;   /* Ground isoline */
 
 
-void map_label(struct map_t *map, int opt);
-void map_render(void *map);
-
 #endif

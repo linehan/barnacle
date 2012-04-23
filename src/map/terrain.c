@@ -30,70 +30,6 @@ void label_shorelines(struct map_t *map);
 
 /* -------------------------------------------------------------------------- */
 
-/*
- * Perform a detailed series of passes over the map's matrix, and apply a
- * variety of strategies to label grid cells so that they can later be
- * detected by the map_render routine.
- * 
- * The rules that determine a certain labeling are somewhat tedious, and 
- * some minimum amount of fussiness should be expected. Refer to the
- * documentation of the individual subroutines.
- */
-void map_label(struct map_t *map, int opt)
-{
-        if (opt == MAP_DOSMOOTH) {
-                print_status("Smoothing noise...");
-                smooth_layers(map);
-                print_status(SUCCESS);
-        }
-
-        print_status("Laying tiles...");
-        label_regions(map);
-        print_status(SUCCESS);
-
-        print_status("Drawing cliffs...");
-        label_cliffs(map);
-        print_status(SUCCESS);
-
-        print_status("Planting trees...");
-        label_treetops(map);
-        print_status(SUCCESS);
-
-        print_status("Trimming trees...");
-        label_treetops_trim(map);
-        print_status(SUCCESS);
-
-        print_status("Eating breakfast...");
-        label_treetrunks(map);
-        print_status(SUCCESS);
-
-        print_status("Going swimming...");
-        label_shorelines(map);
-        print_status(SUCCESS);
-}
-
-/*
- * map_render (METHOD) -- draw the graphics for all labels in the map matrix
- * @mymap: void * pointer to a previously-allocated map
- *
- * Traverse the map's matrix and simply pass every label encountered
- * to the place_tile routine. Any labels associated with a tile rendering
- * will have that rendering applied to the grid cell at (i,j).
- */
-void map_render(void *mymap)
-{
-        struct map_t *map = (struct map_t *)mymap;
-        int i;
-        int j;
-
-        for (i=0; i<map->mx->rows; i++) {
-        for (j=0; j<map->mx->cols; j++) {
-                place_tile(map, i, j, get_nibble(mx_val(map->mx, i, j), LAY));
-        }
-        }
-}
-
-/* -------------------------------------------------------------------------- */
 
 /*
  * Simplified accessors for comparing the value of multiple labels in
@@ -393,5 +329,10 @@ void label_shorelines(struct map_t *map)
         }
         }
 }
+
+
+
+
+
 
 

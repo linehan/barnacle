@@ -62,7 +62,6 @@ void print_title(const char *title)
         #define BODY_H (LINES-(TITLE_H+VER_PAD))/2
         #define BODY_W COLS/2
 
-
         int len;
 
         len = strlen(title);
@@ -82,6 +81,8 @@ void print_title(const char *title)
                 bwin = newwin(BODY_H, BODY_W, BODY_PAD, (COLS-BODY_W)/2);
                 bpan = new_panel(bwin);
                 borderdraw(hwin, BODY_H, BODY_W, &bgtile);
+
+                scrollok(bwin, true);
 
 
                 scr_refresh();
