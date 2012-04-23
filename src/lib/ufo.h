@@ -2,14 +2,12 @@
 #define __REPORTS_OF_UFOS
 #include <stdint.h>
 
-/*
- * Data to describe a bounding rectangle. 
- */
 struct rec_t {
         uint32_t h; /* height */
         uint32_t w; /* width */
         uint32_t y; /* minimum (upper-left) y coordinate */
         uint32_t x; /* minimum (upper-left) x coordinate */
+        uint32_t l; /* total "length" (h*w) */
 };
 
 

@@ -34,28 +34,12 @@
 /* Rolling start */
 int main(int argc, char *argv[]) 
 {
-        struct map_t *inset;
-        struct map_t *pad;
-
         arawak_init();
 
-        /*if (argc == 2) {*/
-                /*if (!strcmp(argv[1], "-water")) */
-                        /*pad = map_preset_arena();*/
-                /*else if (!strcmp(argv[1], "-arena")) {*/
-                        /*pad = map_preset_arena();*/
-                /*}*/
-                /*else if (!strcmp(argv[1], "-test")) {*/
-                        /*pad = new_map((LINES*3), (COLS*3), LINES, COLS, 0, 0);*/
-                        /*map_gen(pad, NULL, MAP_DOSMOOTH);*/
-                        /*inset = map_inset(pad, 16, 18, 0, 0);*/
-                /*}*/
-        /*}*/
-        /*if (!pad) */
-                /*pad = map_preset_sand();*/
+        struct map_t *sand = map_preset_sand();
 
         MAPBOOK = new_mapbook();
-
+        map_set_extra(map_preset_sand());
 
         print_status("\n ALL OK\n");
         print_hold("Press any key to continue");
