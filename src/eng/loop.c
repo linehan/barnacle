@@ -55,9 +55,10 @@ void render_cb(EV_P_ ev_timer *w, int revents)
                 mvwprintw(CONSOLE_WIN, 1, 0, "(%c) render_cb\n", 
                           SPINNER(spindex++));
         }
-        view_dock();
-        draw_compass();
-        approach_helm();
+        /*view_dock();*/
+        /*draw_compass();*/
+        /*approach_helm();*/
+        hide_dock(); 
 
         update_panels();  /* Were slowing down performance, unnecessary */
         doupdate();
@@ -82,10 +83,10 @@ void flow_cb(EV_P_ ev_timer *w, int revents)
                 mvwprintw(CONSOLE_WIN, 2, 0, "(%c) flow_cb\n", 
                           SPINNER(spindex++));
         }
-        render_sweet_flow(GLOBE);
+        render_sweet_flow(ACTIVE);
 
-        GLOBE->restack(GLOBE);
-        map_refresh(GLOBE);
+        MAPBOOK->restack(ACTIVE);
+        map_refresh(ACTIVE);
 
         ev_timer_again(EV_DEFAULT, w);
 }
@@ -107,7 +108,7 @@ void move_cb(EV_P_ ev_timer *w, int revents)
                 mvwprintw(CONSOLE_WIN, 3, 0, "(%c) move_cb\n", 
                           SPINNER(spindex++));
         }
-        do_pulse();
+        /*do_pulse();*/
         noun_render(get_noun("Afarensis"));
 
         ev_timer_again(EV_DEFAULT, w);
@@ -132,7 +133,8 @@ void animate_cb(EV_P_ ev_timer *w, int revents)
                 mvwprintw(CONSOLE_WIN, 4, 0, "(%c) animate_cb\n", 
                           SPINNER(spindex++));
         }
-        NEXT(GLOBE->L[RIM]);
+        NEXT(ACTIVE->L[RIM]);
+        draw_tabs();
 
         ev_timer_again(EV_DEFAULT, w);
 }

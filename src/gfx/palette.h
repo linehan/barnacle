@@ -1,6 +1,7 @@
 #pragma once
 #ifndef __PALETTE_H
 #define __PALETTE_H
+#include "fall.h"
 /* The system's colors go from 0-7 */
 enum arne_colors {
         BLACK      = 17,
@@ -104,6 +105,17 @@ enum arne_shadow2 {
         C_CLIFF = 109,
         D_CLIFF = 110,
         WATER_HINT = 111,
+        PAL1 = 112,
+        PAL2 = 113,
+        PAL3 = 114,
+        PAL4 = 115,
+        PAL5 = 116,
+        DARK_SAND0 = 117,
+        DARK_SAND1 = 118,
+        DARK_SAND2 = 119,
+        DARK_SAND3 = 120,
+        DARK_SAND4 = 121,
+        DARK_SANDZ = 122,
 };
 
 /* FG_BG color pairs; odd ones are swaps of even ones. */
@@ -123,47 +135,6 @@ enum ramp_pairs {
         GUN_SMOKE     = 112,
 
 
-        BEI_SKY = 113,
-        BEI_SEA = 114,
-        BEI_DGR = 115,
-        BEI_BRO = 116,
-        BEI_DBR = 117,
-        BEI_WOO = 118,
-
-        WOO_SKY = 119,
-        WOO_SEA = 120,
-        WOO_DGR = 121,
-        WOO_BEI = 122,
-        WOO_BRO = 123,
-        WOO_DBR = 124,
-
-        BRO_SKY = 125,
-        BRO_SEA = 126,
-        BRO_DGR = 127,
-        BRO_BEI = 128,
-        BRO_DBR = 129,
-        BRO_WOO = 130,
-
-        DBR_SKY = 131,
-        DBR_SEA = 132,
-        DBR_DGR = 133,
-        DBR_BEI = 134,
-        DBR_BRO = 135,
-        DBR_WOO = 136,
-
-        YEL_SKY = 137,
-        UND_SEA = 138,
-        DAY_SKY = 139,
-        RED_SKY = 22,
-        SKY_BRO = 141,
-        D_SEA = 142,
-        DD_SEA = 143,
-        BRZ_SKY = 144,
-        BRZ_DBR = 145,
-        BRZ_WOO = 146,
-        BRZ_BRO = 147,
-        GRE_SKY = 148,
-        WHI_SKY = 149,
         //PUR_WHI = 150,
         //PUR_DPU = 151,
         //PUR_DDP = 152,
@@ -251,7 +222,17 @@ enum ramp_pairs {
 
         SEA__MED = 53,
         SEA___MED = 54,
+
 };
+
+enum stuff {
+        BSAND = 113,
+        CSAND = 114,
+        DSAND = 115,
+        ESAND = 116,
+        FSAND = 117,
+};
+
 
 
 
@@ -376,8 +357,21 @@ enum purpairs {
         PUR_ARSENIC = 237,
         FLEX=238,
         FLEX2=239,
+        PALP1 = 240,
+        PALP2 = 241,
+        PALP3 = 242,
+        PALP4 = 243,
+        PALP5 = 244
 };
 
+void darken_colors(int step);
+static struct rgb_t wallfg[3] = { {252, 431, 372, 290},{252, 431, 372, 290},{252, 431, 372, 290}};
+static struct rgb_t wallbg[3] = { {254, 310, 270, 208},{254, 310, 270, 208},{254, 310, 270, 208}};
+static struct rgb_t backbg[3] = { {254, 310, 270, 208},{254, 310, 270, 208},{254, 310, 270, 208}};
+static struct rgb_t backfg[3] = { {255, 169, 137, 94},{255, 169, 137, 94},{255, 169, 137, 94}};
+
+static short FG[3]={255,254,253};
+static short BG[3]={252,251,250};
 
 #define TITLE_COLOR PUR_BLACK
 

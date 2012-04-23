@@ -5,16 +5,16 @@
 enum dockw_enum { DOCK_WIN, SUBJECT_WIN, SUBJ_ID_WIN, SUBJ_WI_WIN,
                             OBJECT_WIN,  OBJ_ID_WIN,  OBJ_WI_WIN, SUBJ_TX_WIN, OBJ_TX_WIN };
 
-#define DOCK_H 2 
+#define DOCK_H 3
 #define DOCK_W COLS
 #define DOCK_Y LINES-DOCK_H
 #define DOCK_X 0
 
-#define OPERAND_H 2
+#define OPERAND_H 3
 #define OPERAND_W 50
 #define ID_H 1
 #define ID_W 20
-#define ID_Y 0
+#define ID_Y 2 
 #define WIDGET_H 1
 #define WIDGET_W 32
 #define WIDGET_Y 1
@@ -25,5 +25,11 @@ enum dockw_enum { DOCK_WIN, SUBJECT_WIN, SUBJ_ID_WIN, SUBJ_WI_WIN,
 void init_dock(void);
 WINDOW *dock_window(int windowid);
 void view_dock(void);
+
+void hide_dock(void);
+
+
+void do_tab_sig(void);
+void tab_sig(int tab);
 
 #endif

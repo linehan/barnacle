@@ -10,6 +10,7 @@
 #include "../lib/hash.h"
 #include "../mob/mob.h"
 
+
 enum nountypes {SAILBOAT, PERSON, MONSTER};
 
 /* The noun data structure 
@@ -84,6 +85,9 @@ struct mob_t *noun_mob(const char *name)
 {
         return &((get_noun(name))->mob);
 }
+
+void noun_set_mob(struct noun_t *noun, bool yesno);
+
 /*
  * noun_set_render -- set the render method of the noun
  * @noun: pointer to a struct noun_t

@@ -13,6 +13,7 @@
 
 #include "../lib/llist/list.h"
 #include "gfx.h"
+#include "fall.h"
 
 #define ARRAY_SIZE(a) (sizeof(a) / sizeof(a[0]))
 #define CTRLD 4
@@ -46,6 +47,75 @@
 /*shade[_TREETRUNK]  = __TREETRUNK;*/
 /*shade[_GRASSY]     = __GRASSY;*/
 /*shade[_SOILGRASS]  = __SOILGRASS;*/
+
+
+inline void set_color(struct rgb_t *color)
+{
+        init_color(color->tag, color->r, color->g, color->b);
+}
+
+
+#define strips 3
+
+
+
+void mix_colors(void)
+{
+        int i;
+        for (i=0; i<strips; i++) {
+                set_color(&wallbg[i]);
+                set_color(&wallfg[i]);
+                set_color(&backbg[i]);
+                set_color(&backfg[i]);
+                init_pair(FG[i], wallfg[i].tag, wallbg[i].tag);
+                init_pair(BG[i], backfg[i].tag, backbg[i].tag);
+        }
+}
+
+
+inline void darken(struct rgb_t *color, int step)
+{
+        color->r = (color->r - step > 0) ? (color->r - step) : 0;
+        color->g = (color->g - step > 0) ? (color->g - step) : 0;
+        color->b = (color->b - step > 0) ? (color->b - step) : 0;
+
+        set_color(color);
+}
+
+
+void darken_colors(int step)
+{
+        int i;
+        int j=0;
+        for (i=0; i<strips; i++) {
+                darken(&wallbg[i], (i+step));
+                darken(&wallfg[i], (i+step));
+                darken(&backbg[i], (i+step));
+                darken(&backfg[i], (i+step));
+        }
+}
+
+inline void lighten(struct rgb_t *color, int step)
+{
+        color->r = (color->r + step < 1000) ? (color->r + step) : 1000;
+        color->g = (color->g + step < 1000) ? (color->g + step) : 1000;
+        color->b = (color->b + step < 1000) ? (color->b + step) : 1000;
+
+        set_color(color);
+}
+
+void lighten_colors(int step)
+{
+        int i;
+        int j=0;
+        for (i=0; i<strips; i++) {
+                lighten(&wallbg[i], (i+step));
+                lighten(&wallfg[i], (i+step));
+                lighten(&backbg[i], (i+step));
+                lighten(&backfg[i], (i+step));
+        }
+}
+
 
 /******************************************************************************/
 /* Initialize the color palette with R,G,B values from 0-1000 and the color
@@ -241,6 +311,7 @@ void init_palette(int set)
         init_color(D_SAND_LAGOON, 188, 267, 235);
         init_color(WATER_HINT, 223, 310, 274);
 
+
         /*init_color(SANDY, 886,  737,  557);*/
 
         /* UI COLOR PAIRS */
@@ -257,52 +328,6 @@ void init_palette(int set)
 
         init_pair(GUN_FLASH, WHITE, RED);
         init_pair(GUN_SMOKE, WHITE, DSEA);
-
-        init_pair(BEI_SKY, BEIGE, WILDBLUEYONDER);
-        init_pair(BEI_SEA, BEIGE, DSEA);
-        init_pair(BEI_DGR, BEIGE, DGREY);
-        init_pair(BEI_BRO, BEIGE, BROWN);
-        init_pair(BEI_DBR, BEIGE, DARK_BROWN);
-        init_pair(BEI_WOO, BEIGE, WOOD);
-
-        init_pair(WOO_SKY, WOOD, WILDBLUEYONDER);
-        init_pair(WOO_SEA, WOOD, DSEA);
-        init_pair(WOO_DGR, WOOD, DGREY);
-        init_pair(WOO_BEI, WOOD, BEIGE);
-        init_pair(WOO_BRO, WOOD, BROWN);
-        init_pair(WOO_DBR, WOOD, DARK_BROWN);
-
-        init_pair(BRO_SKY, BROWN, WILDBLUEYONDER);
-        init_pair(BRO_SEA, BROWN, DSEA);
-        init_pair(BRO_DGR, BROWN, DGREY);
-        init_pair(BRO_BEI, BROWN, BEIGE);
-        init_pair(BRO_DBR, BROWN, DARK_BROWN);
-        init_pair(BRO_WOO, BROWN, WOOD);
-
-        init_pair(DBR_SKY, DARK_BROWN, WILDBLUEYONDER);
-        init_pair(DBR_SEA, DARK_BROWN, DSEA);
-        init_pair(DBR_DGR, DARK_BROWN, DGREY);
-        init_pair(DBR_DGR, DARK_BROWN, DGREY);
-        init_pair(DBR_BEI, DARK_BROWN, BEIGE);
-        init_pair(DBR_BRO, DARK_BROWN, BROWN);
-        init_pair(DBR_WOO, DARK_BROWN, WOOD);
-
-        init_pair(YEL_SKY, YELLOW, WILDBLUEYONDER);
-        init_pair(UND_SEA, DSEA, DSEA);
-        init_pair(D_SEA,  DSEA, _DSEA);
-        init_pair(DD_SEA, _DSEA, DSEA);
-        init_pair(DAY_SKY, WILDBLUEYONDER, WILDBLUEYONDER);
-        init_pair(RED_SKY, RED, WILDBLUEYONDER);
-        init_pair(SKY_BRO, WILDBLUEYONDER, BROWN);
-        init_pair(BRZ_SKY, BLASTOFFBRONZE, WILDBLUEYONDER);
-        init_pair(BRZ_DBR, BLASTOFFBRONZE, DARK_BROWN);
-        init_pair(BRZ_WOO, BLASTOFFBRONZE, WOOD);
-        init_pair(BRZ_BRO, BLASTOFFBRONZE, BROWN);
-        init_pair(WHI_SKY, WHITE, WILDBLUEYONDER);
-        init_pair(GRE_SKY, CELESTIALBLUE, WILDBLUEYONDER);
-
-
-
 
         init_pair(PUR_BLACK       , BLACK          , __DGREY);
         init_pair(PUR_GREY        , GREY           , __DGREY);
@@ -422,4 +447,28 @@ void init_palette(int set)
         init_pair(__SEA_LIG,    __LSEA,   __DSEA);
         init_pair(SEA__MED, WATER_HINT, DSEA);
         init_pair(SEA___MED, __LSEA, DSEA);
+
+        /*init_color(DARK_SANDZ, 768,  666,  521);*/
+        init_color(DARK_SANDZ, 741,  643,  502);
+
+        /*init_color(DARK_SAND0, 651,  564,  439);*/
+        init_color(DARK_SAND0, 670,  580,  455);
+        /*init_color(DARK_SAND1, 510,  443,  345);*/
+        init_color(DARK_SAND1, 541,  466,  365);
+
+        /*init_color(DARK_SAND2, 451,  376,  270);*/
+        init_color(DARK_SAND2, 431,  372,  290);
+
+        init_color(DARK_SAND3, 259,  216,  157);
+        /*init_color(DARK_SAND3, 310,  270,  208);*/
+
+        init_color(DARK_SAND4, 169,  137,  94);
+
+        init_pair(BSAND, DARK_SANDZ, A_SAND_LAGOON);
+        init_pair(CSAND, DARK_SANDZ, A_SAND_LAGOON);
+        init_pair(DSAND, DARK_SANDZ, DARK_SAND0);
+        init_pair(ESAND, DARK_SAND1, DARK_SAND2);
+        init_pair(FSAND, DARK_SAND4, DARK_SAND3);
+
+        mix_colors();
 }

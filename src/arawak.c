@@ -34,39 +34,40 @@
 /* Rolling start */
 int main(int argc, char *argv[]) 
 {
+        struct map_t *inset;
         struct map_t *pad;
 
         arawak_init();
 
-        if (argc == 2) {
-                if (strcmp(argv[1], "-water")) 
-                        pad = map_preset_arena();
-                else if (strcmp(argv[1], "-arena"))
-                        pad = map_preset_water();
-        }
-        if (pad == NULL) {
-                pad = new_map((LINES*3), (COLS*3), LINES, COLS, 0, 0);
-                      map_gen(pad, NULL, MAP_DOSMOOTH);
-        }
+        /*if (argc == 2) {*/
+                /*if (!strcmp(argv[1], "-water")) */
+                        /*pad = map_preset_arena();*/
+                /*else if (!strcmp(argv[1], "-arena")) {*/
+                        /*pad = map_preset_arena();*/
+                /*}*/
+                /*else if (!strcmp(argv[1], "-test")) {*/
+                        /*pad = new_map((LINES*3), (COLS*3), LINES, COLS, 0, 0);*/
+                        /*map_gen(pad, NULL, MAP_DOSMOOTH);*/
+                        /*inset = map_inset(pad, 16, 18, 0, 0);*/
+                /*}*/
+        /*}*/
+        /*if (!pad) */
+                /*pad = map_preset_sand();*/
 
-        GLOBE = pad;
+        MAPBOOK = new_mapbook();
+
 
         print_status("\n ALL OK\n");
         print_hold("Press any key to continue");
 
-        wprintw(CONSOLE_WIN, "rows:%u cols:%u len: %u\n", 
-                GLOBE->mx->rows,
-                GLOBE->mx->cols,
-                GLOBE->mx->len);
+        map_roll(ACTIVE, 0);
+        map_roll(ACTIVE, 0);
 
-        map_roll(pad, 0);
-        map_roll(pad, 0);
-
-        new_boat(pad, FUNBOAT, "Afarensis");
+        new_boat(FIELD, FUNBOAT, "Afarensis");
         set_mob(noun_mob("Afarensis"), false);
 
-        toggle_instrument_panel();
-        toggle_instrument_panel();
+        /*toggle_instrument_panel();*/
+        /*toggle_instrument_panel();*/
 
         view_dock();
         load_noun_test();
@@ -78,15 +79,15 @@ int main(int argc, char *argv[])
         init_pair(FLEX2, BLACK, WHITE);
 
         new_creature("Guy", PERSON, L"ⰾ", FLEX);
-        new_creature("Beefman", MONSTER, L"Ⰾ", FLEX);
+        /*new_creature("Beefman", MONSTER, L"Ⰾ", FLEX);*/
 
         noun_set_mob(get_noun("Guy"), true);
         mob_move(noun_mob("Guy"), 'd');
         mob_move(noun_mob("Guy"), 'd');
         mob_move(noun_mob("Guy"), 'd');
 
-        noun_set_mob(get_noun("Beefman"), true);
-        mob_move(noun_mob("Beefman"), 'd');
+        /*noun_set_mob(get_noun("Beefman"), true);*/
+        /*mob_move(noun_mob("Beefman"), 'd');*/
 
         fork_sweet_flow();
 

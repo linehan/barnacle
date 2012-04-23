@@ -290,7 +290,7 @@ void sweet_flow(struct map_t *map)
 
                         /* Re-set the position to plain ocean */
                         /*place_ocean_tile(map, i, j);*/
-                        mvwchgat(PLATE(GLOBE, BGR), i, j, 1, 0, SEA_MED, NULL);
+                        mvwchgat(PLATE(ACTIVE, BGR), i, j, 1, 0, SEA_MED, NULL);
 
                         /* Compute the integral */
                         z1[i][j] = A*(z[i-1][j] + z[i+1][j] + z[i][j+1])

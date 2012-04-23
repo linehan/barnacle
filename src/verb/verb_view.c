@@ -27,6 +27,7 @@ inline void put_n(WINDOW *win, int y, int x, wchar_t *wch, short pair, int n)
         static cchar_t cch;
         setcchar(&cch, wch, 0, pair, NULL);
         mvwhline_set(win, y, x, &cch, n);
+        scr_refresh();
 }
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
@@ -148,7 +149,7 @@ void do_pulse_test(struct verb_t *verb, int option)
 ////////////////////////////////////////////////////////////////////////////////
 inline void verb_view_elem(int elem, struct verb_t *verb, WINDOW *win, int opt)
 {
-        static wchar_t basics[]=L"ⲻⲺⲿⲾ";
+        static wchar_t basics[]=L"⫶⫶ⲷⲷ⅃⅃ⲅⲄⲅℾ⅂⅃ⲷⲶⲷⵔⵙⲻⲺⲿⲾ";
         static wchar_t boom[]=L"✶✺";
         uint32_t xofs, xlen, vbid;
         wchar_t *icon;
@@ -311,10 +312,10 @@ void do_pulse(void)
                         verb_view(keyring[i], SUBJECT);
                 }
 
-                if (keyring[i] == request_id(OBJECT)) {
-                        noun_print_vitals(OBJECT);
-                        verb_view(keyring[i], OBJECT);
-                }
+                /*if (keyring[i] == request_id(OBJECT)) {*/
+                        /*noun_print_vitals(OBJECT);*/
+                        /*verb_view(keyring[i], OBJECT);*/
+                /*}*/
 
                 verb_tick(keyring[i]);
         }

@@ -162,8 +162,6 @@ void init_gfx_colors(void)
 
         setcchar(&BLANK, &gfxBLANK, 0, 0, NULL);
         setcchar(&PLAIN, &gfxBLANK, 0, COLOR_PAIR(WHITE), NULL);
-        setcchar(&UNDERSEA, &gfxSOLID, 0, UND_SEA, NULL);
-        setcchar(&DAYSKY, &gfxSOLID, 0, DAY_SKY, NULL);
         setcchar(&PURPLE[0], &gfxBLANK, 0, PUR_WHI, NULL);
         setcchar(&PURPLE[1], &gfxBLANK, 0, PUR_DPU, NULL);
         setcchar(&PURPLE[2], &gfxBLANK, 0, PUR_PUR, NULL);

@@ -8,11 +8,12 @@
 #include "../map/snake.h"
 #include "../ai/a_star.h"
 
+struct map_t;
 
 struct mob_t {
         PANEL *pan;
         struct ufo_t ufo;
-        struct path_t path;
+        struct path_t *path;
         struct astar_t *astar;
         bool active;
 };
