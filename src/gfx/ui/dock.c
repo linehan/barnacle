@@ -178,22 +178,27 @@ void init_dock(void)
         #define STAT_Y LINES - 2 
         #define STAT_X 2
 
+        #define TEXT_HEIGHT 2 
+        #define TEXT_WIDTH 32
+        #define TEXT_Y LINES - 2 
+        #define TEXT_X COLS/2 
+
         init_tabs();
 
         ui_dock.dock_win = newwin(DOCK_HEIGHT, DOCK_WIDTH, DOCK_Y, DOCK_X);
         ui_dock.name_win = newwin(NAME_HEIGHT, NAME_WIDTH, NAME_Y, NAME_X);
         ui_dock.stat_win = newwin(STAT_HEIGHT, STAT_WIDTH, STAT_Y, STAT_X);
-        /*ui_dock.stat_win = newwin(TEXT_HEIGHT, TEXT_WIDTH, TEXT_Y, TEXT_X);*/
+        ui_dock.text_win = newwin(TEXT_HEIGHT, TEXT_WIDTH, TEXT_Y, TEXT_X);
 
         wbkgrnd(ui_dock.dock_win, &PURPLE[2]);
         wbkgrnd(ui_dock.name_win, &PURPLE[2]);
         wbkgrnd(ui_dock.stat_win, &PURPLE[2]);
-        /*wbkgrnd(ui_dock.text_win, &PURPLE[2]);*/
+        wbkgrnd(ui_dock.text_win, &PURPLE[2]);
 
         ui_dock.dock_pan = new_panel(ui_dock.dock_win);
         ui_dock.name_pan = new_panel(ui_dock.name_win);
         ui_dock.stat_pan = new_panel(ui_dock.stat_win);
-        /*ui_dock.text_pan = new_panel(ui_dock.text_win);*/
+        ui_dock.text_pan = new_panel(ui_dock.text_win);
 }
 
 
@@ -206,7 +211,8 @@ WINDOW *dock_window(int windowid)
         WINDOW *win[]={
                 ui_dock.dock_win, 
                 ui_dock.name_win, 
-                ui_dock.stat_win
+                ui_dock.stat_win,
+                ui_dock.text_win
         };
 
         if (windowid > 3) return NULL;
@@ -255,6 +261,7 @@ void view_dock(void)
         show_panel(ui_dock.dock_pan);
         show_panel(ui_dock.name_pan);
         show_panel(ui_dock.stat_pan);
+        show_panel(ui_dock.text_pan);
 
         for (i=0; i<NUMTABS; i++) 
                 show_panel(ui_tab[i].pan);
@@ -275,6 +282,7 @@ void hide_dock(void)
         hide_panel(ui_dock.dock_pan);
         hide_panel(ui_dock.name_pan);
         hide_panel(ui_dock.stat_pan);
+        hide_panel(ui_dock.text_pan);
 
         for (i=0; i<NUMTABS; i++)
                 hide_panel(ui_tab[i].pan);
@@ -298,5 +306,21 @@ void dock_update(void)
         if (ui_dock.is_visible)
                 view_dock();
 }
+
+
+
+/* Special junk
+````````````````````````````````````````````````````````````````````````````` */
+void dock_say(const wchar_t *who, const char *msg)
+{
+        werase(ui_dock.text_win);
+
+        mvwadd_wch(ui_dock.text_win, 0, 0, mkcch(who, 0, PUR_YELLOW));
+        wcolor_set(ui_dock.text_win, PUR_YELLOW, NULL);
+        mvwprintw(ui_dock.text_win, 0, 3, "%s\n", msg);
+
+        wrefresh(ui_dock.text_win);
+}
+
 
 

@@ -109,11 +109,7 @@ void mob_move(struct mob_t *mob, int dir)
         move_panel(mob->pan, ufo_y(mob, ufo), ufo_x(mob, ufo));
         update_panels();
 
-
-
         take_bkgrnd(panel_window(mob->pan), PEEK(ACTIVE->W));
-        /*if (mx_val(ACTIVE->*/
-        /*ᔅ*/
 
         path_push(mob->path, y, x);
         doupdate();

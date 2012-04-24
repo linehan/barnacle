@@ -72,8 +72,8 @@ struct map_t *map_preset_arena(void)
         /* Make a cave entrance */
         place_cave_label(mx_get(arena->mx, ARENA_H/2-1, COLS/2));
         place_cave_label(mx_get(arena->mx, ARENA_H/2-1, COLS/2-1));
-        /*arena->render(arena);*/
 
+        map_render(arena);
 
         return arena;
 }

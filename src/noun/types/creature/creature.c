@@ -6,10 +6,27 @@
 
 
 
+// med left ᱙
+// med left Ꮆ
+// strong left ᕦ
 
-/*struct animation slashtest = { {L"Ꮂ", L"Ꮝ", L"ⰾ", 0, 0}, 4, 0 };*/
-struct animation slashtest = { {L"Ꮂ", L"ᱽ", L"Ꮂ", L"ⰾ", 0}, 5 };
+// strong right ᕤ
+// med right ᱽ
+
+struct animation punch_r_test = { {L"Ꮂ", L"ᱽ", L"Ꮂ", L"ⰾ", 0}, 5 };
+struct animation punch_l_test = { {L"Ꮂ", L"Ꮆ", L"Ꮂ", L"ⰾ", 0}, 5 };
+
 struct animation dodgetest = { {L"Ꮱ", L"Ꮱ", L"ȣ", L"Ꮱ", L"Ꮂ", L"ⰾ", 0}, 7, 3, 'd'};
+struct animation falltest = { {L"ᥑ", L"ᥑ", L"ޗ", L"ⲁ", L"ᥑ", 0}, 7, 3, 'r'};
+/*struct animation falltest = { {L"ᥑ", L"ᥑ", L"ⲁ", L"ⴋ", L"ᥑ", 0}, 7, 3, 'l'};*/
+
+
+/*struct animation run_u1_test = { {L"ⲑ",L"ⲑ", L"ⰾ", 0}, 5, 2, 'u'};*/
+/*struct animation run_u2_test = { {L"ϯ", L"ϯ", L"ⰾ", 0}, 5, 2, 'u'};*/
+/*ϯⲑⰪⱀⱚ*/
+/*L"ϯ", L"ϯ"*/
+/*ⰾⰄⰴⰾ*/
+/*ⰾᎲⰴⰾ*/
 /*struct animation u_runtest = { {L"Ꮂ", L"Ꮂ", L"ⰾ", 0}, 4, 1, 'u'};*/
 /*struct animation d_runtest = { {L"Ꮂ", L"Ꮂ", L"ⰾ", 0}, 4, 1, 'd'};*/
 /*struct animation l_runtest = { {L"Ꮂ", L"Ꮂ", L"ⰾ", 0}, 4, 1, 'l'};*/
@@ -17,19 +34,6 @@ struct animation dodgetest = { {L"Ꮱ", L"Ꮱ", L"ȣ", L"Ꮱ", L"Ꮂ", L"ⰾ", 0
 /*ⰾᎲᱽᎲⰾ*/
 /*ⰾᏡȣᎲⰾ*/
 
-/*struct multiwin_t *new_slash(int h, int w, int y, int x)*/
-/*{*/
-        /*struct multiwin_t *new = new_multiwin(h, w, y, x, 3);*/
-
-        /*wadd_wch(PEEK(new), mkcch(L"Ꮂ", 0, FLEX));*/
-        /*NEXT(new);*/
-        /*wadd_wch(PEEK(new), mkcch(L"Ꮝ", 0, FLEX));*/
-        /*new->win[2] = NULL;*/
-        /*NEXT(new);*/
-        /*NEXT(new);*/
-
-        /*return (new);*/
-/*}*/
 
 
 void new_creature(const char *name, int job, const wchar_t *wch, short pair)
@@ -50,13 +54,15 @@ void new_creature(const char *name, int job, const wchar_t *wch, short pair)
         wbkgrnd(mob_win(&noun->mob), &new->cch);
 
         noun->mob.animate = NULL;
-        noun->mob.slash = &slashtest;
-        noun->mob.dodge = &dodgetest;
+        noun->mob.punch_l = &punch_l_test;
+        noun->mob.punch_r = &punch_r_test;
+        noun->mob.dodge   = &dodgetest;
+        noun->mob.fall = &falltest;
 }
 
 
 
-
+static bool whichrun;
 
 int modify_creature(void *obj, int input)
 {
@@ -80,17 +86,23 @@ int modify_creature(void *obj, int input)
         case 'd':
                 mob_move(&noun->mob, 'r');
                 break;
-        case 't':
-                mob_seek(noun_mob("Beefman"), &noun->mob);
-                break;
+        /*case 't':*/
+                /*mob_seek(noun_mob("Beefman"), &noun->mob);*/
+                /*break;*/
         case 'g':
                 top_panel(noun->mob.pan);
                 break;
         case 'r':
-                noun->mob.animate = noun->mob.slash;
+                noun->mob.animate = noun->mob.punch_l;
+                break;
+        case 't':
+                noun->mob.animate = noun->mob.punch_r;
                 break;
         case ' ':
                 noun->mob.animate = noun->mob.dodge;
+                break;
+        case '|':
+                noun->mob.animate = noun->mob.fall;
                 break;
         case KEY_ESC:
                 return (MODE_RELEASE);

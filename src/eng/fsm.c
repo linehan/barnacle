@@ -191,6 +191,9 @@ void director(int input)
                 case '@':
                         loop_test();
                         break;
+                case '&':
+                        dock_say(L"䥚", "I am the computer king.");
+                        break;
                 }
         }
 }

@@ -39,7 +39,11 @@ int main(int argc, char *argv[])
         struct map_t *sand = map_preset_sand();
 
         MAPBOOK = new_mapbook();
-        map_set_extra(map_preset_sand());
+
+        if (!argv[1])
+                map_set_extra(map_preset_sand());
+        else if (strcmp(argv[1], "-arena") == 0)
+                map_set_extra(map_preset_arena());
 
         print_status("\n ALL OK\n");
         print_hold("Press any key to continue");

@@ -20,12 +20,10 @@ struct map_t;
 
 struct mob_t {
         struct animation *animate;
-        struct animation *slash;
+        struct animation *punch_l;
+        struct animation *punch_r;
         struct animation *dodge;
-        struct animation *urun;
-        struct animation *drun;
-        struct animation *lrun;
-        struct animation *rrun;
+        struct animation *fall;
         PANEL *pan;
         struct ufo_t ufo;
         struct path_t *path;
