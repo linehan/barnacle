@@ -28,7 +28,7 @@ print_cb(EV_P_ ev_timer *w, int revents)
                 loop_ready = (roll_fair(40)==2) ? true : false;
                 if (!loop_ready) return;
                 else
-                        test = rand_gloss(dock_window(SUBJ_TX_WIN));
+                        test = rand_gloss(dock_window(TEXT_WIN));
         }
 
         loop_ready = say(test);
@@ -58,7 +58,7 @@ void render_cb(EV_P_ ev_timer *w, int revents)
         /*view_dock();*/
         /*draw_compass();*/
         /*approach_helm();*/
-        hide_dock(); 
+        dock_update();
 
         update_panels();  /* Were slowing down performance, unnecessary */
         doupdate();
@@ -87,6 +87,8 @@ void flow_cb(EV_P_ ev_timer *w, int revents)
 
         MAPBOOK->restack(ACTIVE);
         map_refresh(ACTIVE);
+
+        mob_animate(noun_mob("Guy"));
 
         ev_timer_again(EV_DEFAULT, w);
 }
@@ -134,7 +136,7 @@ void animate_cb(EV_P_ ev_timer *w, int revents)
                           SPINNER(spindex++));
         }
         NEXT(ACTIVE->L[RIM]);
-        draw_tabs();
+        tab_update();
 
         ev_timer_again(EV_DEFAULT, w);
 }

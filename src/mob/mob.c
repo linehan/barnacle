@@ -112,6 +112,8 @@ void mob_move(struct mob_t *mob, int dir)
 
 
         take_bkgrnd(panel_window(mob->pan), PEEK(ACTIVE->W));
+        /*if (mx_val(ACTIVE->*/
+        /*ᔅ*/
 
         path_push(mob->path, y, x);
         doupdate();
@@ -216,4 +218,29 @@ void mob_seek(struct mob_t *s, struct mob_t *g)
                 mob_move(s, 'u');
 }
 
+
+void mob_animate(struct mob_t *mob)
+{
+        static int i;
+
+        if (!mob->animate)
+                return;
+
+        /* Increment the frame counter */
+        i = ((i + 1) % mob->animate->n);
+
+        /* If the frame is NULL, reset the animation */
+        if (!mob->animate->frame[i]) {
+                i = 0;
+                mob->animate = NULL;
+                return;
+        /* Or else draw the next frame */
+        } else {
+                wadd_wch(panel_window(mob->pan), 
+                         mkcch(mob->animate->frame[i], 0, FLEX));
+        }
+        /* Move the panel if this is the mv_frame */
+        if (i == mob->animate->mv_frame)
+                mob_move(mob, mob->animate->mv_dir);
+}
 

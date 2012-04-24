@@ -28,8 +28,8 @@
 
 struct stdmenu_t *nounmenu[NUM_NOUNMENUS];
 
-#define IDWIN(op) (op == SUBJECT) ? (dock_window(SUBJ_ID_WIN)) : (dock_window(OBJ_ID_WIN))
-#define WIWIN(op) (op == SUBJECT) ? (dock_window(SUBJ_WI_WIN)) : (dock_window(OBJ_WI_WIN))
+#define IDWIN(op) (op == SUBJECT) ? (dock_window(NAME_WIN)) : (dock_window(NAME_WIN))
+#define WIWIN(op) (op == SUBJECT) ? (dock_window(STAT_WIN)) : (dock_window(STAT_WIN))
 
 /*
  * list_nouns -- generate the nouns list based queries and put them in a menu

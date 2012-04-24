@@ -143,14 +143,14 @@ void director(int input)
                 case '2':
                         tab_sig(2);
                         break;
-                case '3':
-                        tab_cur(1);
+                case ',':
+                        tab_cur('l');
                         break;
-                case '4':
-                        tab_cur(2);
+                case '.':
+                        tab_cur('r');
                         break;
-                case 'f':
-                        set_screen_falling(true);
+                case 'z':
+                        dock_toggle();
                         break;
                 case 'F':
                         fall_screen();

@@ -272,8 +272,8 @@ void verb_view(uint32_t key, int opt)
         WINDOW *win; 
         opt %= 2;
 
-        if (opt==SUBJECT) win = dock_window(SUBJ_WI_WIN);
-        else              win = dock_window(OBJ_WI_WIN);
+        if (opt==SUBJECT) win = dock_window(STAT_WIN);
+        else              win = dock_window(STAT_WIN);
 
         key_noun(key);
 

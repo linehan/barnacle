@@ -1,52 +1,50 @@
-#define _XOPEN_SOURCE_EXTENDED = 1  /* extended character sets */
-#include <menu.h>
+#include "../../com/arawak.h"
 #include "../gfx.h"
 #include "../../noun/noun_model.h"
 #include "../../noun/noun_view.h"
 #include "dock.h"
-/*//////////////////////////////////////////////////////////////////////////////
-+------------------------------------------------------------------------------+
-|                               dock parent window                             |
-+------------------------------------------------------------------------------+
-+-----------------------------------+      +-----------------------------------+
-|          subject window           |      |           object window           |
-+-----------------------------------+      +-----------------------------------+
-+-----------+ +---------------------+      +---------------------+ +-----------+
-| id window | |    widget window    |      |    widget window    | | id window |
-+-----------+ +---------------------+      +---------------------+ +-----------+
-*///////////////////////////////////////////////////////////////////////////////
-WINDOW *dock_win;
-WINDOW *subject_win, *subj_id_win, *subj_wi_win, *subj_tx_win;
-WINDOW *object_win, *obj_id_win, *obj_wi_win, *obj_tx_win;
-PANEL  *dock_pan;
 
 
 /* Tab icons, notices, and selectors
 ``````````````````````````````````````````````````````````````````````````````*/
-
+/*
+  +-------------------------------------------------------------------------+
+  |                                                                         |
+  | [][][][][][][][][][]                                    +---------------+
+  | Beefalo Jonathan                                        | % | $ | @ | & |
+  +---------------------------------------------------------+---------------+ 
+                                                            \**** These ****/
+                                                           
 #define NUMTABS 4 
-#define TAB_H 2
-#define TAB_W 3
-#define TAB_Y (LINES-(TAB_H))
-#define TAB_X(i) (COLS-TAB_W-(TAB_W*i))
+
 
 struct ui_tab_t {
-        WINDOW *win;    /* Hold subwindows */
-        WINDOW *ico;  
-        WINDOW *cur;
+        WINDOW *win;    /* Parent window */
+        WINDOW *ico;    /* Holds the tab's icon */
+        WINDOW *cur;    /* Holds the cursor (below the tab) */
         PANEL  *pan;
-        bool sigtrue;
-        bool curtrue;
+        bool sigtrue;   /* TRUE if tab is being signalled */
+        bool curtrue;   /* TRUE if tab has cursor below it */
 };
 
 struct ui_tab_t ui_tab[NUMTABS];
 
-static const wchar_t *cursor_wch = L"๏";
-static const short cursor_color  = PUR_PURPLE;
+
+#define TAB_H    2
+#define TAB_W    3
+#define TAB_Y    (LINES-(TAB_H))
+#define TAB_X(i) (COLS-(NUMTABS*TAB_W)+(TAB_W*i))
+
+
+static const wchar_t *cursor_wch   = L"๏";
+static const short cursor_color    = PUR_PURPLE;
 static const short signal_color[2] = {PUR_PURPLE, PUR_GREY};
 static cchar_t cursor_cch;
 
 
+/*
+ * Initialize and draw the tabs in ui_tab[]
+ */
 void init_tabs(void)
 {
         const wchar_t *wch[NUMTABS] = { L"⸙", L"⬎", L"ℜ", L"⸭" };
@@ -78,22 +76,49 @@ void init_tabs(void)
         }
 }
 
+/*
+ * tab_sig -- toggle the signal status of a tab
+ * @tab: index of the tab to toggle
+ */
 void tab_sig(int tab)
 {
         ui_tab[tab].sigtrue ^= true;
 }
 
+/*
+ * tab_cur -- control the placement of the tab cursor
+ * @tab: index of the tab to toggle, *or* 'l'/'r' for next/prev tab
+ */
 void tab_cur(int tab)
 {
         static uint8_t current;
 
         werase(ui_tab[current].cur); /* Erase old one */
-        current = tab;
 
-        wadd_wch(ui_tab[current].cur, &cursor_cch); 
+        switch (tab) {
+        case 'l':
+                current = (current > 0) ? (current-1) : (NUMTABS-1);
+                break;
+        case 'r':
+                current = (current < NUMTABS-1) ? (current+1) : (0);
+                break;
+        default:
+                current = tab % NUMTABS;
+                break;
+        }
+
+        wadd_wch(ui_tab[current].cur, &cursor_cch); /* Write new one */
 }
 
-void draw_tabs(void)
+/*
+ * tab_update -- update the rendering of every tab
+ * 
+ * Notes
+ * This is a hook for the event loop to call in order to keep the tabs
+ * updated. Its primary use at the moment is to make the signal highlight
+ * "blink" on and off during alternating calls.
+ */
+void tab_update(void)
 {
         static uint8_t cycle; 
         int i;
@@ -109,71 +134,169 @@ void draw_tabs(void)
 
 
 
+/* The dock container 
+````````````````````````````````````````````````````````````````````````````````
+  +-------------------------------------------------------------------------+
+  |                                                                         |
+  | [][][][][][][][][][]                                    +---------------+
+  | Beefalo Jonathan                                        | % | $ | @ | & |
+  +---------------------------------------------------------+---------------+ */
+
+struct ui_dock_t {
+        WINDOW *dock_win;       /* The mother of all windows */
+        WINDOW *name_win;       /* "Beefalo Jonathan" */
+        WINDOW *stat_win;       /* All the [][][]'s */
+        WINDOW *text_win;       /* Not yet implemented */
+        PANEL  *dock_pan;
+        PANEL  *name_pan;
+        PANEL  *stat_pan;
+        PANEL  *text_pan;
+        bool is_visible;        /* Used by dock_toggle */
+};
+
+
+struct ui_dock_t ui_dock; /* The one and only dock */
+
+
+/*
+ * Create the dock
+ */
 void init_dock(void)
 {
+        #define DOCK_HEIGHT 3
+        #define DOCK_WIDTH COLS
+        #define DOCK_Y LINES-DOCK_HEIGHT
+        #define DOCK_X 0
+
+        #define NAME_HEIGHT 1
+        #define NAME_WIDTH 20
+        #define NAME_Y LINES - NAME_HEIGHT
+        #define NAME_X 2
+        
+        #define STAT_HEIGHT 1
+        #define STAT_WIDTH 32
+        #define STAT_Y LINES - 2 
+        #define STAT_X 2
+
         init_tabs();
 
-        dock_win = newwin(DOCK_H, DOCK_W, LINES-DOCK_H, DOCK_X);
+        ui_dock.dock_win = newwin(DOCK_HEIGHT, DOCK_WIDTH, DOCK_Y, DOCK_X);
+        ui_dock.name_win = newwin(NAME_HEIGHT, NAME_WIDTH, NAME_Y, NAME_X);
+        ui_dock.stat_win = newwin(STAT_HEIGHT, STAT_WIDTH, STAT_Y, STAT_X);
+        /*ui_dock.stat_win = newwin(TEXT_HEIGHT, TEXT_WIDTH, TEXT_Y, TEXT_X);*/
 
-        subject_win = derwin(   dock_win , OPERAND_H , OPERAND_W+20 , 0        , SUBJECT_X);
-        subj_id_win = derwin(subject_win , ID_H      , ID_W      , ID_Y     , 0);
-        subj_wi_win = derwin(subject_win , WIDGET_H  , WIDGET_W  , WIDGET_Y , 0);
-        subj_tx_win = derwin(subject_win , ID_H      , ID_W      , ID_Y+1   , 40);
+        wbkgrnd(ui_dock.dock_win, &PURPLE[2]);
+        wbkgrnd(ui_dock.name_win, &PURPLE[2]);
+        wbkgrnd(ui_dock.stat_win, &PURPLE[2]);
+        /*wbkgrnd(ui_dock.text_win, &PURPLE[2]);*/
 
-        /*object_win  = derwin(  dock_win  , OPERAND_H , OPERAND_W , 0        , OBJECT_X);*/
-        /*obj_id_win  = derwin(object_win  , ID_H      , ID_W      , ID_Y     , OPERAND_W-ID_W-2);*/
-        /*obj_wi_win  = derwin(object_win  , WIDGET_H  , WIDGET_W  , WIDGET_Y , OPERAND_W-WIDGET_W-2);*/
-        /*obj_tx_win  = derwin(object_win  , ID_H      , ID_W      , ID_Y     , OPERAND_W-WIDGET_W-32);*/
-
-        wbkgrnd(dock_win, &PURPLE[2]);
-        wbkgrnd(subject_win, &PURPLE[2]);
-        wbkgrnd(subj_id_win, &PURPLE[2]);
-        wbkgrnd(subj_wi_win, &PURPLE[2]);
-        wbkgrnd(subj_tx_win, &PURPLE[2]);
-        /*wbkgrnd(object_win, &PURPLE[2]);*/
-        /*wbkgrnd(obj_id_win, &PURPLE[2]);*/
-        dock_pan = new_panel(dock_win);
+        ui_dock.dock_pan = new_panel(ui_dock.dock_win);
+        ui_dock.name_pan = new_panel(ui_dock.name_win);
+        ui_dock.stat_pan = new_panel(ui_dock.stat_win);
+        /*ui_dock.text_pan = new_panel(ui_dock.text_win);*/
 }
 
 
+/*
+ * Return a particular window of the dock structure (used by the noun
+ * and verb view routines)
+ */
 WINDOW *dock_window(int windowid)
 {
-        WINDOW *win[]={dock_win, subject_win, subj_id_win, subj_wi_win,
-                       object_win, obj_id_win, obj_wi_win, subj_tx_win, obj_tx_win };
+        WINDOW *win[]={
+                ui_dock.dock_win, 
+                ui_dock.name_win, 
+                ui_dock.stat_win
+        };
 
-        if (windowid > 8) return NULL;
+        if (windowid > 3) return NULL;
         else         return (win[windowid]);
 }
 
 
+/*
+ * Quick check to make sure that the panels to be shown or hidden
+ * actually exist.
+ */
+inline void check_for_init(void)
+{
+        if (!ui_dock.dock_pan) 
+                init_dock();
+        if (get_noun_menu(0) == NULL || get_noun_menu(1) == NULL)
+                list_nouns(SUBJECT, ALL_NOUNS);
+}
 
+/*
+ * Implementation note
+ *
+ * UI elements like this dock are interfaced through 4 primary functions.
+ *
+ *      1. view_*: Makes the UI element visible on-screen 
+ *      2. hide_*: Hides the UI element so it is not rendered on-screen 
+ *      3. *_toggle: Calls either view_* or hide_*, depending on a boolean
+ *      4. *_update: For the event loop to call; keeps elements updated
+ *
+ * The first two are for internal use within this module. The second pair
+ * are admissible interfaces: *_toggle is used by the FSM (user input), 
+ * and *_update is used by the event loop.
+ *
+ */
+
+/*
+ * view_dock -- make the dock panels visible at the bottom of the screen
+ */
 void view_dock(void)
 {
         int i;
 
-        if (dock_pan == NULL) init_dock();
-        if (get_noun_menu(0) == NULL || get_noun_menu(1) == NULL)
-                list_nouns(SUBJECT, ALL_NOUNS);
-        else {
-                top_panel(dock_pan);
-                for (i=0; i<NUMTABS; i++) {
-                        top_panel(ui_tab[i].pan);
-                }
-        }
+        check_for_init();
+        ui_dock.is_visible = true;
+
+        show_panel(ui_dock.dock_pan);
+        show_panel(ui_dock.name_pan);
+        show_panel(ui_dock.stat_pan);
+
+        for (i=0; i<NUMTABS; i++) 
+                show_panel(ui_tab[i].pan);
+
+        scr_refresh();
 }
 
-
+/*
+ * hide_dock -- hide the dock panels so they are no longer visible
+ */
 void hide_dock(void)
 {
         int i;
-        if (dock_pan == NULL) 
-                init_dock();
-        if (get_noun_menu(0) == NULL || get_noun_menu(1) == NULL)
-                list_nouns(SUBJECT, ALL_NOUNS);
 
-        for (i=0; i<NUMTABS; i++) {
+        check_for_init();
+        ui_dock.is_visible = false;
+
+        hide_panel(ui_dock.dock_pan);
+        hide_panel(ui_dock.name_pan);
+        hide_panel(ui_dock.stat_pan);
+
+        for (i=0; i<NUMTABS; i++)
                 hide_panel(ui_tab[i].pan);
-        }
-        hide_panel(dock_pan);
+
+        scr_refresh();
 }
+
+/*
+ * dock_toggle -- toggle the dock view between hidden and visible
+ */
+void dock_toggle(void) 
+{
+        (ui_dock.is_visible) ? hide_dock() : view_dock();
+}
+
+/*
+ * dock_update -- hook for the event loop to keep the dock rendering 
+ */
+void dock_update(void)
+{
+        if (ui_dock.is_visible)
+                view_dock();
+}
+
 

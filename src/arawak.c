@@ -50,10 +50,6 @@ int main(int argc, char *argv[])
         new_boat(FIELD, FUNBOAT, "Afarensis");
         set_mob(noun_mob("Afarensis"), false);
 
-        /*toggle_instrument_panel();*/
-        /*toggle_instrument_panel();*/
-
-        view_dock();
         load_noun_test();
         list_nouns(SUBJECT, ALL_NOUNS);
         list_nouns(OBJECT, ALL_NOUNS);
