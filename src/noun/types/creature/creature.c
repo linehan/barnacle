@@ -5,6 +5,33 @@
 #include "../../../eng/fsm.h"
 
 
+
+
+/*struct animation slashtest = { {L"Ꮂ", L"Ꮝ", L"ⰾ", 0, 0}, 4, 0 };*/
+struct animation slashtest = { {L"Ꮂ", L"ᱽ", L"Ꮂ", L"ⰾ", 0}, 5 };
+struct animation dodgetest = { {L"Ꮱ", L"Ꮱ", L"ȣ", L"Ꮱ", L"Ꮂ", L"ⰾ", 0}, 7, 3, 'd'};
+/*struct animation u_runtest = { {L"Ꮂ", L"Ꮂ", L"ⰾ", 0}, 4, 1, 'u'};*/
+/*struct animation d_runtest = { {L"Ꮂ", L"Ꮂ", L"ⰾ", 0}, 4, 1, 'd'};*/
+/*struct animation l_runtest = { {L"Ꮂ", L"Ꮂ", L"ⰾ", 0}, 4, 1, 'l'};*/
+/*struct animation r_runtest = { {L"Ꮂ", L"Ꮂ", L"ⰾ", 0}, 4, 1, 'r'};*/
+/*ⰾᎲᱽᎲⰾ*/
+/*ⰾᏡȣᎲⰾ*/
+
+/*struct multiwin_t *new_slash(int h, int w, int y, int x)*/
+/*{*/
+        /*struct multiwin_t *new = new_multiwin(h, w, y, x, 3);*/
+
+        /*wadd_wch(PEEK(new), mkcch(L"Ꮂ", 0, FLEX));*/
+        /*NEXT(new);*/
+        /*wadd_wch(PEEK(new), mkcch(L"Ꮝ", 0, FLEX));*/
+        /*new->win[2] = NULL;*/
+        /*NEXT(new);*/
+        /*NEXT(new);*/
+
+        /*return (new);*/
+/*}*/
+
+
 void new_creature(const char *name, int job, const wchar_t *wch, short pair)
 {
         struct person_t *new;
@@ -22,9 +49,12 @@ void new_creature(const char *name, int job, const wchar_t *wch, short pair)
         setcchar(&new->cch, wch, 0, pair, NULL);
         wbkgrnd(mob_win(&noun->mob), &new->cch);
 
-        /*wbkgrnd(mob_win(&noun->mob), mkcch(wch, 0, pair));*/
-
+        noun->mob.animate = NULL;
+        noun->mob.slash = &slashtest;
+        noun->mob.dodge = &dodgetest;
 }
+
+
 
 
 
@@ -52,6 +82,15 @@ int modify_creature(void *obj, int input)
                 break;
         case 't':
                 mob_seek(noun_mob("Beefman"), &noun->mob);
+                break;
+        case 'g':
+                top_panel(noun->mob.pan);
+                break;
+        case 'r':
+                noun->mob.animate = noun->mob.slash;
+                break;
+        case ' ':
+                noun->mob.animate = noun->mob.dodge;
                 break;
         case KEY_ESC:
                 return (MODE_RELEASE);

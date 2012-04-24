@@ -18,8 +18,8 @@
 
 
 /* -------------------------------------------------------------------------- */
-#define IDWIN(op) (op == SUBJECT) ? (dock_window(SUBJ_ID_WIN)) : (dock_window(OBJ_ID_WIN))
-#define WIWIN(op) (op == SUBJECT) ? (dock_window(SUBJ_WI_WIN)) : (dock_window(OBJ_WI_WIN))
+#define IDWIN(op) (op == SUBJECT) ? (dock_window(NAME_WIN)) : (dock_window(NAME_WIN))
+#define WIWIN(op) (op == SUBJECT) ? (dock_window(STAT_WIN)) : (dock_window(STAT_WIN))
 /* -------------------------------------------------------------------------- */
 
 
@@ -66,15 +66,17 @@ void noun_print_highlight(int op)
  */
 void noun_print_name(int op, short pair)
 {
+        static const int width = 20;
+
         assert(op == SUBJECT || op == OBJECT);
 
         werase(IDWIN(op));
         wcolor_set(IDWIN(op), pair, NULL);
 
         if (op==SUBJECT) 
-                wprintw(IDWIN(op), "%-*s", ID_W,  fullname(request_id(op)));
+                wprintw(IDWIN(op), "%-*s", width,  fullname(request_id(op)));
         else
-                wprintw(IDWIN(op), "%*s", ID_W, fullname(request_id(op)));
+                wprintw(IDWIN(op), "%*s", width, fullname(request_id(op)));
 
         win_refresh(IDWIN(op));
 }
