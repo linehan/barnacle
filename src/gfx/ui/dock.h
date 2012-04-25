@@ -15,7 +15,6 @@ void tab_sig(int tab);
 void tab_update(void);
 
 
-
 void dock_say(const wchar_t *who, const char *msg);
 
 #endif

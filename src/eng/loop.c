@@ -59,6 +59,7 @@ void render_cb(EV_P_ ev_timer *w, int revents)
         /*draw_compass();*/
         /*approach_helm();*/
         dock_update();
+        mob_animate(noun_mob("Guy"));
 
         update_panels();  /* Were slowing down performance, unnecessary */
         doupdate();
@@ -87,8 +88,6 @@ void flow_cb(EV_P_ ev_timer *w, int revents)
 
         MAPBOOK->restack(ACTIVE);
         map_refresh(ACTIVE);
-
-        mob_animate(noun_mob("Guy"));
 
         ev_timer_again(EV_DEFAULT, w);
 }

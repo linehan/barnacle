@@ -51,6 +51,7 @@ int main(int argc, char *argv[])
         map_roll(ACTIVE, 0);
         map_roll(ACTIVE, 0);
 
+
         new_boat(FIELD, FUNBOAT, "Afarensis");
         set_mob(noun_mob("Afarensis"), false);
 
@@ -64,12 +65,15 @@ int main(int argc, char *argv[])
 
         new_creature("Guy", PERSON, L"ⰾ", FLEX);
         /*new_creature("Beefman", MONSTER, L"Ⰾ", FLEX);*/
+        new_creature("Dummy", MONSTER, L"Ⰹ", FLEX);
 
         noun_set_mob(get_noun("Guy"), true);
         mob_move(noun_mob("Guy"), 'd');
         mob_move(noun_mob("Guy"), 'd');
         mob_move(noun_mob("Guy"), 'd');
 
+        noun_set_mob(get_noun("Dummy"), true);
+        mob_move(noun_mob("Dummy"), 'u');
         /*noun_set_mob(get_noun("Beefman"), true);*/
         /*mob_move(noun_mob("Beefman"), 'd');*/
 

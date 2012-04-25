@@ -15,3 +15,4 @@ struct stdmenu_t *get_noun_struct(int op);
 struct noun_t *current_noun(int op);
 void focus_noun_menu(int op, bool opt);
 bool isvis_noun_menu(int op);
+

@@ -303,8 +303,11 @@ void dock_toggle(void)
  */
 void dock_update(void)
 {
-        if (ui_dock.is_visible)
-                view_dock();
+        if (!ui_dock.is_visible)
+                return;
+
+        view_dock();
+        do_pulse();
 }
 
 
