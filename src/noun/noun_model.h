@@ -158,3 +158,4 @@ uint32_t request_id(int option); /* Request the current subj/obj */
 #include "deps/vitals.h"
 
 #endif
+

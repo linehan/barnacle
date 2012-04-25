@@ -60,14 +60,13 @@ cchar_t *mkcch(wchar_t *wch, attr_t attr, short co);
         doupdate();\
 
 
+
 void mvwp(WINDOW *win, int y, int x, wchar_t *wch, short pair, attr_t attr);
 void mvwnpaint(WINDOW *win, int y, int x, wchar_t *wcs, short pair, int n);
 
 void take_bkgrnd(WINDOW *dest, WINDOW *src);
 
 
-
-
-
-
 #endif
+
+

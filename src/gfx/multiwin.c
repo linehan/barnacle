@@ -62,3 +62,4 @@ struct multiwin_t *new_multiwin(int h, int w, int y0, int x0, int n)
 
         return (new);
 }
+

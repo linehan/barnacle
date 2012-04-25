@@ -149,7 +149,7 @@ void do_pulse_test(struct verb_t *verb, int option)
 ////////////////////////////////////////////////////////////////////////////////
 inline void verb_view_elem(int elem, struct verb_t *verb, WINDOW *win, int opt)
 {
-        static wchar_t basics[]=L"⫶⫶ⲷⲷ⅃⅃ⲅⲄⲅℾ⅂⅃ⲷⲶⲷⵔⵙⲻⲺⲿⲾ";
+        static wchar_t basics[]=L"■■⫶⫶ⲷⲷ⅃⅃ⲅⲄⲅℾ⅂⅃ⲷⲶⲷⵔⵙⲻⲺⲿⲾ";
         static wchar_t boom[]=L"✶✺";
         uint32_t xofs, xlen, vbid;
         wchar_t *icon;

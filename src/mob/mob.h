@@ -9,7 +9,7 @@
 #include "../ai/a_star.h"
 
 struct animation {
-        wchar_t *frame[10];
+        wchar_t *frame[20];
         int n;
         int mv_frame;
         int mv_dir;
@@ -23,7 +23,16 @@ struct mob_t {
         struct animation *punch_l;
         struct animation *punch_r;
         struct animation *dodge;
+        struct animation *dodge_r;
+        struct animation *dodge_l;
+        struct animation *kick_l;
+        struct animation *kick_r;
         struct animation *fall;
+        struct animation *slash;
+        struct animation *run_u;
+        struct animation *run_d;
+        struct animation *run_l;
+        struct animation *run_r;
         PANEL *pan;
         struct ufo_t ufo;
         struct path_t *path;
@@ -55,3 +64,4 @@ void mob_path(struct mob_t *mob);
 void mob_animate(struct mob_t *mob);
 
 #endif
+
