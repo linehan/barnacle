@@ -118,66 +118,10 @@ enum arne_shadow2 {
         DARK_SANDZ = 122,
 };
 
+/* ----- PAIRS ------ */
+
 /* FG_BG color pairs; odd ones are swaps of even ones. */
 enum ramp_pairs {
-
-        CMP_BEIGE     = 100,   /* These colors are for UI elements */
-        CMP_RED       = 101,
-        CMP_WHITE     = 102,
-        CMP_ORANGE    = 103,
-        CMP_GREEN     = 104,
-        CMP_PINK      = 105,
-        CMP_YELLOW    = 106,
-        CMP_SHADOW    = 107,
-        WARNING       = 109,
-        WARNSHADOW    = 110,
-        GUN_FLASH     = 111,
-        GUN_SMOKE     = 112,
-
-
-        //PUR_WHI = 150,
-        //PUR_DPU = 151,
-        //PUR_DDP = 152,
-        //PUR_PUR = 153,
-#define PUR_WHI PUR_WHITE
-#define PUR_BLU PUR_CELESTIAL
-#define PUR_GRE PUR_GREY
-#define PUR_PUR PUR_PURPLE
-        //PUR_YEL = 154,
-        //PUR_GRE = 155,
-        //PUR_DYE = 156,
-        //PUR_BLU = 157,
-        //PUR_EEN = 159,
-        //PUR_BRZ = 160,
-        //PUR_PIN = 161,
-        //PUR_ORA = 162,
-        //PUR_BEI = 163,
-        //PUR_WOO = 164,
-        //TITLE_SCREEN = 166,
-        TESTING = 167,
-        SEA_SAND = 141,
-        SEA_SHALLOW = 142,
-        _SEA_SHALLOW = 143,
-        A_SEA_LAGOON = 144,
-        B_SEA_LAGOON = 145,
-        C_SEA_LAGOON = 146,
-        D_SEA_LAGOON = 147,
-        CLIFF_PAIR = 148,
-        //RED_PINK = 148,
-
-#define PUR_DPU PUR_WHITE
-#define PUR_DDP PUR_WHITE
-#define PUR_YEL PUR_YELLOW
-#define PUR_DYE __PUR_YELLOW
-#define PUR_EEN PUR_LGREEN
-#define PUR_BRZ PUR_BRONZE
-#define PUR_PIN PUR_LRED
-#define PUR_ORA PUR_ORANGE
-#define PUR_BEI PUR_BEIGE
-#define PUR_WOO PUR_WOOD
-#define TITLE_SCREEN PUR_PURPLE
-
-
 
 
 
@@ -223,17 +167,54 @@ enum ramp_pairs {
         SEA__MED = 53,
         SEA___MED = 54,
 
+        CMP_BEIGE     = 55,   /* These colors are for UI elements */
+        CMP_RED       = 56,
+        CMP_WHITE     = 57,
+        CMP_ORANGE    = 58,
+        CMP_GREEN     = 59,
+        CMP_PINK      = 60,
+        CMP_YELLOW    = 61,
+        CMP_SHADOW    = 62,
+        WARNING       = 63,
+        WARNSHADOW    = 64,
+        GUN_FLASH     = 65,
+        GUN_SMOKE     = 66,
+
+        TESTING      = 67,
+        SEA_SAND     = 68,
+        SEA_SHALLOW  = 69,
+        _SEA_SHALLOW = 70,
+        A_SEA_LAGOON = 71,
+        B_SEA_LAGOON = 72,
+        C_SEA_LAGOON = 73,
+        D_SEA_LAGOON = 74,
+        CLIFF_PAIR   = 75,
 };
 
 enum stuff {
-        BSAND = 113,
-        CSAND = 114,
-        DSAND = 115,
-        ESAND = 116,
-        FSAND = 117,
+        BSAND = 76,
+        CSAND = 77,
+        DSAND = 78,
+        ESAND = 79,
+        FSAND = 80,
 };
 
 
+#define PUR_WHI PUR_WHITE
+#define PUR_BLU PUR_CELESTIAL
+#define PUR_GRE PUR_GREY
+#define PUR_PUR PUR_PURPLE
+#define PUR_DPU PUR_WHITE
+#define PUR_DDP PUR_WHITE
+#define PUR_YEL PUR_YELLOW
+#define PUR_DYE __PUR_YELLOW
+#define PUR_EEN PUR_LGREEN
+#define PUR_BRZ PUR_BRONZE
+#define PUR_PIN PUR_LRED
+#define PUR_ORA PUR_ORANGE
+#define PUR_BEI PUR_BEIGE
+#define PUR_WOO PUR_WOOD
+#define TITLE_SCREEN PUR_PURPLE
 
 
 /* These are the first values of each shade level in the enum; they can be

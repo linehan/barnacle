@@ -4,6 +4,7 @@
 #include "../ai/a_star_test.h"
 #include "../map/cell.h"
 #include "../verb/verb.h"
+#include "../noun/noun.h"
 
 
 
@@ -78,12 +79,12 @@ inline void mob_unmark_position(struct mob_t *mob)
  */
 void mob_move(struct mob_t *mob, int dir)
 {
-        if (dir != 'u' && dir != 'd' && dir != 'l' && dir != 'r') return;
-
         int y = ufo_y(mob, ufo);
         int x = ufo_x(mob, ufo);
 
         mob_unmark_position(mob);
+
+        if (dir != 'u' && dir != 'd' && dir != 'l' && dir != 'r') goto update;
 
         switch (dir) {
         case 'u':       
@@ -119,21 +120,20 @@ void mob_move(struct mob_t *mob, int dir)
                 ufo_left(mob, ufo);
         }
 
-        mob->astar->start->y = (uint32_t)ufo_y(mob, ufo);
-        mob->astar->start->x = (uint32_t)ufo_x(mob, ufo);
-        mob->astar->start->key = mort(mob->astar->start->y, mob->astar->start->x);
-
-        mob_mark_position(mob);
-
         move_panel(mob->pan, ufo_y(mob, ufo), ufo_x(mob, ufo));
         update_panels();
 
-        take_bkgrnd(panel_window(mob->pan), PEEK(ACTIVE->W));
+        /* Actions performed whether the mob has moved or not */
+        update:
+                mob->astar->start->y = (uint32_t)ufo_y(mob, ufo);
+                mob->astar->start->x = (uint32_t)ufo_x(mob, ufo);
+                mob->astar->start->key = mort(mob->astar->start->y, mob->astar->start->x);
 
-        path_push(mob->path, y, x);
-        doupdate();
-
-        map_trigger(ACTIVE, mob);
+                mob_mark_position(mob);
+                take_bkgrnd(panel_window(mob->pan), PEEK(ACTIVE->W));
+                path_push(mob->path, y, x);
+                doupdate();
+                map_trigger(ACTIVE, mob);
 }
 
 
@@ -203,16 +203,19 @@ void mob_seek_test(struct mob_t *s, struct mob_t *g)
 
 
 
-void mob_seek(struct mob_t *s, struct mob_t *g)
+void mob_seek(struct noun_t *snoun, struct noun_t *gnoun)
 {
+        struct mob_t *s = &snoun->mob;
+        struct mob_t *g = &gnoun->mob;
+
         if ((s->astar->current == NULL) 
         || !(same_cell(s->astar->current, g->astar->start))) 
         {
                 if (a_star(s->astar, g->astar->start)) {
-                        /*wprintw(CONSOLE_WIN, "Yep\n");*/
+                        wprintw(CONSOLE_WIN, "Yep\n");
                         /*print_path(s->astar->current);*/
                 } else {
-                        /*wprintw(CONSOLE_WIN, "Nope\n");*/
+                        wprintw(CONSOLE_WIN, "Nope\n");
                         return;
                 }
         }
@@ -220,13 +223,17 @@ void mob_seek(struct mob_t *s, struct mob_t *g)
         tmp = cellpath_next(&s->astar->path);
 
         if (tmp->x > s->astar->start->x)
-                mob_move(s, 'r');
+                /*mob_move(s, 'r');*/
+                noun_set_state(snoun, VERB_GoRight, 0);
         if (tmp->x < s->astar->start->x)
-                mob_move(s, 'l');
+                noun_set_state(snoun, VERB_GoLeft, 0);
+                /*mob_move(s, 'l');*/
         if (tmp->y > s->astar->start->y)
-                mob_move(s, 'd');
+                noun_set_state(snoun, VERB_GoDown, 0);
+                /*mob_move(s, 'd');*/
         if (tmp->y < s->astar->start->y)
-                mob_move(s, 'u');
+                noun_set_state(snoun, VERB_GoUp, 0);
+                /*mob_move(s, 'u');*/
 }
 
 

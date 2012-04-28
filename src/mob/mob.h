@@ -10,12 +10,13 @@
 
 
 struct map_t;
+struct noun_t *noun_forw_ref;
 
 
 struct mob_t {
         PANEL *pan;
         WINDOW *win;
-        struct animation *animate;
+        struct ani_t *animate;
         struct ufo_t ufo;
         struct path_t *path;
         struct astar_t *astar;
@@ -47,6 +48,7 @@ void mob_move(struct mob_t *mob, int dir);
 void mob_path(struct mob_t *mob);
 void mob_animate(struct mob_t *mob);
 void mob_set_signal(struct mob_t *mob, int verb, int dir);
+void mob_seek(struct noun_t *snoun, struct noun_t *gnoun);
 
 #endif
 

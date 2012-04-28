@@ -26,7 +26,7 @@
 #include "eng/loop.h"
 
 #include "mob/mob.h"
-
+#include "map/sweet_flow.h"
 #include "noun/types/boat/boat.h"
 #include "noun/types/creature/creature.h"
 #include "gfx/ui/titlecard.h"
@@ -36,8 +36,6 @@
 int main(int argc, char *argv[]) 
 {
         arawak_init();
-
-        struct map_t *sand = map_preset_sand();
 
         MAPBOOK = new_mapbook();
 
@@ -52,9 +50,8 @@ int main(int argc, char *argv[])
         map_roll(ACTIVE, 0);
         map_roll(ACTIVE, 0);
 
-
-        new_boat(FIELD, FUNBOAT, "Afarensis");
-        set_mob(noun_mob("Afarensis"), false);
+        /*new_boat(FIELD, FUNBOAT, "Afarensis");*/
+        /*set_mob(noun_mob("Afarensis"), false);*/
 
         load_noun_test();
         list_nouns(SUBJECT, ALL_NOUNS);

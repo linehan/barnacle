@@ -102,10 +102,10 @@ void operate_on(int input)
                 inspect_control(input);
                 break;
         case UI_BOAT:
-                noun_modify(get_noun("Afarensis"), VERB_Keyboard, input);
+                /*noun_set_state(get_noun("Afarensis"), VERB_Keyboard, input);*/
                 break;
         case UI_MOB:
-                noun_modify(get_noun("Guy"), VERB_Keyboard, input);
+                noun_set_state(get_noun("Guy"), VERB_Keyboard, input);
                 break;
         }
 }
