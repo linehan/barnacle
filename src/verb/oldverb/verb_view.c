@@ -50,96 +50,96 @@ struct stdmenu_t *verbmenu;
 //                                                                            //
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
-void init_verb_menu(uint32_t bitmap)
-{
-        static char *name[100];
-        static char *desc[100];
-        int i, n;
-        int *slice;
+/*void init_verb_menu(uint32_t bitmap)*/
+/*{*/
+        /*static char *name[100];*/
+        /*static char *desc[100];*/
+        /*int i, n;*/
+        /*int *slice;*/
 
-        n = ones32(bitmap);
-        slice = bitind(bitmap, n);
+        /*n = ones32(bitmap);*/
+        /*slice = bitind(bitmap, n);*/
 
-        for (i=0; i<n; i++) {
-                name[i] = verbs[slice[i]].name;
-                desc[i] = verbs[slice[i]].desc;
-        }
+        /*for (i=0; i<n; i++) {*/
+                /*name[i] = verbs[slice[i]].name;*/
+                /*desc[i] = verbs[slice[i]].desc;*/
+        /*}*/
 
-        verbmenu = new_stdmenu(name, desc, NULL, n); 
+        /*verbmenu = new_stdmenu(name, desc, NULL, n); */
 
-        /*verbmenu->item = menu_items(verbmenu->menu);*/
-        for (i=0; i<n; i++) {
-                set_item_userptr(verbmenu->item[i], &verbs[slice[i]]);
-        }
+        /*[>verbmenu->item = menu_items(verbmenu->menu);<]*/
+        /*for (i=0; i<n; i++) {*/
+                /*set_item_userptr(verbmenu->item[i], &verbs[slice[i]]);*/
+        /*}*/
 
-        stdmenu_win(verbmenu, VERB_H, VERB_W, VERB_Y, VERB_X);
-        stdmenu_color(verbmenu, PUR_DDP, PUR_GRE, _PUR_PURPLE);
+        /*stdmenu_win(verbmenu, VERB_H, VERB_W, VERB_Y, VERB_X);*/
+        /*stdmenu_color(verbmenu, PUR_DDP, PUR_GRE, _PUR_PURPLE);*/
 
-        stdmenu_cfg(verbmenu, DESC, true, NULL);
-        stdmenu_cfg(verbmenu, MARK, false, NULL);
+        /*stdmenu_cfg(verbmenu, DESC, true, NULL);*/
+        /*stdmenu_cfg(verbmenu, MARK, false, NULL);*/
 
-        verbmenu->post(verbmenu, true);
-}
+        /*verbmenu->post(verbmenu, true);*/
+/*}*/
 
-MENU *get_verb_menu(void)
-{
-        return (verbmenu->menu);
-}
+/*MENU *get_verb_menu(void)*/
+/*{*/
+        /*return (verbmenu->menu);*/
+/*}*/
 
-PANEL *get_verb_panel(void)
-{
-        return (verbmenu->pan);
-}
+/*PANEL *get_verb_panel(void)*/
+/*{*/
+        /*return (verbmenu->pan);*/
+/*}*/
 
-void post_verb_icon(ITEM *item)
-{
-        #define XPOS VERB_W-6
-        struct verb_info *verb;
-        static int y;
-        int index;
-        int top;
+/*void post_verb_icon(ITEM *item)*/
+/*{*/
+        /*#define XPOS VERB_W-6*/
+        /*struct verb_info *verb;*/
+        /*static int y;*/
+        /*int index;*/
+        /*int top;*/
 
-        top  = top_row(verbmenu->menu);
-        item = current_item(verbmenu->menu);
-        index = item_index(item);
+        /*top  = top_row(verbmenu->menu);*/
+        /*item = current_item(verbmenu->menu);*/
+        /*index = item_index(item);*/
 
-        verb = (struct verb_info *)item_userptr(item);
+        /*verb = (struct verb_info *)item_userptr(item);*/
 
-        mvwdelch(verbmenu->sub, y, XPOS);
+        /*mvwdelch(verbmenu->sub, y, XPOS);*/
 
-        y = (index-top);
-        put_n(verbmenu->sub, y, XPOS, verb->icon, verb->pair, 1);
-        win_refresh(verbmenu->sub);
-}
+        /*y = (index-top);*/
+        /*put_n(verbmenu->sub, y, XPOS, verb->icon, verb->pair, 1);*/
+        /*win_refresh(verbmenu->sub);*/
+/*}*/
 
-////////////////////////////////////////////////////////////////////////////////
-//                                                                            //
-//                                                                            //
-//                          display diagnostic gfx                            //
-//                                                                            //
-//                                                                            //
-////////////////////////////////////////////////////////////////////////////////
-void do_pulse_test(struct verb_t *verb, int option)
-{
-        static int refresh;
+/*////////////////////////////////////////////////////////////////////////////////*/
+/*//                                                                            //*/
+/*//                                                                            //*/
+/*//                          display diagnostic gfx                            //*/
+/*//                                                                            //*/
+/*//                                                                            //*/
+/*////////////////////////////////////////////////////////////////////////////////*/
+/*void do_pulse_test(struct verb_t *verb, int option)*/
+/*{*/
+        /*static int refresh;*/
 
-        if (option == refresh) {
-                werase(DIAGNOSTIC_WIN);
-                refresh = option;
-        }
+        /*if (option == refresh) {*/
+                /*werase(DIAGNOSTIC_WIN);*/
+                /*refresh = option;*/
+        /*}*/
 
-        if (option == SUBJECT)
-                wprintw(DIAGNOSTIC_WIN, "subject\n");
-        else    wprintw(DIAGNOSTIC_WIN, "object\n");
+        /*if (option == SUBJECT)*/
+                /*wprintw(DIAGNOSTIC_WIN, "subject\n");*/
+        /*else    wprintw(DIAGNOSTIC_WIN, "object\n");*/
 
-        wprintw(DIAGNOSTIC_WIN, "mask %s\n", dispel(verb->mask));
-        wprintw(DIAGNOSTIC_WIN, "bump %s\n", dispel(verb->bump));
-        wprintw(DIAGNOSTIC_WIN, "fund %s\n", dispel(verb->fund));
-        wprintw(DIAGNOSTIC_WIN, "send %s\n", dispel(verb->send));
-        wprintw(DIAGNOSTIC_WIN, " rec %s\n", dispel(verb->rec));
-        vrt_refresh();
-        scr_refresh();
-}
+        /*wprintw(DIAGNOSTIC_WIN, "mask %s\n", dispel(verb->mask));*/
+        /*wprintw(DIAGNOSTIC_WIN, "bump %s\n", dispel(verb->bump));*/
+        /*wprintw(DIAGNOSTIC_WIN, "fund %s\n", dispel(verb->fund));*/
+        /*wprintw(DIAGNOSTIC_WIN, "send %s\n", dispel(verb->send));*/
+        /*wprintw(DIAGNOSTIC_WIN, " rec %s\n", dispel(verb->rec));*/
+        /*vrt_refresh();*/
+        /*scr_refresh();*/
+/*}*/
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
 //                                                                            //
@@ -266,32 +266,32 @@ inline void verb_view_elem(int elem, struct verb_t *verb, WINDOW *win, int opt)
 //            `##'                                                            //
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
-void verb_view(uint32_t key, int opt)
-{
-        #define TESTING 0
-        WINDOW *win; 
-        opt %= 2;
+/*void verb_view(uint32_t key, int opt)*/
+/*{*/
+        /*#define TESTING 0*/
+        /*WINDOW *win; */
+        /*opt %= 2;*/
 
-        if (opt==SUBJECT) win = dock_window(STAT_WIN);
-        else              win = dock_window(STAT_WIN);
+        /*if (opt==SUBJECT) win = dock_window(STAT_WIN);*/
+        /*else              win = dock_window(STAT_WIN);*/
 
-        key_noun(key);
+        /*key_noun(key);*/
 
-        verb_view_elem(BASE, &focused->verb, win, opt);
-        verb_view_elem(FUND, &focused->verb, win, opt);
-        verb_view_elem(CANC, &focused->verb, win, opt);
-        verb_view_elem(TAKE, &focused->verb, win, opt);
-        if (&focused->verb.send != 0)
-                verb_view_elem(SEND, &focused->verb, win, opt);
-        if (&focused->verb.rec != 0)
-                verb_view_elem(REC, &focused->verb, win, opt);
+        /*verb_view_elem(BASE, &focused->verb, win, opt);*/
+        /*verb_view_elem(FUND, &focused->verb, win, opt);*/
+        /*verb_view_elem(CANC, &focused->verb, win, opt);*/
+        /*verb_view_elem(TAKE, &focused->verb, win, opt);*/
+        /*if (&focused->verb.send != 0)*/
+                /*verb_view_elem(SEND, &focused->verb, win, opt);*/
+        /*if (&focused->verb.rec != 0)*/
+                /*verb_view_elem(REC, &focused->verb, win, opt);*/
 
-        win_refresh(win);
+        /*win_refresh(win);*/
 
-        if (TESTING) {
-                do_pulse_test(&focused->verb, opt);
-        }
-}
+        /*if (TESTING) {*/
+                /*do_pulse_test(&focused->verb, opt);*/
+        /*}*/
+/*}*/
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
 //                                                                            //
@@ -299,24 +299,24 @@ void verb_view(uint32_t key, int opt)
 //                                                                            //
 //                                                                            //
 ////////////////////////////////////////////////////////////////////////////////
-void do_pulse(void)
-{
-        int max;             
-        int i;
+/*void do_pulse(void)*/
+/*{*/
+        /*int max;             */
+        /*int i;*/
 
-        max = numnoun;
-        for (i=0; i<max; i++) {
+        /*max = numnoun;*/
+        /*for (i=0; i<max; i++) {*/
 
-                if (keyring[i] == request_id(SUBJECT)) {
-                        noun_print_vitals(SUBJECT);
-                        verb_view(keyring[i], SUBJECT);
-                }
-
-                /*if (keyring[i] == request_id(OBJECT)) {*/
-                        /*noun_print_vitals(OBJECT);*/
-                        /*verb_view(keyring[i], OBJECT);*/
+                /*if (keyring[i] == request_id(SUBJECT)) {*/
+                        /*noun_print_vitals(SUBJECT);*/
+                        /*verb_view(keyring[i], SUBJECT);*/
                 /*}*/
 
-                verb_tick(keyring[i]);
-        }
-}
+                /*[>if (keyring[i] == request_id(OBJECT)) {<]*/
+                        /*[>noun_print_vitals(OBJECT);<]*/
+                        /*[>verb_view(keyring[i], OBJECT);<]*/
+                /*[>}<]*/
+
+                /*verb_tick(keyring[i]);*/
+        /*}*/
+/*}*/

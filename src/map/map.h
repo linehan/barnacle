@@ -42,6 +42,7 @@ struct map_t {
         /*----------------------------- Logic */
         struct matrix_t *mx;
         struct matrix_t *hook;
+        struct matrix_t *mobs;
         double **pmap;
         struct ufo_t ufo;
         struct asset_t *asset[NASSETS];

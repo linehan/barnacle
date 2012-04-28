@@ -83,11 +83,10 @@ am_arawak_OBJECTS = arawak.$(OBJEXT) eng/init.$(OBJEXT) \
 	txt/gloss_v.$(OBJEXT) txt/gloss_c.$(OBJEXT) mob/mob.$(OBJEXT) \
 	noun/noun_model.$(OBJEXT) noun/noun_discrim.$(OBJEXT) \
 	noun/noun_view.$(OBJEXT) noun/noun_control.$(OBJEXT) \
-	noun/noun_widgets.$(OBJEXT) noun/types/boat/boat.$(OBJEXT) \
+	noun/noun_widgets.$(OBJEXT) noun/models.$(OBJEXT) \
+	noun/types/boat/boat.$(OBJEXT) \
 	noun/types/boat/compass.$(OBJEXT) \
-	noun/types/creature/creature.$(OBJEXT) \
-	verb/verb_model.$(OBJEXT) verb/verb_view.$(OBJEXT) \
-	verb/verb_control.$(OBJEXT) verb/verbs.$(OBJEXT) \
+	noun/types/creature/creature.$(OBJEXT) verb/verb.$(OBJEXT) \
 	test/test.$(OBJEXT)
 arawak_OBJECTS = $(am_arawak_OBJECTS)
 arawak_LDADD = $(LDADD)
@@ -251,13 +250,11 @@ arawak_SOURCES = arawak.c                       \
                    noun/noun_view.c             \
                    noun/noun_control.c          \
                    noun/noun_widgets.c          \
+                   noun/models.c                \
                    noun/types/boat/boat.c       \
                    noun/types/boat/compass.c    \
                    noun/types/creature/creature.c   \
-                   verb/verb_model.c            \
-                   verb/verb_view.c             \
-                   verb/verb_control.c          \
-                   verb/verbs.c                 \
+                   verb/verb.c                 \
                    test/test.c                  
 
 all: all-am
@@ -498,6 +495,8 @@ noun/noun_control.$(OBJEXT): noun/$(am__dirstamp) \
 	noun/$(DEPDIR)/$(am__dirstamp)
 noun/noun_widgets.$(OBJEXT): noun/$(am__dirstamp) \
 	noun/$(DEPDIR)/$(am__dirstamp)
+noun/models.$(OBJEXT): noun/$(am__dirstamp) \
+	noun/$(DEPDIR)/$(am__dirstamp)
 noun/types/boat/$(am__dirstamp):
 	@$(MKDIR_P) noun/types/boat
 	@: > noun/types/boat/$(am__dirstamp)
@@ -523,13 +522,7 @@ verb/$(am__dirstamp):
 verb/$(DEPDIR)/$(am__dirstamp):
 	@$(MKDIR_P) verb/$(DEPDIR)
 	@: > verb/$(DEPDIR)/$(am__dirstamp)
-verb/verb_model.$(OBJEXT): verb/$(am__dirstamp) \
-	verb/$(DEPDIR)/$(am__dirstamp)
-verb/verb_view.$(OBJEXT): verb/$(am__dirstamp) \
-	verb/$(DEPDIR)/$(am__dirstamp)
-verb/verb_control.$(OBJEXT): verb/$(am__dirstamp) \
-	verb/$(DEPDIR)/$(am__dirstamp)
-verb/verbs.$(OBJEXT): verb/$(am__dirstamp) \
+verb/verb.$(OBJEXT): verb/$(am__dirstamp) \
 	verb/$(DEPDIR)/$(am__dirstamp)
 test/$(am__dirstamp):
 	@$(MKDIR_P) test
@@ -584,6 +577,7 @@ mostlyclean-compile:
 	-rm -f map/sweet_flow.$(OBJEXT)
 	-rm -f map/terrain.$(OBJEXT)
 	-rm -f mob/mob.$(OBJEXT)
+	-rm -f noun/models.$(OBJEXT)
 	-rm -f noun/noun_control.$(OBJEXT)
 	-rm -f noun/noun_discrim.$(OBJEXT)
 	-rm -f noun/noun_model.$(OBJEXT)
@@ -597,10 +591,7 @@ mostlyclean-compile:
 	-rm -f txt/gloss_c.$(OBJEXT)
 	-rm -f txt/gloss_m.$(OBJEXT)
 	-rm -f txt/gloss_v.$(OBJEXT)
-	-rm -f verb/verb_control.$(OBJEXT)
-	-rm -f verb/verb_model.$(OBJEXT)
-	-rm -f verb/verb_view.$(OBJEXT)
-	-rm -f verb/verbs.$(OBJEXT)
+	-rm -f verb/verb.$(OBJEXT)
 
 distclean-compile:
 	-rm -f *.tab.c
@@ -645,6 +636,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@map/$(DEPDIR)/sweet_flow.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@map/$(DEPDIR)/terrain.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@mob/$(DEPDIR)/mob.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@noun/$(DEPDIR)/models.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@noun/$(DEPDIR)/noun_control.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@noun/$(DEPDIR)/noun_discrim.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@noun/$(DEPDIR)/noun_model.Po@am__quote@
@@ -658,10 +650,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@txt/$(DEPDIR)/gloss_c.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@txt/$(DEPDIR)/gloss_m.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@txt/$(DEPDIR)/gloss_v.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@verb/$(DEPDIR)/verb_control.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@verb/$(DEPDIR)/verb_model.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@verb/$(DEPDIR)/verb_view.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@verb/$(DEPDIR)/verbs.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@verb/$(DEPDIR)/verb.Po@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.o$$||'`;\

@@ -122,10 +122,10 @@ static const char *job_flavor[] = {
         (char *)NULL
 };
 
-static inline const char *get_job(int id)
-{
-        key_noun(id);
-        return (job_list[focused->job]);
-}
+//static inline const char *get_job(int id)
+//{
+        //key_noun(id);
+        //return (job_list[focused->job]);
+//}
 
 #endif

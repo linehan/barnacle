@@ -30,7 +30,7 @@ struct seed_t {
         uint32_t *se;
 };
 
-static uint32_t DUMMY;
+static uint32_t DOPE;
 
 /* Public function prototypes 
 ``````````````````````````````````````````````````````````````````````````````*/
@@ -189,7 +189,7 @@ uint32_t *mx_w(struct matrix_t *matrix, int y, int x)
         if (likely(safe_address_w(matrix, x))) 
                 return &matrix->mx[y][x-1];
         else
-                return &DUMMY;
+                return &DOPE;
 }
 
 /*
@@ -204,7 +204,7 @@ uint32_t *mx_e(struct matrix_t *matrix, int y, int x)
         if (likely(safe_address_e(matrix, x))) 
                 return &matrix->mx[y][x+1]; 
         else
-                return &DUMMY;
+                return &DOPE;
 }
 
 /*
@@ -219,7 +219,7 @@ uint32_t *mx_n(struct matrix_t *matrix, int y, int x)
         if (likely(safe_address_n(matrix, y))) 
                 return &matrix->mx[y-1][x];
         else 
-                return &DUMMY;
+                return &DOPE;
 }
 
 /*
@@ -234,7 +234,7 @@ uint32_t *mx_s(struct matrix_t *matrix, int y, int x)
         if (likely(safe_address_s(matrix, y)))
                 return &matrix->mx[y+1][x];
         else 
-                return &DUMMY;
+                return &DOPE;
 }
 
 /*
@@ -249,7 +249,7 @@ uint32_t *mx_nw(struct matrix_t *matrix, int y, int x)
         if (likely(safe_address_nw(matrix, y, x)))
                 return &matrix->mx[y-1][x-1];
         else
-                return &DUMMY;
+                return &DOPE;
 }
 
 /*
@@ -264,7 +264,7 @@ uint32_t *mx_ne(struct matrix_t *matrix, int y, int x)
         if (likely(safe_address_ne(matrix, y, x))) 
                 return &matrix->mx[y-1][x+1]; 
         else
-                return &DUMMY;
+                return &DOPE;
 }
 
 /*
@@ -279,7 +279,7 @@ uint32_t *mx_sw(struct matrix_t *matrix, int y, int x)
         if (likely(safe_address_sw(matrix, y, x))) 
                 return &matrix->mx[y+1][x-1];
         else 
-                return &DUMMY;
+                return &DOPE;
 }
 
 /*
@@ -294,7 +294,7 @@ uint32_t *mx_se(struct matrix_t *matrix, int y, int x)
         if (likely(safe_address_se(matrix, y, x))) 
                 return &matrix->mx[y+1][x+1];
         else 
-                return &DUMMY;
+                return &DOPE;
 }
 
 /*

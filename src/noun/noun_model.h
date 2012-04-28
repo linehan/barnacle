@@ -4,35 +4,42 @@
 
 #include <stdbool.h>
 #include <stdint.h>
-#include "../verb/verb_model.h"
+#include "../verb/verb.h"
 #include "../eng/bytes.h"
 #include "../lib/redblack/rb.h"
 #include "../lib/hash.h"
 #include "../mob/mob.h"
 
 
-enum nountypes {SAILBOAT, PERSON, MONSTER};
+enum nountypes {
+        SAILBOAT, 
+        PERSON, 
+        MONSTER,
+        DUMMY,
+};
+
 
 /* The noun data structure 
 ``````````````````````````````````````````````````````````````````````````````*/
 struct noun_t {
-        char *name;             /* Used for hashing and id */
-        uint32_t type;          /* Subclass of noun */
-        uint32_t job;           /* Sub-sub class of noun */
+        char    *name;          /* String identifier */
+        uint32_t key;           /* Hashed identifier */
+        uint32_t model;         /* Polymorph. model */
         uint32_t vitals;        /* The state word */
         uint32_t attributes;    /* The options word */
         uint32_t options;       /* Used by the query system */
-        struct verb_t verb;     /* A verb package to be used by verb.c */
-        struct mob_t mob;       /* A mob package to be used by mob.c */
+        uint32_t state;         /* for the AI */
+        struct verb_t verb;     /* A verb package for messaging (verb.c) */
+        struct mob_t mob;       /* A mob package for rendering (mob.c) */
         void *obj;              /* A private data type */
-        void (*render)(void *self);         /* Render the noun on-screen */
-        int (*modify)(void *self, int opt); /* Accept input to modify state */
+        void (*render)(void *self);
+        int  (*modify)(void *self, int verb, int value);
 };
 
 
 /* Functions 
 ``````````````````````````````````````````````````````````````````````````````*/
-struct noun_t *new_noun(const char *name, uint32_t type, uint32_t job, void *obj);
+struct noun_t *new_noun(const char *name, uint32_t model, void *obj);
 void load_noun_test(void);
 
 struct rb_tree *nountree;
@@ -41,18 +48,26 @@ struct noun_t *focused;
 
 /* Query functions 
 ``````````````````````````````````````````````````````````````````````````````*/
+static inline 
+bool noun_exists(uint32_t key)
+{
+        return (rb_extra(nountree, key)) ? true : false;
+}
+
 /*
  * key_noun -- given a noun's id, set the 'focused noun' pointer to that noun
  * @id: unsigned 32-bit unique id
  */
 static inline
-void key_noun(uint32_t id)
+struct noun_t *key_noun(uint32_t id)
 {
         struct noun_t *tmp;
         tmp = rb_extra(nountree, id);
-        assert(tmp != NULL);
+        //assert(tmp != NULL);
         focused = tmp;
+        return (focused);
 }
+
 /*
  * get_noun -- given a name string, return a pointer to the noun
  * @name: name of the noun to be returned
@@ -62,6 +77,17 @@ struct noun_t *get_noun(const char *name)
 {
         key_noun(fasthash(name, strlen(name)));
         return (focused);
+}
+
+/*
+ * get_noun_at -- given coordinates y, x, return any noun at that position
+ * @y: y-coordinate
+ * @x: x-coordinate
+ */
+static inline
+struct noun_t *get_noun_at(struct map_t *map, int y, int x)
+{
+        return (key_noun(mx_val(map->mobs, y, x)));  
 }
 
 
@@ -76,6 +102,7 @@ void *noun_obj(const char *name)
 {
         return (void *)(get_noun(name))->obj;
 }
+
 /*
  * &noun->mob -- returns a pointer to the mob member of the noun struct
  * @name: name of noun (string)
@@ -85,8 +112,6 @@ struct mob_t *noun_mob(const char *name)
 {
         return &((get_noun(name))->mob);
 }
-
-void noun_set_mob(struct noun_t *noun, bool yesno);
 
 /*
  * noun_set_render -- set the render method of the noun
@@ -98,16 +123,18 @@ void noun_set_render(struct noun_t *noun, void (*func)(void *obj))
 {
         noun->render = func;
 }
+
 /*
  * noun_set_modify -- set the modify method of the noun
  * @noun: pointer to a struct noun_t
  * @func: pointer to a function returning int and accepting void * and int
  */
 static inline
-void noun_set_modify(struct noun_t *noun, int (*func)(void *obj, int opt))
+void noun_set_modify(struct noun_t *noun, int (*func)(void *obj, int verb, int value))
 {
         noun->modify = func;
 }
+
 /*
  * noun_render -- call the noun's render method
  * @noun: pointer to a struct noun_t
@@ -117,15 +144,16 @@ void noun_render(struct noun_t *noun)
 {
         noun->render(noun);
 }
+
 /*
  * noun_modify -- call the noun's modify method
  * @noun: pointer to a struct noun_t
  * @opt: value to be interpreted by the modify method
  */
 static inline
-void noun_modify(struct noun_t *noun, int opt)
+void noun_modify(struct noun_t *noun, int verb, int value)
 {
-        noun->modify(noun, opt);
+        noun->modify(noun, verb, value);
 }
 
 

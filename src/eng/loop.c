@@ -7,7 +7,7 @@
 #include "../map/map.h"
 #include "../noun/noun_model.h"
 #include "../noun/types/boat/boat.h"
-#include "../verb/verb_view.h"
+#include "../verb/verb.h"
 #include "../txt/gloss.h"
 #include "../map/terrain.h"
 #include "../map/particle.h"
@@ -59,7 +59,11 @@ void render_cb(EV_P_ ev_timer *w, int revents)
         /*draw_compass();*/
         /*approach_helm();*/
         dock_update();
-        mob_animate(noun_mob("Guy"));
+        noun_render(get_noun("Dummy"));
+        noun_render(get_noun("Guy"));
+
+        /*noun_animate(noun_mob("Dummy"));*/
+        /*noun_animate(noun_mob("Guy"));*/
 
         update_panels();  /* Were slowing down performance, unnecessary */
         doupdate();

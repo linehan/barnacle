@@ -1,12 +1,5 @@
 /*
  * noun_model.c -- provides an interface for the noun database
- *
- * new_noun (private) -- allocate a new struct noun_t
- * add_noun (public) -- add a noun to the nountree
- * del_noun (public) -- remove a noun from the nountree
- * get_noun (public) -- return a pointer to a noun given the name string
- * key_noun (public) -- return a pointer to a noun given the unique id
- *
  */
 
 #include <assert.h>
@@ -26,47 +19,59 @@
 struct rb_tree *nountree; /* Holds all registered nouns */
 int numnoun;              /* Counts all registered nouns */
 
+/*
+ * check_nountree -- used to ensure the tree is initialized and allocated
+ */
+inline bool check_nountree(void)
+{
+        if (!nountree) {
+                nountree = rb_new(1);
+                numnoun  = 0;
+        }
+        return (nountree) ? true : false;
+}
+
+/*
+ * add_to_nountree -- insert a noun into the nountree and refcount
+ */
+inline int add_to_nountree(struct noun_t *noun)
+{
+        rb_store(nountree, noun->key, noun); 
+        keyring[numnoun] = noun->key;
+
+        return numnoun++;
+}
+
+
 
 
 /*
- * new_noun (private) -- Create a new noun object and store it in the nountree
+ * new_noun -- Create a new noun object and store it in the nountree
  * @name: the name of the noun
- * @type: the type enum of the noun
+ * @model: the type enum of the noun
  * @job: the job or subtype enum of the noun
  * @obj: the class struct containing type-specific data
  */
-struct noun_t *new_noun(const char *name, uint32_t type, uint32_t job, void *obj)
+struct noun_t *new_noun(const char *name, uint32_t model, void *obj)
 {
-        struct noun_t *new;        
-        uint32_t id;
+        assert(check_nountree() || "Could not allocate noun tree");
 
+        struct noun_t *new;        
         new = malloc(sizeof(struct noun_t));
 
-        new->name = mydup(name);
-        new->type = type;
-        new->job  = job;
-        new->obj  = obj;
+        new->name  = mydup(name);
+        new->key   = fasthash(name, strlen(name));
+        new->model = model;
+        new->obj   = obj;
 
-        new->verb.empty = true;
-        new->verb.forw  = true;
-
-        new->verb.give = FIFO_INIT;
-        new->verb.get  = FIFO_INIT;
-        new->verb.from = FIFO_INIT;
-        new->verb.to   = FIFO_INIT;
-
-        if (!nountree) {
-                nountree = rb_new(1);
-                numnoun = 0;
-        }
-
-        id = fasthash(new->name, strlen(new->name));
-
-        rb_store(nountree, id, new);
-        keyring[numnoun++] = id;
+        apply_noun_model(new);
+        add_to_nountree(new);
 
         return new;
 }
+
+
+
 
 void noun_set_mob(struct noun_t *noun, bool yesno)
 {
@@ -140,7 +145,7 @@ void load_noun_test(void)
 
         int i;
         for (i=0; i<24; i++) {
-                new_creature(name[i], PERSON, L"?", PUR_GREEN);
+                new_noun(name[i], PERSON, 0);
         }
 
         for (i=0; i<numnoun; i++) {
@@ -149,7 +154,7 @@ void load_noun_test(void)
                 set_vital(keyring[i], LP, roll_fair(8));
                 set_vital(keyring[i], EP, roll_fair(8));
                 key_noun(keyring[i]);
-                focused->verb.fund = 0x80000000>>vit_blocklen(keyring[i]);
+                /*focused->verb.fund = 0x80000000>>vit_blocklen(keyring[i]);*/
         }
 }
 

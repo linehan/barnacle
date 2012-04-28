@@ -70,6 +70,7 @@ void init_test(void)
 
         CONSOLE_WIN = newwin(CONSOLE_H, CONSOLE_W, 0, 0);
         CONSOLE_PAN = new_panel(CONSOLE_WIN);
+        scrollok(CONSOLE_WIN, true);
 
         CONSOLE_INPUT = derwin(CONSOLE_WIN, 1, CONSOLE_W, CONSOLE_H-1, 0);
 
@@ -139,10 +140,11 @@ int inspect_control(int dir)
 
         werase(INSPECTORMSGWIN);
         wprintw(INSPECTORMSGWIN, "LINES: %d COLS: %d\tY: %2u X: %2u M: %2u\t"
-                                 "LAYER: %s\t"
-                                 "ELEV: %2u\t"
-                                 "PERLIN: %+5f\t" 
-                                 "HOOK: %u",
+                                 "LAYER: %s "
+                                 "ELEV: %2u "
+                                 "PERLIN: %+4f\t" 
+                                 "HOOK: %u\t"
+                                 "MOBS: %u",
                         LINES,
                         COLS,
                         i_yy, 
@@ -151,7 +153,8 @@ int inspect_control(int dir)
                         lay_tag[get_nibble(mx_val(ACTIVE->mx, i_yy, i_xx), LAY)], 
                         get_nibble(mx_val(ACTIVE->mx, i_yy, i_xx), ALT), 
                         ACTIVE->pmap[i_yy][i_xx],
-                        mx_val(ACTIVE->hook, i_yy, i_xx));
+                        mx_val(ACTIVE->hook, i_yy, i_xx),
+                        mx_val(ACTIVE->mobs, i_yy, i_xx));
         scr_refresh();
         return MODE_PERSIST;
 }
