@@ -36,6 +36,7 @@ arawak_SOURCES = arawak.c                       \
                    eng/fsm.c                    \
                    eng/loop.c                   \
                    thr/thr_pool.c               \
+                   gfx/colloc.c                 \
                    gfx/palette.c                \
                    gfx/sprite.c                 \
                    gfx/gfx.c                    \

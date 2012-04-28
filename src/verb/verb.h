@@ -7,13 +7,17 @@
 
 /* Messages and reserved states
 ````````````````````````````````````````````````````````````````````````````` */
-static uint32_t VERB_STATE;
 static const uint32_t VERB_RESERVED_Enter  = 9999;
 static const uint32_t VERB_RESERVED_Exit   = 9998;
 static const uint32_t VERB_RESERVED_Update = 9997;
 
 enum verb_messages {
+        VERB_Default,
         VERB_Keyboard,
+        VERB_GoUp,
+        VERB_GoDown,
+        VERB_GoLeft,
+        VERB_GoRight,
         VERB_Die,
         VERB_Punch,
         VERB_Run,

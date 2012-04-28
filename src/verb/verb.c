@@ -22,7 +22,7 @@ void route_verb(struct verb_t *verb)
         } else {
                 if (recipient = key_noun(verb->to), recipient) {
                         wprintw(CONSOLE_WIN, "Sending to %u\n", verb->to);
-                        noun_modify(recipient, verb->name, verb->value);
+                        noun_set_state(recipient, verb->name, verb->value);
                 }
                 free(verb);
         }

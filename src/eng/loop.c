@@ -59,8 +59,10 @@ void render_cb(EV_P_ ev_timer *w, int revents)
         /*draw_compass();*/
         /*approach_helm();*/
         dock_update();
-        noun_render(get_noun("Dummy"));
-        noun_render(get_noun("Guy"));
+        /*noun_render(get_noun("Dummy"));*/
+        /*noun_render(get_noun("Guy"));*/
+        noun_update(get_noun("Dummy"));
+        noun_update(get_noun("Guy"));
 
         /*noun_animate(noun_mob("Dummy"));*/
         /*noun_animate(noun_mob("Guy"));*/
@@ -114,7 +116,7 @@ void move_cb(EV_P_ ev_timer *w, int revents)
                           SPINNER(spindex++));
         }
         /*do_pulse();*/
-        noun_render(get_noun("Afarensis"));
+        /*noun_render(get_noun("Afarensis"));*/
 
         ev_timer_again(EV_DEFAULT, w);
 }
