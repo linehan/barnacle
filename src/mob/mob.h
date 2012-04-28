@@ -8,36 +8,32 @@
 #include "../map/snake.h"
 #include "../ai/a_star.h"
 
+
 struct animation {
-        wchar_t *frame[20];
-        int n;
+        wchar_t frame[20];
         int mv_frame;
         int mv_dir;
+        int verb_frame;
+        int verb_id;
+        int verb_dir;
+        int len;
+        int i;
 };
 
 
 struct map_t;
 
+
 struct mob_t {
-        struct animation *animate;
-        struct animation *punch_l;
-        struct animation *punch_r;
-        struct animation *dodge;
-        struct animation *dodge_r;
-        struct animation *dodge_l;
-        struct animation *kick_l;
-        struct animation *kick_r;
-        struct animation *fall;
-        struct animation *slash;
-        struct animation *run_u;
-        struct animation *run_d;
-        struct animation *run_l;
-        struct animation *run_r;
         PANEL *pan;
+        WINDOW *win;
+        struct animation *animate;
         struct ufo_t ufo;
         struct path_t *path;
         struct astar_t *astar;
+        uint32_t signal;
         bool active;
+        uint32_t name; 
 };
 
 
@@ -62,6 +58,7 @@ void set_mob(struct mob_t *mob, bool onoff);
 void mob_move(struct mob_t *mob, int dir);
 void mob_path(struct mob_t *mob);
 void mob_animate(struct mob_t *mob);
+void mob_set_signal(struct mob_t *mob, int verb, int dir);
 
 #endif
 

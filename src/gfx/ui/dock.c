@@ -307,7 +307,7 @@ void dock_update(void)
                 return;
 
         view_dock();
-        do_pulse();
+        /*do_pulse();*/
 }
 
 

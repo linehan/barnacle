@@ -3,6 +3,7 @@
 #include "../map/snake.h"
 #include "../ai/a_star_test.h"
 #include "../map/cell.h"
+#include "../verb/verb.h"
 
 
 
@@ -30,11 +31,14 @@ void mob_cfg(struct mob_t *mob, struct map_t *map, int h, int w, int y, int x)
         astar_init(mob->astar, map->mx, start);
         mob->path = new_path(0, 0, MOB_PATH_LEN);
         init_path(mob->path, 0, 0, MOB_PATH_LEN);
-        WINDOW *win = newwin(h, w, y, x);
-        mob->pan    = new_panel(win);
+        mob->win = newwin(h, w, y, x);
+        mob->pan = new_panel(mob->win);
 
         set_mob(mob, false);
 }
+
+
+
 
 
 /*
@@ -56,6 +60,17 @@ void set_mob(struct mob_t *mob, bool onoff)
 }
 
 
+
+inline void mob_mark_position(struct mob_t *mob)
+{
+        mx_set(ACTIVE->mobs, ufo_y(mob, ufo), ufo_x(mob, ufo), mob->name);
+}
+inline void mob_unmark_position(struct mob_t *mob)
+{
+        mx_set(ACTIVE->mobs, ufo_y(mob, ufo), ufo_x(mob, ufo), 0);
+}
+
+
 /*
  * mob_move -- move a mob in the specified direction
  * @mob: pointer to struct mob_t
@@ -67,6 +82,8 @@ void mob_move(struct mob_t *mob, int dir)
 
         int y = ufo_y(mob, ufo);
         int x = ufo_x(mob, ufo);
+
+        mob_unmark_position(mob);
 
         switch (dir) {
         case 'u':       
@@ -105,6 +122,8 @@ void mob_move(struct mob_t *mob, int dir)
         mob->astar->start->y = (uint32_t)ufo_y(mob, ufo);
         mob->astar->start->x = (uint32_t)ufo_x(mob, ufo);
         mob->astar->start->key = mort(mob->astar->start->y, mob->astar->start->x);
+
+        mob_mark_position(mob);
 
         move_panel(mob->pan, ufo_y(mob, ufo), ufo_x(mob, ufo));
         update_panels();
@@ -215,28 +234,56 @@ void mob_seek(struct mob_t *s, struct mob_t *g)
 }
 
 
-void mob_animate(struct mob_t *mob)
+void mob_set_signal(struct mob_t *mob, int verb, int dir)
 {
-        static int i;
-
-        if (!mob->animate)
-                return;
-
-        /* Increment the frame counter */
-        i = ((i + 1) % mob->animate->n);
-
-        /* If the frame is NULL, reset the animation */
-        if (!mob->animate->frame[i]) {
-                i = 0;
-                mob->animate = NULL;
-                return;
-        /* Or else draw the next frame */
-        } else {
-                wadd_wch(panel_window(mob->pan), 
-                         mkcch(mob->animate->frame[i], 0, FLEX));
+        int y = ufo_y(mob, ufo);
+        int x = ufo_x(mob, ufo);
+        
+        switch (dir) {
+        case 'u':
+                DEC(y, 0);
+                break;
+        case 'd':
+                INC(y, mob->ufo.box.h);
+                break;
+        case 'l':
+                DEC(x, 0);
+                break;
+        case 'r':
+                INC(x, mob->ufo.box.w);
+                break;
         }
-        /* Move the panel if this is the mv_frame */
-        if (i == mob->animate->mv_frame)
-                mob_move(mob, mob->animate->mv_dir);
+
+        send_verb(verb, mx_val(ACTIVE->mobs, y, x), mob->name, 0, NULL);
 }
+
+        
+/*void mob_animate(struct mob_t *mob)*/
+/*{*/
+        /*if (!mob->animate)*/
+                /*return;*/
+
+        /*[> Increment the frame counter <]*/
+        /*mob->animate->i = ((mob->animate->i + 1) % mob->animate->len);*/
+
+        /*[> If the frame is NULL, reset the animation <]*/
+        /*if (!mob->animate->frame[mob->animate->i]) {*/
+                /*mob->animate->i = 0;*/
+                /*mob->animate    = NULL;*/
+                /*return;*/
+        /*[> Or else draw the next frame <]*/
+        /*} else {*/
+                /*wadd_wch(panel_window(mob->pan), */
+                         /*mkcch(mob->animate->frame[mob->animate->i], 0, FLEX));*/
+        /*}*/
+
+        /*[> Move the panel if this is the mv_frame <]*/
+        /*if (mob->animate->i == mob->animate->mv_frame)*/
+                /*mob_move(mob, mob->animate->mv_dir);*/
+
+        /*[> Signal if this is the sig_frame <]*/
+        /*if (mob->animate->i == mob->animate->verb_frame)*/
+                /*mob_set_signal(mob, mob->animate->verb_id, mob->animate->verb_dir);*/
+/*}*/
+
 

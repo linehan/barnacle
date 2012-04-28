@@ -26,7 +26,7 @@
 #include "noun_model.h"
 #include "noun_control.h"
 #include "noun_discrim.h"
-#include "../verb/verb_model.h"
+#include "../verb/verb.h"
 
 
 
@@ -150,7 +150,7 @@ void operate_on(void *noun)
                 setmode(VITALS);
                 break;
         case CANCEL:
-                verb_cancel(key);
+                /*verb_cancel(key);*/
                 setmode(VITALS);
                 break;
         }

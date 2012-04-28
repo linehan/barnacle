@@ -79,7 +79,7 @@ void operate_on(int input)
                 setmode(choose_noun(input));
                 break;
         case UI_VERB:
-                setmode(choose_verb(input));
+                /*setmode(choose_verb(input));*/
                 break;
         case UI_WORLDMAP:
                 /*switch(input) */
@@ -102,10 +102,10 @@ void operate_on(int input)
                 inspect_control(input);
                 break;
         case UI_BOAT:
-                noun_modify(get_noun("Afarensis"), input);
+                noun_modify(get_noun("Afarensis"), VERB_Keyboard, input);
                 break;
         case UI_MOB:
-                noun_modify(get_noun("Guy"), input);
+                noun_modify(get_noun("Guy"), VERB_Keyboard, input);
                 break;
         }
 }

@@ -28,21 +28,6 @@
 #include "verbs.h"
 ////////////////////////////////////////////////////////////////////////////////
 
-/*struct verbpkg {*/
-        /*uint32_t to;*/
-        /*uint32_t from;*/
-        /*struct verb_info *verb;*/
-/*};*/
-
-/*static const uint32_t RECEIVE = 0x80000000; */
-/*static const uint32_t TRANSMIT = 0x80000000;*/
-/*static const uint32_t SHUTTLE = 0x80000000;*/
-
-/*#define COMBINE(a, b) (a) ^= (b); \*/
-                      /*(b) ^= (a)*/
-
-
-
 ////////////////////////////////////////////////////////////////////////////////
 uint32_t update_mask(uint32_t key)
 {

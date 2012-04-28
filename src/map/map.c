@@ -65,8 +65,9 @@ struct map_t *new_map(int h, int w)
         new = malloc(sizeof(struct map_t));
 
         /* Build some stuff */
-        new->mx = new_matrix(h, w);
-        new->hook = new_matrix(h, w);
+        new->mx     = new_matrix(h, w);
+        new->mobs   = new_matrix(h, w);
+        new->hook   = new_matrix(h, w);
         set_ufo(&new->ufo, SCR_HEIGHT, SCR_WIDTH, SCR_Y0, SCR_X0, h, w, 0, 0);
 
         /* Build windows, pads, and panels */
@@ -388,7 +389,7 @@ void map_trigger(struct map_t *map, struct mob_t *mob)
 
 
 /*
- * map_roll -- move the map around
+   map_roll -- move the map around
  * @map: pointer to the map you want to move
  * @dir: 'lrud' directional motion char
  */
