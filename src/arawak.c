@@ -64,8 +64,6 @@ int main(int argc, char *argv[])
         init_pair(FLEX, BLACK, WHITE);
         init_pair(FLEX2, BLACK, WHITE);
 
-        /*new_creature("Guy", PERSON, L"ⰾ", FLEX);*/
-        /*new_creature("Dummy", DUMMY, L"Ⰹ", FLEX);*/
         new_noun("Guy", PERSON, 0);
         new_noun("Dummy", DUMMY, 0);
 
