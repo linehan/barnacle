@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include "../com/arawak.h"
 #include "verb.h"
-#include "../noun/noun_model.h"
+#include "../noun/noun.h"
 
 
 struct list_head delayed_verbs; /* Holds any delayed verbs */

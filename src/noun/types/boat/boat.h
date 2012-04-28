@@ -3,7 +3,7 @@
 #define __BOAT_H
 
 #include "../../../com/arawak.h"
-#include "../../noun_model.h"
+#include "../../noun.h"
 #include "../../../gfx/gfx.h"
 #include "../../../lib/ufo.h"
 #include "../../../map/snake.h"

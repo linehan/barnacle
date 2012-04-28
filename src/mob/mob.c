@@ -41,7 +41,7 @@ void mob_cfg(struct mob_t *mob, struct map_t *map, int h, int w, int y, int x)
 
 
 
-/*
+/**
  * set_mob -- toggle a mob's visibility
  * Toggle whether or not a mob is visible on-screen, by setting the PANEL
  * member to hidden or showing it.
@@ -71,7 +71,7 @@ inline void mob_unmark_position(struct mob_t *mob)
 }
 
 
-/*
+/**
  * mob_move -- move a mob in the specified direction
  * @mob: pointer to struct mob_t
  * @dir: direction in which to move the mob PANEL
@@ -137,8 +137,8 @@ void mob_move(struct mob_t *mob, int dir)
 }
 
 
-/*
- * Draw the snake path behind a boat 
+/**
+ * Draw the snake path behind a mob
  */
 void mob_path(struct mob_t *mob)
 {
@@ -147,10 +147,6 @@ void mob_path(struct mob_t *mob)
         wrefresh((PEEK(ACTIVE->L[HIG])));
         doupdate();
 }
-
-
-
-
 
 
 void mob_seek_test(struct mob_t *s, struct mob_t *g)
@@ -256,34 +252,5 @@ void mob_set_signal(struct mob_t *mob, int verb, int dir)
 
         send_verb(verb, mx_val(ACTIVE->mobs, y, x), mob->name, 0, NULL);
 }
-
-        
-/*void mob_animate(struct mob_t *mob)*/
-/*{*/
-        /*if (!mob->animate)*/
-                /*return;*/
-
-        /*[> Increment the frame counter <]*/
-        /*mob->animate->i = ((mob->animate->i + 1) % mob->animate->len);*/
-
-        /*[> If the frame is NULL, reset the animation <]*/
-        /*if (!mob->animate->frame[mob->animate->i]) {*/
-                /*mob->animate->i = 0;*/
-                /*mob->animate    = NULL;*/
-                /*return;*/
-        /*[> Or else draw the next frame <]*/
-        /*} else {*/
-                /*wadd_wch(panel_window(mob->pan), */
-                         /*mkcch(mob->animate->frame[mob->animate->i], 0, FLEX));*/
-        /*}*/
-
-        /*[> Move the panel if this is the mv_frame <]*/
-        /*if (mob->animate->i == mob->animate->mv_frame)*/
-                /*mob_move(mob, mob->animate->mv_dir);*/
-
-        /*[> Signal if this is the sig_frame <]*/
-        /*if (mob->animate->i == mob->animate->verb_frame)*/
-                /*mob_set_signal(mob, mob->animate->verb_id, mob->animate->verb_dir);*/
-/*}*/
 
 

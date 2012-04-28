@@ -1,7 +1,7 @@
 #pragma once
 #ifndef __ATTRIBUTES_MODEL
 #define __ATTRIBUTES_MODEL
-#include "../noun_model.h"
+#include "../noun.h"
 
 /*
   Creatures have an 'attributes' member, which is a packaged state consisting

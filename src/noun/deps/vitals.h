@@ -3,7 +3,7 @@
 #define __VITALS_MODEL
 #include <stdint.h>
 #include <stdbool.h>
-#include "../noun_model.h"
+#include "../noun.h"
 
 static const int VIT_MAXLEN=32;
 static const int VIT_GRAIN=24; // Each block represents this many stat points.

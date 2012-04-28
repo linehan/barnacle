@@ -57,15 +57,14 @@ arawak_SOURCES = arawak.c                       \
                    txt/gloss_v.c                \
                    txt/gloss_c.c                \
                    mob/mob.c                    \
-                   noun/noun_model.c            \
-                   noun/noun_discrim.c          \
-                   noun/noun_view.c             \
-                   noun/noun_control.c          \
-                   noun/noun_widgets.c          \
+                   noun/noun.c                  \
                    noun/models.c                \
+                   noun/menu_discrim.c          \
+                   noun/menu_view.c             \
+                   noun/menu_control.c          \
+                   noun/menu_widgets.c          \
                    noun/types/boat/boat.c       \
                    noun/types/boat/compass.c    \
-                   noun/types/creature/creature.c   \
-                   verb/verb.c                 \
+                   verb/verb.c                  \
                    test/test.c                  
 
