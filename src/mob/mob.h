@@ -9,18 +9,6 @@
 #include "../ai/a_star.h"
 
 
-struct animation {
-        wchar_t frame[20];
-        int mv_frame;
-        int mv_dir;
-        int verb_frame;
-        int verb_id;
-        int verb_dir;
-        int len;
-        int i;
-};
-
-
 struct map_t;
 
 

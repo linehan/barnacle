@@ -5,7 +5,7 @@
 #include "../gfx/gfx.h"
 #include "../lib/stoc/stoc.h"
 #include "../map/map.h"
-#include "../noun/noun_model.h"
+#include "../noun/noun.h"
 #include "../noun/types/boat/boat.h"
 #include "../verb/verb.h"
 #include "../txt/gloss.h"

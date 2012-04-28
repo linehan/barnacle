@@ -6,7 +6,7 @@
 #include "../../../test/test.h"
 #include "../../../lib/stoc/brnoise.h"
 #include "../../../mob/mob.h"
-#include "../../noun_model.h"
+#include "../../noun.h"
 
 
 /*

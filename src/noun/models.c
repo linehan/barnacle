@@ -1,8 +1,26 @@
 #include "../com/arawak.h"
-#include "noun_model.h"
+#include "noun.h"
 #include "../eng/fsm.h"
+#include "models.h"
 
 
+/* Animation of nouns during rendering 
+``````````````````````````````````````````````````````````````````````````````*/
+struct animation {
+        wchar_t frame[20];      /* Frames in the animation reel */
+        int mv_frame;           /* Frame on which to issue a move signal */
+        int mv_dir;             /* Direction in which to move */
+        int verb_frame;         /* Frame on which to issue a verb signal */
+        int verb_id;            /* Verb to issue */
+        int verb_dir;           /* Neighbor to address the verb to */
+        int len;                /* Length of the animation (late binding) */
+        int i;                  /* Incrementer for internal use */ 
+};
+
+/*
+ * noun_animate -- draw successive character "frames", trigger movement, etc.
+ * @noun: pointer to a noun
+ */
 void noun_animate(struct noun_t *noun)
 {
         if (!noun->mob.animate) return;
@@ -36,6 +54,8 @@ void noun_animate(struct noun_t *noun)
 
 
 
+/* Model (class) definitions 
+``````````````````````````````````````````````````````````````````````````````*/
 
 
 /******************************************************************************
@@ -62,9 +82,11 @@ struct animation kick_l_test  = {L"ᎲᎲᎲ࿂࿂ᱯᱯ࿂࿂༱ꝬꝬꝬᓂᓂ
  * render_human -- the rendering method for human noun models
  * @noun: pointer to a noun of model 'HUMAN'
  */
-void render_human(struct noun_t *noun)
+void render_human(void *self)
 {
+        struct noun_t *noun = (struct noun_t *)self;
         static bool done;
+
         if (!done)
                 wbkgrnd(noun->mob.win, mkcch(L"ⰾ", 0, FLEX));
 
@@ -75,9 +97,9 @@ void render_human(struct noun_t *noun)
  * modify_human -- the state machine for human noun models
  * @noun: pointer to a noun of model 'HUMAN'
  */
-int modify_human(void *obj, int verb, int value)
+int modify_human(void *self, int verb, int value)
 {
-        struct noun_t *noun = (struct noun_t *)obj;
+        struct noun_t *noun = (struct noun_t *)self;
 
         switch (verb) 
         { 
@@ -146,8 +168,9 @@ struct animation bonk_test = { L"ⰊⰊⰊⰊⰉ"};
  * render_dummy -- the rendering method for dummy noun models
  * @noun: pointer to a noun of model 'DUMMY'
  */
-void render_dummy(struct noun_t *noun)
+void render_dummy(void *self)
 {
+        struct noun_t *noun = (struct noun_t *)self;
         static bool done;
 
         if (!done)
@@ -178,27 +201,33 @@ int modify_dummy(void *obj, int verb, int value)
 
 
 
+/* The all-important late-binding dynamic linker
+``````````````````````````````````````````````````````````````````````````````*/
 /*
  * apply_noun_model -- implement the polymorphic noun model scheme
  * @noun: pointer to a noun with model field specified
  */
 void apply_noun_model(struct noun_t *noun)
 {
+        /* Class method table */
+        modify[PERSON] = (modify[PERSON]) ? modify[PERSON] : &modify_human;
+        render[PERSON] = (render[PERSON]) ? render[PERSON] : &render_human;
+        modify[DUMMY]  = (modify[DUMMY])  ? modify[DUMMY]  : &modify_dummy;
+        render[DUMMY]  = (render[DUMMY])  ? render[DUMMY]  : &render_dummy;
+
+        noun->modify = modify[noun->model];
+        noun->render = render[noun->model];
+        noun->mob.name = noun->key;
+
         switch (noun->model) 
         {
         case PERSON:
                 mob_cfg(&noun->mob, FIELD, 1, 1, CENTERED);
-                noun->mob.name = noun->key;
                 noun->options |= NOUN_CREATURE;
-                noun_set_modify(noun, &modify_human);
-                noun_set_render(noun, &render_human);
                 break;
         case DUMMY:
                 mob_cfg(&noun->mob, FIELD, 1, 1, CENTERED);
-                noun->mob.name = noun->key;
                 noun->options |= NOUN_CREATURE;
-                noun_set_modify(noun, &modify_dummy);
-                noun_set_render(noun, &render_dummy);
                 break;
         }
 }

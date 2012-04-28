@@ -81,12 +81,11 @@ am_arawak_OBJECTS = arawak.$(OBJEXT) eng/init.$(OBJEXT) \
 	map/asset.$(OBJEXT) map/sweet_flow.$(OBJEXT) \
 	ai/a_star.$(OBJEXT) txt/gloss_m.$(OBJEXT) \
 	txt/gloss_v.$(OBJEXT) txt/gloss_c.$(OBJEXT) mob/mob.$(OBJEXT) \
-	noun/noun_model.$(OBJEXT) noun/noun_discrim.$(OBJEXT) \
-	noun/noun_view.$(OBJEXT) noun/noun_control.$(OBJEXT) \
-	noun/noun_widgets.$(OBJEXT) noun/models.$(OBJEXT) \
+	noun/noun.$(OBJEXT) noun/models.$(OBJEXT) \
+	noun/menu_discrim.$(OBJEXT) noun/menu_view.$(OBJEXT) \
+	noun/menu_control.$(OBJEXT) noun/menu_widgets.$(OBJEXT) \
 	noun/types/boat/boat.$(OBJEXT) \
-	noun/types/boat/compass.$(OBJEXT) \
-	noun/types/creature/creature.$(OBJEXT) verb/verb.$(OBJEXT) \
+	noun/types/boat/compass.$(OBJEXT) verb/verb.$(OBJEXT) \
 	test/test.$(OBJEXT)
 arawak_OBJECTS = $(am_arawak_OBJECTS)
 arawak_LDADD = $(LDADD)
@@ -245,16 +244,15 @@ arawak_SOURCES = arawak.c                       \
                    txt/gloss_v.c                \
                    txt/gloss_c.c                \
                    mob/mob.c                    \
-                   noun/noun_model.c            \
-                   noun/noun_discrim.c          \
-                   noun/noun_view.c             \
-                   noun/noun_control.c          \
-                   noun/noun_widgets.c          \
+                   noun/noun.c                  \
                    noun/models.c                \
+                   noun/menu_discrim.c          \
+                   noun/menu_view.c             \
+                   noun/menu_control.c          \
+                   noun/menu_widgets.c          \
                    noun/types/boat/boat.c       \
                    noun/types/boat/compass.c    \
-                   noun/types/creature/creature.c   \
-                   verb/verb.c                 \
+                   verb/verb.c                  \
                    test/test.c                  
 
 all: all-am
@@ -485,17 +483,17 @@ noun/$(am__dirstamp):
 noun/$(DEPDIR)/$(am__dirstamp):
 	@$(MKDIR_P) noun/$(DEPDIR)
 	@: > noun/$(DEPDIR)/$(am__dirstamp)
-noun/noun_model.$(OBJEXT): noun/$(am__dirstamp) \
-	noun/$(DEPDIR)/$(am__dirstamp)
-noun/noun_discrim.$(OBJEXT): noun/$(am__dirstamp) \
-	noun/$(DEPDIR)/$(am__dirstamp)
-noun/noun_view.$(OBJEXT): noun/$(am__dirstamp) \
-	noun/$(DEPDIR)/$(am__dirstamp)
-noun/noun_control.$(OBJEXT): noun/$(am__dirstamp) \
-	noun/$(DEPDIR)/$(am__dirstamp)
-noun/noun_widgets.$(OBJEXT): noun/$(am__dirstamp) \
+noun/noun.$(OBJEXT): noun/$(am__dirstamp) \
 	noun/$(DEPDIR)/$(am__dirstamp)
 noun/models.$(OBJEXT): noun/$(am__dirstamp) \
+	noun/$(DEPDIR)/$(am__dirstamp)
+noun/menu_discrim.$(OBJEXT): noun/$(am__dirstamp) \
+	noun/$(DEPDIR)/$(am__dirstamp)
+noun/menu_view.$(OBJEXT): noun/$(am__dirstamp) \
+	noun/$(DEPDIR)/$(am__dirstamp)
+noun/menu_control.$(OBJEXT): noun/$(am__dirstamp) \
+	noun/$(DEPDIR)/$(am__dirstamp)
+noun/menu_widgets.$(OBJEXT): noun/$(am__dirstamp) \
 	noun/$(DEPDIR)/$(am__dirstamp)
 noun/types/boat/$(am__dirstamp):
 	@$(MKDIR_P) noun/types/boat
@@ -507,15 +505,6 @@ noun/types/boat/boat.$(OBJEXT): noun/types/boat/$(am__dirstamp) \
 	noun/types/boat/$(DEPDIR)/$(am__dirstamp)
 noun/types/boat/compass.$(OBJEXT): noun/types/boat/$(am__dirstamp) \
 	noun/types/boat/$(DEPDIR)/$(am__dirstamp)
-noun/types/creature/$(am__dirstamp):
-	@$(MKDIR_P) noun/types/creature
-	@: > noun/types/creature/$(am__dirstamp)
-noun/types/creature/$(DEPDIR)/$(am__dirstamp):
-	@$(MKDIR_P) noun/types/creature/$(DEPDIR)
-	@: > noun/types/creature/$(DEPDIR)/$(am__dirstamp)
-noun/types/creature/creature.$(OBJEXT):  \
-	noun/types/creature/$(am__dirstamp) \
-	noun/types/creature/$(DEPDIR)/$(am__dirstamp)
 verb/$(am__dirstamp):
 	@$(MKDIR_P) verb
 	@: > verb/$(am__dirstamp)
@@ -577,15 +566,14 @@ mostlyclean-compile:
 	-rm -f map/sweet_flow.$(OBJEXT)
 	-rm -f map/terrain.$(OBJEXT)
 	-rm -f mob/mob.$(OBJEXT)
+	-rm -f noun/menu_control.$(OBJEXT)
+	-rm -f noun/menu_discrim.$(OBJEXT)
+	-rm -f noun/menu_view.$(OBJEXT)
+	-rm -f noun/menu_widgets.$(OBJEXT)
 	-rm -f noun/models.$(OBJEXT)
-	-rm -f noun/noun_control.$(OBJEXT)
-	-rm -f noun/noun_discrim.$(OBJEXT)
-	-rm -f noun/noun_model.$(OBJEXT)
-	-rm -f noun/noun_view.$(OBJEXT)
-	-rm -f noun/noun_widgets.$(OBJEXT)
+	-rm -f noun/noun.$(OBJEXT)
 	-rm -f noun/types/boat/boat.$(OBJEXT)
 	-rm -f noun/types/boat/compass.$(OBJEXT)
-	-rm -f noun/types/creature/creature.$(OBJEXT)
 	-rm -f test/test.$(OBJEXT)
 	-rm -f thr/thr_pool.$(OBJEXT)
 	-rm -f txt/gloss_c.$(OBJEXT)
@@ -636,15 +624,14 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@map/$(DEPDIR)/sweet_flow.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@map/$(DEPDIR)/terrain.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@mob/$(DEPDIR)/mob.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@noun/$(DEPDIR)/menu_control.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@noun/$(DEPDIR)/menu_discrim.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@noun/$(DEPDIR)/menu_view.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@noun/$(DEPDIR)/menu_widgets.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@noun/$(DEPDIR)/models.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@noun/$(DEPDIR)/noun_control.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@noun/$(DEPDIR)/noun_discrim.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@noun/$(DEPDIR)/noun_model.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@noun/$(DEPDIR)/noun_view.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@noun/$(DEPDIR)/noun_widgets.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@noun/$(DEPDIR)/noun.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@noun/types/boat/$(DEPDIR)/boat.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@noun/types/boat/$(DEPDIR)/compass.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@noun/types/creature/$(DEPDIR)/creature.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@test/$(DEPDIR)/test.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@thr/$(DEPDIR)/thr_pool.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@txt/$(DEPDIR)/gloss_c.Po@am__quote@
@@ -809,8 +796,6 @@ distclean-generic:
 	-rm -f noun/$(am__dirstamp)
 	-rm -f noun/types/boat/$(DEPDIR)/$(am__dirstamp)
 	-rm -f noun/types/boat/$(am__dirstamp)
-	-rm -f noun/types/creature/$(DEPDIR)/$(am__dirstamp)
-	-rm -f noun/types/creature/$(am__dirstamp)
 	-rm -f test/$(DEPDIR)/$(am__dirstamp)
 	-rm -f test/$(am__dirstamp)
 	-rm -f thr/$(DEPDIR)/$(am__dirstamp)
@@ -828,7 +813,7 @@ clean: clean-am
 clean-am: clean-binPROGRAMS clean-generic mostlyclean-am
 
 distclean: distclean-am
-	-rm -rf ./$(DEPDIR) ai/$(DEPDIR) eng/$(DEPDIR) gfx/$(DEPDIR) gfx/ui/$(DEPDIR) lib/$(DEPDIR) lib/ncolor/src/$(DEPDIR) lib/redblack/$(DEPDIR) lib/sort/$(DEPDIR) lib/stoc/$(DEPDIR) map/$(DEPDIR) mob/$(DEPDIR) noun/$(DEPDIR) noun/types/boat/$(DEPDIR) noun/types/creature/$(DEPDIR) test/$(DEPDIR) thr/$(DEPDIR) txt/$(DEPDIR) verb/$(DEPDIR)
+	-rm -rf ./$(DEPDIR) ai/$(DEPDIR) eng/$(DEPDIR) gfx/$(DEPDIR) gfx/ui/$(DEPDIR) lib/$(DEPDIR) lib/ncolor/src/$(DEPDIR) lib/redblack/$(DEPDIR) lib/sort/$(DEPDIR) lib/stoc/$(DEPDIR) map/$(DEPDIR) mob/$(DEPDIR) noun/$(DEPDIR) noun/types/boat/$(DEPDIR) test/$(DEPDIR) thr/$(DEPDIR) txt/$(DEPDIR) verb/$(DEPDIR)
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
 	distclean-tags
@@ -874,7 +859,7 @@ install-ps-am:
 installcheck-am:
 
 maintainer-clean: maintainer-clean-am
-	-rm -rf ./$(DEPDIR) ai/$(DEPDIR) eng/$(DEPDIR) gfx/$(DEPDIR) gfx/ui/$(DEPDIR) lib/$(DEPDIR) lib/ncolor/src/$(DEPDIR) lib/redblack/$(DEPDIR) lib/sort/$(DEPDIR) lib/stoc/$(DEPDIR) map/$(DEPDIR) mob/$(DEPDIR) noun/$(DEPDIR) noun/types/boat/$(DEPDIR) noun/types/creature/$(DEPDIR) test/$(DEPDIR) thr/$(DEPDIR) txt/$(DEPDIR) verb/$(DEPDIR)
+	-rm -rf ./$(DEPDIR) ai/$(DEPDIR) eng/$(DEPDIR) gfx/$(DEPDIR) gfx/ui/$(DEPDIR) lib/$(DEPDIR) lib/ncolor/src/$(DEPDIR) lib/redblack/$(DEPDIR) lib/sort/$(DEPDIR) lib/stoc/$(DEPDIR) map/$(DEPDIR) mob/$(DEPDIR) noun/$(DEPDIR) noun/types/boat/$(DEPDIR) test/$(DEPDIR) thr/$(DEPDIR) txt/$(DEPDIR) verb/$(DEPDIR)
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 

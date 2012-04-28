@@ -1,7 +1,7 @@
 #include "../../com/arawak.h"
 #include "../gfx.h"
-#include "../../noun/noun_model.h"
-#include "../../noun/noun_view.h"
+#include "../../noun/noun.h"
+#include "../../noun/menu_view.h"
 #include "dock.h"
 
 

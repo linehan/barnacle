@@ -18,14 +18,15 @@
 #include "lib/ufo.h"
 #include "lib/morton.h"
 
-#include "noun/noun_model.h"
-#include "noun/noun_control.h"
+#include "noun/noun.h"
+#include "noun/menu_control.h"
+#include "noun/menu_view.h"
 
 #include "eng/init.h"
 #include "eng/loop.h"
 
 #include "mob/mob.h"
-#include "noun/noun_view.h"
+
 #include "noun/types/boat/boat.h"
 #include "noun/types/creature/creature.h"
 #include "gfx/ui/titlecard.h"
@@ -68,12 +69,12 @@ int main(int argc, char *argv[])
         new_noun("Guy", PERSON, 0);
         new_noun("Dummy", DUMMY, 0);
 
-        noun_set_mob(get_noun("Guy"), true);
+        noun_set_mobile(get_noun("Guy"), true);
         mob_move(noun_mob("Guy"), 'd');
         mob_move(noun_mob("Guy"), 'd');
         mob_move(noun_mob("Guy"), 'd');
 
-        noun_set_mob(get_noun("Dummy"), true);
+        noun_set_mobile(get_noun("Dummy"), true);
         mob_move(noun_mob("Dummy"), 'u');
 
         fork_sweet_flow();

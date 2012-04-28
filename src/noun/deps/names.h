@@ -2,7 +2,7 @@
 #ifndef __NAMES_MODEL
 #define __NAMES_MODEL
 #include <string.h>
-#include "../noun_model.h"
+#include "../noun.h"
 
 static inline char *fullname(int id)
 {
