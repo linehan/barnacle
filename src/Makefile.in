@@ -72,19 +72,19 @@ am_arawak_OBJECTS = arawak.$(OBJEXT) eng/init.$(OBJEXT) \
 	lib/stoc/shuffle.$(OBJEXT) lib/stoc/smooth.$(OBJEXT) \
 	lib/stoc/brnoise.$(OBJEXT) lib/matrix.$(OBJEXT) \
 	eng/bytes.$(OBJEXT) eng/fsm.$(OBJEXT) eng/loop.$(OBJEXT) \
-	thr/thr_pool.$(OBJEXT) gfx/palette.$(OBJEXT) \
-	gfx/sprite.$(OBJEXT) gfx/gfx.$(OBJEXT) gfx/multiwin.$(OBJEXT) \
-	gfx/ui/dock.$(OBJEXT) gfx/ui/stdpan.$(OBJEXT) \
-	gfx/ui/stdmenu.$(OBJEXT) gfx/ui/titlecard.$(OBJEXT) \
-	gfx/fall.$(OBJEXT) map/terrain.$(OBJEXT) map/map.$(OBJEXT) \
-	map/cell.$(OBJEXT) map/snake.$(OBJEXT) map/arena.$(OBJEXT) \
-	map/asset.$(OBJEXT) map/sweet_flow.$(OBJEXT) \
-	ai/a_star.$(OBJEXT) txt/gloss_m.$(OBJEXT) \
-	txt/gloss_v.$(OBJEXT) txt/gloss_c.$(OBJEXT) mob/mob.$(OBJEXT) \
-	noun/noun.$(OBJEXT) noun/models.$(OBJEXT) \
-	noun/menu_discrim.$(OBJEXT) noun/menu_view.$(OBJEXT) \
-	noun/menu_control.$(OBJEXT) noun/menu_widgets.$(OBJEXT) \
-	noun/types/boat/boat.$(OBJEXT) \
+	thr/thr_pool.$(OBJEXT) gfx/colloc.$(OBJEXT) \
+	gfx/palette.$(OBJEXT) gfx/sprite.$(OBJEXT) gfx/gfx.$(OBJEXT) \
+	gfx/multiwin.$(OBJEXT) gfx/ui/dock.$(OBJEXT) \
+	gfx/ui/stdpan.$(OBJEXT) gfx/ui/stdmenu.$(OBJEXT) \
+	gfx/ui/titlecard.$(OBJEXT) gfx/fall.$(OBJEXT) \
+	map/terrain.$(OBJEXT) map/map.$(OBJEXT) map/cell.$(OBJEXT) \
+	map/snake.$(OBJEXT) map/arena.$(OBJEXT) map/asset.$(OBJEXT) \
+	map/sweet_flow.$(OBJEXT) ai/a_star.$(OBJEXT) \
+	txt/gloss_m.$(OBJEXT) txt/gloss_v.$(OBJEXT) \
+	txt/gloss_c.$(OBJEXT) mob/mob.$(OBJEXT) noun/noun.$(OBJEXT) \
+	noun/models.$(OBJEXT) noun/nounmenu.$(OBJEXT) \
+	noun/nounmenu_control.$(OBJEXT) \
+	noun/nounmenu_discrim.$(OBJEXT) noun/types/boat/boat.$(OBJEXT) \
 	noun/types/boat/compass.$(OBJEXT) verb/verb.$(OBJEXT) \
 	test/test.$(OBJEXT)
 arawak_OBJECTS = $(am_arawak_OBJECTS)
@@ -223,6 +223,7 @@ arawak_SOURCES = arawak.c                       \
                    eng/fsm.c                    \
                    eng/loop.c                   \
                    thr/thr_pool.c               \
+                   gfx/colloc.c                 \
                    gfx/palette.c                \
                    gfx/sprite.c                 \
                    gfx/gfx.c                    \
@@ -246,10 +247,9 @@ arawak_SOURCES = arawak.c                       \
                    mob/mob.c                    \
                    noun/noun.c                  \
                    noun/models.c                \
-                   noun/menu_discrim.c          \
-                   noun/menu_view.c             \
-                   noun/menu_control.c          \
-                   noun/menu_widgets.c          \
+                   noun/nounmenu.c              \
+                   noun/nounmenu_control.c      \
+                   noun/nounmenu_discrim.c      \
                    noun/types/boat/boat.c       \
                    noun/types/boat/compass.c    \
                    verb/verb.c                  \
@@ -414,6 +414,8 @@ gfx/$(am__dirstamp):
 gfx/$(DEPDIR)/$(am__dirstamp):
 	@$(MKDIR_P) gfx/$(DEPDIR)
 	@: > gfx/$(DEPDIR)/$(am__dirstamp)
+gfx/colloc.$(OBJEXT): gfx/$(am__dirstamp) \
+	gfx/$(DEPDIR)/$(am__dirstamp)
 gfx/palette.$(OBJEXT): gfx/$(am__dirstamp) \
 	gfx/$(DEPDIR)/$(am__dirstamp)
 gfx/sprite.$(OBJEXT): gfx/$(am__dirstamp) \
@@ -487,13 +489,11 @@ noun/noun.$(OBJEXT): noun/$(am__dirstamp) \
 	noun/$(DEPDIR)/$(am__dirstamp)
 noun/models.$(OBJEXT): noun/$(am__dirstamp) \
 	noun/$(DEPDIR)/$(am__dirstamp)
-noun/menu_discrim.$(OBJEXT): noun/$(am__dirstamp) \
+noun/nounmenu.$(OBJEXT): noun/$(am__dirstamp) \
 	noun/$(DEPDIR)/$(am__dirstamp)
-noun/menu_view.$(OBJEXT): noun/$(am__dirstamp) \
+noun/nounmenu_control.$(OBJEXT): noun/$(am__dirstamp) \
 	noun/$(DEPDIR)/$(am__dirstamp)
-noun/menu_control.$(OBJEXT): noun/$(am__dirstamp) \
-	noun/$(DEPDIR)/$(am__dirstamp)
-noun/menu_widgets.$(OBJEXT): noun/$(am__dirstamp) \
+noun/nounmenu_discrim.$(OBJEXT): noun/$(am__dirstamp) \
 	noun/$(DEPDIR)/$(am__dirstamp)
 noun/types/boat/$(am__dirstamp):
 	@$(MKDIR_P) noun/types/boat
@@ -532,6 +532,7 @@ mostlyclean-compile:
 	-rm -f eng/fsm.$(OBJEXT)
 	-rm -f eng/init.$(OBJEXT)
 	-rm -f eng/loop.$(OBJEXT)
+	-rm -f gfx/colloc.$(OBJEXT)
 	-rm -f gfx/fall.$(OBJEXT)
 	-rm -f gfx/gfx.$(OBJEXT)
 	-rm -f gfx/multiwin.$(OBJEXT)
@@ -566,12 +567,11 @@ mostlyclean-compile:
 	-rm -f map/sweet_flow.$(OBJEXT)
 	-rm -f map/terrain.$(OBJEXT)
 	-rm -f mob/mob.$(OBJEXT)
-	-rm -f noun/menu_control.$(OBJEXT)
-	-rm -f noun/menu_discrim.$(OBJEXT)
-	-rm -f noun/menu_view.$(OBJEXT)
-	-rm -f noun/menu_widgets.$(OBJEXT)
 	-rm -f noun/models.$(OBJEXT)
 	-rm -f noun/noun.$(OBJEXT)
+	-rm -f noun/nounmenu.$(OBJEXT)
+	-rm -f noun/nounmenu_control.$(OBJEXT)
+	-rm -f noun/nounmenu_discrim.$(OBJEXT)
 	-rm -f noun/types/boat/boat.$(OBJEXT)
 	-rm -f noun/types/boat/compass.$(OBJEXT)
 	-rm -f test/test.$(OBJEXT)
@@ -590,6 +590,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@eng/$(DEPDIR)/fsm.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@eng/$(DEPDIR)/init.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@eng/$(DEPDIR)/loop.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@gfx/$(DEPDIR)/colloc.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@gfx/$(DEPDIR)/fall.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@gfx/$(DEPDIR)/gfx.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@gfx/$(DEPDIR)/multiwin.Po@am__quote@
@@ -624,12 +625,11 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@map/$(DEPDIR)/sweet_flow.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@map/$(DEPDIR)/terrain.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@mob/$(DEPDIR)/mob.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@noun/$(DEPDIR)/menu_control.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@noun/$(DEPDIR)/menu_discrim.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@noun/$(DEPDIR)/menu_view.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@noun/$(DEPDIR)/menu_widgets.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@noun/$(DEPDIR)/models.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@noun/$(DEPDIR)/noun.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@noun/$(DEPDIR)/nounmenu.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@noun/$(DEPDIR)/nounmenu_control.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@noun/$(DEPDIR)/nounmenu_discrim.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@noun/types/boat/$(DEPDIR)/boat.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@noun/types/boat/$(DEPDIR)/compass.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@test/$(DEPDIR)/test.Po@am__quote@

@@ -110,16 +110,21 @@ void stdmenu_buf(struct stdmenu_t *stdmenu, WINDOW *buf)
         stdmenu->buf = buf;
 }
 
-
-void stdmenu_color(struct stdmenu_t *stdmenu, short fore, short back, short grey)
+void stdmenu_color_fore(struct stdmenu_t *stdmenu, short pair)
 {
-        stdmenu->fore = fore;
-        stdmenu->back = back;
-        stdmenu->grey = grey;
-
-        set_menu_fore(stdmenu->menu, COLOR_PAIR(stdmenu->fore));
-        set_menu_back(stdmenu->menu, COLOR_PAIR(stdmenu->back));
-        set_menu_grey(stdmenu->menu, COLOR_PAIR(stdmenu->grey));
+        set_menu_fore(stdmenu->menu, COLOR_PAIR(pair));
+}
+void stdmenu_color_back(struct stdmenu_t *stdmenu, short pair)
+{
+        set_menu_back(stdmenu->menu, COLOR_PAIR(pair));
+}
+void stdmenu_color_grey(struct stdmenu_t *stdmenu, short pair)
+{
+        set_menu_grey(stdmenu->menu, COLOR_PAIR(pair));
+}
+void stdmenu_color_name(struct stdmenu_t *stdmenu, short pair)
+{
+        wcolor_set(stdmenu->buf, pair, NULL);
 }
 
 void stdmenu_cfg(struct stdmenu_t *stdmenu, int opt, bool set, const char *ch)

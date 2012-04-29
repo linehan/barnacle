@@ -1,7 +1,7 @@
 #include "../../com/arawak.h"
 #include "../gfx.h"
 #include "../../noun/noun.h"
-#include "../../noun/menu_view.h"
+#include "../../noun/nounmenu.h"
 #include "dock.h"
 
 
@@ -16,7 +16,6 @@
                                                             \**** These ****/
                                                            
 #define NUMTABS 4 
-
 
 struct ui_tab_t {
         WINDOW *win;    /* Parent window */
@@ -206,17 +205,26 @@ void init_dock(void)
  * Return a particular window of the dock structure (used by the noun
  * and verb view routines)
  */
-WINDOW *dock_window(int windowid)
+WINDOW *dock_window(int id)
 {
-        WINDOW *win[]={
-                ui_dock.dock_win, 
-                ui_dock.name_win, 
-                ui_dock.stat_win,
-                ui_dock.text_win
-        };
+        WINDOW *win;
 
-        if (windowid > 3) return NULL;
-        else         return (win[windowid]);
+        switch (id) {
+        case DOCK_WIN:
+                win = ui_dock.dock_win;
+                break;
+        case NAME_WIN:
+                win = ui_dock.name_win;
+                break;
+        case STAT_WIN:
+                win = ui_dock.stat_win;
+                break;
+        case TEXT_WIN:
+                win = ui_dock.text_win;
+                break;
+        }
+
+        return (win);
 }
 
 
@@ -228,8 +236,8 @@ inline void check_for_init(void)
 {
         if (!ui_dock.dock_pan) 
                 init_dock();
-        if (get_noun_menu(0) == NULL || get_noun_menu(1) == NULL)
-                list_nouns(SUBJECT, ALL_NOUNS);
+        if (!get_nounmenu())
+                make_nounmenu(ALL_NOUNS);
 }
 
 /*
@@ -307,7 +315,8 @@ void dock_update(void)
                 return;
 
         view_dock();
-        /*do_pulse();*/
+        nounmenu_print_name(PUR_YELLOW);
+        nounmenu_print_vitals();
 }
 
 

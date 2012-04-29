@@ -304,7 +304,7 @@ double **empty_simplex_matrix(uint32_t h, uint32_t w)
         new = malloc(h * sizeof(double *));
 
         for (i=0; i<h; i++)
-                new[i] = malloc(w * sizeof(double));
+                new[i] = calloc(w, sizeof(double));
 
         return (new);
 }

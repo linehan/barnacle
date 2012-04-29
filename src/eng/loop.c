@@ -59,13 +59,8 @@ void render_cb(EV_P_ ev_timer *w, int revents)
         /*draw_compass();*/
         /*approach_helm();*/
         dock_update();
-        /*noun_render(get_noun("Dummy"));*/
-        /*noun_render(get_noun("Guy"));*/
         noun_update(get_noun("Dummy"));
         noun_update(get_noun("Guy"));
-
-        /*noun_animate(noun_mob("Dummy"));*/
-        /*noun_animate(noun_mob("Guy"));*/
 
         update_panels();  /* Were slowing down performance, unnecessary */
         doupdate();
@@ -112,7 +107,7 @@ void move_cb(EV_P_ ev_timer *w, int revents)
 {
         static int spindex;
         if (loop_test_active) {
-                mvwprintw(CONSOLE_WIN, 3, 0, "(%c) move_cb\n", 
+                mvwprintw(CONSOLE_WIN, 4, 0, "(%c) move_cb\n", 
                           SPINNER(spindex++));
         }
         /*do_pulse();*/
@@ -137,7 +132,7 @@ void animate_cb(EV_P_ ev_timer *w, int revents)
 {
         static int spindex;
         if (loop_test_active) {
-                mvwprintw(CONSOLE_WIN, 4, 0, "(%c) animate_cb\n", 
+                mvwprintw(CONSOLE_WIN, 5, 0, "(%c) animate_cb\n", 
                           SPINNER(spindex++));
         }
         NEXT(ACTIVE->L[RIM]);
@@ -162,7 +157,7 @@ void *iolisten_cb(EV_P_ ev_io *w, int revents)
 {
         static int spindex;
         if (loop_test_active) {
-                mvwprintw(CONSOLE_WIN, 5, 0, "(%c) iolisten_cb\n", 
+                mvwprintw(CONSOLE_WIN, 6, 0, "(%c) iolisten_cb\n", 
                           SPINNER(spindex++));
         }
         ev_io_stop (EV_A, w);
