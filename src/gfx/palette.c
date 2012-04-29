@@ -12,42 +12,14 @@
 #include <panel.h>
 
 #include "../lib/llist/list.h"
+#include "fjord_palette.h"
 #include "gfx.h"
 #include "fall.h"
+#include "colloc.h"
 
 #define ARRAY_SIZE(a) (sizeof(a) / sizeof(a[0]))
 #define CTRLD 4
 /******************************************************************************/
-/* The shaded color pairs are indexed by their lighter cousins */
-/*int shade[128];*/
-
-/*shade[SEA_DARK]    = _SEA_DARK;*/
-/*shade[SEA_MED]     = _SEA_MED;*/
-/*shade[SEA_LIG]     = _SEA_LIG;*/
-/*shade[BOAT_DEEP]   = _BOAT_DEEP;*/
-/*shade[BOAT_WOOD]   = _BOAT_WOOD;*/
-/*shade[BOAT_WHITE]  = _BOAT_WHITE;*/
-/*shade[BOAT_WOOD]   = _BOAT_WOOD;*/
-/*shade[SAIL_DEEP]   = _SAIL_DEEP;*/
-/*shade[LAND]        = _LAND;*/
-/*shade[TREETOP]     = _TREETOP;*/
-/*shade[TREETRUNK]   = _TREETRUNK;*/
-/*shade[GRASSY]      = _GRASSY;*/
-/*shade[SOILGRASS]   = _SOILGRASS;*/
-/*shade[_SEA_DARK]   = __SEA_DARK;*/
-/*shade[_SEA_MED]    = __SEA_MED;*/
-/*shade[_SEA_LIG]    = __SEA_LIG;*/
-/*shade[_BOAT_DEEP]  = __BOAT_DEEP;*/
-/*shade[_BOAT_WOOD]  = __BOAT_WOOD;*/
-/*shade[_BOAT_WHITE] = __BOAT_WHITE;*/
-/*shade[_BOAT_WOOD]  = __BOAT_WOOD;*/
-/*shade[_SAIL_DEEP]  = __SAIL_DEEP;*/
-/*shade[_LAND]       = __LAND;*/
-/*shade[_TREETOP]    = __TREETOP;*/
-/*shade[_TREETRUNK]  = __TREETRUNK;*/
-/*shade[_GRASSY]     = __GRASSY;*/
-/*shade[_SOILGRASS]  = __SOILGRASS;*/
-
 
 inline void set_color(struct rgb_t *color)
 {
@@ -56,7 +28,6 @@ inline void set_color(struct rgb_t *color)
 
 
 #define strips 3
-
 
 
 void mix_colors(void)
@@ -122,6 +93,10 @@ void lighten_colors(int step)
  * pairs with the initialized colors. */
 void init_palette(int set)
 {
+        init_colloc();
+
+        load_fjord_palette();
+
 /* Hexadecimal values for colors used
 
                                 SHADOW 1        SHADOW 2
@@ -167,66 +142,17 @@ void init_palette(int set)
         init_color(DSEA,       165,  235,  211);
         init_color(LWOOD,      851,  647,  443);
         init_color(WOOD,       769,  545,  321);
-        /*{721 , 521 , 325},  // WOOD*/
         init_color(__WOOD, 673, 497, 329);
         init_color(WHITE,      902,  894,  835);
         init_color(SHADOW,     372,  349,  376);
         init_color(DARK_RED,   416,  141,  176);
         init_color(DARK_BROWN, 282, 220, 137);
-        /*init_color(CELESTIALBLUE, 286, 592, 815);*/
         init_color(CELESTIALBLUE, 353, 537, 784);
         init_color(CERULEAN, 0, 482, 655);
         init_color(WILDBLUEYONDER, 635, 678, 815);
-        /*#define WILDBLUEYONDER DSEA*/
         init_color(BLASTOFFBRONZE, 647, 443, 392);
         init_color(METALYELLOW, 972, 972, 576);
         init_color(ZEN_BG, 247, 247, 247);
-
-/*struct triplet { short r; short g; short b; };*/
-/*struct triplet _SHADE[]={*/
-        /*{172,  153,  180},  // DGREY*/
-        /*{490,  490,  490},  // GREY*/
-        /*{831,  827,  796},  // LGREY*/
-        /*{220,  251,  561},  // DBLUE*/
-        /*{251,  533,  839},  // BLUE*/
-        /*{537,  784,  878},  // LBLUE*/
-        /*{82,   251,  149},  // DGREEN*/
-        /*{172,  388,  318},  // GREEN*/
-        /*{521,  678,  286},  // LGREEN*/
-        /*{929,  819,  306},  // YELLOW*/
-        /*{470,  321,  137},  // BROWN*/
-        /*{749,  451,  239},  // ORANGE*/
-        /*{568,  192,  239},  // RED*/
-        /*{659,  376,  439},  // PINK*/
-        /*{819 , 686 , 525},  // BEIGE*/
-        /*{153 , 220 , 196},  // DSEA*/
-        /*{314 , 427 , 396},  // SEA*/
-        /*{368 , 490 , 478},  // LSEA*/
-        /*{721 , 521 , 325},  // WOOD*/
-        /*{721 , 521 , 325}   // LWOOD*/
-/*};*/
-
-/*struct triplet __SHADE[]={*/
-        /*{78 , 71 , 78 },  // DGREY*/
-        /*{74 , 74 , 74 },  // GREY*/
-        /*{388, 388, 388},  // LGREY*/
-        /*{729, 729, 729},  // DBLUE*/
-        /*{204, 227, 459},  // BLUE*/
-        /*{259, 490, 741},  // LBLUE*/
-        /*{514, 706, 780},  // DGREEN*/
-        /*{59 , 149, 94 },  // GREEN*/
-        /*{141, 290, 243},  // LGREEN*/
-        /*{459, 580, 274},  // YELLOW*/
-        /*{831, 741, 314},  // BROWN*/
-        /*{368, 263, 125},  // ORANGE*/
-        /*{651, 412, 239},  // RED*/
-        /*{470, 184, 220},  // PINK*/
-        /*{561, 349, 396},  // BEIGE*/
-        /*{721, 619, 498},  // DSEA*/
-        /*{55 , 71 , 67 },  // SEA*/
-        /*{196, 259, 243},  // LSEA*/
-        /*{314, 388, 384}   // WOOD*/
-/*};*/
 
         init_color(__DGREY,     78,   71,   78);
         init_color(__BG,     74, 74, 74);
@@ -248,8 +174,6 @@ void init_palette(int set)
         init_color(__SEA,      196,  259,  243);
         init_color(__LSEA,     314,  388,  384);
 
-
-
         init_color(_DGREY,     172,  153,  180);
         init_color(_GREY,      490,  490,  490);
         init_color(_LGREY,     831,  827,  796);
@@ -265,15 +189,7 @@ void init_palette(int set)
         init_color(_RED,       568,  192,  239);
         init_color(_PINK,      659,  376,  439);
         init_color(_BEIGE,     819,  686,  525);
-        /*init_color(_DSEA,       153,  212,  188);*/
-        /*init_color(_DSEA,       161,  220,  200);*/
-        /*init_color(_DSEA,      125,  169,  157);*/
-        /*init_color(_DSEA,      145,  200,  180);*/
         init_color(_DSEA,       153,    220,    196);
-        /*!!*//*init_color(_DSEA,       153,    220,    196);*/
-        /*init_color(_DSEA,       169,    231,    208);*/
-        /*init_color(_SEA,       255,  361,  329);*/
-        /*init_color(_SEA,        286, 419,  384);*/
         init_color(_SEA,        314, 427,  396);
         init_color(_LSEA,      368,  490,  478);
         init_color(_WOOD,       721,    521,    325);
@@ -298,21 +214,16 @@ void init_palette(int set)
         init_color(__DSEA,      55,   71,   67);
         init_color(__SEA,      196,  259,  243);
         init_color(__LSEA,     314,  388,  384);
-        /*init_color(__WOOD,     314, 388, 384  );*/
 
         init_color(SANDY, 886,  741,  568);
         init_color(SHALLOW, 188,  270,  243);
         init_color(LSHALLOW, 400,  526,  472);
-        /*init_color(SAND_LAGOON, 141, 184, 133);*/
-        /*init_color(SAND_LAGOON, 372, 380, 314);*/
         init_color(A_SAND_LAGOON, 800, 694, 541);
         init_color(B_SAND_LAGOON, 635, 623, 506);
         init_color(C_SAND_LAGOON, 259, 361, 318);
         init_color(D_SAND_LAGOON, 188, 267, 235);
         init_color(WATER_HINT, 223, 310, 274);
 
-
-        /*init_color(SANDY, 886,  737,  557);*/
 
         /* UI COLOR PAIRS */
         init_pair(CMP_BEIGE, BEIGE, ORANGE);
@@ -420,11 +331,8 @@ void init_palette(int set)
         init_pair(B_SEA_LAGOON, C_SAND_LAGOON, D_SAND_LAGOON);
         init_pair(C_SEA_LAGOON, C_SAND_LAGOON, C_SAND_LAGOON);
         init_pair(D_SEA_LAGOON, C_SAND_LAGOON, D_SAND_LAGOON);
-        /*init_pair(SEA_SHALLOW, LSHALLOW, DSEA);*/
-        /*init_pair(_SEA_SHALLOW, LSHALLOW, _DSEA);*/
         init_pair(SEA_SHALLOW, C_SAND_LAGOON, DSEA);
         init_pair(_SEA_SHALLOW, C_SAND_LAGOON, _DSEA);
-        /*init_pair(_SEA_SHALLOW, _SEA, DSEA);*/
 
         init_pair(_BOAT_WHITE, _WHITE,  _DSEA);
         init_pair(_BOAT_WOOD,  _LWOOD,  _DSEA);

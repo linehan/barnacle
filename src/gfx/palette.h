@@ -29,7 +29,6 @@ enum arne_colors {
         SHADOW     = 39, 
         DARK_RED   = 42, 
         DARK_BROWN = 43,
-
 };
 
 enum arne_shadow1 {
@@ -116,15 +115,15 @@ enum arne_shadow2 {
         DARK_SAND3 = 120,
         DARK_SAND4 = 121,
         DARK_SANDZ = 122,
+        /* FJORD PALETTE 123-135*/
 };
+
+
 
 /* ----- PAIRS ------ */
 
 /* FG_BG color pairs; odd ones are swaps of even ones. */
 enum ramp_pairs {
-
-
-
         SEA_DARK      = 17,     /* SHADE0 colors for environment */
         SEA_MED       = 18,
         BOAT_DEEP     = 19,
@@ -200,6 +199,7 @@ enum stuff {
 };
 
 
+
 #define PUR_WHI PUR_WHITE
 #define PUR_BLU PUR_CELESTIAL
 #define PUR_GRE PUR_GREY
@@ -262,90 +262,91 @@ static inline short to_shade(short pair, int lvl)
 void init_palette(int);
 
 enum purpairs {
-        PUR_YELLOW      = 168,
-        PUR_ORANGE      = 169,
-        _PUR_YELLOW     = 170,
-        _PUR_ORANGE     = 171,
-        __PUR_YELLOW    = 172,
-        __PUR_ORANGE    = 173,
+        PUR_YELLOW      = 81,
+        PUR_ORANGE      = 82,
+        _PUR_YELLOW     = 83,
+        _PUR_ORANGE     = 84,
+        __PUR_YELLOW    = 85,
+        __PUR_ORANGE    = 86,
 //-----
-        PUR_BEIGE       = 174,
-        PUR_BROWN       = 175,
-        _PUR_BEIGE      = 177,
-        _PUR_BROWN      = 178,
-        __PUR_BEIGE     = 180,
-        __PUR_BROWN     = 181,
+        PUR_BEIGE       = 87,
+        PUR_BROWN       = 88,
+        _PUR_BEIGE      = 89,
+        _PUR_BROWN      = 90,
+        __PUR_BEIGE     = 91,
+        __PUR_BROWN     = 92,
 //-----
-        PUR_LBLUE       = 183,
-        PUR_BLUE        = 184,
-        PUR_DBLUE       = 185,
-        _PUR_LBLUE      = 186,
-        _PUR_BLUE       = 187,
-        _PUR_DBLUE      = 188,
-        __PUR_LBLUE     = 189,
-        __PUR_BLUE      = 190,
-        __PUR_DBLUE     = 191,
+        PUR_LBLUE       = 93,
+        PUR_BLUE        = 94,
+        PUR_DBLUE       = 95,
+        _PUR_LBLUE      = 96,
+        _PUR_BLUE       = 97,
+        _PUR_DBLUE      = 98,
+        __PUR_LBLUE     = 99,
+        __PUR_BLUE      = 100,
+        __PUR_DBLUE     = 101,
 //-----
-        PUR_LGREEN      = 192,
-        PUR_GREEN       = 193,
-        PUR_DGREEN      = 194,
-        _PUR_LGREEN     = 195,
-        _PUR_GREEN      = 196,
-        _PUR_DGREEN     = 197,
-        __PUR_LGREEN    = 198,
-        __PUR_GREEN     = 199,
-        __PUR_DGREEN    = 200,
+        PUR_LGREEN      = 102,
+        PUR_GREEN       = 103,
+        PUR_DGREEN      = 104,
+        _PUR_LGREEN     = 105,
+        _PUR_GREEN      = 106,
+        _PUR_DGREEN     = 107,
+        __PUR_LGREEN    = 108,
+        __PUR_GREEN     = 109,
+        __PUR_DGREEN    = 110,
 //-----
-        PUR_LRED        = 201,
-        PUR_RED         = 202,
-        PUR_DRED        = 203,
-        _PUR_LRED       = 204,
-        _PUR_RED        = 205,
-        _PUR_DRED       = 206,
-        __PUR_LRED      = 207,
-        __PUR_RED       = 208,
-        __PUR_DRED      = 209,
+        PUR_LRED        = 111,
+        PUR_RED         = 112,
+        PUR_DRED        = 113,
+        _PUR_LRED       = 114,
+        _PUR_RED        = 115,
+        _PUR_DRED       = 116,
+        __PUR_LRED      = 117,
+        __PUR_RED       = 118,
+        __PUR_DRED      = 119,
 //-----
-        PUR_LSEA        = 210,
-        PUR_SEA         = 211,
-        PUR_DSEA        = 212,
-        _PUR_LSEA       = 213,
-        _PUR_SEA        = 214,
-        _PUR_DSEA       = 215,
-        __PUR_LSEA      = 216,
-        __PUR_SEA       = 217,
-        __PUR_DSEA      = 218,
+        PUR_LSEA        = 120,
+        PUR_SEA         = 121,
+        PUR_DSEA        = 122,
+        _PUR_LSEA       = 123,
+        _PUR_SEA        = 124,
+        _PUR_DSEA       = 125,
+        __PUR_LSEA      = 126,
+        __PUR_SEA       = 127,
+        __PUR_DSEA      = 128,
 //-----
-        PUR_LWOOD       = 219,
-        PUR_WOOD        = 220,
-        _PUR_LWOOD      = 221,
-        _PUR_WOOD       = 222,
-        __PUR_LWOOD     = 223,
-        __PUR_WOOD      = 224,
+        PUR_LWOOD       = 129,
+        PUR_WOOD        = 130,
+        _PUR_LWOOD      = 131,
+        _PUR_WOOD       = 132,
+        __PUR_LWOOD     = 133,
+        __PUR_WOOD      = 134,
 //-----
-        PUR_SKY         = 225,
-        PUR_BRONZE      = 226,
-        PUR_METALYELLOW = 227,
-        PUR_CELESTIAL   = 228,
-        PUR_CERULEAN    = 229,
-        PUR_BLACK       = 230,
-        PUR_GREY        = 231, 
-        _PUR_GREY       = 232, 
-        __PUR_GREY      = 233, 
-        PUR_WHITE       = 234, 
-        PUR_PURPLE      = 235, 
-        _PUR_PURPLE     = 236, 
-        PUR_ARSENIC = 237,
-        FLEX=238,
-        FLEX2=239,
-        PALP1 = 240,
-        PALP2 = 241,
-        PALP3 = 242,
-        PALP4 = 243,
-        PALP5 = 244
+        PUR_SKY         = 135,
+        PUR_BRONZE      = 136,
+        PUR_METALYELLOW = 137,
+        PUR_CELESTIAL   = 138,
+        PUR_CERULEAN    = 139,
+        PUR_BLACK       = 140,
+        PUR_GREY        = 141, 
+        _PUR_GREY       = 142, 
+        __PUR_GREY      = 143, 
+        PUR_WHITE       = 144,
+        PUR_PURPLE      = 145,
+        _PUR_PURPLE     = 146,
+        PUR_ARSENIC     = 147,
+        FLEX            = 148,
+        FLEX2           = 149,
+        PALP1           = 150,
+        PALP2           = 151,
+        PALP3           = 152,
+        PALP4           = 153,
+        PALP5           = 154,
 };
 
 void darken_colors(int step);
+
 static struct rgb_t wallfg[3] = { {252, 431, 372, 290},{252, 431, 372, 290},{252, 431, 372, 290}};
 static struct rgb_t wallbg[3] = { {254, 310, 270, 208},{254, 310, 270, 208},{254, 310, 270, 208}};
 static struct rgb_t backbg[3] = { {254, 310, 270, 208},{254, 310, 270, 208},{254, 310, 270, 208}};

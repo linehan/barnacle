@@ -23,7 +23,7 @@
 
 
 
-
+/* Do not fear ! */
 struct stdmenu_t {
         WINDOW *win;  /* Main MENU window */
         WINDOW *sub;  /* Embedded MENU window */
@@ -35,9 +35,6 @@ struct stdmenu_t {
         MENU *menu;   /* Stores items */
         ITEM **item;
         int nitems;
-        short fore;   /* FG color */
-        short back;   /* BG color */
-        short grey;   /* Non-selectable items color */
         int nrows;
         int ncols;
         void (*die)(void *self);
@@ -53,5 +50,10 @@ void stdmenu_win(struct stdmenu_t *stdmenu, int h, int w, int y, int x);
 void stdmenu_color(struct stdmenu_t *stdmenu, short fore, short back, short grey);
 void stdmenu_cfg(struct stdmenu_t *stdmenu, int opt, bool set, const char *ch);
 void stdmenu_buf(struct stdmenu_t *stdmenu, WINDOW *buf);
+
+void stdmenu_color_fore(struct stdmenu_t *stdmenu, short pair);
+void stdmenu_color_back(struct stdmenu_t *stdmenu, short pair);
+void stdmenu_color_grey(struct stdmenu_t *stdmenu, short pair);
+void stdmenu_color_name(struct stdmenu_t *stdmenu, short pair);
 
 #endif

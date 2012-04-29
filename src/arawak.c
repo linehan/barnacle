@@ -19,8 +19,8 @@
 #include "lib/morton.h"
 
 #include "noun/noun.h"
-#include "noun/menu_control.h"
-#include "noun/menu_view.h"
+#include "noun/nounmenu.h"
+#include "noun/nounmenu_control.h"
 
 #include "eng/init.h"
 #include "eng/loop.h"
@@ -54,8 +54,7 @@ int main(int argc, char *argv[])
         /*set_mob(noun_mob("Afarensis"), false);*/
 
         load_noun_test();
-        list_nouns(SUBJECT, ALL_NOUNS);
-        list_nouns(OBJECT, ALL_NOUNS);
+        make_nounmenu(ALL_NOUNS);
         choose_noun('*');
         
         init_pair(FLEX, BLACK, WHITE);

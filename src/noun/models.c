@@ -83,6 +83,7 @@ struct ani_t dodge_l_test = {L"ᎲᎲᎲᥑᥑⲁཚཚཚᎲᎲᎲⰾ",     MV(
 struct ani_t dodge_r_test = {L"ᎲᎲᎲᥑᥑⲁཚཚཚᎲᎲᎲⰾ",     MV(6,'r'), NOVB};
 struct ani_t kick_r_test  = {L"ᎲᎲᎲ࿂࿂ᱯ࿂࿂༱༱ꝬꝬỿᓀᓀᎲⰾ", MV(10,'r'), NOVB};
 struct ani_t kick_l_test  = {L"ᎲᎲᎲ࿂࿂ᱯᱯ࿂࿂༱ꝬꝬꝬᓂᓂᎲⰾ", MV(10,'l'), NOVB};
+struct ani_t recoil_test  = {L"ᎲᎲᎹᎹᎲⰾ",            MV(2,'d'), NOVB};
 /*----------------------------------------------------------------------------*/
 /*
  * render_human -- the rendering method for human noun models
@@ -158,6 +159,9 @@ int modify_human(void *self)
                         return (MODE_RELEASE);
                 }
                 break;
+        case VERB_Punch:
+                noun->mob.animate = &recoil_test;
+                break;
         }
         STATE_RESET(noun);
 
@@ -172,10 +176,10 @@ int modify_human(void *self)
 /*----------------------------------------------------------------------------*/
 wchar_t *dummy_base = L"Ⰹ";
 struct ani_t bonk_test = {L"ⰊⰊⰊⰊⰉ", NOMV, NOVB};
-struct ani_t dummy_mv_u = {L"ⰹⰹꝿꝿⰺⰹⰹⰹⰉ", MV(4,'u'), NOVB};
-struct ani_t dummy_mv_d = {L"ⰹⰹꝿꝿⰺⰹⰹⰹⰉ", MV(4,'d'), NOVB};
-struct ani_t dummy_mv_l = {L"ⰹⰹꝿꝿⰺⰹⰹⰹⰉ", MV(4,'l'), NOVB};
-struct ani_t dummy_mv_r = {L"ⰹⰹꝿꝿⰺⰹⰹⰹⰉ", MV(4,'r'), NOVB};
+struct ani_t dummy_mv_u = {L"ⰹⰹⰺⰺⰹⰹⰹⰉ", MV(4,'u'), NOVB};
+struct ani_t dummy_mv_d = {L"ⰹⰹⰺⰺⰹⰹⰹⰉ", MV(4,'d'), NOVB};
+struct ani_t dummy_mv_l = {L"ⰹⰹⰺⰺⰹⰹⰹⰉ", MV(4,'l'), NOVB};
+struct ani_t dummy_mv_r = {L"ⰹⰹⰺⰺⰹⰹⰹⰉ", MV(4,'r'), NOVB};
 /*/ⰊⰺⰹꝾⰹⰑ⚲ꝿ*ⰋⰔⱄⰫ*/
 /*----------------------------------------------------------------------------*/
 /*
@@ -215,15 +219,20 @@ int modify_dummy(void *obj)
         case VERB_Punch:
                 wprintw(CONSOLE_WIN, "Dummy hit!\n");
                 noun->mob.animate = &bonk_test;
+                        dock_say(L"嶴", "FUCK!");
                 break;
         case VERB_GoUp:
                 noun->mob.animate = &dummy_mv_u;
                 break;
         case VERB_GoDown:
+                if (flip_biased(0.4))
+                        dock_say(L"䥚", "I'm gonna hop all over you!");
                 noun->mob.animate = &dummy_mv_d;
                 break;
         case VERB_GoLeft:
                 noun->mob.animate = &dummy_mv_l;
+                if (flip_biased(0.4))
+                        dock_say(L"䥚", "Get fucked!");
                 break;
         case VERB_GoRight:
                 noun->mob.animate = &dummy_mv_r;

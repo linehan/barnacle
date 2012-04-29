@@ -18,9 +18,9 @@
 #define ISLAND_FAT 10
 
 
-#define BEACH_F  0.021
-#define TERRA_F  0.451
-#define OCEAN_F -0.05
+#define BEACH_F  0.021f
+#define TERRA_F  0.451f
+#define OCEAN_F -0.05f
 
 #define ARENA_W (COLS/2)
 #define ARENA_H (LINES/2)
@@ -93,8 +93,9 @@ struct map_t *map_preset_sand(void)
                 sand[i][j] = BEACH_F;
         }
         }
+
         sandmap = new_map(FULLSCREEN);
-        map_gen(sandmap, sand, MAP_NOSMOOTH);
+        map_gen(sandmap, sandmap->pmap, MAP_NOSMOOTH);
 
         sandmap->asset[1] = new_asset(0);
         sandmap->asset[1]->put(sandmap, 1, ((LINES/2)-(LINES/3)), ((COLS/2)-2));

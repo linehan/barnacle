@@ -60,10 +60,9 @@ arawak_SOURCES = arawak.c                       \
                    mob/mob.c                    \
                    noun/noun.c                  \
                    noun/models.c                \
-                   noun/menu_discrim.c          \
-                   noun/menu_view.c             \
-                   noun/menu_control.c          \
-                   noun/menu_widgets.c          \
+                   noun/nounmenu.c              \
+                   noun/nounmenu_control.c      \
+                   noun/nounmenu_discrim.c      \
                    noun/types/boat/boat.c       \
                    noun/types/boat/compass.c    \
                    verb/verb.c                  \
