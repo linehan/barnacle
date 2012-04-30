@@ -226,6 +226,52 @@ static inline void place_cave_tile(struct map_t *map, int y, int x)
         #undef attr
 }
 
+
+/*
+ * Place a tile for a cave floor 
+ */
+static inline void place_floor_tile(struct map_t *map, int y, int x)
+{
+        #define layer TOP 
+        #define color PUR_GREY 
+        #define attr 0
+
+        mvwp(PLATE(map, layer), y, x, L"█", color, attr);
+
+        #undef layer
+        #undef color
+        #undef attr
+}
+/*
+ * Place a tile for a cave wall 
+ */
+static inline void place_wall_tile(struct map_t *map, int y, int x)
+{
+        #define layer TOP 
+        #define color PUR_GREY 
+        #define attr 0
+
+        mvwp(PLATE(map, layer), y, x, L"▒", color, attr);
+
+        #undef layer
+        #undef color
+        #undef attr
+}
+static inline void place_earth_tile(struct map_t *map, int y, int x)
+{
+        #define layer TTO
+        #define color PUR_PURPLE 
+        #define attr A_REVERSE 
+
+        mvwp(PLATE(map, layer), y, x, L"█", color, attr);
+
+        #undef layer
+        #undef color
+        #undef attr
+}
+
+
+
 /*
  * Place a tile 
  */
