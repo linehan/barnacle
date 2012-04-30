@@ -43,6 +43,8 @@ int main(int argc, char *argv[])
                 map_set_extra(map_preset_sand());
         else if (strcmp(argv[1], "-arena") == 0)
                 map_set_extra(map_preset_arena());
+        else if (strcmp(argv[1], "-cave") == 0)
+                map_set_extra(new_cave());
 
         print_status("\n ALL OK\n");
         print_hold("Press any key to continue");
