@@ -35,8 +35,8 @@ void label_shorelines(struct map_t *map);
  * Simplified accessors for comparing the value of multiple labels in
  * the same block. See the documentation for or_nibble in "../eng/bytes.h"
  */
-#define LAYER(val,n,...) or_nibble(val, LAY, n, __VA_ARGS__)
-#define  ELEV(val,n,...) or_nibble(val, ALT, n, __VA_ARGS__)
+#define LAYER(val,n,...) or_byte(val, LAY, n, __VA_ARGS__)
+#define  ELEV(val,n,...) or_byte(val, ALT, n, __VA_ARGS__)
 
 
 
@@ -325,7 +325,7 @@ void label_shorelines(struct map_t *map)
                         mvwp(PEEK(map->L[RIM]), i, j, &wch[roll1d(10)], color, 0);
                         NEXT(map->L[RIM]);
                 }
-                set_nibble(seed.cur, LAY, RIM);
+                set_byte(seed.cur, LAY, RIM);
         }
         }
 }

@@ -40,7 +40,7 @@ int main(int argc, char *argv[])
         MAPBOOK = new_mapbook();
 
         if (!argv[1])
-                map_set_extra(map_preset_sand());
+                map_set_extra(map_preset_arena());
         else if (strcmp(argv[1], "-arena") == 0)
                 map_set_extra(map_preset_arena());
         else if (strcmp(argv[1], "-cave") == 0)

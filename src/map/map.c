@@ -65,21 +65,18 @@ struct map_t *new_map(int h, int w)
         new = malloc(sizeof(struct map_t));
 
         /* Build some stuff */
+        new->id     = mt_random();
         new->mx     = new_matrix(h, w);
         new->mobs   = new_matrix(h, w);
-        new->hook   = new_matrix(h, w);
+        new->door   = new_matrix(h, w);
         set_ufo(&new->ufo, SCR_HEIGHT, SCR_WIDTH, SCR_Y0, SCR_X0, h, w, 0, 0);
 
         /* Build windows, pads, and panels */
         new->win = newwin(LINES, COLS, 0, 0); /* Fullscreen */
         new->pan = new_panel(new->win);
-        for (i=0; i<NLAYERS; i++) {
-                if (i == RIM) 
-                        new->L[i] = new_multiwin(h, w, 0, 0, 4);
-                else          
-                        new->L[i] = new_multiwin(h, w, 0, 0, 1);
-        }
-        new->W = new_multiwin(h, w, 0, 0, 2);
+        new->L[RIM] = new_multiwin(h, w, 0, 0, 4);
+        new->L[BGR] = new_multiwin(h, w, 0, 0, 1);
+        new->W      = new_multiwin(h, w, 0, 0, 2);
 
         return (new);
 }
@@ -274,7 +271,7 @@ void map_render(void *mymap)
 
         for (i=0; i<map->mx->rows; i++) {
         for (j=0; j<map->mx->cols; j++) {
-                place_tile(map, i, j, get_nibble(mx_val(map->mx, i, j), LAY));
+                place_tile(map, i, j, get_byte(mx_val(map->mx, i, j), LAY));
         }
         }
 }
@@ -293,13 +290,8 @@ void map_restack(void *mymap)
         struct map_t *map = (struct map_t *)mymap;
         int i;
 
-        for (i=0; i<NLAYERS; i++) {
-                overlay(PEEK(map->L[i]), PEEK(map->W));
-        }
-        for (i=0; i<NASSETS; i++) {
-                if (map->asset[i])
-                        overlay(map->asset[i]->win, PEEK(map->W));
-        }
+        overlay(PEEK(map->L[BGR]), PEEK(map->W));
+        overlay(PEEK(map->L[RIM]), PEEK(map->W));
 }
 
 /*
@@ -372,20 +364,20 @@ void map_set_extra(void *mymap)
  * @map: pointer to the map containing the event information
  * @mob: pointer to the mob
  */
-void map_trigger(struct map_t *map, struct mob_t *mob)
-{
-        int y;
-        int x;
-        int i;
+/*void map_trigger(struct map_t *map, struct mob_t *mob)*/
+/*{*/
+        /*int y;*/
+        /*int x;*/
+        /*int i;*/
 
-        y = ufo_y(mob, ufo);
-        x = ufo_x(mob, ufo);
+        /*y = ufo_y(mob, ufo);*/
+        /*x = ufo_x(mob, ufo);*/
 
-        i = mx_val(map->hook, y, x);
+        /*i = mx_val(map->hook, y, x);*/
         
-        if (map->asset[i] != NULL)
-                map->asset[i]->trigger();
-}
+        /*if (map->asset[i] != NULL)*/
+                /*map->asset[i]->trigger();*/
+/*}*/
 
 
 /*

@@ -133,7 +133,6 @@ void mob_move(struct mob_t *mob, int dir)
                 take_bkgrnd(panel_window(mob->pan), PEEK(ACTIVE->W));
                 path_push(mob->path, y, x);
                 doupdate();
-                map_trigger(ACTIVE, mob);
 }
 
 
@@ -212,10 +211,10 @@ void mob_seek(struct noun_t *snoun, struct noun_t *gnoun)
         || !(same_cell(s->astar->current, g->astar->start))) 
         {
                 if (a_star(s->astar, g->astar->start)) {
-                        wprintw(CONSOLE_WIN, "Yep\n");
+                        /*wprintw(CONSOLE_WIN, "Yep\n");*/
                         /*print_path(s->astar->current);*/
                 } else {
-                        wprintw(CONSOLE_WIN, "Nope\n");
+                        /*wprintw(CONSOLE_WIN, "Nope\n");*/
                         return;
                 }
         }
@@ -223,17 +222,13 @@ void mob_seek(struct noun_t *snoun, struct noun_t *gnoun)
         tmp = cellpath_next(&s->astar->path);
 
         if (tmp->x > s->astar->start->x)
-                /*mob_move(s, 'r');*/
                 noun_set_state(snoun, VERB_GoRight, 0);
         if (tmp->x < s->astar->start->x)
                 noun_set_state(snoun, VERB_GoLeft, 0);
-                /*mob_move(s, 'l');*/
         if (tmp->y > s->astar->start->y)
                 noun_set_state(snoun, VERB_GoDown, 0);
-                /*mob_move(s, 'd');*/
         if (tmp->y < s->astar->start->y)
                 noun_set_state(snoun, VERB_GoUp, 0);
-                /*mob_move(s, 'u');*/
 }
 
 

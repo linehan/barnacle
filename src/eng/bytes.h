@@ -14,6 +14,7 @@ static const int NBYTES=4;
 static const int NNIBBLES=8;
 //static const int NSTATES=256;
 
+#define BYTESTATES 256
 #define NNIBS    8  // Number of nibbles in a state word.
 #define NSTATES 16  // Number of states each nibble can take.
 #define NBITS   32  // Number of bits (total) in a state word.
@@ -150,7 +151,7 @@ static inline int or_byte(uint32_t word, int b, int n, int s0,...)
         
         s = s0;
 
-        while (n-->0 && ((word & ~(nscrub[b])) >> noffset[b]) != state[s])
+        while (n-->0 && ((word & ~(bscrub[b])) >> boffset[b]) != state[s])
                 s = va_arg(states, int);
 
         va_end (states); 

@@ -4,6 +4,8 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <string.h>
+#include <limits.h>
+#include "llist/list.h"
 /******************************************************************************
  * Paul Hsieh's blazing fast hash function.                             
  * See http://www.azillionmonkeys.com/qed/hash.html
@@ -58,6 +60,107 @@
 #define get16bits(d) ((((uint32_t)(((const uint8_t *)(d))[1])) << 8)\
                        +(uint32_t)(((const uint8_t *)(d))[0]) )
 #endif
+
+#define TABLESIZE UINT16_MAX 
+#define HASH_LEN 16 
+#define HASH(k) (k >> HASH_LEN)
+
+struct hash_record_t {
+        struct list_node node;
+        uint32_t key;
+        void *data;
+};
+
+struct hash_node_t {
+        struct list_head head;
+        size_t n;
+};
+
+struct hashtable_t {
+        struct hash_node_t *tbl[TABLESIZE]; 
+        size_t n;
+};
+
+
+
+static inline 
+struct hash_node_t *new_hash_node(void)
+{
+        struct hash_node_t *new;
+        new = calloc(1, sizeof(struct hash_node_t));
+        assert(new || !"Could not allocate hash node\n");
+
+        list_head_init(&new->head);
+
+        return (new);
+};
+
+static inline
+struct hash_record_t *new_hash_record(uint32_t key, void *data)
+{
+        struct hash_record_t *new;
+        new = calloc(1, sizeof(struct hash_record_t));
+        assert(new || !"Could not allocate hash record\n");
+
+        new->key  = key;
+        new->data = data;
+
+        return (new);
+}
+
+static inline
+struct hashtable_t *new_hashtable(int mode)
+{
+        struct hashtable_t *new;
+        new = calloc(1, sizeof(struct hashtable_t));
+        assert(new || !"Could not allocate hash table\n");
+
+        return (new);
+}
+
+static inline
+void add_record(struct hashtable_t *tbl, struct hash_record_t *record)
+{
+        uint16_t hashkey;
+
+        hashkey = HASH(record->key);
+
+        /* Create a new node at index 'hashkey' if none exists */
+        if (!tbl->tbl[hashkey])
+                tbl->tbl[hashkey] = new_hash_node();
+
+        /* Add the record to the chain at the hash node */
+        list_add(&tbl->tbl[hashkey]->head, &record->node);
+
+        tbl->tbl[hashkey]->n++; /* Increment the node's record count */
+        tbl->n++;               /* Increment the table's record count */
+}
+
+
+static inline 
+void hashtable_add(struct hashtable_t *tbl, uint32_t key, void *data)
+{
+        add_record(tbl, new_hash_record(key, data));
+}
+
+static inline
+void *hashtable_get(struct hashtable_t *tbl, uint32_t key)
+{
+        struct hash_record_t *tmp;
+        uint16_t hashkey;
+
+        hashkey = HASH(key);
+
+        assert(tbl->tbl[hashkey] || !"Invalid index into hash table");
+        assert(!list_empty(&tbl->tbl[hashkey]->head) || !"Empty hash node");
+
+        list_for_each(&tbl->tbl[hashkey]->head, tmp, node) {
+                if (tmp->key == key)
+                        break;
+        }
+        return (tmp->data);
+}
+
 
 static inline uint32_t fasthash(const char *data, int len) 
 {

@@ -5,27 +5,24 @@
 #include "map.h"
 #include "tile.h"
 
-#define LABEL(val,n,...) or_nibble((val), LAY, (n), __VA_ARGS__)
+#define LABEL(val,n,...) or_byte((val), LAY, (n), __VA_ARGS__)
 
-/*#define EARTH RIM*/
-/*#define FLOOR DRP*/
-/*#define WALL  TOP*/
 
 inline void place_earth_label(uint32_t *val)
 {
-        set_nibble(val, LAY, RIM);
-        set_nibble(val, ALT, 10);
+        set_byte(val, LAY, RIM);
+        set_byte(val, ALT, 10);
 }
 
 inline void place_wall_label(uint32_t *val)
 {
-        set_nibble(val, LAY, TOP);
-        set_nibble(val, ALT, 4);
+        set_byte(val, LAY, TOP);
+        set_byte(val, ALT, 4);
 }
 inline void place_floor_label(uint32_t *val)
 {
-        set_nibble(val, LAY, DRP);
-        set_nibble(val, ALT, 3);
+        set_byte(val, LAY, DRP);
+        set_byte(val, ALT, 3);
 }
 
 
@@ -43,8 +40,8 @@ void gen_cave(struct map_t *map)
         height = map->ufo.box.h-1;
         width  = map->ufo.box.w-1;
 
-        y = roll1d(LINES/2);
-        x = roll1d(COLS/2);
+        y = 0;
+        x = COLS/2;
 
         cell = new_cell(y,x);
 
@@ -71,17 +68,12 @@ struct map_t *new_cave(void)
 {
         struct map_t *cave;
 
-        print_status("Preparing cave...");
+        /*print_status("Preparing cave...");*/
 
         cave = new_map(LINES*3, COLS*3);
         cave->pmap = empty_simplex_matrix(LINES*3, COLS*3);        
-
-        print_status(SUCCESS);
-
-        print_status("Generating caverns...");
+        
         gen_cave(cave);
-        print_status(SUCCESS);
-        print_status("\n -- Map complete --\n\n");
 
         return (cave);
 }

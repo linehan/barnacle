@@ -14,7 +14,7 @@
 #include "../mob/mob.h"
 #include "tag.h"
 #include "arena.h"
-#include "asset.h"
+#include "door.h"
 
 
 #define WORLD_HEIGHT   (LINES*3)
@@ -22,7 +22,6 @@
 #define FIELD_HEIGHT   16
 #define FIELD_WIDTH    18
 #define FULLSCREEN     LINES+1, COLS+1
-#define NASSETS        10
 #define PLATE(map,tag) PEEK(((map)->L[(tag)]))
 
 
@@ -34,18 +33,19 @@
  * a tile on the screen, or calling a function.
  */
 struct map_t {
+        uint32_t id;
         /*----------------------------- Graphics */
         WINDOW *win;
         PANEL  *pan;
-        struct multiwin_t *L[NLAYERS];
+        struct multiwin_t *L[3];
         struct multiwin_t *W;
         /*----------------------------- Logic */
         struct matrix_t *mx;
-        struct matrix_t *hook;
         struct matrix_t *mobs;
+        struct matrix_t *door;
+        struct matrix_t *elev;
         double **pmap;
         struct ufo_t ufo;
-        struct asset_t *asset[NASSETS];
 };
 
 
