@@ -301,7 +301,7 @@ void sweet_flow(struct map_t *map)
                          * sea level, multiply it by the dampening
                          * factor
                          */
-                        if ((get_nibble(map->mx->mx[i][j], ALT)) != 0)
+                        if ((get_byte(map->mx->mx[i][j], ALT)) != 0)
                                 z1[i][j] *= d;
 
                         /* These are the "waves" on the map */

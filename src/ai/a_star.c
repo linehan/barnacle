@@ -44,7 +44,7 @@ void astar_init(struct astar_t *astar, struct matrix_t *map,
  */
 uint32_t mapval(struct astar_t *astar, int y, int x)
 {
-        return get_nibble(mx_val(astar->map, y, x), ALT);
+        return get_byte(mx_val(astar->map, y, x), ALT);
 }
 
 
@@ -301,7 +301,7 @@ bool a_star(struct astar_t *astar, struct cell_t *goal)
                 bh_add(astar->CLOSED, current->f, current->key, current);
                 groom_neighbors(astar, current);
 
-                test_rig(astar, current); // displays test output
+                /*test_rig(astar, current); // displays test output*/
         }
         astar->current = NULL;
         return false;

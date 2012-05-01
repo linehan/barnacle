@@ -13,6 +13,8 @@
 #include "../eng/bytes.h"
 #include "../gfx/ui/titlecard.h"
 #include "../test/test.h"
+#include "cave.h"
+#include "door.h"
 
 
 #define ISLAND_FAT 10
@@ -36,6 +38,7 @@
 struct map_t *map_preset_arena(void)
 {
         struct map_t *arena;
+        struct map_t *cave;
         double **armap;
         int i;
         int j;
@@ -70,8 +73,10 @@ struct map_t *map_preset_arena(void)
         map_gen(arena, armap, MAP_NOSMOOTH);
 
         /* Make a cave entrance */
-        place_cave_label(mx_get(arena->mx, ARENA_H/2-1, COLS/2));
-        place_cave_label(mx_get(arena->mx, ARENA_H/2-1, COLS/2-1));
+        cave = new_cave();
+        put_door(CAVE_DOOR, arena, cave, 1, 2, ARENA_H/2-1, COLS/2);
+        /*place_cave_label(mx_get(arena->mx, ARENA_H/2-1, COLS/2));*/
+        /*place_cave_label(mx_get(arena->mx, ARENA_H/2-1, COLS/2-1));*/
 
         map_render(arena);
 
@@ -97,8 +102,8 @@ struct map_t *map_preset_sand(void)
         sandmap = new_map(FULLSCREEN);
         map_gen(sandmap, sandmap->pmap, MAP_NOSMOOTH);
 
-        sandmap->asset[1] = new_asset(0);
-        sandmap->asset[1]->put(sandmap, 1, ((LINES/2)-(LINES/3)), ((COLS/2)-2));
+        /*sandmap->asset[1] = new_asset(0);*/
+        /*sandmap->asset[1]->put(sandmap, 1, ((LINES/2)-(LINES/3)), ((COLS/2)-2));*/
 
         map_render(sandmap);
 

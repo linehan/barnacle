@@ -52,7 +52,7 @@ arawak_SOURCES = arawak.c                       \
                    map/snake.c                  \
                    map/arena.c                  \
                    map/cave.c                   \
-                   map/asset.c                  \
+                   map/door.c                   \
                    map/sweet_flow.c             \
                    ai/a_star.c                  \
                    txt/gloss_m.c                \

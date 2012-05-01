@@ -17,6 +17,7 @@
 #include "../map/terrain.h"
 #include "../lib/morton.h"
 #include "../lib/ufo.h"
+#include "../lib/matrix.h"
 
 /* -------------------------------------------------------------------------- */
 
@@ -46,15 +47,13 @@ PANEL  *INSPECTORPAN;
 WINDOW *INSPECTORMSGWIN;
 PANEL  *INSPECTORMSGPAN;
 
-#define i_yy inspector_yy
-#define i_xx inspector_xx
-
 static bool diagnostic_lock;
 
 static int inspector_y = 0;
 static int inspector_x = 0;
-static int inspector_yy = 0;
-static int inspector_xx = 0;
+
+static int cur_y;
+static int cur_x;
 
 
 /* -------------------------------------------------------------------------- */
@@ -92,8 +91,6 @@ void init_test(void)
 
 void test_request(void)
 {
-        char buf[81], *p;
-
         werase(CONSOLE_INPUT);
         wprintw(CONSOLE_INPUT, "> ");
         fflush(stdout);
@@ -108,54 +105,103 @@ void hud_win(WINDOW *win)
 }
 
 /* -------------------------------------------------------------------------- */
+static inline void move_cursor(int dir, int step)
+{
+        switch (dir) {
+        case 'l':
+                while (step-->0) DEC(cur_x,0);
+                break;
+        case 'r':
+                while (step-->0) INC(cur_x, COLS);
+                break;
+        case 'u':
+                while (step-->0) DEC(cur_y,0);
+                break;
+        case 'd':
+                while (step-->0) INC(cur_y, LINES);
+                break;
+        }
+
+        move_panel(INSPECTORPAN, cur_y, cur_x);
+        top_panel(INSPECTORPAN);
+        vrt_refresh();
+}
+
 
 int inspect_control(int dir)
 {
         uint32_t z;
         switch (dir) {
-        case KEY_LEFT:
-                inspector_x -= (inspector_x > 0) ? 1 : 0;
+        case 'h':
+                move_cursor('l', 1);
                 break;
-        case KEY_RIGHT:
-                inspector_x += 1;
+        case 'H':
+                move_cursor('l', 4);
                 break;
-        case KEY_UP:
-                inspector_y -= (inspector_y > 0) ? 1: 0;
+        case 'l':
+                move_cursor('r', 1);
                 break;
-        case KEY_DOWN:
-                inspector_y += 1;
+        case 'L':
+                move_cursor('r', 4);
+                break;
+        case 'k':
+                move_cursor('u', 1);
+                break;
+        case 'K':
+                move_cursor('u', 4);
+                break;
+        case 'j':
+                move_cursor('d', 1);
+                break;
+        case 'J':
+                move_cursor('d', 4);
                 break;
         case '?':
                 return MODE_RELEASE;
         }
 
-        i_yy = ufo_y(ACTIVE, ufo)+(inspector_y);
-        i_xx = ufo_x(ACTIVE, ufo)+(inspector_x);
+        cur_y += ufo_y(ACTIVE, ufo);
+        cur_x += ufo_x(ACTIVE, ufo);
 
-        z = MORT(i_yy, i_xx);
-        move_panel(INSPECTORPAN, inspector_y, inspector_x);
-        top_panel(INSPECTORPAN);
+        z = MORT(cur_y, cur_x);
+
         top_panel(INSPECTORMSGPAN);
         vrt_refresh();
 
         werase(INSPECTORMSGWIN);
         wprintw(INSPECTORMSGWIN, "LINES: %d COLS: %d\tY: %2u X: %2u M: %2u\t"
-                                 "LAYER: %s "
                                  "ELEV: %2u "
                                  "PERLIN: %+4f\t" 
-                                 "HOOK: %u\t"
+                                 "DOOR: %u\t\t"
                                  "MOBS: %u",
                         LINES,
                         COLS,
-                        i_yy, 
-                        i_xx, 
+                        cur_y, 
+                        cur_x, 
                         z,
-                        lay_tag[get_nibble(mx_val(ACTIVE->mx, i_yy, i_xx), LAY)], 
-                        get_nibble(mx_val(ACTIVE->mx, i_yy, i_xx), ALT), 
-                        ACTIVE->pmap[i_yy][i_xx],
-                        mx_val(ACTIVE->hook, i_yy, i_xx),
-                        mx_val(ACTIVE->mobs, i_yy, i_xx));
+                        get_byte(mx_val(ACTIVE->mx, cur_y, cur_x), ALT), 
+                        ACTIVE->pmap[cur_y][cur_x],
+                        mx_val(ACTIVE->door, cur_y, cur_x),
+                        mx_val(ACTIVE->mobs, cur_y, cur_x));
         scr_refresh();
         return MODE_PERSIST;
+}
+
+
+void print_matrix(WINDOW *win, void *matrix)
+{
+        struct matrix_t *mx = (struct matrix_t *)matrix;
+        int i;
+        int j;
+
+        for (i=0; i<mx->rows; i++) {
+        for (j=0; j<mx->cols; j++) {
+                if (mx->mx[i][j] != 0)
+                        mvwprintw(win, i, j, "#");
+                else
+                        mvwprintw(win, i, j, ".");
+        }
+        }
+        scr_refresh();
 }
 

@@ -194,6 +194,13 @@ void director(int input)
                 case '&':
                         dock_say(L"䥚", "I am the computer king.");
                         break;
+                case 't':
+                        switch (getchar()) {
+                        case 'd':
+                                print_matrix(DIAGNOSTIC_WIN, ACTIVE->door);
+                                break;
+                        }
+                        break;
                 }
         }
 }
