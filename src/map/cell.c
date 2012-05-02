@@ -136,8 +136,8 @@ struct cell_t **mk_neighbors(struct cell_t *cell, int h, int w, int opt)
         int x;
 
         /* To prevent backtracking, we test against the parent's coordinates */
-        py = (cell->parent && (OPT(opt, WLK_FW))) ? cell->parent->y : -1;
-        px = (cell->parent && (OPT(opt, WLK_FW))) ? cell->parent->x : -1;
+        py = (cell->parent && (!OPT(opt, WLK_FW))) ? cell->parent->y : -1;
+        px = (cell->parent && (!OPT(opt, WLK_FW))) ? cell->parent->x : -1;
 
         y = cell->y;
         x = cell->x;

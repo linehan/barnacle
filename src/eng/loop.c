@@ -10,7 +10,7 @@
 #include "../verb/verb.h"
 #include "../txt/gloss.h"
 #include "../map/terrain.h"
-#include "../map/particle.h"
+#include "../map/sweet_flow.h"
 #include "fsm.h"
 
 
@@ -59,7 +59,7 @@ void render_cb(EV_P_ ev_timer *w, int revents)
         /*draw_compass();*/
         /*approach_helm();*/
         dock_update();
-        noun_update(get_noun("Dummy"));
+        /*noun_update(get_noun("Dummy"));*/
         noun_update(get_noun("Guy"));
 
         update_panels();  /* Were slowing down performance, unnecessary */

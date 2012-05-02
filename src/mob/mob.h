@@ -8,6 +8,7 @@
 #include "../map/snake.h"
 #include "../ai/a_star.h"
 
+bool light_torch;
 
 struct map_t;
 struct noun_t *noun_forw_ref;
@@ -23,6 +24,7 @@ struct mob_t {
         uint32_t signal;
         bool active;
         uint32_t name; 
+        uint32_t mapid;
 };
 
 

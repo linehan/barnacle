@@ -40,7 +40,7 @@ struct map_t {
         struct multiwin_t *L[3];
         struct multiwin_t *W;
         /*----------------------------- Logic */
-        struct matrix_t *mx;
+        struct matrix_t *tile;
         struct matrix_t *mobs;
         struct matrix_t *door;
         struct matrix_t *elev;

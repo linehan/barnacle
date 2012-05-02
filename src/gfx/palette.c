@@ -224,6 +224,15 @@ void init_palette(int set)
         init_color(D_SAND_LAGOON, 188, 267, 235);
         init_color(WATER_HINT, 223, 310, 274);
 
+        init_color(LIGHT1, 851, 490, 235);
+        init_color(LIGHT2, 0, 0, 0);
+        init_color(LIGHT3, 0, 0, 0);
+        init_color(LIGHT4, 0, 0, 0);
+
+        init_color(FLEXBG, 0, 0, 0);
+        init_color(FLEXFG, 0, 0, 0);
+        init_color(FLEXBG_DEFAULT, 0, 0, 0);
+        init_color(FLEXFG_DEFAULT, 0, 0, 0);
 
         /* UI COLOR PAIRS */
         init_pair(CMP_BEIGE, BEIGE, ORANGE);
@@ -355,6 +364,7 @@ void init_palette(int set)
         init_pair(__SEA_LIG,    __LSEA,   __DSEA);
         init_pair(SEA__MED, WATER_HINT, DSEA);
         init_pair(SEA___MED, __LSEA, DSEA);
+        init_pair(PUR_SOLID, __DGREY, __DGREY);
 
         /*init_color(DARK_SANDZ, 768,  666,  521);*/
         init_color(DARK_SANDZ, 741,  643,  502);
@@ -377,6 +387,11 @@ void init_palette(int set)
         init_pair(DSAND, DARK_SANDZ, DARK_SAND0);
         init_pair(ESAND, DARK_SAND1, DARK_SAND2);
         init_pair(FSAND, DARK_SAND4, DARK_SAND3);
+
+        init_pair(LIGHTP1, LIGHT1, __DGREY);
+        init_pair(LIGHTP2, LIGHT2, __DGREY);
+        init_pair(LIGHTP3, LIGHT3, __DGREY);
+        init_pair(LIGHTP4, LIGHT4, __DGREY);
 
         mix_colors();
 }

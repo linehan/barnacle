@@ -179,7 +179,7 @@ int inspect_control(int dir)
                         cur_y, 
                         cur_x, 
                         z,
-                        get_byte(mx_val(ACTIVE->mx, cur_y, cur_x), ALT), 
+                        ELEV(ACTIVE, cur_y, cur_x),
                         ACTIVE->pmap[cur_y][cur_x],
                         mx_val(ACTIVE->door, cur_y, cur_x),
                         mx_val(ACTIVE->mobs, cur_y, cur_x));

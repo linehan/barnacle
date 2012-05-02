@@ -158,6 +158,9 @@ void director(int input)
                 case '^':
                         map_swap();
                         break;
+                case '+':
+                        door_trigger(mx_val(ACTIVE->door, (LINES/2)/2-1, (COLS/2)));
+                        break;
                 case 'm':
                         setmode(UI_MOB);
                         setmode(MODE_STARTED);
@@ -189,15 +192,19 @@ void director(int input)
                         doupdate();
                         break;
                 case '@':
-                        loop_test();
+                        torch_toggle();
                         break;
+
                 case '&':
                         dock_say(L"䥚", "I am the computer king.");
                         break;
-                case 't':
+                case 'T':
                         switch (getchar()) {
                         case 'd':
                                 print_matrix(DIAGNOSTIC_WIN, ACTIVE->door);
+                                break;
+                        case '@':
+                                loop_test();
                                 break;
                         }
                         break;

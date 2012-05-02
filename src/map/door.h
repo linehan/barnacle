@@ -10,16 +10,20 @@ struct door_t {
         uint32_t id;
         enum door_tag tag;
         struct map_t *src;
-        struct map_t *dest;
-        struct rec_t rec;
+        struct map_t *dst;
+        struct rec_t srcrec;
+        struct rec_t dstrec;
         void (*trigger)(void *self);
 };
 
 
-void put_door(int tag, struct map_t *src, struct map_t *dest, int h, int w, int y, int x);
+void put_door(int tag, struct map_t *src, struct map_t *dst, 
+              int src_h, int src_w, int src_y, int src_x,
+              int dst_h, int dst_w, int dst_y, int dst_x);
+
 struct door_t *get_door(uint32_t key);
-void door_trigger(void (*trigger)(void *self), struct door_t *door);
 void place_door_tile(struct map_t *map, int y, int x);
+void trigger_door(uint32_t key);
 
 
 
