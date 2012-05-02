@@ -138,6 +138,22 @@ short cuco(WINDOW *win)
         return (color_pair);
 }
 
+inline short WINPAIR(WINDOW *win, int y, int x)
+{
+        cchar_t cch;
+        wchar_t wch;
+        short color;
+        attr_t attr;
+
+        getbegyx(win, y, x);           /* Get the position of src */
+        mvwin_wch(win, y, x, &cch);    /* Get the cch at position in dst */
+
+        /* Extract character renditions */
+        getcchar(&cch, &wch, &attr, &color, NULL);
+
+        return (color);
+}
+
 
 void take_bkgrnd(WINDOW *dst, WINDOW *src)
 {
@@ -169,11 +185,14 @@ void take_bkgrnd(WINDOW *dst, WINDOW *src)
         pair_content(dst_pair, &dst_fg, &dst_bg);
 
         /* Re-init the FLEX pair's existing fg with the bg of src */
-        init_pair(FLEX, BLACK, src_bg);
+        init_pair(FLEX, FLEXFG, src_bg);
 
         /* ? when a pair changes, characters rendered with it are re-drawn */
 }
 
+#define ABSUB(x,x1) (x > x1) ? (x-x1) : (x1-x)
+
+#define sqdist(y,y1,x,x1) ((ABSUB(x,x1)*ABSUB(x,x1)) + (ABSUB(y,y1)*ABSUB(y,y1)))
 
 
 

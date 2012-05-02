@@ -31,14 +31,6 @@ void label_shorelines(struct map_t *map);
 /* -------------------------------------------------------------------------- */
 
 
-/*
- * Simplified accessors for comparing the value of multiple labels in
- * the same block. See the documentation for or_nibble in "../eng/bytes.h"
- */
-#define LAYER(val,n,...) or_byte(val, LAY, n, __VA_ARGS__)
-#define  ELEV(val,n,...) or_byte(val, ALT, n, __VA_ARGS__)
-
-
 
 /*
  * Perform a series of low-pass filters on the perlin noise matrix
@@ -81,7 +73,7 @@ void label_regions(struct map_t *map)
         for (y=0; y<map->ufo.box.h-1; y++) {
         for (x=0; x<map->ufo.box.w-1; x++) {
 
-                seed.cur = mx_get(map->mx, y, x);
+                seed.cur = mx_get(map->tile, y, x);
 
                 if (map->pmap[y][x] < SHOAL) place_ocean_label(seed.cur); else
                 if (map->pmap[y][x] < BEACH) place_shoal_label(seed.cur); else
@@ -106,8 +98,8 @@ void label_cliffs(struct map_t *map)
         for (y=0; y<map->ufo.box.h-1; y++) {
         for (x=0; x<map->ufo.box.w-1; x++) {
 
-                seed.cur = mx_get(map->mx, y, x);
-                seed.s   = mx_s(map->mx, y, x);
+                seed.cur = mx_get(map->tile, y, x);
+                seed.s   = mx_s(map->tile, y, x);
 
                 if ((LAYER(*seed.cur, 1, TOP)) && !(LAYER(*seed.s, 1, TOP))) 
                         place_cliff_label(seed.cur);
@@ -129,7 +121,7 @@ void label_treetops(struct map_t *map)
         for (y=0; y<map->ufo.box.h-1; y++) {
         for (x=0; x<map->ufo.box.w-1; x++) {
 
-                mx_seed(map->mx, y, x, &seed);
+                mx_seed(map->tile, y, x, &seed);
 
                 if (!LAYER(*seed.cur, 1, TOP) ||
                     !LAYER(*seed.n,   1, TOP) ||
@@ -170,7 +162,7 @@ void label_treetops_trim(struct map_t *map)
         for (y=0; y<map->ufo.box.h-1; y++) {
         for (x=0; x<map->ufo.box.w-1; x++) {
 
-                mx_seed(map->mx, y, x, &seed);
+                mx_seed(map->tile, y, x, &seed);
 
                 if (LAYER(*seed.cur, 1, TTO) &&
                    (!LAYER(*seed.w,  2, TTO, TOP) ||
@@ -205,7 +197,7 @@ void label_treetrunks(struct map_t *map)
         for (y=0; y<map->ufo.box.h-1; y++) {
         for (x=0; x<map->ufo.box.w-1; x++) {
 
-                mx_seed(map->mx, y, x, &seed);
+                mx_seed(map->tile, y, x, &seed);
 
                 if (LAYER(*seed.cur, 1, TTO) &&
                     LAYER(*seed.s,   1, TOP) &&
@@ -252,12 +244,12 @@ void label_shorelines(struct map_t *map)
         for (i=0; i<map->ufo.box.h-1; i++) {
         for (j=0; j<map->ufo.box.w-1; j++) {
 
-                mx_seed(map->mx, i, j, &seed);
+                mx_seed(map->tile, i, j, &seed);
 
                 /* Draw nothing if the cursor is on land */
                 if ((LAYER(*seed.cur, 6, TOP, DRP, BEA, SHO, TTO, TTR)) 
-                ||  (LAYER(*seed.nw,  1, BGR) && LAYER(*seed.w, 1, TOP))
-                ||  (LAYER(*seed.ne,  1, BGR) && LAYER(*seed.e, 1, TOP)))
+                ||  (LAYER(*seed.nw,  1, OCN) && LAYER(*seed.w, 1, TOP))
+                ||  (LAYER(*seed.ne,  1, OCN) && LAYER(*seed.e, 1, TOP)))
                 {
                         continue;
                 }
@@ -325,14 +317,9 @@ void label_shorelines(struct map_t *map)
                         mvwp(PEEK(map->L[RIM]), i, j, &wch[roll1d(10)], color, 0);
                         NEXT(map->L[RIM]);
                 }
-                set_byte(seed.cur, LAY, RIM);
+                set_byte(seed.cur, LAB, RIM);
         }
         }
 }
-
-
-
-
-
 
 

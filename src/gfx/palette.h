@@ -198,7 +198,19 @@ enum stuff {
         FSAND = 80,
 };
 
+enum light {
+        LIGHT1 = 81,
+        LIGHT2 = 82,
+        LIGHT3 = 83,
+        LIGHT4 = 84
+};
 
+enum flex {
+        FLEXBG = 85,
+        FLEXFG = 86,
+        FLEXBG_DEFAULT = 87,
+        FLEXFG_DEFAULT = 88
+};
 
 #define PUR_WHI PUR_WHITE
 #define PUR_BLU PUR_CELESTIAL
@@ -216,48 +228,6 @@ enum stuff {
 #define PUR_WOO PUR_WOOD
 #define TITLE_SCREEN PUR_PURPLE
 
-
-/* These are the first values of each shade level in the enum; they can be
- * used for boundary-checking to determine which shade level we're in. */
-#define SHADE0 17 
-#define SHADE1 29 
-#define SHADE2 41 
-#define SHADE_MAX 52 /* UI colors should be >> this number, to keep them out */
-
-/* The "step" refers to the number of places each shade level is shifted from
- * it's equivalent color pair in the shader level above or below it. Obviously,
- * this step value should be the same for both transitions, but if it isn't,
- * it will equal 0, meaning when we calculate the offset, with a bum step
- * value, it will return the original value unchanged (since 0 is the additive 
- * identity). */
-#define SHADE_STEP SHADE1-SHADE0
-
-/* Secondary macro to decide between SHADE1 or SHADE 2, once SHADE0 is 
- * ruled out */
-#define SHADE1_OR_SHADE2(pair) \
-        ((pair < SHADE_MAX)&&(pair >= SHADE2)) ? 2 : 1
-
-/* Return the shade level of the provided pair */
-#define SHADE_LEVEL(pair) \
-        ((pair < SHADE1)&&(pair >= SHADE0)) ? 0 : SHADE1_OR_SHADE2(pair)
-
-static inline short to_shade(short pair, int lvl)
-{
-        int mylvl = SHADE_LEVEL(pair);
-        short newpair = pair;
-
-        do {
-                if (mylvl<lvl) {
-                        mylvl++;
-                        newpair += SHADE_STEP;
-                }
-                else if (mylvl>lvl) {
-                        mylvl--;
-                        newpair -= SHADE_STEP;
-                }
-        } while (mylvl != lvl);
-        return newpair;
-}
 
 void init_palette(int);
 
@@ -343,9 +313,50 @@ enum purpairs {
         PALP3           = 152,
         PALP4           = 153,
         PALP5           = 154,
+        PUR_SOLID       = 155,
+};
+
+enum light_pair {
+        LIGHTP1 = 156,
+        LIGHTP2 = 157,
+        LIGHTP3 = 158,
+        LIGHTP4 = 159
 };
 
 void darken_colors(int step);
+
+static inline short BGCOLOR(short pair)
+{
+        short fg, bg;
+        pair_content(pair, &fg, &bg);
+        return bg;
+}
+
+static inline short FGCOLOR(short pair)
+{
+        short fg, bg;
+        pair_content(pair, &fg, &bg);
+        return fg;
+}
+
+
+static inline 
+void blend(short color1, float i1, short color2, float i2, short dest)
+{
+        short r1, r2;
+        short g1, g2;
+        short b1, b2;
+
+        color_content(color1, &r1, &g1, &b1); 
+        color_content(color2, &r2, &g2, &b2); 
+
+        r1 = (((i1*r1) + (i2*r2)) / 2);
+        g1 = (((i1*g1) + (i2*g2)) / 2);
+        b1 = (((i1*b1) + (i2*b2)) / 2);
+
+        init_color(dest, r1, g1, b1);
+}
+
 
 static struct rgb_t wallfg[3] = { {252, 431, 372, 290},{252, 431, 372, 290},{252, 431, 372, 290}};
 static struct rgb_t wallbg[3] = { {254, 310, 270, 208},{254, 310, 270, 208},{254, 310, 270, 208}};

@@ -60,13 +60,12 @@ struct map_t *new_map(int h, int w)
         #define SCR_Y0 0
 
         struct map_t *new;
-        int i;
        
         new = malloc(sizeof(struct map_t));
 
         /* Build some stuff */
         new->id     = mt_random();
-        new->mx     = new_matrix(h, w);
+        new->tile   = new_matrix(h, w);
         new->mobs   = new_matrix(h, w);
         new->door   = new_matrix(h, w);
         set_ufo(&new->ufo, SCR_HEIGHT, SCR_WIDTH, SCR_Y0, SCR_X0, h, w, 0, 0);
@@ -269,9 +268,9 @@ void map_render(void *mymap)
         int i;
         int j;
 
-        for (i=0; i<map->mx->rows; i++) {
-        for (j=0; j<map->mx->cols; j++) {
-                place_tile(map, i, j, get_byte(mx_val(map->mx, i, j), LAY));
+        for (i=0; i<map->tile->rows; i++) {
+        for (j=0; j<map->tile->cols; j++) {
+                place_tile(map, i, j, get_byte(mx_val(map->tile, i, j), LAB));
         }
         }
 }
@@ -288,7 +287,6 @@ void map_render(void *mymap)
 void map_restack(void *mymap)
 {
         struct map_t *map = (struct map_t *)mymap;
-        int i;
 
         overlay(PEEK(map->L[BGR]), PEEK(map->W));
         overlay(PEEK(map->L[RIM]), PEEK(map->W));
@@ -322,7 +320,10 @@ void map_swap(void)
         MAPBOOK->hide(ACTIVE);
         MAPBOOK->field_is_active ^= true;
 
-        ACTIVE = (MAPBOOK->field_is_active) ? FIELD : WORLD;
+        if (MAPBOOK->field_is_active)
+                ACTIVE = FIELD;
+        else
+                ACTIVE = WORLD;
 
         map_refresh(ACTIVE);
         MAPBOOK->show(ACTIVE);
@@ -346,9 +347,9 @@ void map_set_extra(void *mymap)
                 ACTIVE = EXTRA;
         }
 
+        MAPBOOK->show(ACTIVE);
         map_restack(ACTIVE);
         map_refresh(ACTIVE);
-        MAPBOOK->show(ACTIVE);
 }
 
 /******************************************************************************

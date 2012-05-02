@@ -5,6 +5,7 @@
 #include "../map/cell.h"
 #include "../verb/verb.h"
 #include "../noun/noun.h"
+#include "../map/terrain.h"
 
 
 
@@ -29,11 +30,12 @@ void mob_cfg(struct mob_t *mob, struct map_t *map, int h, int w, int y, int x)
         set_ufo(&mob->ufo, h, w, y, x, 
                            map->ufo.obj.h, map->ufo.obj.w, 0, 0);
 
-        astar_init(mob->astar, map->mx, start);
+        astar_init(mob->astar, map->tile, start);
         mob->path = new_path(0, 0, MOB_PATH_LEN);
         init_path(mob->path, 0, 0, MOB_PATH_LEN);
         mob->win = newwin(h, w, y, x);
         mob->pan = new_panel(mob->win);
+        mob->mapid = map->id;
 
         set_mob(mob, false);
 }
@@ -69,6 +71,64 @@ inline void mob_mark_position(struct mob_t *mob)
 inline void mob_unmark_position(struct mob_t *mob)
 {
         mx_set(ACTIVE->mobs, ufo_y(mob, ufo), ufo_x(mob, ufo), 0);
+}
+
+void mob_place(struct mob_t *mob, int y, int x)
+{
+        ufo_y(mob, ufo) = y;
+        ufo_x(mob, ufo) = x;
+
+        mob_move(mob, 'u');
+}
+
+
+WINDOW *torch_win;
+PANEL  *torch_pan;
+
+static bool torch_lit;
+
+void torch_toggle(void)
+{
+        torch_lit ^= true;
+        if (torch_lit)
+                show_panel(torch_pan);
+        else
+                hide_panel(torch_pan);
+}
+
+void torch(struct mob_t *mob)
+{
+        int y;
+        int x;
+        int i;
+        int j;
+
+        y = ufo_y(mob, ufo);
+        x = ufo_x(mob, ufo);
+
+        if (!torch_lit)
+                return;
+
+        if (!torch_win) {
+                torch_win = newwin(5, 5, y-2, x-2);
+                torch_pan = new_panel(torch_win);
+                blend(LIGHT1, 0.5, __DGREY, 1.0, LIGHT2);
+                blend(LIGHT1, 1.0, __DGREY, 1.0, LIGHT1);
+        } else {
+                move_panel(torch_pan, y-2, x-2);
+        }
+
+        copywin(PLATE(ACTIVE, BGR), torch_win, y-2, x-2, 0, 0, 4, 4, 0);
+        overwrite(mob->win, torch_win);
+
+        for (i=0; i<5; i++) {
+        for (j=0; j<5; j++) {
+                if (i==0 || i==4 || j==0 || j==4)
+                        mvwchgat(torch_win, i, j, 1, 0, LIGHTP2, NULL);
+                else
+                        mvwchgat(torch_win, i, j, 1, 0, LIGHTP1, NULL);
+        }
+        }
 }
 
 
@@ -110,15 +170,15 @@ void mob_move(struct mob_t *mob, int dir)
         }
 
         // Scroll down at bottom boundary
-        if (ufo_y(mob, ufo) == LINES-10) {
-                map_roll(ACTIVE, 'd');
-                ufo_up(mob, ufo);
-        }
+        /*if (ufo_y(mob, ufo) == LINES-10) {*/
+                /*map_roll(ACTIVE, 'd');*/
+                /*ufo_up(mob, ufo);*/
+        /*}*/
         // Scroll right at right boundary
-        if (ufo_x(mob, ufo) == COLS-10) {
-                map_roll(ACTIVE, 'r');
-                ufo_left(mob, ufo);
-        }
+        /*if (ufo_x(mob, ufo) == COLS-10) {*/
+                /*map_roll(ACTIVE, 'r');*/
+                /*ufo_left(mob, ufo);*/
+        /*}*/
 
         move_panel(mob->pan, ufo_y(mob, ufo), ufo_x(mob, ufo));
         update_panels();
@@ -131,8 +191,11 @@ void mob_move(struct mob_t *mob, int dir)
 
                 mob_mark_position(mob);
                 take_bkgrnd(panel_window(mob->pan), PEEK(ACTIVE->W));
+                torch(mob);
                 path_push(mob->path, y, x);
                 doupdate();
+                if (TILE(ACTIVE, ufo_y(mob,ufo), ufo_x(mob,ufo)) == DOR)
+                        door_trigger(mob, mx_val(ACTIVE->door, ufo_y(mob,ufo), ufo_x(mob,ufo)));
 }
 
 
