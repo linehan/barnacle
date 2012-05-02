@@ -96,36 +96,90 @@ void torch_toggle(void)
                 hide_panel(torch_pan);
 }
 
+#define TORCH_H 5
+#define TORCH_W 7
+#define TORCH_Hr 2
+#define TORCH_Wr 3
+int torch_h;
+int torch_w;
+
 void torch(struct mob_t *mob)
 {
         int y;
         int x;
         int i;
         int j;
-
-        y = ufo_y(mob, ufo);
-        x = ufo_x(mob, ufo);
+        int x0;
+        int y0;
 
         if (!torch_lit)
                 return;
 
-        if (!torch_win) {
-                torch_win = newwin(5, 5, y-2, x-2);
-                torch_pan = new_panel(torch_win);
-                blend(LIGHT1, 0.5, __DGREY, 1.0, LIGHT2);
-                blend(LIGHT1, 1.0, __DGREY, 1.0, LIGHT1);
-        } else {
-                move_panel(torch_pan, y-2, x-2);
+        y = ufo_y(mob, ufo);
+        x = ufo_x(mob, ufo);
+
+        if (y < TORCH_Hr) 
+        {
+                torch_h = (TORCH_Hr + y);
+                y0 = TORCH_Hr - y;
+        }
+        else if (y > LINES-TORCH_Hr) 
+        {
+                torch_h = TORCH_Hr + (LINES-y);
+                y0 = y - TORCH_Hr;
+        }
+        else {
+                torch_h = TORCH_H;
+                y0 = y - TORCH_Hr;
         }
 
-        copywin(PLATE(ACTIVE, BGR), torch_win, y-2, x-2, 0, 0, 4, 4, 0);
+        if (x < TORCH_Wr) 
+        {
+                torch_w = (TORCH_Wr + x);
+                x0 = TORCH_Wr - x;
+        }
+        else if (x > COLS-TORCH_Wr) {
+                torch_w = TORCH_Wr + (COLS-x);
+                x0 = x - TORCH_Wr;
+        }
+        else {
+                torch_w = TORCH_W;
+                x0 = x - TORCH_Wr;
+        }
+
+        if (!torch_win) {
+                torch_win = newwin(torch_h, torch_w, y0, x0);
+                torch_pan = new_panel(torch_win);
+                blend(LIGHT1, 0.2, __DGREY, 1.0, LIGHT3);
+                blend(LIGHT1, 0.5, __DGREY, 1.0, LIGHT2);
+                blend(LIGHT1, 1.0, __DGREY, 1.0, LIGHT1);
+                blend(__DGREY, 0.3, BLACK, 1.0, LIGHTB3);
+                blend(__DGREY, 0.5, BLACK, 1.0, LIGHTB2);
+                blend(__DGREY, 1.0, BLACK, 1.0, LIGHTB1);
+        } else {
+                if (wresize(torch_win, torch_h, torch_w))
+                        replace_panel(torch_pan, torch_win);
+
+                move_panel(torch_pan, y0, x0);
+        }
+
+        copywin(PLATE(ACTIVE, BGR), torch_win, y0, x0, 0, 0, torch_h-1, torch_w-1, 0);
         overwrite(mob->win, torch_win);
 
-        for (i=0; i<5; i++) {
-        for (j=0; j<5; j++) {
-                if (i==0 || i==4 || j==0 || j==4)
+        for (i=0; i<torch_h; i++) {
+        for (j=0; j<torch_w; j++) {
+                if ((i==0 && j==0)
+                || (i==0 && j==1)
+                || (i==0 && j==torch_w-1)
+                || (i==0 && j==torch_w-2)
+                || (i==torch_h-1 && j==0)
+                || (i==torch_h-1 && j==1)
+                || (i==torch_h-1 && j==torch_w-1)
+                || (i==torch_h-1 && j==torch_w-2))
+                        mvwchgat(torch_win, i, j, 1, 0, LIGHTP3, NULL);
+                else if (i==0 || i==torch_h-1 || j==0 || j==1 || j==torch_w-1 || j==torch_w-2)
                         mvwchgat(torch_win, i, j, 1, 0, LIGHTP2, NULL);
-                else
+                else 
                         mvwchgat(torch_win, i, j, 1, 0, LIGHTP1, NULL);
         }
         }

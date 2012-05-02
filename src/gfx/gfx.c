@@ -190,10 +190,4 @@ void take_bkgrnd(WINDOW *dst, WINDOW *src)
         /* ? when a pair changes, characters rendered with it are re-drawn */
 }
 
-#define ABSUB(x,x1) (x > x1) ? (x-x1) : (x1-x)
-
-#define sqdist(y,y1,x,x1) ((ABSUB(x,x1)*ABSUB(x,x1)) + (ABSUB(y,y1)*ABSUB(y,y1)))
-
-
-
 

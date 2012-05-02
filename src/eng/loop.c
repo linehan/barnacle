@@ -59,7 +59,7 @@ void render_cb(EV_P_ ev_timer *w, int revents)
         /*draw_compass();*/
         /*approach_helm();*/
         dock_update();
-        /*noun_update(get_noun("Dummy"));*/
+        noun_update(get_noun("Dummy"));
         noun_update(get_noun("Guy"));
 
         update_panels();  /* Were slowing down performance, unnecessary */
@@ -193,13 +193,10 @@ int start_event_watchers(void)
         ev_init(&animate, &animate_cb);
         ev_init(&flow, &flow_cb);
 
-        render.repeat    = .025;
-        /*render.repeat    = .04;*/
-        /*move.repeat      = .08;*/
-        move.repeat      = .08;
-        animate.repeat   = 3.5;
-        flow.repeat      = .1;
-
+        render.repeat  = .025;
+        move.repeat    = .08;
+        animate.repeat = 3.5;
+        flow.repeat    = .1;
 
         ev_io_start(readloop, &read);
         ev_timer_again(execloop, &render);

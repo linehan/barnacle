@@ -202,14 +202,18 @@ enum light {
         LIGHT1 = 81,
         LIGHT2 = 82,
         LIGHT3 = 83,
-        LIGHT4 = 84
+        LIGHT4 = 84,
+        LIGHTB1 = 85,
+        LIGHTB2 = 86,
+        LIGHTB3 = 87,
+        LIGHTB4 = 88,
 };
 
 enum flex {
-        FLEXBG = 85,
-        FLEXFG = 86,
-        FLEXBG_DEFAULT = 87,
-        FLEXFG_DEFAULT = 88
+        FLEXBG = 89,
+        FLEXFG = 90,
+        FLEXBG_DEFAULT = 91,
+        FLEXFG_DEFAULT = 92 
 };
 
 #define PUR_WHI PUR_WHITE
