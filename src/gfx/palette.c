@@ -229,6 +229,11 @@ void init_palette(int set)
         init_color(LIGHT3, 0, 0, 0);
         init_color(LIGHT4, 0, 0, 0);
 
+        init_color(LIGHTB1, 0, 0, 0);
+        init_color(LIGHTB2, 0, 0, 0);
+        init_color(LIGHTB3, 0, 0, 0);
+        init_color(LIGHTB4, 0, 0, 0);
+
         init_color(FLEXBG, 0, 0, 0);
         init_color(FLEXFG, 0, 0, 0);
         init_color(FLEXBG_DEFAULT, 0, 0, 0);
@@ -366,20 +371,11 @@ void init_palette(int set)
         init_pair(SEA___MED, __LSEA, DSEA);
         init_pair(PUR_SOLID, __DGREY, __DGREY);
 
-        /*init_color(DARK_SANDZ, 768,  666,  521);*/
         init_color(DARK_SANDZ, 741,  643,  502);
-
-        /*init_color(DARK_SAND0, 651,  564,  439);*/
         init_color(DARK_SAND0, 670,  580,  455);
-        /*init_color(DARK_SAND1, 510,  443,  345);*/
         init_color(DARK_SAND1, 541,  466,  365);
-
-        /*init_color(DARK_SAND2, 451,  376,  270);*/
         init_color(DARK_SAND2, 431,  372,  290);
-
         init_color(DARK_SAND3, 259,  216,  157);
-        /*init_color(DARK_SAND3, 310,  270,  208);*/
-
         init_color(DARK_SAND4, 169,  137,  94);
 
         init_pair(BSAND, DARK_SANDZ, A_SAND_LAGOON);
@@ -388,10 +384,10 @@ void init_palette(int set)
         init_pair(ESAND, DARK_SAND1, DARK_SAND2);
         init_pair(FSAND, DARK_SAND4, DARK_SAND3);
 
-        init_pair(LIGHTP1, LIGHT1, __DGREY);
-        init_pair(LIGHTP2, LIGHT2, __DGREY);
-        init_pair(LIGHTP3, LIGHT3, __DGREY);
-        init_pair(LIGHTP4, LIGHT4, __DGREY);
+        init_pair(LIGHTP1, LIGHT1, LIGHTB1);
+        init_pair(LIGHTP2, LIGHT2, LIGHTB2);
+        init_pair(LIGHTP3, LIGHT3, LIGHTB3);
+        init_pair(LIGHTP4, LIGHT4, LIGHTB4);
 
         mix_colors();
 }

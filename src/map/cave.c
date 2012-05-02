@@ -37,8 +37,10 @@ void gen_cave(struct map_t *map)
         for (j=0; j<width; j++) {
                 if (TILE(map, i, j) == CAVEFLOOR)
                         place_cavefloor_tile(map, i, j);
-                else
+                else {
+                        place_cavesolid_label(mx_get(map->tile, i, j));
                         place_cavesolid_tile(map, i, j);
+                }
         }
         }
 }

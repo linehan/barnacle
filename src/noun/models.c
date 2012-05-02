@@ -34,13 +34,6 @@ void noun_animate(struct noun_t *noun)
         if (mob->animate->len == 0)
                 mob->animate->len = wcslen(mob->animate->frame);
 
-        /* Increment the current frame and/or terminate the animation */
-        if (++mob->animate->i == mob->animate->len) {
-                mob->animate->i = 0;
-                mob->animate = NULL;
-                return;
-        }
-
         /* Draw the current frame */
         wadd_wch(mob->win, mkcch(&mob->animate->frame[mob->animate->i], 0, FLEX));
 
@@ -51,6 +44,13 @@ void noun_animate(struct noun_t *noun)
         /* Signal if this is the sig_frame */
         if (mob->animate->i == mob->animate->verb_frame)
                 mob_set_signal(mob, mob->animate->verb_id, mob->animate->verb_dir);
+
+        /* Increment the current frame and/or terminate the animation */
+        if (++mob->animate->i == mob->animate->len) {
+                mob->animate->i = 0;
+                mob->animate = NULL;
+                return;
+        }
 
         return;
 }
@@ -69,21 +69,21 @@ void noun_animate(struct noun_t *noun)
  * NOTES: This is the main player character
  ******************************************************************************/
 /*----------------------------------------------------------------------------*/
-wchar_t *base = L"ⰾ";
-struct ani_t run_u_test   = {L"Ꮂⲑⲑⱚⰾ",             MV(1,'u'), NOVB};
-struct ani_t run_d_test   = {L"Ꮂⲑⲑⱚⰾ",             MV(1,'d'), NOVB};
-struct ani_t run_l_test   = {L"Ꮂⲑⲑⱚⰾ",             MV(1,'l'), NOVB};
-struct ani_t run_r_test   = {L"Ꮂⲑⲑⱚⰾ",             MV(1,'r'), NOVB};
+wchar_t *base = L"ⰾ";//ⱚᏅᎤ
+struct ani_t run_u_test   = {L"ⲑⲑᎲⰾ",              MV(0,'u'), NOVB};
+struct ani_t run_d_test   = {L"ⲑⲑᎲⰾ",              MV(0,'d'), NOVB};
+struct ani_t run_l_test   = {L"ⲑⲑᎲⰾ",              MV(0,'l'), NOVB};
+struct ani_t run_r_test   = {L"ⲑⲑᎲⰾ",              MV(0,'r'), NOVB};
 struct ani_t punch_r_test = {L"ᎲᎲᎲᱽᕤᱽᎲᎲⰾ",         NOMV, NOVB};
 struct ani_t punch_l_test = {L"ᎲᎲᎲ᱙ᕦ᱙ᎲᎲⰾ",         NOMV, NOVB};
-struct ani_t slashtest    = {L"ᎲᎲᎲᒀᒀᒀᒀᎲᎲⰾ",        NOMV, VB(4,VERB_Punch,'u')};
-struct ani_t dodgetest    = {L"ᎲᎲᎲᏡᏡᏡᏡȣȣȣȣᏡᎲᎲⰾ",   MV(9,'d'), NOVB};
-struct ani_t falltest     = {L"ᎲᎲᎲޗޗޗⲁⲁⲁᥑ",        MV(5,'r'), NOVB};
-struct ani_t dodge_l_test = {L"ᎲᎲᎲᥑᥑⲁཚཚཚᎲᎲᎲⰾ",     MV(6,'l'), NOVB};
-struct ani_t dodge_r_test = {L"ᎲᎲᎲᥑᥑⲁཚཚཚᎲᎲᎲⰾ",     MV(6,'r'), NOVB};
-struct ani_t kick_r_test  = {L"ᎲᎲᎲ࿂࿂ᱯ࿂࿂༱༱ꝬꝬỿᓀᓀᎲⰾ", MV(10,'r'), NOVB};
-struct ani_t kick_l_test  = {L"ᎲᎲᎲ࿂࿂ᱯᱯ࿂࿂༱ꝬꝬꝬᓂᓂᎲⰾ", MV(10,'l'), NOVB};
-struct ani_t recoil_test  = {L"ᎲᎲᎹᎹᎲⰾ",            MV(2,'d'), NOVB};
+struct ani_t slashtest    = {L"ᎲᎲᎲᒀᒀᒀᒀᎲᎲⰾ",        NOMV, VB(3,VERB_Punch,'u')};
+struct ani_t dodgetest    = {L"ᎲᎲᎲᏡᏡᏡᏡȣȣȣȣᏡᎲᎲⰾ",   MV(8,'d'), NOVB};
+struct ani_t falltest     = {L"ᎲᎲᎲޗޗޗⲁⲁⲁᥑ",        MV(4,'r'), NOVB};
+struct ani_t dodge_l_test = {L"ᎲᎲᎲᥑᥑⲁཚཚཚᎲᎲᎲⰾ",     MV(5,'l'), NOVB};
+struct ani_t dodge_r_test = {L"ᎲᎲᎲᥑᥑⲁཚཚཚᎲᎲᎲⰾ",     MV(5,'r'), NOVB};
+struct ani_t kick_r_test  = {L"ᎲᎲᎲ࿂࿂ᱯ࿂࿂༱༱ꝬꝬỿᓀᓀᎲⰾ", MV(9,'r'), NOVB};
+struct ani_t kick_l_test  = {L"ᎲᎲᎲ࿂࿂ᱯᱯ࿂࿂༱ꝬꝬꝬᓂᓂᎲⰾ", MV(9,'l'), NOVB};
+struct ani_t recoil_test  = {L"ᎲᎲᎹᎹᎲⰾ",            MV(1,'d'), NOVB};
 /*----------------------------------------------------------------------------*/
 /*
  * render_human -- the rendering method for human noun models

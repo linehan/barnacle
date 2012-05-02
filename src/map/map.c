@@ -352,35 +352,6 @@ void map_set_extra(void *mymap)
         map_refresh(ACTIVE);
 }
 
-/******************************************************************************
- * Map functions 
- * 
- * map_trigger -- detect if an event has been triggered by a mob 
- * map_roll    -- move the map 
- *
- ******************************************************************************/ 
-
-/*
- * map_trigger -- detect if a mob is on a tile that should trigger an event
- * @map: pointer to the map containing the event information
- * @mob: pointer to the mob
- */
-/*void map_trigger(struct map_t *map, struct mob_t *mob)*/
-/*{*/
-        /*int y;*/
-        /*int x;*/
-        /*int i;*/
-
-        /*y = ufo_y(mob, ufo);*/
-        /*x = ufo_x(mob, ufo);*/
-
-        /*i = mx_val(map->hook, y, x);*/
-        
-        /*if (map->asset[i] != NULL)*/
-                /*map->asset[i]->trigger();*/
-/*}*/
-
-
 /*
    map_roll -- move the map around
  * @map: pointer to the map you want to move
@@ -421,10 +392,10 @@ int map_hit(struct map_t *map, struct rec_t *rec)
 
         for (i=rec->y; i<(rec->h+rec->y); i++) {
                 for (j=rec->x; j<(rec->x+rec->w); j++) {
-                        /*if (is_state(map->tree, z, 0, LAY, TOP)) return (1);*/
-                        /*if (is_state(map->tree, z, 0, LAY, DRP)) return (1);*/
-                        /*if (is_state(map->tree, z, 0, LAY, GRO)) return (1);*/
-                        /*if (is_state(map->tree, z, 0, LAY, VEG)) return (1);*/
+                        if (TILE(map, i, j) == DRP) return (1);
+                        if (TILE(map, i, j) == TTO) return (1);
+                        if (TILE(map, i, j) == CAVEWALL) return (1);
+                        if (TILE(map, i, j) == CAVESOLID) return (1);
                 }
         }
         return (0);
