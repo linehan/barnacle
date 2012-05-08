@@ -9,11 +9,11 @@
  * the same block. See the documentation for or_nibble in "../eng/bytes.h"
  */
 #define SET_TILE(map,y,x,val) (set_byte(mx_get((map)->tile, y, x), LAB, val))
-#define TILE(map,y,x)     (get_byte(mx_val((map)->tile, y, x), LAB))
+#define TILE(map,y,x)         (get_byte(mx_val((map)->tile, y, x), LAB))
 #define IS_TILE(map,y,x,val)  (val == TILE(map,y,x)) ? true : false
 
 #define SET_ELEV(map,y,x,val) (set_byte(mx_get((map)->tile, y, x), ALT, v))
-#define ELEV(map,y,x) (get_byte(mx_val((map)->tile, y, x), ALT))
+#define ELEV(map,y,x)         (get_byte(mx_val((map)->tile, y, x), ALT))
 #define IS_ELEV(map,y,x,val)  (val == ELEV(map,y,x)) ? true : false
 
 

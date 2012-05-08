@@ -117,6 +117,23 @@ enum arne_shadow2 {
         DARK_SANDZ = 122,
         /* FJORD PALETTE 123-135*/
 };
+enum light {
+        LIGHT1 = 123,
+        LIGHT2 = 124,
+        LIGHT3 = 125,
+        LIGHT4 = 126,
+        LIGHTB1 = 127,
+        LIGHTB2 = 128,
+        LIGHTB3 = 129,
+        LIGHTB4 = 130,
+};
+
+enum flex {
+        FLEXBG = 131,
+        FLEXFG = 132,
+        FLEXBG_DEFAULT = 133,
+        FLEXFG_DEFAULT = 134 
+};
 
 
 
@@ -198,23 +215,7 @@ enum stuff {
         FSAND = 80,
 };
 
-enum light {
-        LIGHT1 = 81,
-        LIGHT2 = 82,
-        LIGHT3 = 83,
-        LIGHT4 = 84,
-        LIGHTB1 = 85,
-        LIGHTB2 = 86,
-        LIGHTB3 = 87,
-        LIGHTB4 = 88,
-};
 
-enum flex {
-        FLEXBG = 89,
-        FLEXFG = 90,
-        FLEXBG_DEFAULT = 91,
-        FLEXFG_DEFAULT = 92 
-};
 
 #define PUR_WHI PUR_WHITE
 #define PUR_BLU PUR_CELESTIAL
@@ -326,6 +327,12 @@ enum light_pair {
         LIGHTP3 = 158,
         LIGHTP4 = 159
 };
+
+enum black_pair {
+        BLACK_BEIGE = 160,
+};
+
+
 
 void darken_colors(int step);
 

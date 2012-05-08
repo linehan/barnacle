@@ -3,6 +3,7 @@
 #include "../eng/fsm.h"
 #include "models.h"
 #include "../mob/mob.h"
+#include "../equip/rope.h"
 
 #define STATE_RESET(noun) noun_set_state(noun, 0, 0)
 
@@ -13,6 +14,8 @@ struct ani_t {
         wchar_t frame[20];      /* Frames in the animation reel */
         int mv_frame;           /* Frame on which to issue a move signal */
         int mv_dir;             /* Direction in which to move */
+        int mv_frame_alt;       /* Frame on which to issue a move signal */
+        int mv_dir_alt;         /* Direction in which to move */
         int verb_frame;         /* Frame on which to issue a verb signal */
         int verb_id;            /* Verb to issue */
         int verb_dir;           /* Neighbor to address the verb to */
@@ -40,6 +43,8 @@ void noun_animate(struct noun_t *noun)
         /* Move the panel if this is the mv_frame */
         if (mob->animate->i == mob->animate->mv_frame)
                 mob_move(mob, mob->animate->mv_dir);
+        if (mob->animate->i == mob->animate->mv_frame_alt)
+                mob_move(mob, mob->animate->mv_dir_alt);
 
         /* Signal if this is the sig_frame */
         if (mob->animate->i == mob->animate->verb_frame)
@@ -70,24 +75,25 @@ void noun_animate(struct noun_t *noun)
  ******************************************************************************/
 /*----------------------------------------------------------------------------*/
 wchar_t *base = L"ⰾ";//ⱚᏅᎤ
-struct ani_t run_u_test   = {L"ⲑⲑᎲⰾ",              MV(0,'u'), NOVB};
-struct ani_t run_d_test   = {L"ⲑⲑᎲⰾ",              MV(0,'d'), NOVB};
-struct ani_t run_l_test   = {L"ⲑⲑᎲⰾ",              MV(0,'l'), NOVB};
-struct ani_t run_r_test   = {L"ⲑⲑᎲⰾ",              MV(0,'r'), NOVB};
-struct ani_t punch_r_test = {L"ᎲᎲᎲᱽᕤᱽᎲᎲⰾ",         NOMV, NOVB};
-struct ani_t punch_l_test = {L"ᎲᎲᎲ᱙ᕦ᱙ᎲᎲⰾ",         NOMV, NOVB};
-struct ani_t slashtest    = {L"ᎲᎲᎲᒀᒀᒀᒀᎲᎲⰾ",        NOMV, VB(3,VERB_Punch,'u')};
-struct ani_t dodgetest    = {L"ᎲᎲᎲᏡᏡᏡᏡȣȣȣȣᏡᎲᎲⰾ",   MV(8,'d'), NOVB};
-struct ani_t falltest     = {L"ᎲᎲᎲޗޗޗⲁⲁⲁᥑ",        MV(4,'r'), NOVB};
-struct ani_t dodge_l_test = {L"ᎲᎲᎲᥑᥑⲁཚཚཚᎲᎲᎲⰾ",     MV(5,'l'), NOVB};
-struct ani_t dodge_r_test = {L"ᎲᎲᎲᥑᥑⲁཚཚཚᎲᎲᎲⰾ",     MV(5,'r'), NOVB};
-struct ani_t kick_r_test  = {L"ᎲᎲᎲ࿂࿂ᱯ࿂࿂༱༱ꝬꝬỿᓀᓀᎲⰾ", MV(9,'r'), NOVB};
-struct ani_t kick_l_test  = {L"ᎲᎲᎲ࿂࿂ᱯᱯ࿂࿂༱ꝬꝬꝬᓂᓂᎲⰾ", MV(9,'l'), NOVB};
-struct ani_t recoil_test  = {L"ᎲᎲᎹᎹᎲⰾ",            MV(1,'d'), NOVB};
+struct ani_t run_u_test   = {L"ⲑⲑᎲⰾ",              MV(0,'u'), NOMV, NOVB};
+struct ani_t run_d_test   = {L"ⲑⲑᎲⰾ",              MV(0,'d'), NOMV, NOVB};
+struct ani_t run_l_test   = {L"ⲑⲑᎲⰾ",              MV(0,'l'), NOMV, NOVB};
+struct ani_t run_r_test   = {L"ⲑⲑᎲⰾ",              MV(0,'r'), NOMV, NOVB};
+struct ani_t punch_r_test = {L"ᎲᎲᎲᱽᕤᱽᎲᎲⰾ",         NOMV, NOMV, NOVB};
+struct ani_t punch_l_test = {L"ᎲᎲᎲ᱙ᕦ᱙ᎲᎲⰾ",         NOMV, NOMV, NOVB};
+struct ani_t slashtest    = {L"ᎲᎲᎲᒀᒀᒀᒀᎲᎲⰾ",        NOMV, NOMV, VB(3,VERB_Punch,'u')};
+struct ani_t dodgetest    = {L"ᎲᎲᎲᏡᏡᏡᏡȣȣȣȣᏡᎲᎲⰾ",   MV(8,'d'), NOMV, NOVB};
+struct ani_t falltest     = {L"ᎲᎲᎲޗޗޗⲁⲁⲁᥑ",        MV(4,'r'), NOMV, NOVB};
+struct ani_t dodge_l_test = {L"ᎲᎲᎲᥑᥑⲁཚཚཚᎲᎲᎲⰾ",     MV(5,'l'), NOMV, NOVB};
+struct ani_t dodge_r_test = {L"ᎲᎲᎲᥑᥑⲁཚཚཚᎲᎲᎲⰾ",     MV(5,'r'), NOMV, NOVB};
+struct ani_t kick_r_test  = {L"ᎲᎲᎲ࿂࿂ᱯ࿂࿂༱༱ꝬꝬỿᓀᓀᎲⰾ", MV(9,'r'), NOMV, NOVB};
+struct ani_t kick_l_test  = {L"ᎲᎲᎲ࿂࿂ᱯᱯ࿂࿂༱ꝬꝬꝬᓂᓂᎲⰾ", MV(9,'l'), NOMV, NOVB};
+struct ani_t jump_ul      = {L"ᎲᎲᎲⰾⰾᎹᎹᎹᎹᎹᎹᎲᎲⰾ",    MV(7,'u'+'l'), NOVB};
+struct ani_t jump_ur      = {L"ᎲᎲᎲⰾⰾᎹᎹᎹᎹᎹᎹᎲᎲⰾ",    MV(7,'u'+'r'), NOVB};
 /*----------------------------------------------------------------------------*/
 /*
  * render_human -- the rendering method for human noun models
- * @noun: pointer to a noun of model 'HUMAN'
+ * @self: pointer to a noun of model 'HUMAN'
  */
 void render_human(void *self)
 {
@@ -103,7 +109,7 @@ void render_human(void *self)
 
 /*
  * modify_human -- the state machine for human noun models
- * @noun: pointer to a noun of model 'HUMAN'
+ * @self: pointer to a noun of model 'HUMAN'
  */
 int modify_human(void *self)
 {
@@ -123,7 +129,7 @@ int modify_human(void *self)
                         break;
                 case 'H':
                 case 'A':
-                        noun->mob.animate = &kick_l_test;
+                        noun->mob.animate = &jump_ul;
                         break;
                 case 'h':
                 case 'a':
@@ -131,7 +137,7 @@ int modify_human(void *self)
                         break;
                 case 'L':
                 case 'D':
-                        noun->mob.animate = &kick_r_test;
+                        noun->mob.animate = &jump_ur;
                         break;
                 case 'l':
                 case 'd':
@@ -142,6 +148,12 @@ int modify_human(void *self)
                         break;
                 case 'r':
                         noun->mob.animate = &punch_l_test;
+                        break;
+                case 'R':
+                        rope_head(noun->mob.ufo.obj.y, noun->mob.ufo.obj.x, ropekey);
+                        break;
+                case 'Y':
+                        rope_drop(ropekey);
                         break;
                 case 't':
                         noun->mob.animate = &punch_r_test;
@@ -158,9 +170,6 @@ int modify_human(void *self)
                 case KEY_ESC:
                         return (MODE_RELEASE);
                 }
-                break;
-        case VERB_Punch:
-                noun->mob.animate = &recoil_test;
                 break;
         }
         STATE_RESET(noun);

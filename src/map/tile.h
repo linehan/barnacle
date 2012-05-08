@@ -90,6 +90,11 @@ static inline void place_cavefloor_label(uint32_t *val)
         set_byte(val, LAB, CAVEFLOOR);
         set_byte(val, ALT, 3);
 }
+static inline void place_rope_label(uint32_t *val)
+{
+        set_byte(val, LAB, ROPE);
+        set_byte(val, ALT, 3);
+}
 
 #define layer BGR
 /*
@@ -164,7 +169,7 @@ static inline void place_terra_tile(struct map_t *map, int y, int x)
 static inline void place_cliff_tile(struct map_t *map, int y, int x)
 {
         #define color LAND
-        #define attr 0
+        #define attr 0 
 
         wipe_tile(map, y, x, TOP);
         mvwp(PLATE(map, layer), y, x, L"▓", color, attr);
@@ -201,8 +206,6 @@ static inline void place_treetrunk_tile(struct map_t *map, int y, int x)
         #undef color
         #undef attr
 }
-
-
 /*
  * Place a tile for a cave floor 
  */
@@ -242,14 +245,45 @@ static inline void place_cavefloor_tile(struct map_t *map, int y, int x)
 static inline void place_cavedoor_tile(struct map_t *map, int y, int x)
 {
         #define color PUR_BROWN 
-        #define attr  0
+        #define attr  A_REVERSE
 
-        mvwp(PLATE(map, layer), y, x, L" ", color, attr);
+        mvwp(PLATE(map, layer), y, x, L"⬣", color, attr);
+
+        #undef color
+        #undef attr
+}
+static inline void place_l_rope_anchor_tile(struct map_t *map, int y, int x)
+{
+        #define color BLACK_BEIGE 
+        #define attr  0 
+
+        mvwp(PLATE(map, layer), y, x, L"⸜", color, attr);
+
+        #undef color
+        #undef attr
+}
+static inline void place_r_rope_anchor_tile(struct map_t *map, int y, int x)
+{
+        #define color BLACK_BEIGE 
+        #define attr  0 
+
+        mvwp(PLATE(map, layer), y, x, L"⸝", color, attr);
+
+        #undef color
+        #undef attr
+}
+static inline void place_rope_tile(struct map_t *map, int y, int x)
+{
+        #define color BLACK_BEIGE 
+        #define attr  0 
+
+        mvwp(PLATE(map, layer), y, x, L"┆", color, attr);
 
         #undef color
         #undef attr
 }
 
+//ỺỻꚐꚑ⏓⏚⍊⍽⎵⸜⸝
 
 
 /*
@@ -293,6 +327,15 @@ static inline void place_tile(struct map_t *map, int y, int x, int type)
                 break;
         case CAVESOLID:
                 place_cavesolid_tile(map, y, x);
+                break;
+        case ROPE:
+                place_rope_tile(map, y, x);
+                break;
+        case L_ROPE_ANCHOR:
+                place_l_rope_anchor_tile(map, y, x);
+                break;
+        case R_ROPE_ANCHOR:
+                place_r_rope_anchor_tile(map, y, x);
                 break;
         }
 }

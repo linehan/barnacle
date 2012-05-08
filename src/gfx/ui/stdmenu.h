@@ -22,9 +22,9 @@
  */
 
 
-
 /* Do not fear ! */
 struct stdmenu_t {
+        /*---------------------------- Windows and panels */
         WINDOW *win;  /* Main MENU window */
         WINDOW *sub;  /* Embedded MENU window */
         WINDOW *buf;  /* Pattern or item name/description buffer */
@@ -32,28 +32,61 @@ struct stdmenu_t {
         PANEL *pan;   /* Holds all the windows */
         PANEL *bufpan;
         PANEL *nfopan;
-        MENU *menu;   /* Stores items */
-        ITEM **item;
-        int nitems;
-        int nrows;
-        int ncols;
+        /*---------------------------- Dimensions */
+        int nitem;       /* Number of items in stdmenu */
+        int nrows;       /* Number of rows at a time in the menu */
+        int ncols;       /* Number of columns at a time in the menu */
+        /*---------------------------- Menu components */
+        MENU *menu;     
+        ITEM **item;  
+        wchar_t **icon;  /* Wide-character icons (optional) */
+        /*---------------------------- Rendering and display */
+        short pair_item_lo;
+        short pair_item_hi;
+        short pair_item_gr;
+        short pair_icon_lo;
+        short pair_icon_hi;
+        short pair_icon_gr;
+        short pair_name_lo;
+        short pair_name_hi;
+        short pair_name_gr;
+        /*---------------------------- Book-keeping */
+        bool is_posted;
+        bool is_open;
+        bool has_focus;
+        /*---------------------------- Iterated quantities */
+        ITEM *cur_item;
+        void *cur_ptr;
+        int cur_top;
+        int cur_row;
+        /*---------------------------- Methods */
         void (*die)(void *self);
-        void (*vis)(void *self, bool opt);
-        bool (*isvis)(void *self);
-        void (*build)(void *self, int opt);
-        void (*post)(void *self, bool opt);
+        void (*post)(void *self);
+        void (*unpost)(void *self);
+        void (*open)(void *self);
+        void (*close)(void *self);
+        void (*tog)(void *self);
+        void (*focus)(void *self);
+        void (*unfocus)(void *self);
+        void (*icons)(void *self, int yofs, int xofs);
+        void (*prev)(void *self);
+        void (*next)(void *self);
+        void (*pgup)(void *self);
+        void (*pgdn)(void *self);
 };
 
+struct stdmenu_t *new_stdmenu(char **name, char **desc, wchar_t **icon, void **usrptr, int n);
 
-struct stdmenu_t *new_stdmenu(char **name, char **desc, void **usrptr, int n);
-void stdmenu_win(struct stdmenu_t *stdmenu, int h, int w, int y, int x);
-void stdmenu_color(struct stdmenu_t *stdmenu, short fore, short back, short grey);
-void stdmenu_cfg(struct stdmenu_t *stdmenu, int opt, bool set, const char *ch);
-void stdmenu_buf(struct stdmenu_t *stdmenu, WINDOW *buf);
+void stdmenu_win(struct stdmenu_t *stdmenu, 
+                 int h, int w, int y, int x,
+                 int tpad, int bpad, int lpad, int rpad);
 
-void stdmenu_color_fore(struct stdmenu_t *stdmenu, short pair);
-void stdmenu_color_back(struct stdmenu_t *stdmenu, short pair);
-void stdmenu_color_grey(struct stdmenu_t *stdmenu, short pair);
-void stdmenu_color_name(struct stdmenu_t *stdmenu, short pair);
+void stdmenu_color(struct stdmenu_t *smenu, short fore, short back, short grey);
+void stdmenu_color_item(struct stdmenu_t *smenu, short pairlo, short pairhi, short pairgr);
+void stdmenu_color_name(struct stdmenu_t *smenu, short pairlo, short pairhi, short pairgr);
+void stdmenu_color_icon(struct stdmenu_t *smenu, short pairlo, short pairhi, short pairgr);
+
+void stdmenu_cfg(struct stdmenu_t *smenu, int opt, bool set, const char *ch);
+void stdmenu_buf(struct stdmenu_t *smenu, WINDOW *buf);
 
 #endif

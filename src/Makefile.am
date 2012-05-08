@@ -67,5 +67,8 @@ arawak_SOURCES = arawak.c                       \
                    noun/types/boat/boat.c       \
                    noun/types/boat/compass.c    \
                    verb/verb.c                  \
+                   camp/builder.c               \
+                   equip/items.c                \
+                   equip/rope.c                 \
                    test/test.c                  
 

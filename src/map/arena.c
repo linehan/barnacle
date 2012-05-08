@@ -75,10 +75,12 @@ struct map_t *map_preset_arena(void)
         /* Make a cave entrance */
         cave = new_cave();
         put_door(CAVE_DOOR, arena, cave, 
-                 1, 2, ARENA_H/2-1, COLS/2,
-                 1, 1, LINES-1, COLS/2);
+                 1, 1, ARENA_H/2-1, COLS/2,
+                 1, 1, 5, COLS/2);
 
+        cave_connect_door(cave);
         map_render(arena);
+        map_render(cave);
 
         return arena;
 }

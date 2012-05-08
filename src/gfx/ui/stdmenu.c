@@ -1,57 +1,50 @@
 #include <stdlib.h>
 #include "../gfx.h"
 #include "stdmenu.h"
+#include "../../lib/textutils.h"
 
+#define STDMENU(x) (struct stdmenu_t *)x
+#define STD_BACKGROUND &PURPLE[2]
+
+/* Method forward references
+``````````````````````````````````````````````````````````````````````````````*/
+void stdmenu_open(void *self);
+void stdmenu_close(void *self);
+void stdmenu_tog(void *self);
+void stdmenu_focus(void *self);
+void stdmenu_unfocus(void *self);
+void stdmenu_post(void *self);
+void stdmenu_unpost(void *self);
+void stdmenu_prev(void *self);
+void stdmenu_next(void *self);
+void stdmenu_pgup(void *self);
+void stdmenu_pgdn(void *self);
+void stdmenu_print_icons(void *self, int yofs, int xofs);
+
+/* Creators and Destructors
+``````````````````````````````````````````````````````````````````````````````*/
 void stdmenu_destroy(void *self)
 {
+        struct stdmenu_t *smenu = STDMENU(self);
         int i;
-        struct stdmenu_t *stdmenu = (struct stdmenu_t *)self;
 
-        del_panel(stdmenu->pan);
-        delwin(stdmenu->buf);
-        delwin(stdmenu->sub);
-        delwin(stdmenu->win);
+        del_panel(smenu->pan);
+        delwin(smenu->buf);
+        delwin(smenu->sub);
+        delwin(smenu->win);
 
-        unpost_menu(stdmenu->menu);
-        free_menu(stdmenu->menu);
+        unpost_menu(smenu->menu);
+        free_menu(smenu->menu);
 
-        for (i=0; i<stdmenu->nitems; i++)
-                free_item(stdmenu->item[i]);
+        for (i=0; i<smenu->nitem; i++) {
+                free_item(smenu->item[i]);
+                free(smenu->icon[i]);
+        }
 
-        free(stdmenu);
+        free(smenu);
 }
 
-
-bool stdmenu_is_visible(void *self)
-{
-        struct stdmenu_t *stdmenu = (struct stdmenu_t *)self;
-
-        return (panel_hidden(stdmenu->pan)) ? false : true;
-}
-
-
-void stdmenu_visible(void *self, bool opt)
-{
-        struct stdmenu_t *stdmenu = (struct stdmenu_t *)self; 
-
-        if (opt == true)
-                show_panel(stdmenu->pan);
-        else
-                hide_panel(stdmenu->pan);
-}
-
-
-void stdmenu_post(void *self, bool opt)
-{
-        struct stdmenu_t *stdmenu = (struct stdmenu_t *)self; 
-
-        if (opt == true)
-                post_menu(stdmenu->menu);
-        else
-                unpost_menu(stdmenu->menu);
-}
-
-struct stdmenu_t *new_stdmenu(char **name, char **desc, void **usrptr, int n)
+struct stdmenu_t *new_stdmenu(char **name, char **desc, wchar_t **icon, void **usrptr, int n)
 {
         struct stdmenu_t *new;
         int i;
@@ -59,109 +52,240 @@ struct stdmenu_t *new_stdmenu(char **name, char **desc, void **usrptr, int n)
         new = malloc(sizeof(struct stdmenu_t));
 
         new->item = calloc(n+1, sizeof(ITEM *));
+        new->icon = calloc(n+1, sizeof(wchar_t *));
 
         for (i=0; i<n; i++) {
                 new->item[i] = new_item(name[i], desc[i]);
                 if (usrptr != NULL)
                         set_item_userptr(new->item[i], usrptr[i]);
+                if (icon != NULL)
+                        new->icon[i] = wcdup(icon[i]);
         }
         new->item[n] = (ITEM *)NULL;
 
         new->menu = new_menu((ITEM **)new->item);
 
-        new->die = &stdmenu_destroy;
-        new->vis = &stdmenu_visible;
-        new->post = &stdmenu_post;
-        new->isvis = &stdmenu_is_visible;
+        new->die     = &stdmenu_destroy;
+        new->post    = &stdmenu_post;
+        new->unpost  = &stdmenu_unpost;
+        new->open    = &stdmenu_open;
+        new->close   = &stdmenu_close;
+        new->tog     = &stdmenu_tog;
+        new->focus   = &stdmenu_focus;
+        new->unfocus = &stdmenu_unfocus;
+        new->icons   = &stdmenu_print_icons;
+        new->next    = &stdmenu_next;
+        new->prev    = &stdmenu_prev;
+        new->pgup    = &stdmenu_pgup;
+        new->pgdn    = &stdmenu_pgdn;
 
         return (new);
 }
 
 
-void stdmenu_win(struct stdmenu_t *stdmenu, int h, int w, int y, int x)
+/* Initialization and Configuration 
+``````````````````````````````````````````````````````````````````````````````*/
+/* create the windows */
+void stdmenu_win(struct stdmenu_t *smenu, int h, int w, int y, int x,
+                 int tpad, int bpad, int lpad, int rpad)
 {
-        #define winh(h) (h)
-        #define winw(w) (w)
-        #define subh(h) (winh(h)-2)
-        #define subw(w) ((winw(w))-2) 
+        #define subh(h) (h - (tpad+bpad))
+        #define subw(w) (w - (lpad+rpad)) 
 
-        stdmenu->win = newwin(winh(h), winw(w), y, x);
-        stdmenu->sub = derwin(stdmenu->win, subh(h), subw(w), 1, 1);
+        smenu->win = newwin(h, w, y, x);
+        smenu->sub = derwin(smenu->win, subh(h), subw(w), tpad, lpad);
 
-        wbkgrnd(stdmenu->win, &PURPLE[2]);
-        wbkgrnd(stdmenu->sub, &PURPLE[2]);
+        wbkgrnd(smenu->win, STD_BACKGROUND);
+        wbkgrnd(smenu->sub, STD_BACKGROUND);
 
-        stdmenu->pan = new_panel(stdmenu->win);
+        smenu->pan = new_panel(smenu->win);
 
-        hide_panel(stdmenu->pan);
+        hide_panel(smenu->pan);
 
-        set_menu_win(stdmenu->menu, stdmenu->win);
-        set_menu_sub(stdmenu->menu, stdmenu->sub);
+        set_menu_win(smenu->menu, smenu->win);
+        set_menu_sub(smenu->menu, smenu->sub);
 
-        stdmenu->nrows = h-2;
-        stdmenu->ncols = 1;
+        smenu->nrows = h-2;
+        smenu->ncols = 1;
 
-        set_menu_format(stdmenu->menu, stdmenu->nrows, stdmenu->ncols);
+        set_menu_format(smenu->menu, smenu->nrows, smenu->ncols);
 }
 
-
-void stdmenu_buf(struct stdmenu_t *stdmenu, WINDOW *buf)
+/* assign a buffer window */
+void stdmenu_buf(struct stdmenu_t *smenu, WINDOW *buf)
 {
-        stdmenu->buf = buf;
+        smenu->buf = buf;
 }
 
-void stdmenu_color_fore(struct stdmenu_t *stdmenu, short pair)
+/* Assign the three item colorings */
+void stdmenu_color_item(struct stdmenu_t *smenu, short pairlo, short pairhi, short pairgr)
 {
-        set_menu_fore(stdmenu->menu, COLOR_PAIR(pair));
-}
-void stdmenu_color_back(struct stdmenu_t *stdmenu, short pair)
-{
-        set_menu_back(stdmenu->menu, COLOR_PAIR(pair));
-}
-void stdmenu_color_grey(struct stdmenu_t *stdmenu, short pair)
-{
-        set_menu_grey(stdmenu->menu, COLOR_PAIR(pair));
-}
-void stdmenu_color_name(struct stdmenu_t *stdmenu, short pair)
-{
-        wcolor_set(stdmenu->buf, pair, NULL);
+        smenu->pair_item_lo = pairlo;
+        smenu->pair_item_hi = pairhi;
+        smenu->pair_item_gr = pairgr;
+
+        set_menu_fore(smenu->menu, COLOR_PAIR(pairlo));
+        set_menu_back(smenu->menu, COLOR_PAIR(pairhi));
+        set_menu_grey(smenu->menu, COLOR_PAIR(pairgr));
 }
 
-void stdmenu_cfg(struct stdmenu_t *stdmenu, int opt, bool set, const char *ch)
+/* Assign the three item name colorings */
+void stdmenu_color_name(struct stdmenu_t *smenu, short pairlo, short pairhi, short pairgr)
+{
+        smenu->pair_name_lo = pairlo;
+        smenu->pair_name_hi = pairhi;
+        smenu->pair_name_gr = pairgr;
+        wcolor_set(smenu->buf, pairlo, NULL);
+}
+
+/* Assign the three icon colorings */
+void stdmenu_color_icon(struct stdmenu_t *smenu, short pairlo, short pairhi, short pairgr)
+{
+        smenu->pair_icon_lo = pairlo;
+        smenu->pair_icon_hi = pairhi;
+        smenu->pair_icon_gr = pairgr;
+}
+
+/* Miscellaneous configuration */
+void stdmenu_cfg(struct stdmenu_t *smenu, int opt, bool set, const char *ch)
 {
         switch (opt) {
         case DESC:
                 if (set == false)
-                        menu_opts_off(stdmenu->menu, O_SHOWDESC);
+                        menu_opts_off(smenu->menu, O_SHOWDESC);
                 break;
         case MARK:
                 if (set == false)
-                        set_menu_mark(stdmenu->menu, "");
+                        set_menu_mark(smenu->menu, "");
                 if (ch != NULL)
-                        set_menu_mark(stdmenu->menu, ch);
+                        set_menu_mark(smenu->menu, ch);
                 break;
         }
 }
 
 
-void menu_control(MENU *menu, int esc)
+/* Methods
+``````````````````````````````````````````````````````````````````````````````*/
+/* NOT_METHOD Assignments to be completed on cursor movement */
+void stdmenu_onmove(struct stdmenu_t *smenu)
 {
-        int h;
-        while ((h = getch()), (h != esc)) {
-                switch (h) {
-                case 'k':
-                        menu_driver(menu, REQ_PREV_ITEM);
-                        break;
-                case 'j':
-                        menu_driver(menu, REQ_NEXT_ITEM);
-                        break;
-                case 'n':
-                        menu_driver(menu, REQ_PREV_MATCH);
-                        break;
-                case 'p':
-                        menu_driver(menu, REQ_NEXT_MATCH);
-                        break;
-                }
-                scr_refresh();
+        smenu->cur_item = current_item(smenu->menu);
+        smenu->cur_ptr  = item_userptr(smenu->cur_item);
+        smenu->cur_row  = item_index(smenu->cur_item);
+        smenu->cur_top  = top_row(smenu->menu);
+}
+
+/* "Open" the menu, i.e. make the panel visible */
+void stdmenu_open(void *self)
+{
+        struct stdmenu_t *smenu = STDMENU(self);
+        show_panel(smenu->pan);
+        smenu->is_open = true;
+}
+
+/* "Close" the menu, i.e. hide the panel */
+void stdmenu_close(void *self)
+{
+        struct stdmenu_t *smenu = STDMENU(self);
+        hide_panel(smenu->pan);
+        smenu->is_open = false;
+}
+
+/* Toggle between open and closed states */
+void stdmenu_tog(void *self)
+{
+        struct stdmenu_t *smenu = STDMENU(self);
+        if (smenu->is_open) smenu->close(smenu);
+        else                smenu->open(smenu);
+}
+
+/* Focus the menu; changes item coloration */
+void stdmenu_focus(void *self)
+{
+        struct stdmenu_t *smenu = STDMENU(self);
+        set_menu_fore(smenu->menu, smenu->pair_name_lo);
+        smenu->has_focus = true;
+}
+
+/* Unfocus the menu; changes item coloration */
+void stdmenu_unfocus(void *self)
+{
+        struct stdmenu_t *smenu = STDMENU(self);
+        set_menu_fore(smenu->menu, smenu->pair_name_gr);
+        smenu->has_focus = false;
+}
+
+
+
+/* Post the menu associated with the stdpan (see man 3 curs_menu) */
+void stdmenu_post(void *self)
+{
+        struct stdmenu_t *smenu = STDMENU(self);
+        post_menu(smenu->menu);
+        smenu->is_posted = true;
+
+}
+
+/* Unpost the menu associated with the stdpan (see man 3 curs_menu) */
+void stdmenu_unpost(void *self)
+{
+        struct stdmenu_t *smenu = STDMENU(self);
+        unpost_menu(smenu->menu);
+        smenu->is_posted = false;
+}
+
+/* Select the previous item in the menu */
+void stdmenu_prev(void *self)
+{
+        struct stdmenu_t *smenu = STDMENU(self);
+        menu_driver(smenu->menu, REQ_PREV_ITEM);
+        stdmenu_onmove(smenu);
+}
+
+/* Select the next item in the menu */
+void stdmenu_next(void *self)
+{
+        struct stdmenu_t *smenu = STDMENU(self);
+        menu_driver(smenu->menu, REQ_NEXT_ITEM);
+        stdmenu_onmove(smenu);
+}
+
+/* Page up through the menu */
+void stdmenu_pgup(void *self)
+{
+        struct stdmenu_t *smenu = STDMENU(self);
+        int err;
+
+        err = menu_driver(smenu->menu, REQ_SCR_UPAGE);
+        if (err == E_REQUEST_DENIED)
+                menu_driver(smenu->menu, REQ_FIRST_ITEM);
+}
+
+/* Page down through the menu */
+void stdmenu_pgdn(void *self)
+{
+        struct stdmenu_t *smenu = STDMENU(self);
+        int err;
+
+        err = menu_driver(smenu->menu, REQ_SCR_DPAGE);
+        if (err == E_REQUEST_DENIED)
+                menu_driver(smenu->menu, REQ_LAST_ITEM);
+}
+
+/* Print the icon array along the corresponding rows */
+void stdmenu_print_icons(void *self, int yofs, int xofs)
+{
+        struct stdmenu_t *smenu = STDMENU(self);
+        short pair;          
+        cchar_t cch;         
+        int i;
+
+        for (i=(smenu->cur_top); i<(smenu->nitem); i++) {
+
+                pair = (i == smenu->cur_row) ? PUR_GREY : PUR_PURPLE;
+                setcchar(&cch, smenu->icon[i], 0, pair, NULL);
+                
+                mvwadd_wch(smenu->win, yofs+(i-smenu->cur_top), xofs, &cch);
         }
 }
+

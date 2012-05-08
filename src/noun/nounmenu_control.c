@@ -26,6 +26,7 @@
 #include "nounmenu_control.h"
 #include "nounmenu_discrim.h"
 #include "../verb/verb.h"
+#include "../gfx/ui/stdmenu.h"
 
 
 
@@ -50,6 +51,8 @@ enum operator_modes {
         TOGMENU         /* Toggle the menu of the operand */
 };
 
+
+struct stdmenu_t *nounmenu;
 
 #define RESET -1 
 bool mode_changed;
@@ -110,23 +113,23 @@ void operate_on(void *noun)
                 break;
         case EXITING:
                 nounmenu_print_name(PUR_WHITE);
-                nounmenu_close();
+                nounmenu->close(nounmenu);
                 return;
         case PATTERN:
                 scr_refresh();
                 return;
         case TOGMENU:
-                nounmenu_tog();
+                nounmenu->tog(nounmenu);
                 setmode(DEFAULT_MODE);
                 return;
         case REFRESHMENU:
-                nounmenu_close();
+                nounmenu->close(nounmenu);
                 make_nounmenu(ALL_NOUNS);
-                nounmenu_open();
+                nounmenu->open(nounmenu);
                 setmode(LAST);
                 break;
         case POPMENU:
-                nounmenu_open();
+                nounmenu->open(nounmenu);
                 setmode(DEFAULT_MODE);
                 break;
         case CANCEL:
@@ -135,7 +138,7 @@ void operate_on(void *noun)
         }
         switch(mode) {
         case VITALS:
-                nounmenu_print_vitals();
+                /*nounmenu_print_vitals();*/
                 break;
         }
         nounmenu_print_name(PUR_PURPLE);
@@ -159,81 +162,83 @@ int choose_noun(int ch)
         case MODE_STARTED:
                 if (mode == EXITING) 
                         setmode(LAST);
-                else                 
+                else {
                         setmode(STARTING);
+                        nounmenu = get_noun_struct();
+                }
                 break;
 
         /* Menu navigation -------------------------------- */
-        case 'k':
-                menu_driver(menu, REQ_PREV_ITEM);
-                break;
-        case 'j':
-                menu_driver(menu, REQ_NEXT_ITEM);
-                break;
-        case 'K':
-                if ((menu_driver(menu, REQ_SCR_UPAGE) == E_REQUEST_DENIED))
-                        menu_driver(menu, REQ_FIRST_ITEM);
-                break;
-        case 'J':
-                if ((menu_driver(menu, REQ_SCR_DPAGE) == E_REQUEST_DENIED))
-                        menu_driver(menu, REQ_LAST_ITEM);
-                break;
+        /*case 'k':*/
+                /*menu_driver(menu, REQ_PREV_ITEM);*/
+                /*break;*/
+        /*case 'j':*/
+                /*menu_driver(menu, REQ_NEXT_ITEM);*/
+                /*break;*/
+        /*case 'K':*/
+                /*if ((menu_driver(menu, REQ_SCR_UPAGE) == E_REQUEST_DENIED))*/
+                        /*menu_driver(menu, REQ_FIRST_ITEM);*/
+                /*break;*/
+        /*case 'J':*/
+                /*if ((menu_driver(menu, REQ_SCR_DPAGE) == E_REQUEST_DENIED))*/
+                        /*menu_driver(menu, REQ_LAST_ITEM);*/
+                /*break;*/
 
 
         /* Select / open the subject or object menu ------- */
-        case 'i':
-                if (!nounmenu_isvis())
-                        setmode(POPMENU);
+        /*case 'i':*/
+                /*if (!nounmenu_isvis())*/
+                        /*setmode(POPMENU);*/
 
-                nounmenu_focus(true);
-                break;
+                /*nounmenu_focus(true);*/
+                /*break;*/
 
         /* Toggle the selected menu ----------------------- */
-        case '\n':
-        case ' ':
-                nounmenu_close();
+        /*case '\n':*/
+        /*case ' ':*/
+                /*nounmenu_close();*/
 
-                if (nounmenu_isvis()) {
-                        nounmenu_focus(true);
-                        nounmenu_focus(false);
-                        setmode(op^1);
-                }
+                /*if (nounmenu_isvis()) {*/
+                        /*nounmenu_focus(true);*/
+                        /*nounmenu_focus(false);*/
+                        /*setmode(op^1);*/
+                /*}*/
 
-                break;
+                /*break;*/
 
         /* Refresh the contents of the selected menu ------ */
-        case 'u':
-                setmode(REFRESHMENU);
-                break;
+        /*case 'u':*/
+                /*setmode(REFRESHMENU);*/
+                /*break;*/
 
-        /* Highlight (locate) the currently selected noun - */
-        case 'l':
-                nounmenu_print_highlight();
-                break;
+        /*[> Highlight (locate) the currently selected noun - <]*/
+        /*case 'l':*/
+                /*nounmenu_print_highlight();*/
+                /*break;*/
 
-        /* Feed input to the pattern matcher -------------- */
-        case '/': 
-                setmode(PATTERN);
-                while (item=(ITEM *)pattern_noun_menu(), item!=NULL)
-                        operate_on(item_userptr(item));
-                setmode(LAST);
-                break;
+        /*[> Feed input to the pattern matcher -------------- <]*/
+        /*case '/': */
+                /*setmode(PATTERN);*/
+                /*while (item=(ITEM *)pattern_noun_menu(), item!=NULL)*/
+                        /*operate_on(item_userptr(item));*/
+                /*setmode(LAST);*/
+                /*break;*/
 
-        /* Initiate verb actions -------------------------- */
-        case 'x':
-                setmode(CANCEL);
-                break;
+        /*[> Initiate verb actions -------------------------- <]*/
+        /*case 'x':*/
+                /*setmode(CANCEL);*/
+                /*break;*/
 
-        /* Will be filters in the future ------------------ */
-        case 'p':
-                query_noun_menu(NOUN_MOBILE, NOUN_DOSORT);
-                break;
-        case 's':
-                sort_noun_menu(0);
-                break;
-        case 'v':
-                setmode(VITALS);
-                break;
+        /*[> Will be filters in the future ------------------ <]*/
+        /*case 'p':*/
+                /*query_noun_menu(NOUN_MOBILE, NOUN_DOSORT);*/
+                /*break;*/
+        /*case 's':*/
+                /*sort_noun_menu(0);*/
+                /*break;*/
+        /*case 'v':*/
+                /*setmode(VITALS);*/
+                /*break;*/
 
         /* Exit noun menu mode ---------------------------- */
         case KEY_ESC:
