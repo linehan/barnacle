@@ -31,6 +31,7 @@
 #include "noun/types/creature/creature.h"
 #include "gfx/ui/titlecard.h"
 #include "ai/a_star_test.h"
+#include "equip/rope.h"
 
 /* Rolling start */
 int main(int argc, char *argv[]) 
@@ -51,6 +52,8 @@ int main(int argc, char *argv[])
 
         map_roll(ACTIVE, 0);
         map_roll(ACTIVE, 0);
+
+        new_rope(5, 0);
 
         /*new_boat(FIELD, FUNBOAT, "Afarensis");*/
         /*set_mob(noun_mob("Afarensis"), false);*/

@@ -85,6 +85,7 @@ struct mapbook *MAPBOOK;
 
 enum map_label_opts { MAP_DOSMOOTH, MAP_NOSMOOTH };
 
+bool gravity_enabled;
 
 
 /*Map creation functions

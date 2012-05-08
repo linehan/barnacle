@@ -6,7 +6,7 @@
 #include "tile.h"
 
 
-void gen_cave(struct map_t *map)
+void gen_cave_passage(struct map_t *map)
 {
         struct cell_t *cell;
         int len = 200;
@@ -28,22 +28,79 @@ void gen_cave(struct map_t *map)
         while (len-->0) 
                 cell_walk(&cell, height, width, WLK_VN|WLK_FW|WLK_DRUNK);
 
+        for (i=0; i<height; i++) {
+        for (j=0; j<width; j++) {
+                place_cavesolid_label(mx_get(map->tile, i, j));
+        }
+        }
+
         while (cell->parent) {
                 place_cavefloor_label(mx_get(map->tile, cell->y, cell->x));
                 cell = cell->parent;
         }
+}
 
-        for (i=0; i<height; i++) {
-        for (j=0; j<width; j++) {
-                if (TILE(map, i, j) == CAVEFLOOR)
-                        place_cavefloor_tile(map, i, j);
-                else {
-                        place_cavesolid_label(mx_get(map->tile, i, j));
-                        place_cavesolid_tile(map, i, j);
+
+void cave_connect_door(struct map_t *map)
+{
+        struct cell_t *cell;
+        int h;
+        int w;
+        int y;
+        int x;
+        int i;
+        int j;
+
+        h = map->ufo.box.h-1;
+        w = map->ufo.box.w-1;
+
+        for (i=0; i<h; i++) {
+        for (j=0; j<w; j++) {
+                if (TILE(map, i, j) == DOR) {
+                        y = i;
+                        x = j;
                 }
         }
         }
+
+        cell = new_cell(y,x);
+
+        while (TILE(map, cell->y, cell->x) != CAVEFLOOR)
+                cell_walk(&cell, h, w, WLK_VN|WLK_FW|WLK_DRUNK);
+
+        while (cell->parent) {
+                place_cavefloor_label(mx_get(map->tile, cell->y, cell->x));
+                cell = cell->parent;
+        }
 }
+
+
+void gen_cavern(struct map_t *map)
+{
+        #define CAVERN 0.0f
+        #define OCTAVES 6      /* Number of octaves to smooth */
+        #define PERSIST 0.99f  /* Persistence factor */
+        int h;
+        int w;
+        int i;
+        int j;
+
+        h = map->ufo.box.h-1;
+        w = map->ufo.box.w-1;
+
+        perlin_smooth(map->pmap, h, w, PERSIST, OCTAVES);
+        smooth_cycle(map->pmap, h, w, CAVERN, SMOOTH_BO, 3);
+
+        for (i=0; i<h; i++) {
+        for (j=0; j<w; j++) {
+                if (map->pmap[i][j] > CAVERN)
+                        place_cavefloor_label(mx_get(map->tile, i, j));
+                else
+                        place_cavesolid_label(mx_get(map->tile, i, j));
+        }
+        }
+}
+
 
 
 struct map_t *new_cave(void)
@@ -51,9 +108,10 @@ struct map_t *new_cave(void)
         struct map_t *cave;
 
         cave = new_map(FULLSCREEN);
-        cave->pmap = empty_simplex_matrix(LINES, COLS);        
+        cave->pmap = simplex_matrix(FULLSCREEN);        
         
-        gen_cave(cave);
+        /*gen_cave(cave);*/
+        gen_cavern(cave);
 
         return (cave);
 }

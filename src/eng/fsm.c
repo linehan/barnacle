@@ -19,7 +19,9 @@ enum uimodes {
         UI_INSPECTOR,
         UI_PROMPT,
         UI_MOB,
-        UI_BOAT
+        UI_BOAT,
+        UI_BUILD,
+        UI_INVENTORY
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -107,6 +109,12 @@ void operate_on(int input)
         case UI_MOB:
                 noun_set_state(get_noun("Guy"), VERB_Keyboard, input);
                 break;
+        case UI_BUILD:
+                build_control(input);
+                break;
+        case UI_INVENTORY:
+                inventory_control(input);
+                break;
         }
 }
 
@@ -166,10 +174,15 @@ void director(int input)
                         setmode(MODE_STARTED);
                         break;
                 case 'b':
-                        setmode(UI_BOAT);
+                        /*setmode(UI_BOAT);*/
+                        /*setmode(MODE_STARTED);*/
+                        setmode(UI_BUILD);
                         setmode(MODE_STARTED);
                         break;
                 case 'i':
+                        setmode(UI_INVENTORY);
+                        setmode(MODE_STARTED);
+                        break;
                 case 'o':
                         setmode(UI_NOUN);
                         setmode(MODE_STARTED);
@@ -191,10 +204,15 @@ void director(int input)
                         TOGPAN(DIAGNOSTIC_PAN);
                         doupdate();
                         break;
+                case 'G':
+                        gravity_enabled ^= true;
+                        break;
                 case '@':
                         torch_toggle();
                         break;
-
+                case '_':
+                        MAPBOOK->render(ACTIVE);
+                        break;
                 case '&':
                         dock_say(L"䥚", "I am the computer king.");
                         break;

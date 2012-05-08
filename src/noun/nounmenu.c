@@ -19,7 +19,7 @@
 #define MENU_W 21
 #define MENU_H (LINES/3)
 #define MENU_X 1
-#define MENU_Y (LINES-MENU_H-2)
+#define MENU_Y (LINES-MENU_H-1)
 
 #define IDWIN dock_window(NAME_WIN)
 #define WIWIN dock_window(STAT_WIN)
@@ -39,40 +39,6 @@ struct stdmenu_t *nounmenu; /* Global noun menu */
 MENU *get_nounmenu(void)
 {
         return nounmenu->menu;
-}
-/* nounmenu_isvis -- returns true if operand is visible, else returns false */
-bool nounmenu_isvis(void)
-{
-        return (nounmenu->isvis(nounmenu)) ? true : false;
-}
-/* nounmenu_open -- call the noun menu's 'vis' method to open the menu */
-void nounmenu_open(void)
-{
-        nounmenu->vis(nounmenu, true);
-        vrt_refresh();
-        scr_refresh();
-}
-/* nounmenu_close -- call the noun menu's 'vis' method to close the menu */
-void nounmenu_close(void)
-{
-        nounmenu->vis(nounmenu, false);
-        scr_refresh();
-}
-/* nounmenu_tog -- call the noun menu's 'vis' method to toggle the menu */
-void nounmenu_tog(void)
-{
-        if (panel_hidden(nounmenu->pan))
-                nounmenu->vis(nounmenu, true);
-        else
-                nounmenu->vis(nounmenu, false);
-}
-/* nounmenu_focus -- give a visual hint that the cursor's focus has changed */
-void nounmenu_focus(bool opt)
-{
-        if (opt == false)
-                stdmenu_color_fore(nounmenu, PUR_WHITE);
-        else
-                stdmenu_color_fore(nounmenu, STANDOUT);
 }
 /* get_noun_struct -- return ptr to the nounmenu */
 struct stdmenu_t *get_noun_struct(void)
@@ -98,31 +64,29 @@ void make_nounmenu(int query)
 {
         uint32_t **key;
         char **name;
-        int nitems;
+        int nitem;
         int i;
 
-        nitems = numnoun;
+        nitem = numnoun;
 
-        name = calloc(nitems, sizeof(char *));      /* Noun names */
-        key  = calloc(nitems, sizeof(uint32_t *));  /* Noun ids */
+        name = calloc(nitem, sizeof(char *));      /* Noun names */
+        key  = calloc(nitem, sizeof(uint32_t *));  /* Noun ids */
 
-        for (i=0; i<nitems; i++) {
+        for (i=0; i<nitem; i++) {
                 name[i] = fullname(keyring[i]);
                 key[i]  = &keyring[i];
         }
 
-        nounmenu = new_stdmenu(name, name, (void **)key, nitems);
-        nounmenu->nitems = nitems;
+        nounmenu = new_stdmenu(name, name, NULL, (void **)key, nitem);
+        nounmenu->nitem = nitem;
 
-        stdmenu_win(nounmenu, MENU_H, MENU_W, MENU_Y, MENU_X);
+        stdmenu_win(nounmenu, MENU_H, MENU_W, MENU_Y, MENU_X, 1, 1, 1, 1);
         stdmenu_buf(nounmenu, IDWIN);
-        stdmenu_color_fore(nounmenu, STANDOUT);
-        stdmenu_color_back(nounmenu, ORIGINAL);
-        stdmenu_color_grey(nounmenu, __PUR_GREY);
-        stdmenu_color_name(nounmenu, PUR_YEL);
+        stdmenu_color_item(nounmenu, STANDOUT, ORIGINAL, __PUR_GREY);
+        stdmenu_color_name(nounmenu, PUR_YEL, ORIGINAL, __PUR_GREY);
         stdmenu_cfg(nounmenu, DESC, false, NULL);
 
-        nounmenu->post(nounmenu, true);
+        nounmenu->post(nounmenu);
 }
 
 

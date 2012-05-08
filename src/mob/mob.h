@@ -51,6 +51,7 @@ void mob_path(struct mob_t *mob);
 void mob_animate(struct mob_t *mob);
 void mob_set_signal(struct mob_t *mob, int verb, int dir);
 void mob_seek(struct noun_t *snoun, struct noun_t *gnoun);
+void mob_fall(struct mob_t *mob);
 
 #endif
 

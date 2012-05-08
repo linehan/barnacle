@@ -86,7 +86,8 @@ am_arawak_OBJECTS = arawak.$(OBJEXT) eng/init.$(OBJEXT) \
 	noun/nounmenu.$(OBJEXT) noun/nounmenu_control.$(OBJEXT) \
 	noun/nounmenu_discrim.$(OBJEXT) noun/types/boat/boat.$(OBJEXT) \
 	noun/types/boat/compass.$(OBJEXT) verb/verb.$(OBJEXT) \
-	test/test.$(OBJEXT)
+	camp/builder.$(OBJEXT) equip/items.$(OBJEXT) \
+	equip/rope.$(OBJEXT) test/test.$(OBJEXT)
 arawak_OBJECTS = $(am_arawak_OBJECTS)
 arawak_LDADD = $(LDADD)
 DEFAULT_INCLUDES = -I.@am__isrc@
@@ -254,6 +255,9 @@ arawak_SOURCES = arawak.c                       \
                    noun/types/boat/boat.c       \
                    noun/types/boat/compass.c    \
                    verb/verb.c                  \
+                   camp/builder.c               \
+                   equip/items.c                \
+                   equip/rope.c                 \
                    test/test.c                  
 
 all: all-am
@@ -515,6 +519,24 @@ verb/$(DEPDIR)/$(am__dirstamp):
 	@: > verb/$(DEPDIR)/$(am__dirstamp)
 verb/verb.$(OBJEXT): verb/$(am__dirstamp) \
 	verb/$(DEPDIR)/$(am__dirstamp)
+camp/$(am__dirstamp):
+	@$(MKDIR_P) camp
+	@: > camp/$(am__dirstamp)
+camp/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) camp/$(DEPDIR)
+	@: > camp/$(DEPDIR)/$(am__dirstamp)
+camp/builder.$(OBJEXT): camp/$(am__dirstamp) \
+	camp/$(DEPDIR)/$(am__dirstamp)
+equip/$(am__dirstamp):
+	@$(MKDIR_P) equip
+	@: > equip/$(am__dirstamp)
+equip/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) equip/$(DEPDIR)
+	@: > equip/$(DEPDIR)/$(am__dirstamp)
+equip/items.$(OBJEXT): equip/$(am__dirstamp) \
+	equip/$(DEPDIR)/$(am__dirstamp)
+equip/rope.$(OBJEXT): equip/$(am__dirstamp) \
+	equip/$(DEPDIR)/$(am__dirstamp)
 test/$(am__dirstamp):
 	@$(MKDIR_P) test
 	@: > test/$(am__dirstamp)
@@ -530,10 +552,13 @@ arawak$(EXEEXT): $(arawak_OBJECTS) $(arawak_DEPENDENCIES) $(EXTRA_arawak_DEPENDE
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
 	-rm -f ai/a_star.$(OBJEXT)
+	-rm -f camp/builder.$(OBJEXT)
 	-rm -f eng/bytes.$(OBJEXT)
 	-rm -f eng/fsm.$(OBJEXT)
 	-rm -f eng/init.$(OBJEXT)
 	-rm -f eng/loop.$(OBJEXT)
+	-rm -f equip/items.$(OBJEXT)
+	-rm -f equip/rope.$(OBJEXT)
 	-rm -f gfx/colloc.$(OBJEXT)
 	-rm -f gfx/fall.$(OBJEXT)
 	-rm -f gfx/gfx.$(OBJEXT)
@@ -589,10 +614,13 @@ distclean-compile:
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/arawak.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ai/$(DEPDIR)/a_star.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@camp/$(DEPDIR)/builder.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@eng/$(DEPDIR)/bytes.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@eng/$(DEPDIR)/fsm.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@eng/$(DEPDIR)/init.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@eng/$(DEPDIR)/loop.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@equip/$(DEPDIR)/items.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@equip/$(DEPDIR)/rope.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@gfx/$(DEPDIR)/colloc.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@gfx/$(DEPDIR)/fall.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@gfx/$(DEPDIR)/gfx.Po@am__quote@
@@ -776,8 +804,12 @@ distclean-generic:
 	-test . = "$(srcdir)" || test -z "$(CONFIG_CLEAN_VPATH_FILES)" || rm -f $(CONFIG_CLEAN_VPATH_FILES)
 	-rm -f ai/$(DEPDIR)/$(am__dirstamp)
 	-rm -f ai/$(am__dirstamp)
+	-rm -f camp/$(DEPDIR)/$(am__dirstamp)
+	-rm -f camp/$(am__dirstamp)
 	-rm -f eng/$(DEPDIR)/$(am__dirstamp)
 	-rm -f eng/$(am__dirstamp)
+	-rm -f equip/$(DEPDIR)/$(am__dirstamp)
+	-rm -f equip/$(am__dirstamp)
 	-rm -f gfx/$(DEPDIR)/$(am__dirstamp)
 	-rm -f gfx/$(am__dirstamp)
 	-rm -f gfx/ui/$(DEPDIR)/$(am__dirstamp)
@@ -817,7 +849,7 @@ clean: clean-am
 clean-am: clean-binPROGRAMS clean-generic mostlyclean-am
 
 distclean: distclean-am
-	-rm -rf ./$(DEPDIR) ai/$(DEPDIR) eng/$(DEPDIR) gfx/$(DEPDIR) gfx/ui/$(DEPDIR) lib/$(DEPDIR) lib/ncolor/src/$(DEPDIR) lib/redblack/$(DEPDIR) lib/sort/$(DEPDIR) lib/stoc/$(DEPDIR) map/$(DEPDIR) mob/$(DEPDIR) noun/$(DEPDIR) noun/types/boat/$(DEPDIR) test/$(DEPDIR) thr/$(DEPDIR) txt/$(DEPDIR) verb/$(DEPDIR)
+	-rm -rf ./$(DEPDIR) ai/$(DEPDIR) camp/$(DEPDIR) eng/$(DEPDIR) equip/$(DEPDIR) gfx/$(DEPDIR) gfx/ui/$(DEPDIR) lib/$(DEPDIR) lib/ncolor/src/$(DEPDIR) lib/redblack/$(DEPDIR) lib/sort/$(DEPDIR) lib/stoc/$(DEPDIR) map/$(DEPDIR) mob/$(DEPDIR) noun/$(DEPDIR) noun/types/boat/$(DEPDIR) test/$(DEPDIR) thr/$(DEPDIR) txt/$(DEPDIR) verb/$(DEPDIR)
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
 	distclean-tags
@@ -863,7 +895,7 @@ install-ps-am:
 installcheck-am:
 
 maintainer-clean: maintainer-clean-am
-	-rm -rf ./$(DEPDIR) ai/$(DEPDIR) eng/$(DEPDIR) gfx/$(DEPDIR) gfx/ui/$(DEPDIR) lib/$(DEPDIR) lib/ncolor/src/$(DEPDIR) lib/redblack/$(DEPDIR) lib/sort/$(DEPDIR) lib/stoc/$(DEPDIR) map/$(DEPDIR) mob/$(DEPDIR) noun/$(DEPDIR) noun/types/boat/$(DEPDIR) test/$(DEPDIR) thr/$(DEPDIR) txt/$(DEPDIR) verb/$(DEPDIR)
+	-rm -rf ./$(DEPDIR) ai/$(DEPDIR) camp/$(DEPDIR) eng/$(DEPDIR) equip/$(DEPDIR) gfx/$(DEPDIR) gfx/ui/$(DEPDIR) lib/$(DEPDIR) lib/ncolor/src/$(DEPDIR) lib/redblack/$(DEPDIR) lib/sort/$(DEPDIR) lib/stoc/$(DEPDIR) map/$(DEPDIR) mob/$(DEPDIR) noun/$(DEPDIR) noun/types/boat/$(DEPDIR) test/$(DEPDIR) thr/$(DEPDIR) txt/$(DEPDIR) verb/$(DEPDIR)
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 

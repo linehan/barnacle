@@ -30,6 +30,8 @@
 #include "terrain.h"
 #include "tile.h"
 
+
+
 /* -------------------------------------------------------------------------- */
 void map_restack(void *mymap);
 void map_render(void *mymap);
@@ -129,7 +131,6 @@ struct map_t *new_inset(struct map_t *map, int h, int w, int y, int x)
 
         return (new);
 }
-
 
 /*
  * new_mapbook -- allocate and initialize a new mapbook

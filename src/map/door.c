@@ -31,13 +31,13 @@ void door_trigger(struct mob_t *mob, uint32_t key)
         if (mob->mapid == door->src->id) {
                 map_set_extra(door->dst);
                 mob_place(mob, door->dstrec.y, door->dstrec.x);
+                mob->mapid = door->dst->id;
         /* Mob is at dst map */
         } else {
                 map_set_extra(door->src);
-                mob_place(mob, door->srcrec.y, door->srcrec.x);
+                mob_place(mob, door->srcrec.y+2, door->srcrec.x);
+                mob->mapid = door->src->id;
         }
-
-        ACTIVE = EXTRA;
 }
 
 

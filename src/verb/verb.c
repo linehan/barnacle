@@ -21,7 +21,7 @@ void route_verb(struct verb_t *verb)
                 add_delayed(verb);
         } else {
                 if (recipient = key_noun(verb->to), recipient) {
-                        wprintw(CONSOLE_WIN, "Sending to %u\n", verb->to);
+                        /*wprintw(CONSOLE_WIN, "Sending to %u\n", verb->to);*/
                         noun_set_state(recipient, verb->name, verb->value);
                 }
                 free(verb);

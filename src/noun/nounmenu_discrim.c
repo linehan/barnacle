@@ -40,7 +40,7 @@ void sort_noun_menu(uint32_t sort)
         int j;
 
         nounmenu = get_noun_struct();
-        nitems   = nounmenu->nitems;
+        nitems   = nounmenu->nitem;
         item     = nounmenu->item;
         tmp      = NULL;
 
@@ -92,7 +92,7 @@ void query_noun_menu(uint32_t query, int sort)
         int i;
 
         nounmenu = get_noun_struct();
-        nitems   = nounmenu->nitems;
+        nitems   = nounmenu->nitem;
         item     = nounmenu->item;
 
         /* 
@@ -165,7 +165,7 @@ void *pattern_noun_menu(void)
                 bufwin       = nounmenu->buf;       /* Enhance readability */
                 color        = PUR_WHITE;           /* Default pattern color */
                 patbuf[0]    = '\0';                /* Make patbuf a string */
-                nounmenu_open();                    /* Open menu */
+                nounmenu->open(nounmenu);                    /* Open menu */
 
                 goto PATTERN_PRINT; /* Enter the main loop at the bottom */
 

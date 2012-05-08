@@ -29,7 +29,7 @@ struct ui_tab_t {
 struct ui_tab_t ui_tab[NUMTABS];
 
 
-#define TAB_H    2
+#define TAB_H    1
 #define TAB_W    3
 #define TAB_Y    (LINES-(TAB_H))
 #define TAB_X(i) (COLS-(NUMTABS*TAB_W)+(TAB_W*i))
@@ -46,7 +46,7 @@ static cchar_t cursor_cch;
  */
 void init_tabs(void)
 {
-        const wchar_t *wch[NUMTABS] = { L"⸙", L"⬎", L"ℜ", L"⸭" };
+        const wchar_t *wch[NUMTABS] = {  L"༈", L"⸭", L"ℌ", L"ℜ",  };
         const short colors[NUMTABS];
         static cchar_t cch[NUMTABS];
         int i;
@@ -162,7 +162,7 @@ struct ui_dock_t ui_dock; /* The one and only dock */
  */
 void init_dock(void)
 {
-        #define DOCK_HEIGHT 3
+        #define DOCK_HEIGHT 1
         #define DOCK_WIDTH COLS
         #define DOCK_Y LINES-DOCK_HEIGHT
         #define DOCK_X 0
@@ -170,16 +170,16 @@ void init_dock(void)
         #define NAME_HEIGHT 1
         #define NAME_WIDTH 20
         #define NAME_Y LINES - NAME_HEIGHT
-        #define NAME_X 2
+        #define NAME_X 3 
         
         #define STAT_HEIGHT 1
         #define STAT_WIDTH 32
-        #define STAT_Y LINES - 2 
-        #define STAT_X 2
+        #define STAT_Y LINES - STAT_HEIGHT 
+        #define STAT_X 3
 
-        #define TEXT_HEIGHT 2 
+        #define TEXT_HEIGHT 1 
         #define TEXT_WIDTH 32
-        #define TEXT_Y LINES - 2 
+        #define TEXT_Y LINES - TEXT_HEIGHT 
         #define TEXT_X COLS/2 
 
         init_tabs();
@@ -315,8 +315,8 @@ void dock_update(void)
                 return;
 
         view_dock();
-        nounmenu_print_name(PUR_YELLOW);
-        nounmenu_print_vitals();
+        /*nounmenu_print_name(PUR_YELLOW);*/
+        /*nounmenu_print_vitals();*/
 }
 
 

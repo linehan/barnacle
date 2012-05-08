@@ -389,5 +389,7 @@ void init_palette(int set)
         init_pair(LIGHTP3, LIGHT3, LIGHTB3);
         init_pair(LIGHTP4, LIGHT4, LIGHTB4);
 
+        init_pair(BLACK_BEIGE, __BROWN, BLACK);
+
         mix_colors();
 }
