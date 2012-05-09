@@ -21,6 +21,7 @@ struct mob_t {
         struct ufo_t ufo;
         struct path_t *path;
         struct astar_t *astar;
+        struct inventory_t *inv;
         uint32_t signal;
         bool active;
         uint32_t name; 

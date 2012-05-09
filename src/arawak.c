@@ -53,15 +53,13 @@ int main(int argc, char *argv[])
         map_roll(ACTIVE, 0);
         map_roll(ACTIVE, 0);
 
-        new_rope(5, 0);
-
         /*new_boat(FIELD, FUNBOAT, "Afarensis");*/
         /*set_mob(noun_mob("Afarensis"), false);*/
 
         load_noun_test();
         make_nounmenu(ALL_NOUNS);
         choose_noun('*');
-        
+
         init_pair(FLEX, BLACK, WHITE);
         init_pair(FLEX2, BLACK, WHITE);
 

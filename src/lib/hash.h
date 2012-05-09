@@ -151,8 +151,11 @@ void *hashtable_get(struct hashtable_t *tbl, uint32_t key)
 
         hashkey = HASH(key);
 
-        assert(tbl->tbl[hashkey] || !"Invalid index into hash table");
-        assert(!list_empty(&tbl->tbl[hashkey]->head) || !"Empty hash node");
+        //assert(tbl->tbl[hashkey] || !"Invalid index into hash table");
+        //assert(!list_empty(&tbl->tbl[hashkey]->head) || !"Empty hash node");
+
+        if (!tbl->tbl[hashkey] || list_empty(&tbl->tbl[hashkey]->head))
+                return NULL;
 
         list_for_each(&tbl->tbl[hashkey]->head, tmp, node) {
                 if (tmp->key == key)

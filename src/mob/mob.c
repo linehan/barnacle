@@ -35,6 +35,7 @@ void mob_cfg(struct mob_t *mob, struct map_t *map, int h, int w, int y, int x)
         mob->win = newwin(h, w, y, x);
         mob->pan = new_panel(mob->win);
         mob->mapid = map->id;
+        mob->inv = new_inventory();
 
         set_mob(mob, false);
 }

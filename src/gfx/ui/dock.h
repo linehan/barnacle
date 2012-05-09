@@ -12,6 +12,7 @@ void dock_update(void);
 
 void tab_cur(int tab);
 void tab_sig(int tab);
+void tab_tog(int tab);
 void tab_update(void);
 
 

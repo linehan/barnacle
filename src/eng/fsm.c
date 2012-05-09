@@ -113,7 +113,7 @@ void operate_on(int input)
                 build_control(input);
                 break;
         case UI_INVENTORY:
-                inventory_control(input);
+                inventory_control(noun_mob("Guy"), input);
                 break;
         }
 }
@@ -206,9 +206,6 @@ void director(int input)
                         break;
                 case 'G':
                         gravity_enabled ^= true;
-                        break;
-                case '@':
-                        torch_toggle();
                         break;
                 case '_':
                         MAPBOOK->render(ACTIVE);

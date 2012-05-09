@@ -20,4 +20,28 @@ RENDER_METHOD render[100];
 
 void apply_noun_model(struct noun_t *noun);
 
+/* Model (class) definitions 
+``````````````````````````````````````````````````````````````````````````````*/
+#define MV(frame,dir) frame, dir
+#define VB(frame,verb,dir) frame, verb, dir
+#define NOMV MV(0,0) 
+#define NOVB VB(0,0,0) 
+
+/* Animation of nouns during rendering 
+``````````````````````````````````````````````````````````````````````````````*/
+struct ani_t {
+        wchar_t frame[20];      /* Frames in the animation reel */
+        int mv_frame;           /* Frame on which to issue a move signal */
+        int mv_dir;             /* Direction in which to move */
+        int mv_frame_alt;       /* Frame on which to issue a move signal */
+        int mv_dir_alt;         /* Direction in which to move */
+        int verb_frame;         /* Frame on which to issue a verb signal */
+        int verb_id;            /* Verb to issue */
+        int verb_dir;           /* Neighbor to address the verb to */
+        int len;                /* Length of the animation (late binding) */
+        int i;                  /* Incrementer for internal use */ 
+};
+static struct ani_t punch_r_test = {L"ᎲᎲᎲᱽᕤᱽᎲᎲⰾ",         NOMV, NOMV, NOVB};
+static struct ani_t punch_l_test = {L"ᎲᎲᎲ᱙ᕦ᱙ᎲᎲⰾ",         NOMV, NOMV, NOVB};
+
 #endif

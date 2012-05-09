@@ -1,17 +1,15 @@
+#include "../mob/mob.h"
 
 
-struct rope_t {
-        int id;
-        int len;
-        int test;
-        struct cell_t *head;
-        struct cell_t *end;
-};
 
 uint32_t ropekey;
 
-uint32_t new_rope(int len, int test);
-void rope_head(int y, int x, uint32_t key);
-void rope_drop(uint32_t key);
+void new_rope(void *self);
+void new_torch(void *self);
+void new_pickaxe(void *self);
 
+void use_rope(struct mob_t *mob, void *self);
+void use_pickaxe(struct mob_t *mob, void *self);
+void use_torch(struct mob_t *mob, void *self);
+void burn_torch(struct mob_t *mob, void *self);
 
