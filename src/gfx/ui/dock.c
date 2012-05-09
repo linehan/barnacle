@@ -24,6 +24,7 @@ struct ui_tab_t {
         PANEL  *pan;
         bool sigtrue;   /* TRUE if tab is being signalled */
         bool curtrue;   /* TRUE if tab has cursor below it */
+        bool togtrue;
 };
 
 struct ui_tab_t ui_tab[NUMTABS];
@@ -82,6 +83,16 @@ void init_tabs(void)
 void tab_sig(int tab)
 {
         ui_tab[tab].sigtrue ^= true;
+}
+
+void tab_tog(int tab)
+{
+        ui_tab[tab].togtrue ^= true;
+
+        if (ui_tab[tab].togtrue)
+                wchgat(ui_tab[tab].ico, 1, 0, signal_color[1], NULL);
+        else
+                wchgat(ui_tab[tab].ico, 1, 0, signal_color[0], NULL);
 }
 
 /*
@@ -170,12 +181,12 @@ void init_dock(void)
         #define NAME_HEIGHT 1
         #define NAME_WIDTH 20
         #define NAME_Y LINES - NAME_HEIGHT
-        #define NAME_X 3 
+        #define NAME_X 5
         
         #define STAT_HEIGHT 1
         #define STAT_WIDTH 32
         #define STAT_Y LINES - STAT_HEIGHT 
-        #define STAT_X 3
+        #define STAT_X 5
 
         #define TEXT_HEIGHT 1 
         #define TEXT_WIDTH 32

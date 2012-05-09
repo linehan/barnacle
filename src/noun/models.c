@@ -4,24 +4,11 @@
 #include "models.h"
 #include "../mob/mob.h"
 #include "../equip/rope.h"
+#include "../equip/items.h"
+#include "../mob/inventory.h"
 
 #define STATE_RESET(noun) noun_set_state(noun, 0, 0)
 
-
-/* Animation of nouns during rendering 
-``````````````````````````````````````````````````````````````````````````````*/
-struct ani_t {
-        wchar_t frame[20];      /* Frames in the animation reel */
-        int mv_frame;           /* Frame on which to issue a move signal */
-        int mv_dir;             /* Direction in which to move */
-        int mv_frame_alt;       /* Frame on which to issue a move signal */
-        int mv_dir_alt;         /* Direction in which to move */
-        int verb_frame;         /* Frame on which to issue a verb signal */
-        int verb_id;            /* Verb to issue */
-        int verb_dir;           /* Neighbor to address the verb to */
-        int len;                /* Length of the animation (late binding) */
-        int i;                  /* Incrementer for internal use */ 
-};
 
 /*
  * noun_animate -- draw successive character "frames", trigger movement, etc.
@@ -61,14 +48,6 @@ void noun_animate(struct noun_t *noun)
 }
 
 
-
-/* Model (class) definitions 
-``````````````````````````````````````````````````````````````````````````````*/
-#define MV(frame,dir) frame, dir
-#define VB(frame,verb,dir) frame, verb, dir
-#define NOMV MV(0,0) 
-#define NOVB VB(0,0,0) 
-
 /******************************************************************************
  * MODEL: Person
  * NOTES: This is the main player character
@@ -79,8 +58,8 @@ struct ani_t run_u_test   = {L"ⲑⲑᎲⰾ",              MV(0,'u'), NOMV, NOVB
 struct ani_t run_d_test   = {L"ⲑⲑᎲⰾ",              MV(0,'d'), NOMV, NOVB};
 struct ani_t run_l_test   = {L"ⲑⲑᎲⰾ",              MV(0,'l'), NOMV, NOVB};
 struct ani_t run_r_test   = {L"ⲑⲑᎲⰾ",              MV(0,'r'), NOMV, NOVB};
-struct ani_t punch_r_test = {L"ᎲᎲᎲᱽᕤᱽᎲᎲⰾ",         NOMV, NOMV, NOVB};
-struct ani_t punch_l_test = {L"ᎲᎲᎲ᱙ᕦ᱙ᎲᎲⰾ",         NOMV, NOMV, NOVB};
+/*struct ani_t punch_r_test = {L"ᎲᎲᎲᱽᕤᱽᎲᎲⰾ",         NOMV, NOMV, NOVB};*/
+/*struct ani_t punch_l_test = {L"ᎲᎲᎲ᱙ᕦ᱙ᎲᎲⰾ",         NOMV, NOMV, NOVB};*/
 struct ani_t slashtest    = {L"ᎲᎲᎲᒀᒀᒀᒀᎲᎲⰾ",        NOMV, NOMV, VB(3,VERB_Punch,'u')};
 struct ani_t dodgetest    = {L"ᎲᎲᎲᏡᏡᏡᏡȣȣȣȣᏡᎲᎲⰾ",   MV(8,'d'), NOMV, NOVB};
 struct ani_t falltest     = {L"ᎲᎲᎲޗޗޗⲁⲁⲁᥑ",        MV(4,'r'), NOMV, NOVB};
@@ -102,6 +81,8 @@ void render_human(void *self)
 
         if (!done)
                 wbkgrnd(noun->mob.win, mkcch(L"ⰾ", 0, FLEX));
+
+        noun->mob.inv->burn(LH(&noun->mob), &noun->mob);
 
         noun_animate(noun);
         mob_move(&noun->mob, '*');
@@ -147,13 +128,7 @@ int modify_human(void *self)
                         top_panel(noun->mob.pan);
                         break;
                 case 'r':
-                        noun->mob.animate = &punch_l_test;
-                        break;
-                case 'R':
-                        rope_head(noun->mob.ufo.obj.y, noun->mob.ufo.obj.x, ropekey);
-                        break;
-                case 'Y':
-                        rope_drop(ropekey);
+                        noun->mob.inv->use(noun->mob.inv->lh, &noun->mob);
                         break;
                 case 't':
                         noun->mob.animate = &punch_r_test;
@@ -164,8 +139,11 @@ int modify_human(void *self)
                 case 'e':
                         noun->mob.animate = &slashtest;
                         break;
+                case '@':
+                        tab_tog(0);
+                        noun->mob.inv->use(noun->mob.inv->rh, &noun->mob);
+                        break;
                 case '|':
-                        noun->mob.animate = &falltest;
                         break;
                 case KEY_ESC:
                         return (MODE_RELEASE);

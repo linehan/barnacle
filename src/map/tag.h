@@ -21,6 +21,7 @@ enum map_labels {
         CAVESOLID,
         CAVEFLOOR,
         CAVEWALL,
+        CAVERUBBLE,
         ROPE,
         L_ROPE_ANCHOR,
         R_ROPE_ANCHOR,

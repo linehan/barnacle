@@ -59,6 +59,7 @@ arawak_SOURCES = arawak.c                       \
                    txt/gloss_v.c                \
                    txt/gloss_c.c                \
                    mob/mob.c                    \
+                   mob/inventory.c              \
                    noun/noun.c                  \
                    noun/models.c                \
                    noun/nounmenu.c              \
