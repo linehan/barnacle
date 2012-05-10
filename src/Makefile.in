@@ -87,7 +87,7 @@ am_arawak_OBJECTS = arawak.$(OBJEXT) eng/init.$(OBJEXT) \
 	noun/nounmenu_control.$(OBJEXT) \
 	noun/nounmenu_discrim.$(OBJEXT) noun/types/boat/boat.$(OBJEXT) \
 	noun/types/boat/compass.$(OBJEXT) verb/verb.$(OBJEXT) \
-	camp/builder.$(OBJEXT) equip/items.$(OBJEXT) \
+	camp/builder.$(OBJEXT) equip/equipment.$(OBJEXT) \
 	equip/rope.$(OBJEXT) test/test.$(OBJEXT)
 arawak_OBJECTS = $(am_arawak_OBJECTS)
 arawak_LDADD = $(LDADD)
@@ -258,7 +258,7 @@ arawak_SOURCES = arawak.c                       \
                    noun/types/boat/compass.c    \
                    verb/verb.c                  \
                    camp/builder.c               \
-                   equip/items.c                \
+                   equip/equipment.c            \
                    equip/rope.c                 \
                    test/test.c                  
 
@@ -537,7 +537,7 @@ equip/$(am__dirstamp):
 equip/$(DEPDIR)/$(am__dirstamp):
 	@$(MKDIR_P) equip/$(DEPDIR)
 	@: > equip/$(DEPDIR)/$(am__dirstamp)
-equip/items.$(OBJEXT): equip/$(am__dirstamp) \
+equip/equipment.$(OBJEXT): equip/$(am__dirstamp) \
 	equip/$(DEPDIR)/$(am__dirstamp)
 equip/rope.$(OBJEXT): equip/$(am__dirstamp) \
 	equip/$(DEPDIR)/$(am__dirstamp)
@@ -561,7 +561,7 @@ mostlyclean-compile:
 	-rm -f eng/fsm.$(OBJEXT)
 	-rm -f eng/init.$(OBJEXT)
 	-rm -f eng/loop.$(OBJEXT)
-	-rm -f equip/items.$(OBJEXT)
+	-rm -f equip/equipment.$(OBJEXT)
 	-rm -f equip/rope.$(OBJEXT)
 	-rm -f gfx/colloc.$(OBJEXT)
 	-rm -f gfx/fall.$(OBJEXT)
@@ -624,7 +624,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@eng/$(DEPDIR)/fsm.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@eng/$(DEPDIR)/init.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@eng/$(DEPDIR)/loop.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@equip/$(DEPDIR)/items.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@equip/$(DEPDIR)/equipment.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@equip/$(DEPDIR)/rope.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@gfx/$(DEPDIR)/colloc.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@gfx/$(DEPDIR)/fall.Po@am__quote@

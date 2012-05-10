@@ -224,7 +224,7 @@ void load_noun_test(void)
         uint32_t j[] = {5,3,1,0,9,2,3,4,5,8,12,3,5,7,5,1,2,2,6,8,22,4,0,23};
 
         int i;
-        for (i=0; i<24; i++) {
+        for (i=0; i<4; i++) {
                 new_noun(name[i], PERSON, 0);
         }
 

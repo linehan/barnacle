@@ -16,6 +16,10 @@
 #define ELEV(map,y,x)         (get_byte(mx_val((map)->tile, y, x), ALT))
 #define IS_ELEV(map,y,x,val)  (val == ELEV(map,y,x)) ? true : false
 
+#define SET_DOOR(map,y,x,val) (mx_set((map)->door, y, x, val))
+#define DOOR(map,y,x)         (mx_val((map)->door, y, x))
+#define IS_DOOR(map,y,x,val)  (val == DOOR(map,y,x)) ? true : false
+
 
 #define LAYER(val,n,...) or_byte(val, LAB, n, __VA_ARGS__)
 //#define  ELEV(val,n,...) or_byte(val, ALT, n, __VA_ARGS__)

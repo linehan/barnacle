@@ -6,6 +6,7 @@
 #include "../verb/verb.h"
 #include "../noun/noun.h"
 #include "../map/terrain.h"
+#include "inventory.h"
 
 
 /*
@@ -79,112 +80,6 @@ void mob_place(struct mob_t *mob, int y, int x)
         ufo_x(mob, ufo) = x;
 
         mob_move(mob, 'u');
-}
-
-
-WINDOW *torch_win;
-PANEL  *torch_pan;
-
-static bool torch_lit;
-
-void torch_toggle(void)
-{
-        torch_lit ^= true;
-        if (torch_lit)
-                show_panel(torch_pan);
-        else
-                hide_panel(torch_pan);
-}
-
-#define TORCH_H 5
-#define TORCH_W 7
-#define TORCH_Hr 2
-#define TORCH_Wr 3
-int torch_h;
-int torch_w;
-
-void torch(struct mob_t *mob)
-{
-        int y;
-        int x;
-        int i;
-        int j;
-        int x0;
-        int y0;
-
-        if (!torch_lit)
-                return;
-
-        y = ufo_y(mob, ufo);
-        x = ufo_x(mob, ufo);
-
-        /* -------------------------------------- y-adjustments */
-        if (y < TORCH_Hr+1) {
-                torch_h = (TORCH_Hr + y);
-                y0 = TORCH_Hr - y;
-        }
-        else if (y > LINES-(TORCH_Hr+1)) {
-                torch_h = TORCH_Hr + (LINES-y);
-                y0 = y - TORCH_Hr;
-        }
-        else {
-                torch_h = TORCH_H;
-                y0 = y - TORCH_Hr;
-        }
-        /* -------------------------------------- x-adjustments */
-        if (x < TORCH_Wr) 
-        {
-                torch_w = (TORCH_Wr + x);
-                x0 = TORCH_Wr - x;
-        }
-        else if (x > COLS-TORCH_Wr) {
-                torch_w = TORCH_Wr + (COLS-x);
-                x0 = x - TORCH_Wr;
-        }
-        else {
-                torch_w = TORCH_W;
-                x0 = x - TORCH_Wr;
-        }
-        /* -------------------------------------- initialization */
-        if (!torch_win) {
-                torch_win = newwin(torch_h, torch_w, y0, x0);
-                torch_pan = new_panel(torch_win);
-                blend(LIGHT1, 0.2, __DGREY, 1.0, LIGHT3);
-                blend(LIGHT1, 0.5, __DGREY, 1.0, LIGHT2);
-                blend(LIGHT1, 1.0, __DGREY, 1.0, LIGHT1);
-                blend(__DGREY, 0.3, BLACK, 1.0, LIGHTB3);
-                blend(__DGREY, 0.5, BLACK, 1.0, LIGHTB2);
-                blend(__DGREY, 1.0, BLACK, 1.0, LIGHTB1);
-        } else {
-                if (wresize(torch_win, torch_h, torch_w))
-                        replace_panel(torch_pan, torch_win);
-
-                move_panel(torch_pan, y0, x0);
-        }
-        /* -------------------------------------- copy bg to torch buffer */
-        copywin(PLATE(ACTIVE, BGR), torch_win, y0, x0, 0, 0, torch_h-1, torch_w-1, 0);
-        overwrite(mob->win, torch_win);
-
-        /* -------------------------------------- re-color the copied wchars */
-        for (i=0; i<torch_h; i++) {
-        for (j=0; j<torch_w; j++) {
-                if ((i==0 && j==0)
-                ||  (i==0 && j==1)
-                ||  (i==0 && j==torch_w-1)
-                ||  (i==0 && j==torch_w-2)
-                ||  (i==torch_h-1 && j==0)
-                ||  (i==torch_h-1 && j==1)
-                ||  (i==torch_h-1 && j==torch_w-1)
-                ||  (i==torch_h-1 && j==torch_w-2))
-                {
-                        mvwchgat(torch_win, i, j, 1, 0, LIGHTP3, NULL);
-                }
-                else if (i==0 || i==torch_h-1 || j==0 || j==1 || j==torch_w-1 || j==torch_w-2)
-                        mvwchgat(torch_win, i, j, 1, 0, LIGHTP2, NULL);
-                else 
-                        mvwchgat(torch_win, i, j, 1, 0, LIGHTP1, NULL);
-        }
-        }
 }
 
 
@@ -273,11 +168,10 @@ void mob_move(struct mob_t *mob, int dir)
 
                 mob_mark_position(mob);
                 take_bkgrnd(panel_window(mob->pan), PEEK(ACTIVE->W));
-                torch(mob);
                 path_push(mob->path, y, x);
                 doupdate();
-                if (TILE(ACTIVE, ufo_y(mob,ufo), ufo_x(mob,ufo)) == DOR)
-                        door_trigger(mob, mx_val(ACTIVE->door, ufo_y(mob,ufo), ufo_x(mob,ufo)));
+                if (DOOR(ACTIVE, ufo_y(mob,ufo), ufo_x(mob,ufo)))
+                        door_trigger(mob, DOOR(ACTIVE, ufo_y(mob,ufo), ufo_x(mob,ufo)));
 }
 
 
@@ -304,7 +198,7 @@ void mob_fall(struct mob_t *mob)
         i = mob->ufo.obj.y;
         j = mob->ufo.obj.x;
 
-        DEC(i,0);
+        INC(i,0);
 
         if (TILE(ACTIVE, i, j) == CAVEFLOOR)
                 mob_move(mob, 'd');

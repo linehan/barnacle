@@ -30,7 +30,7 @@ void door_trigger(struct mob_t *mob, uint32_t key)
         /* Mob is at src map */
         if (mob->mapid == door->src->id) {
                 map_set_extra(door->dst);
-                mob_place(mob, door->dstrec.y, door->dstrec.x);
+                mob_place(mob, door->dstrec.y, door->dstrec.x+1);
                 mob->mapid = door->dst->id;
         /* Mob is at dst map */
         } else {
@@ -68,14 +68,14 @@ void put_door(int tag, struct map_t *src, struct map_t *dst,
 
         for (i=src_y; i<src_y+src_h; i++) {
         for (j=src_x; j<src_x+src_w; j++) {
-                SET_TILE(src, i, j, DOR);
-                mx_set(src->door, i, j, new->id);
+                SET_TILE(src, i, j, CAVEDOOR_OUTSIDE);
+                SET_DOOR(src, i, j, new->id);
         }
         }
         for (i=dst_y; i<dst_y+dst_h; i++) {
         for (j=dst_x; j<dst_x+dst_w; j++) {
-                SET_TILE(dst, i, j, DOR);
-                mx_set(dst->door, i, j, new->id);
+                SET_TILE(dst, i, j, CAVEDOOR_INSIDE);
+                SET_DOOR(dst, i, j, new->id);
         }
         }
 
@@ -92,23 +92,23 @@ struct door_t *get_door(uint32_t key)
 }
 
 
-void place_door_tile(struct map_t *map, int y, int x)
-{
-        struct door_t *door;
-        uint32_t key;
-        int i;
-        int j;
+/*void place_door_tile(struct map_t *map, int y, int x)*/
+/*{*/
+        /*struct door_t *door;*/
+        /*uint32_t key;*/
+        /*int i;*/
+        /*int j;*/
 
-        key  = mx_val(map->door, y, x);
-        door = get_door(key);
+        /*key  = mx_val(map->door, y, x);*/
+        /*door = get_door(key);*/
 
-        assert(door && "Door does not exist\n");
+        /*assert(door && "Door does not exist\n");*/
 
-        switch (door->tag) {
-        case CAVE_DOOR:
-                place_cavedoor_tile(map, y, x);
-                break;
-        }
-} 
+        /*switch (door->tag) {*/
+        /*case CAVE_DOOR:*/
+                /*place_cavedoor_tile(map, y, x);*/
+                /*break;*/
+        /*}*/
+/*} */
 
 

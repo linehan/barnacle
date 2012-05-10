@@ -181,11 +181,7 @@ void director(int input)
                         break;
                 case 'i':
                         setmode(UI_INVENTORY);
-                        setmode(MODE_STARTED);
-                        break;
-                case 'o':
-                        setmode(UI_NOUN);
-                        setmode(MODE_STARTED);
+                        operate_on(MODE_STARTED);
                         break;
                 case 'v':
                         setmode(UI_VERB);

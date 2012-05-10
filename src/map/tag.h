@@ -18,6 +18,8 @@ enum map_labels {
         TTO,    /* treetop */
         TTR,    /* treetrunk */
         DOR,    /* door */
+        CAVEDOOR_INSIDE,
+        CAVEDOOR_OUTSIDE,
         CAVESOLID,
         CAVEFLOOR,
         CAVEWALL,

@@ -1,14 +1,16 @@
 #include <stdlib.h>
 #include "../com/arawak.h"
-#include "../gfx/gfx.h"
-#include "../gfx/ui/stdmenu.h"
-#include "../lib/hash.h"
 #include "../lib/stoc/stoc.h"
-#include "items.h"
+#include "equipment.h"
 #include "rope.h"
 
 
-void (*item_novum[])(void *self) = {&new_rope, &new_torch, &new_pickaxe};
+void (*item_novum[])(void *self) = {
+        &new_rope, 
+        &new_torch, 
+        &new_pickaxe,
+        &new_shovel
+};
 
 
 

@@ -22,7 +22,7 @@ void put_door(int tag, struct map_t *src, struct map_t *dst,
               int dst_h, int dst_w, int dst_y, int dst_x);
 
 struct door_t *get_door(uint32_t key);
-void place_door_tile(struct map_t *map, int y, int x);
+//void place_door_tile(struct map_t *map, int y, int x);
 void trigger_door(uint32_t key);
 
 
