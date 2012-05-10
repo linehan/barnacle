@@ -111,6 +111,11 @@ void stdmenu_win(struct stdmenu_t *smenu, int h, int w, int y, int x,
         set_menu_format(smenu->menu, smenu->nrows, smenu->ncols);
 }
 
+void stdmenu_move(struct stdmenu_t *smenu, int y, int x)
+{
+        move_panel(smenu->pan, y, x);
+}
+
 /* assign a buffer window */
 void stdmenu_buf(struct stdmenu_t *smenu, WINDOW *buf)
 {

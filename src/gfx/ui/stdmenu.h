@@ -56,6 +56,7 @@ struct stdmenu_t {
         bool has_focus;
         /*---------------------------- Iterated quantities */
         ITEM *cur_item;
+        ITEM *old_item;
         void *cur_ptr;
         int cur_top;
         int cur_row;
@@ -88,5 +89,6 @@ void stdmenu_color_icon(struct stdmenu_t *smenu, short pairlo, short pairhi, sho
 
 void stdmenu_cfg(struct stdmenu_t *smenu, int opt, bool set, const char *ch);
 void stdmenu_buf(struct stdmenu_t *smenu, WINDOW *buf);
+void stdmenu_move(struct stdmenu_t *smenu, int y, int x);
 
 #endif

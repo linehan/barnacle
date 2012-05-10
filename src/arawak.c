@@ -60,6 +60,8 @@ int main(int argc, char *argv[])
         make_nounmenu(ALL_NOUNS);
         choose_noun('*');
 
+        dock_toggle();
+
         init_pair(FLEX, BLACK, WHITE);
         init_pair(FLEX2, BLACK, WHITE);
 

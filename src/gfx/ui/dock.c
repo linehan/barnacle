@@ -15,7 +15,7 @@
   +---------------------------------------------------------+---------------+ 
                                                             \**** These ****/
                                                            
-#define NUMTABS 4 
+#define NUMTABS 5
 
 struct ui_tab_t {
         WINDOW *win;    /* Parent window */
@@ -47,7 +47,7 @@ static cchar_t cursor_cch;
  */
 void init_tabs(void)
 {
-        const wchar_t *wch[NUMTABS] = {  L"༈", L"⸭", L"ℌ", L"ℜ",  };
+        const wchar_t *wch[NUMTABS] = { L"༈", L"∰∯∮", L"⸭", L"ℌ", L"ℜ",  };
         const short colors[NUMTABS];
         static cchar_t cch[NUMTABS];
         int i;

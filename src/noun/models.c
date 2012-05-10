@@ -4,7 +4,7 @@
 #include "models.h"
 #include "../mob/mob.h"
 #include "../equip/rope.h"
-#include "../equip/items.h"
+#include "../equip/equipment.h"
 #include "../mob/inventory.h"
 
 #define STATE_RESET(noun) noun_set_state(noun, 0, 0)
@@ -58,8 +58,8 @@ struct ani_t run_u_test   = {L"ⲑⲑᎲⰾ",              MV(0,'u'), NOMV, NOVB
 struct ani_t run_d_test   = {L"ⲑⲑᎲⰾ",              MV(0,'d'), NOMV, NOVB};
 struct ani_t run_l_test   = {L"ⲑⲑᎲⰾ",              MV(0,'l'), NOMV, NOVB};
 struct ani_t run_r_test   = {L"ⲑⲑᎲⰾ",              MV(0,'r'), NOMV, NOVB};
-/*struct ani_t punch_r_test = {L"ᎲᎲᎲᱽᕤᱽᎲᎲⰾ",         NOMV, NOMV, NOVB};*/
-/*struct ani_t punch_l_test = {L"ᎲᎲᎲ᱙ᕦ᱙ᎲᎲⰾ",         NOMV, NOMV, NOVB};*/
+struct ani_t punch_r_test = {L"ᎲᎲᎲᱽᕤᱽᎲᎲⰾ",         NOMV, NOMV, NOVB};
+struct ani_t punch_l_test = {L"ᎲᎲᎲ᱙ᕦ᱙ᎲᎲⰾ",         NOMV, NOMV, NOVB};
 struct ani_t slashtest    = {L"ᎲᎲᎲᒀᒀᒀᒀᎲᎲⰾ",        NOMV, NOMV, VB(3,VERB_Punch,'u')};
 struct ani_t dodgetest    = {L"ᎲᎲᎲᏡᏡᏡᏡȣȣȣȣᏡᎲᎲⰾ",   MV(8,'d'), NOMV, NOVB};
 struct ani_t falltest     = {L"ᎲᎲᎲޗޗޗⲁⲁⲁᥑ",        MV(4,'r'), NOMV, NOVB};
@@ -82,10 +82,12 @@ void render_human(void *self)
         if (!done)
                 wbkgrnd(noun->mob.win, mkcch(L"ⰾ", 0, FLEX));
 
-        noun->mob.inv->burn(LH(&noun->mob), &noun->mob);
+        inv_burn(TORCHKEY(&noun->mob), &noun->mob);
 
         noun_animate(noun);
         mob_move(&noun->mob, '*');
+
+        top_panel(noun->mob.inv->equipped_pan);
 }
 
 /*
@@ -127,23 +129,28 @@ int modify_human(void *self)
                 case 'g':
                         top_panel(noun->mob.pan);
                         break;
-                case 'r':
-                        noun->mob.inv->use(noun->mob.inv->lh, &noun->mob);
-                        break;
                 case 't':
                         noun->mob.animate = &punch_r_test;
                         break;
                 case ' ':
-                        noun->mob.animate = &dodgetest;
+                        if (CUR_KEY(&noun->mob))
+                                inv_use(CUR_KEY(&noun->mob), &noun->mob);
                         break;
                 case 'e':
                         noun->mob.animate = &slashtest;
                         break;
                 case '@':
-                        tab_tog(0);
-                        noun->mob.inv->use(noun->mob.inv->rh, &noun->mob);
+                        if (TORCHKEY(&noun->mob)) {
+                                tab_tog(0);
+                                inv_use(TORCHKEY(&noun->mob), &noun->mob);
+                        }
                         break;
                 case '|':
+                        if (ROPEKEY(&noun->mob)) {
+                                tab_tog(1);
+                                inv_use(ROPEKEY(&noun->mob), &noun->mob);
+                                tab_tog(1);
+                        }
                         break;
                 case KEY_ESC:
                         return (MODE_RELEASE);

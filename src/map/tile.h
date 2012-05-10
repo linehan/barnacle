@@ -254,10 +254,20 @@ static inline void place_caverubble_tile(struct map_t *map, int y, int x)
         #undef color
         #undef attr
 }
-static inline void place_cavedoor_tile(struct map_t *map, int y, int x)
+static inline void place_cavedoor_outside_tile(struct map_t *map, int y, int x)
 {
         #define color PUR_BROWN 
         #define attr  A_REVERSE
+
+        mvwp(PLATE(map, layer), y, x, L"⬣", color, attr);
+
+        #undef color
+        #undef attr
+}
+static inline void place_cavedoor_inside_tile(struct map_t *map, int y, int x)
+{
+        #define color PUR_BEIGE
+        #define attr  0 
 
         mvwp(PLATE(map, layer), y, x, L"⬣", color, attr);
 
@@ -329,7 +339,13 @@ static inline void place_tile(struct map_t *map, int y, int x, int type)
                 place_treetrunk_tile(map, y, x);
                 break;
         case DOR:
-                place_door_tile(map, y, x);
+                //place_door_tile(map, y, x);
+                break;
+        case CAVEDOOR_INSIDE:
+                place_cavedoor_inside_tile(map, y, x);
+                break;
+        case CAVEDOOR_OUTSIDE:
+                place_cavedoor_outside_tile(map, y, x);
                 break;
         case CAVEFLOOR:
                 place_cavefloor_tile(map, y, x);

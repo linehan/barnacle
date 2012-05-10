@@ -1,12 +1,11 @@
 #include <stdlib.h>
 #include "../com/arawak.h"
 #include "../map/cell.h"
-#include "../lib/hash.h"
-#include "rope.h"
 #include "../map/terrain.h"
 #include "../lib/stoc/stoc.h"
 #include "../noun/models.h"
-#include "items.h"
+#include "equipment.h"
+#include "rope.h"
 
 #define EQUIPMENT(declare, argument) \
         struct equip_t *declare = (struct equip_t *)argument
@@ -35,12 +34,12 @@ void new_rope(void *self)
 
         new = malloc(sizeof(struct rope_t));
 
-        new->len  = ROPE_M_LEN;
+        new->len  = ROPE_L_LEN;
         new->head = NULL;
         new->tail = NULL;
 
         equip->data = new;
-        equip->tag  = ROPE;
+        equip->tag  = ITEM_ROPE;
         equip->name = "Rope";
         equip->wch  = ROPE_L_WCH;
         equip->use  = &use_rope;
@@ -52,6 +51,7 @@ void use_rope(struct mob_t *mob, void *self)
         int tile;
         int i;
         int y;
+        int y_ahead;
         int x;
 
         EQUIPMENT(equip, self);
@@ -76,7 +76,12 @@ void use_rope(struct mob_t *mob, void *self)
 
         for (i=0; i<rope->len; i++) {
                 y = (rope->tail->y < LINES) ? rope->tail->y+1 : rope->tail->y;
+                y_ahead = (y < LINES) ? y+1 : y;
                 x = rope->tail->x;
+
+                if (IS_TILE(ACTIVE, y_ahead, x, CAVESOLID))
+                        break;
+                
                 struct cell_t *new = new_cell(y, x);
                 new->parent = rope->tail;
                 rope->tail = new;
@@ -118,16 +123,50 @@ void use_pickaxe(struct mob_t *mob, void *self)
 
         if (tile_l == CAVESOLID) {
                 SET_TILE(ACTIVE, y, (x-1), CAVERUBBLE);
-                mob->animate = &punch_l_test;
+                mob->animate = &dig_l_test;
         }
         else if (tile_r == CAVESOLID) {
                 SET_TILE(ACTIVE, y, (x+1), CAVERUBBLE);
-                mob->animate = &punch_r_test;
+                mob->animate = &dig_r_test;
         }
 
         MAPBOOK->render(ACTIVE);
 }        
 
+/* Shovel 
+``````````````````````````````````````````````````````````````````````````````*/
+
+void new_shovel(void *self)
+{
+        #define SHOVEL_WCH L"⏚"
+
+        EQUIPMENT(equip, self);
+
+        equip->data = NULL;
+        equip->tag  = ITEM_SHOVEL;
+        equip->name = "Shovel";
+        equip->wch  = SHOVEL_WCH;
+        equip->use  = &use_shovel;
+}
+
+void use_shovel(struct mob_t *mob, void *self)
+{
+        int tile_d;
+        int y;
+        int x;
+
+        y = ufo_y(mob, ufo); 
+        x = ufo_x(mob, ufo);
+
+        tile_d = TILE(ACTIVE, (y+1), x);
+
+        if (tile_d == CAVESOLID) {
+                SET_TILE(ACTIVE, (y+1), x, CAVERUBBLE);
+                mob->animate = &dig_d_test;
+        }
+
+        MAPBOOK->render(ACTIVE);
+}        
 
 /* Torch 
 ``````````````````````````````````````````````````````````````````````````````*/
@@ -184,6 +223,7 @@ void new_torch(void *self)
 
         new->win = newwin(new->h, new->w, 0, 0);
         new->pan = new_panel(new->win);
+        hide_panel(new->pan);
 
         new->lit = false;
 
@@ -202,6 +242,11 @@ void use_torch(struct mob_t *mob, void *self)
         struct torch_t *torch = equip->data;
 
         torch->lit ^= true;
+
+        if (torch->lit)
+                show_panel(torch->pan);
+        else
+                hide_panel(torch->pan);
 }
 
 
