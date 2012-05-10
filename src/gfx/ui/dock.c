@@ -7,117 +7,89 @@
 
 /* Tab icons, notices, and selectors
 ``````````````````````````````````````````````````````````````````````````````*/
-/*
-  +-------------------------------------------------------------------------+
-  |                                                                         |
-  | [][][][][][][][][][]                                    +---------------+
-  | Beefalo Jonathan                                        | % | $ | @ | & |
-  +---------------------------------------------------------+---------------+ 
-                                                            \**** These ****/
-                                                           
-#define NUMTABS 5
-
 struct ui_tab_t {
-        WINDOW *win;    /* Parent window */
-        WINDOW *ico;    /* Holds the tab's icon */
-        WINDOW *cur;    /* Holds the cursor (below the tab) */
-        PANEL  *pan;
+        wchar_t *wch;
+        int n;          /* Which character in the string is being displayed */
+        int len;        /* Total number of characters in the string */
         bool sigtrue;   /* TRUE if tab is being signalled */
-        bool curtrue;   /* TRUE if tab has cursor below it */
         bool togtrue;
+        WINDOW *win;    /* Parent window */
+        WINDOW *ico;
+        PANEL  *pan;
 };
 
-struct ui_tab_t ui_tab[NUMTABS];
-
-
+#define NUMTABS  5 
 #define TAB_H    1
 #define TAB_W    3
 #define TAB_Y    (LINES-(TAB_H))
 #define TAB_X(i) (COLS-(NUMTABS*TAB_W)+(TAB_W*i))
+#define TAB_YOFS 0
+#define TAB_XOFS 1
 
-
-static const wchar_t *cursor_wch   = L"๏";
-static const short cursor_color    = PUR_PURPLE;
-static const short signal_color[2] = {PUR_PURPLE, PUR_GREY};
-static cchar_t cursor_cch;
-
+//{L"⸭"}
+struct ui_tab_t ui_tab[] = { {L"༈"},{L"∰∯∮"},{L"◆◈◇"},{L"ℌ"},{L"ℜ"} };
+                             
 
 /*
  * Initialize and draw the tabs in ui_tab[]
  */
 void init_tabs(void)
 {
-        const wchar_t *wch[NUMTABS] = { L"༈", L"∰∯∮", L"⸭", L"ℌ", L"ℜ",  };
-        const short colors[NUMTABS];
-        static cchar_t cch[NUMTABS];
+        cchar_t cch;
         int i;
 
-        setcchar(&cursor_cch, cursor_wch, 0, cursor_color, NULL);
-
         for (i=0; i<NUMTABS; i++) {
+
+                ui_tab[i].len = wcslen(ui_tab[i].wch);
+                ui_tab[i].n = 0;
+
                 /* Create the window and subwindow */
                 ui_tab[i].win = newwin(TAB_H, TAB_W, TAB_Y, TAB_X(i));
-                ui_tab[i].ico = derwin(ui_tab[i].win, 1, 1, 0, 0);
-                ui_tab[i].cur = derwin(ui_tab[i].win, 1, 1, 1, 0);
+                ui_tab[i].ico = derwin(ui_tab[i].win, 1, 1, 0, 1);
 
                 /* Paint the icon character */
-                setcchar(&cch[i], wch[i], 0, PUR_PURPLE, NULL);
-
-                /* Draw the icon in the subwindow */
-                wadd_wch(ui_tab[i].ico, &cch[i]);
+                setcchar(&cch, ui_tab[i].wch, 0, PUR_PURPLE, NULL);
+                wadd_wch(ui_tab[i].ico, &cch);
 
                 /* Draw the background color */
                 wbkgrnd(ui_tab[i].win, &PURPLE[2]);
                 wbkgrnd(ui_tab[i].ico, &PURPLE[2]);
-                wbkgrnd(ui_tab[i].cur, &PURPLE[2]);
 
                 /* Create the panel */ 
                 ui_tab[i].pan = new_panel(ui_tab[i].win);
         }
 }
 
-/*
- * tab_sig -- toggle the signal status of a tab
- * @tab: index of the tab to toggle
- */
+
+/* tab_sig -- toggle the signal status of a tab */
 void tab_sig(int tab)
 {
         ui_tab[tab].sigtrue ^= true;
 }
 
+
+void tab_cycle(int tab)
+{
+        cchar_t cch;
+        int n;
+
+        n = (ui_tab[tab].n) = ((ui_tab[tab].n+1) % ui_tab[tab].len);
+
+        setcchar(&cch, &ui_tab[tab].wch[n], 0, PUR_PURPLE, NULL);
+        wadd_wch(ui_tab[tab].ico, &cch);
+}
+
 void tab_tog(int tab)
 {
+        #define SIGNAL_COLOR PUR_GREY
+        #define NORMAL_COLOR PUR_PURPLE
+
         ui_tab[tab].togtrue ^= true;
 
         if (ui_tab[tab].togtrue)
-                wchgat(ui_tab[tab].ico, 1, 0, signal_color[1], NULL);
+                wchgat(ui_tab[tab].ico, 1, 0, SIGNAL_COLOR, NULL);
         else
-                wchgat(ui_tab[tab].ico, 1, 0, signal_color[0], NULL);
-}
-
-/*
- * tab_cur -- control the placement of the tab cursor
- * @tab: index of the tab to toggle, *or* 'l'/'r' for next/prev tab
- */
-void tab_cur(int tab)
-{
-        static uint8_t current;
-
-        werase(ui_tab[current].cur); /* Erase old one */
-
-        switch (tab) {
-        case 'l':
-                current = (current > 0) ? (current-1) : (NUMTABS-1);
-                break;
-        case 'r':
-                current = (current < NUMTABS-1) ? (current+1) : (0);
-                break;
-        default:
-                current = tab % NUMTABS;
-                break;
-        }
-
-        wadd_wch(ui_tab[current].cur, &cursor_cch); /* Write new one */
+                wchgat(ui_tab[tab].ico, 1, 0, NORMAL_COLOR, NULL);
 }
 
 /*
@@ -131,13 +103,14 @@ void tab_cur(int tab)
 void tab_update(void)
 {
         static uint8_t cycle; 
+        static short color;
         int i;
 
-        cycle ^= 1;
+        color = (cycle^=1, cycle) ? PUR_GREY : PUR_PURPLE;
 
         for (i=0; i<NUMTABS; i++) {
                 if (ui_tab[i].sigtrue) {
-                        wchgat(ui_tab[i].ico, 1, 0, signal_color[cycle], NULL);
+                        wchgat(ui_tab[i].ico, 1, 0, color, NULL);
                 }
         }
 }

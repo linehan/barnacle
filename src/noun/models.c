@@ -105,26 +105,32 @@ int modify_human(void *self)
                 case 'j':
                 case 's':
                         noun->mob.animate = &run_d_test;
+                        noun->mob.facing = MOB_SOUTH;
                         break;
                 case 'k':
                 case 'w':
                         noun->mob.animate = &run_u_test;
+                        noun->mob.facing = MOB_NORTH;
                         break;
                 case 'H':
                 case 'A':
                         noun->mob.animate = &jump_ul;
+                        noun->mob.facing = MOB_WEST;
                         break;
                 case 'h':
                 case 'a':
                         noun->mob.animate = &run_l_test;
+                        noun->mob.facing = MOB_WEST;
                         break;
                 case 'L':
                 case 'D':
                         noun->mob.animate = &jump_ur;
+                        noun->mob.facing = MOB_EAST;
                         break;
                 case 'l':
                 case 'd':
                         noun->mob.animate = &run_r_test;
+                        noun->mob.facing = MOB_EAST;
                         break;
                 case 'g':
                         top_panel(noun->mob.pan);
@@ -138,6 +144,9 @@ int modify_human(void *self)
                         break;
                 case 'e':
                         noun->mob.animate = &slashtest;
+                        break;
+                case '}':
+                        tab_cycle(2);
                         break;
                 case '@':
                         if (TORCHKEY(&noun->mob)) {

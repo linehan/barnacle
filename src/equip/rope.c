@@ -110,24 +110,34 @@ void new_pickaxe(void *self)
 
 void use_pickaxe(struct mob_t *mob, void *self)
 {
-        int tile_l;
-        int tile_r;
+        int tile;
         int y;
         int x;
 
         y = ufo_y(mob, ufo); 
         x = ufo_x(mob, ufo);
 
-        tile_l = TILE(ACTIVE, y, (x-1));
-        tile_r = TILE(ACTIVE, y, (x+1));
-
-        if (tile_l == CAVESOLID) {
-                SET_TILE(ACTIVE, y, (x-1), CAVERUBBLE);
-                mob->animate = &dig_l_test;
-        }
-        else if (tile_r == CAVESOLID) {
-                SET_TILE(ACTIVE, y, (x+1), CAVERUBBLE);
+        switch (mob->facing) {
+        case MOB_NORTH:
+                DEC(y, 0);
+                mob->animate = &dig_u_test;
+                break;
+        case MOB_SOUTH:
+                INC(y, LINES);
+                mob->animate = &dig_d_test;
+                break;
+        case MOB_EAST:
+                INC(x, COLS);
                 mob->animate = &dig_r_test;
+                break;
+        case MOB_WEST:
+                DEC(x, 0);
+                mob->animate = &dig_l_test;
+                break;
+        }
+
+        if (TILE(ACTIVE, y, x) == CAVESOLID) {
+                SET_TILE(ACTIVE, y, x, CAVERUBBLE);
         }
 
         MAPBOOK->render(ACTIVE);
