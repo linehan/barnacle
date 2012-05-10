@@ -43,6 +43,7 @@ struct ani_t {
 };
 static struct ani_t dig_r_test = {L"ᎲᎲᎲᱽᕤᱽᎲᎲⰾⲑⲑᎲⰾ", MV(7,'r'), NOMV, NOVB};
 static struct ani_t dig_d_test = {L"ᎲᎲᎲᱽᕤᱽᎲᎲⰾⲑⲑᎲⰾ", MV(7,'d'), NOMV, NOVB};
+static struct ani_t dig_u_test = {L"ᎲᎲᎲᱽᕤᱽᎲᎲⰾⲑⲑᎲⰾ", MV(7,'u'), NOMV, NOVB};
 static struct ani_t dig_l_test = {L"ᎲᎲᎲ᱙ᕦ᱙ᎲᎲⰾⲑⲑᎲⰾ", MV(7,'l'), NOMV, NOVB};
 
 #endif

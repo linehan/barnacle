@@ -12,6 +12,7 @@ bool light_torch;
 
 struct map_t;
 struct noun_t *noun_forw_ref;
+enum mob_facing { MOB_NORTH, MOB_SOUTH, MOB_EAST, MOB_WEST };
 
 
 struct mob_t {
@@ -24,6 +25,7 @@ struct mob_t {
         struct inventory_t *inv;
         uint32_t signal;
         bool active;
+        enum mob_facing facing;
         uint32_t name; 
         uint32_t mapid;
 };

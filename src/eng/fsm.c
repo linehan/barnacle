@@ -152,10 +152,10 @@ void director(int input)
                         tab_sig(2);
                         break;
                 case ',':
-                        tab_cur('l');
+                        /*tab_cur('l');*/
                         break;
                 case '.':
-                        tab_cur('r');
+                        /*tab_cur('r');*/
                         break;
                 case 'z':
                         dock_toggle();
