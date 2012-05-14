@@ -18,8 +18,8 @@ struct equip_t {
         short pair;
         void *data;
         void (*new)(void *self);
-        void (*use)(struct mob_t *mob, void *self);
-        void (*burn)(struct mob_t *mob, void *self);
+        void (*use)(void *self, struct noun_t *noun);
+        void (*burn)(void *self, struct noun_t *noun);
 };
 
 struct equip_t *new_equipment(int tag);

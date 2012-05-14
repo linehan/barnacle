@@ -141,11 +141,11 @@ void new_boat(struct map_t *map, int type, const char *name)
 
         noun = new_noun(name, SAILBOAT, new);
         noun_set_render(noun, sail_boat);
-        noun_set_modify(noun, boat_control);
+        /*noun_set_modify(noun, boat_control);*/
 
-        mob_cfg(&noun->mob, map, BOAT_H, BOAT_W, 0, 0);
-        init_path(noun->mob.path, BOAT_PATH_Y, BOAT_PATH_X, BOAT_PATH_LEN);
-        wbkgrnd(mob_win(&noun->mob), mkcch(br_dis(0), 0, SEA_MED));
+        /*mob_cfg(&noun->mob, map, BOAT_H, BOAT_W, 0, 0);*/
+        /*init_path(noun->mob.path, BOAT_PATH_Y, BOAT_PATH_X, BOAT_PATH_LEN);*/
+        wbkgrnd(noun->win, mkcch(br_dis(0), 0, SEA_MED));
 }
 
 
@@ -188,7 +188,7 @@ int boat_control(void *mynoun, int order)
                 return (MODE_RELEASE);
                 break;
         }
-        draw_boat(mob_win(&noun->mob), boat);
+        draw_boat(noun->win, boat);
 
         return MODE_PERSIST;
 }
@@ -206,21 +206,21 @@ void sail_boat(void *mynoun)
 
         int H, S, W; // Heading, sail and wind enums.
 
-        draw_boat(mob_win(&noun->mob), boat);
+        draw_boat(noun->win, boat);
 
         H = get_nibble(boat->state, HDG);
         S = get_nibble(boat->state, SAI);
         W = 3;
 
         if ((S!=POL)&&(W!=H)) { /*not in irons*/
-                if NORTHING(H)          mob_move(&noun->mob, 'u');
-                else if EASTING(H)      mob_move(&noun->mob, 'r');
-                else if SOUTHING(H)     mob_move(&noun->mob, 'd');
-                else if WESTING(H)      mob_move(&noun->mob, 'l');
+                if NORTHING(H)          noun_move(noun, 'u');
+                else if EASTING(H)      noun_move(noun, 'r');
+                else if SOUTHING(H)     noun_move(noun, 'd');
+                else if WESTING(H)      noun_move(noun, 'l');
         }
-        else path_pop(noun->mob.path);
+        /*else path_pop(noun->mob.path);*/
 
-        mob_path(&noun->mob); // If it's down here, after draw_boat(), it makes
+        /*mob_path(&noun->mob); // If it's down here, after draw_boat(), it makes*/
                          // a neat "tugging" effect as the boat moves
         scr_refresh();
 } 

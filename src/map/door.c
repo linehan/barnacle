@@ -22,21 +22,21 @@ inline void init_doortbl(void)
 /*
  * door_trigger -- make the destination map of a door into the active map
  */
-void door_trigger(struct mob_t *mob, uint32_t key)
+void door_trigger(struct noun_t *noun, uint32_t key)
 {
         struct door_t *door = get_door(key);
         assert(door && door->dst && "Door does not exist\n");
 
         /* Mob is at src map */
-        if (mob->mapid == door->src->id) {
+        if (noun->map_id == door->src->id) {
                 map_set_extra(door->dst);
-                mob_place(mob, door->dstrec.y, door->dstrec.x+1);
-                mob->mapid = door->dst->id;
+                noun->setyx(noun, door->dstrec->y, door->dstrec->x+1);
+                noun->map_id = door->dst->id;
         /* Mob is at dst map */
         } else {
                 map_set_extra(door->src);
-                mob_place(mob, door->srcrec.y+2, door->srcrec.x);
-                mob->mapid = door->src->id;
+                noun->setyx(noun, door->srcrec->y+2, door->srcrec->x);
+                noun->map_id = door->src->id;
         }
 }
 
@@ -56,15 +56,8 @@ void put_door(int tag, struct map_t *src, struct map_t *dst,
         new->dst = dst;
         new->id  = mt_random();
 
-        new->srcrec.w = src_w;
-        new->srcrec.h = src_h;
-        new->srcrec.y = src_y;
-        new->srcrec.x = src_x;
-
-        new->dstrec.w = dst_w;
-        new->dstrec.h = dst_h;
-        new->dstrec.y = dst_y;
-        new->dstrec.x = dst_x;
+        new->srcrec = new_rec(src_h, src_w, src_y, src_x);
+        new->dstrec = new_rec(dst_h, dst_w, dst_y, dst_x);
 
         for (i=src_y; i<src_y+src_h; i++) {
         for (j=src_x; j<src_x+src_w; j++) {
@@ -91,24 +84,5 @@ struct door_t *get_door(uint32_t key)
         return (struct door_t *)hashtable_get(doortbl, key);
 }
 
-
-/*void place_door_tile(struct map_t *map, int y, int x)*/
-/*{*/
-        /*struct door_t *door;*/
-        /*uint32_t key;*/
-        /*int i;*/
-        /*int j;*/
-
-        /*key  = mx_val(map->door, y, x);*/
-        /*door = get_door(key);*/
-
-        /*assert(door && "Door does not exist\n");*/
-
-        /*switch (door->tag) {*/
-        /*case CAVE_DOOR:*/
-                /*place_cavedoor_tile(map, y, x);*/
-                /*break;*/
-        /*}*/
-/*} */
 
 

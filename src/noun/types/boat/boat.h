@@ -5,7 +5,7 @@
 #include "../../../com/arawak.h"
 #include "../../noun.h"
 #include "../../../gfx/gfx.h"
-#include "../../../lib/ufo.h"
+#include "../../../lib/pos.h"
 #include "../../../map/snake.h"
 #include "../../../mob/mob.h"
 #include "compass.h"
@@ -62,7 +62,6 @@ enum boat_genera { FUNBOAT, KETCH, CARAVEL };
 enum  boat_nibbles   {RIG,HDG,SAI,GUN,ROT,FLG,VEL};
 
 enum hdg_t HDG_state;
-enum grad_t VEL_state;
 
 enum SAI_state_tags {                                                   
         POL, // Bare poles

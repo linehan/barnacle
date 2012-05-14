@@ -4,7 +4,7 @@
 
 #include "../gfx/gfx.h"
 #include "../map/map.h"
-#include "../lib/ufo.h"
+#include "../lib/rec.h"
 #include "../map/snake.h"
 #include "../ai/a_star.h"
 
@@ -16,18 +16,21 @@ enum mob_facing { MOB_NORTH, MOB_SOUTH, MOB_EAST, MOB_WEST };
 
 
 struct mob_t {
-        PANEL *pan;
-        WINDOW *win;
-        struct ani_t *animate;
-        struct ufo_t ufo;
-        struct path_t *path;
-        struct astar_t *astar;
-        struct inventory_t *inv;
-        uint32_t signal;
         bool active;
-        enum mob_facing facing;
-        uint32_t name; 
-        uint32_t mapid;
+        struct pos_t *pos;
+        struct astar_t *astar;
+        struct ani_t *animate;
+
+        uint32_t map_id;
+        uint32_t noun_id;
+
+        PANEL  *pan;
+        WINDOW *win;
+
+        bool hit_testing_enabled;
+        void (*step)(void *self, int dir);
+        void (*setyx)(void *self, int y, int x);
+        void (*hit)(void *self);
 };
 
 
@@ -39,17 +42,16 @@ static inline WINDOW *mob_win(struct mob_t *mob)
 {
         return panel_window(mob->pan);
 }
-
-static inline void mob_pos(struct mob_t *mob, uint32_t *y, uint32_t *x)
+static inline void mob_move(struct mob_t *mob, int dir)
 {
-        *y = ufo_y(mob, ufo);
-        *x = ufo_x(mob, ufo);
+        mob->step(mob, dir);
 }
 
 
+struct mob_t *new_mob(struct noun_t *noun, struct map_t *map, int h, int w, int y, int x);
+
 void mob_cfg(struct mob_t *mob, struct map_t *map, int h, int w, int y0, int x0);
 void set_mob(struct mob_t *mob, bool onoff);
-void mob_move(struct mob_t *mob, int dir);
 void mob_path(struct mob_t *mob);
 void mob_animate(struct mob_t *mob);
 void mob_set_signal(struct mob_t *mob, int verb, int dir);

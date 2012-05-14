@@ -20,7 +20,7 @@ void delete_matrix(void *self)
  * Return an allocated struct matrix_t large enough for an nrows x ncols
  * matrix.
  */
-struct matrix_t *new_matrix(uint32_t nrows, uint32_t ncols)
+struct matrix_t *new_matrix(int nrows, int ncols)
 {
         struct matrix_t *new;
         int k;
@@ -51,7 +51,7 @@ struct matrix_t *new_matrix(uint32_t nrows, uint32_t ncols)
         /* Assign helper values to members in the structure */
         new->rows = nrows;
         new->cols = ncols;
-        new->len = (uint32_t)(nrows * ncols);
+        new->len = (nrows * ncols);
         new->die = &delete_matrix;
 
         return (new);

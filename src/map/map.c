@@ -70,7 +70,7 @@ struct map_t *new_map(int h, int w)
         new->tile   = new_matrix(h, w);
         new->mobs   = new_matrix(h, w);
         new->door   = new_matrix(h, w);
-        set_ufo(&new->ufo, SCR_HEIGHT, SCR_WIDTH, SCR_Y0, SCR_X0, h, w, 0, 0);
+        new->pos    = new_pos(SCR_HEIGHT, SCR_WIDTH, SCR_Y0, SCR_X0, h, w, 0, 0);
 
         /* Build windows, pads, and panels */
         new->win = newwin(LINES, COLS, 0, 0); /* Fullscreen */
@@ -186,7 +186,7 @@ void map_gen(struct map_t *map, double **pmap, int opt)
         print_status("Generating noise...");
 
         if (pmap == NULL)
-                map->pmap = simplex_matrix(map->ufo.box.h, map->ufo.box.w);
+                map->pmap = simplex_matrix(pos_boxh(map->pos), pos_boxw(map->pos));
         else    map->pmap = pmap;
 
         print_status(SUCCESS);
@@ -362,16 +362,16 @@ void map_roll(struct map_t *map, int dir)
 {
         switch (dir) {
         case 'l': 
-                ufo_left(map, ufo);
+                pos_l(map->pos);
                 break;
         case 'r': 
-                ufo_right(map, ufo);
+                pos_r(map->pos);
                 break;
         case 'u': 
-                ufo_up(map, ufo);
+                pos_u(map->pos);
                 break;
         case 'd': 
-                ufo_down(map, ufo);
+                pos_d(map->pos);
                 break;
         }
         map_refresh(map);
@@ -386,13 +386,13 @@ void map_roll(struct map_t *map, int dir)
  * Notes
  * Returns 1 (true) if collision detected, otherwise returns 0 (false).
  */
-int map_hit(struct map_t *map, struct rec_t *rec)
+int map_hit(struct map_t *map, struct pos_t *pos)
 {
-        uint32_t i;
-        uint32_t j;
+        int i;
+        int j;
 
-        for (i=rec->y; i<(rec->h+rec->y); i++) {
-                for (j=rec->x; j<(rec->x+rec->w); j++) {
+        for (i=pos_y(pos); i<(pos_y(pos) + pos_h(pos)); i++) {
+                for (j=pos_x(pos); j<(pos_x(pos) + pos_w(pos)); j++) {
                         if (TILE(map, i, j) == DRP) return (1);
                         if (TILE(map, i, j) == TTO) return (1);
                         if (TILE(map, i, j) == CAVEWALL) return (1);

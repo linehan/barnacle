@@ -220,8 +220,6 @@ inline void check_for_init(void)
 {
         if (!ui_dock.dock_pan) 
                 init_dock();
-        if (!get_nounmenu())
-                make_nounmenu(ALL_NOUNS);
 }
 
 /*

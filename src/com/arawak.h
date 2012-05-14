@@ -149,13 +149,13 @@ enum fsm_reserved_modes {
  * strict type-checking.. See the
  * "unnecessary" pointer comparison.
  */
-#define min(x, y) ({				\
+#define MIN(x, y) ({				\
 	typeof(x) _min1 = (x);			\
 	typeof(y) _min2 = (y);			\
 	(void) (&_min1 == &_min2);		\
 	_min1 < _min2 ? _min1 : _min2; })
 
-#define max(x, y) ({				\
+#define MAX(x, y) ({				\
 	typeof(x) _max1 = (x);			\
 	typeof(y) _max2 = (y);			\
 	(void) (&_max1 == &_max2);		\
@@ -266,45 +266,19 @@ enum fsm_reserved_modes {
 	do { typeof(a) __tmp = (a); (a) = (b); (b) = __tmp; } while (0)
 
 
-#ifdef __CHECKER__
-#define BUILD_BUG_ON_NOT_POWER_OF_2(n)
-#define BUILD_BUG_ON_ZERO(e) (0)
-#define BUILD_BUG_ON_NULL(e) ((void*)0)
-#define BUILD_BUG_ON(condition)
-#define BUILD_BUG() (0)
-#else /* __CHECKER__ */
-
-/* Force a compilation error if a constant expression is not a power of 2 */
-#define BUILD_BUG_ON_NOT_POWER_OF_2(n)			\
-	BUILD_BUG_ON((n) == 0 || (((n) & ((n) - 1)) != 0))
-
-/* Force a compilation error if condition is true, but also produce a
-   result (of value 0 and type size_t), so the expression can be used
-   e.g. in a structure initializer (or where-ever else comma expressions
-   aren't permitted). */
-#define BUILD_BUG_ON_ZERO(e) (sizeof(struct { int:-!!(e); }))
-#define BUILD_BUG_ON_NULL(e) ((void *)sizeof(struct { int:-!!(e); }))
-
-/**
- * BUILD_BUG - break compile if used.
- *
- * If you have some code that you expect the compiler to eliminate at
- * build time, you should use BUILD_BUG to detect if it is
- * unexpectedly used.
- */
-#define BUILD_BUG()						\
-	do {							\
-		extern void __build_bug_failed(void)		\
-			__linktime_error("BUILD_BUG failed");	\
-		__build_bug_failed();				\
-	} while (0)
-
-#endif	/* __CHECKER__ */
-
 /*
  * Safe decrement and increment
  */
 #define DEC(x, min) x = ((x) > (min)) ? ((x)-1) : (x)
 #define INC(x, max) x = ((x) < (max)) ? ((x)+1) : (x)
+#define BETWEEN(x, min, max) ((x) > (min) && (x) < (max)) ? true : false
+
+#define NUM_HEADINGS 16
+enum hdg_t {NORTH,NNE,NE,ENE,EAST,ESE,SE,SSE,SOUTH,SSW,SW,WSW,WEST,WNW,NW,NNW};        
+
+static const char *hdg_tag[NUM_HEADINGS]={"NORTH","NNE","NE","ENE","EAST","ESE",
+                                          "SE","SSE","SOUTH","SSW","SW","WSW",
+                                          "WEST","WNW","NW", "NNW"};
+
 
 #endif /* header */

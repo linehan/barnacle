@@ -9,11 +9,11 @@
 #include "inventory.h"
 
 
-void inventory_get(uint32_t key, struct mob_t *mob);
-void inventory_add(struct equip_t *equip, struct mob_t *mob);
-void inventory_use(uint32_t key, struct mob_t *mob);
-void inventory_burn(uint32_t key, struct mob_t *mob);
-void inventory_mkmenu(struct mob_t *mob);
+void inventory_get(void *self, uint32_t key);
+void inventory_add(void *self, struct equip_t *equip);
+void inventory_use(void *self, uint32_t key);
+void inventory_burn(void *self, uint32_t key);
+void inventory_mkmenu(void *self);
 
 
 #define MENU_W 12
@@ -24,18 +24,19 @@ void inventory_mkmenu(struct mob_t *mob);
 /*
  * new_inventory -- create and initialize an inventory structure
  */
-struct inventory_t *new_inventory(void)
+struct inventory_t *new_inventory(struct noun_t *noun)
 {
         struct inventory_t *new = calloc(1, sizeof(struct inventory_t));
 
         new->tbl = new_hashtable(0);
+        new->noun = noun;
 
         new->use    = &inventory_use;
         new->add    = &inventory_add;
         new->get    = &inventory_get;
         new->burn   = &inventory_burn;
         new->mkmenu = &inventory_mkmenu;
-
+        
         new->equipped_win = newwin(1, 12, LINES-1, 1);
         wbkgrnd(new->equipped_win, &PURPLE[2]);
         new->equipped_pan = new_panel(new->equipped_win);
@@ -47,40 +48,52 @@ struct inventory_t *new_inventory(void)
 /* Inventory methods
 ``````````````````````````````````````````````````````````````````````````````*/
 /* inventory_get -- set the 'tmp' ptr to the hashed object stored at 'key' */
-void inventory_get(uint32_t key, struct mob_t *mob)
+void inventory_get(void *self, uint32_t key)
 {
-        mob->inv->tmp = (struct equip_t *)hashtable_get(mob->inv->tbl, key);
+        struct inventory_t *inv = (struct inventory_t *)self; 
+
+        inv->tmp = (struct equip_t *)hashtable_get(inv->tbl, key);
 }
+
 
 /* inventory_add -- add a new piece of equipment to the inventory hash table */
-void inventory_add(struct equip_t *equip, struct mob_t *mob)
+void inventory_add(void *self, struct equip_t *equip)
 {
-        hashtable_add(mob->inv->tbl, equip->id, equip);
-        mob->inv->key[mob->inv->n++] = equip->id;
+        struct inventory_t *inv = (struct inventory_t *)self; 
+
+        hashtable_add(inv->tbl, equip->id, equip);
+        
+        inv->key[inv->n++] = equip->id;
 
         if (equip->tag == ITEM_TORCH)
-                mob->inv->torch_key = equip->id;
+                inv->torch_key = equip->id;
         if (equip->tag == ITEM_ROPE)
-                mob->inv->rope_key = equip->id;
+                inv->rope_key = equip->id;
 }
 
+
 /* inventory_use -- retreive the hashed object and call its 'use' method */
-void inventory_use(uint32_t key, struct mob_t *mob)
+void inventory_use(void *self, uint32_t key)
 {
-        mob->inv->get(key, mob);
-        mob->inv->tmp->use(mob, mob->inv->tmp);
+        struct inventory_t *inv = (struct inventory_t *)self; 
+
+        inv->get(inv, key);
+        inv->tmp->use(inv->tmp, inv->noun);
 }
 
 /* inventory_burn -- retreive the hashed object and call its 'burn' method */
-void inventory_burn(uint32_t key, struct mob_t *mob)
+void inventory_burn(void *self, uint32_t key)
 {
-        mob->inv->get(key, mob);
-        if (mob->inv->tmp && mob->inv->tmp->burn)
-                mob->inv->tmp->burn(mob, mob->inv->tmp);
+        struct inventory_t *inv = (struct inventory_t *)self; 
+
+        inv->get(inv, key);
+        if (inv->tmp && inv->tmp->burn)
+                inv->tmp->burn(inv->tmp, inv->noun);
 }
 
+
 /* inventory_mkmenu -- generate an inventory menu */
-void inventory_mkmenu(struct mob_t *mob)
+void inventory_mkmenu(void *self)
 {
         #define ORIGINAL PUR_GRE
         #define STANDOUT WARNING
@@ -91,73 +104,73 @@ void inventory_mkmenu(struct mob_t *mob)
         int i;
         int n;
 
-        inv_add(new_equipment(ITEM_ROPE), mob);
-        inv_add(new_equipment(ITEM_PICKAXE), mob);
-        inv_add(new_equipment(ITEM_SHOVEL), mob);
-        inv_add(new_equipment(ITEM_TORCH), mob);
+        struct inventory_t *inv = (struct inventory_t *)self;
 
-        n = mob->inv->n;
+        inv->add(inv, new_equipment(ITEM_ROPE));
+        inv->add(inv, new_equipment(ITEM_PICKAXE));
+        inv->add(inv, new_equipment(ITEM_SHOVEL));
+        inv->add(inv, new_equipment(ITEM_TORCH));
 
-        name = calloc(n, sizeof(char *));      /* Item names */
-        id   = calloc(n, sizeof(uint32_t *));  /* Item hash ids */
-        icon = calloc(n, sizeof(wchar_t *));
+        name = calloc(inv->n, sizeof(char *));      /* Item names */
+        id   = calloc(inv->n, sizeof(uint32_t *));  /* Item hash ids */
+        icon = calloc(inv->n, sizeof(wchar_t *));
 
-        for (i=0; i<(n); i++) {
-                mob->inv->get(mob->inv->key[i], mob);
-                name[i] = mob->inv->tmp->name;
-                icon[i] = mob->inv->tmp->wch;
-                id[i]   = &mob->inv->tmp->id;
+        for (i=0; i<(inv->n); i++) {
+                inv->get(inv, inv->key[i]);
+                name[i] = inv->tmp->name;
+                icon[i] = inv->tmp->wch;
+                id[i]   = &inv->tmp->id;
         }
 
-        inv_menu(mob) = new_stdmenu(name, name, icon, (void **)id, n);
-        inv_menu(mob)->nitem = n;
+        inv->menu = new_stdmenu(name, name, icon, (void **)id, inv->n);
+        inv->menu->nitem = inv->n;
 
-        stdmenu_win(inv_menu(mob), MENU_H, MENU_W, MENU_Y, MENU_X, 1, 0, 3, 0);
-        stdmenu_color_item(inv_menu(mob), STANDOUT, ORIGINAL, __PUR_GREY);
-        stdmenu_color_name(inv_menu(mob), PUR_YEL, ORIGINAL, __PUR_GREY);
-        stdmenu_cfg(inv_menu(mob), DESC, false, NULL);
-        stdmenu_cfg(inv_menu(mob), MARK, false, NULL);
+        stdmenu_win(inv->menu, MENU_H, MENU_W, MENU_Y, MENU_X, 1, 0, 3, 0);
+        stdmenu_color_item(inv->menu, STANDOUT, ORIGINAL, __PUR_GREY);
+        stdmenu_color_name(inv->menu, PUR_YEL, ORIGINAL, __PUR_GREY);
+        stdmenu_cfg(inv->menu, DESC, false, NULL);
+        stdmenu_cfg(inv->menu, MARK, false, NULL);
 
-        inv_menu(mob)->post(inv_menu(mob));
-        inv_menu(mob)->next(inv_menu(mob));
-        inv_menu(mob)->prev(inv_menu(mob));
+        inv->menu->post(inv->menu);
+        inv->menu->next(inv->menu);
+        inv->menu->prev(inv->menu);
 }
 
 
-static inline void print_item(struct mob_t *mob, short pair)
+static inline void print_item(struct inventory_t *inv, short pair)
 {
-        wcolor_set(inv_eqwin(mob), pair, NULL);
-        mvwadd_wch(inv_eqwin(mob), 0, 1, mkcch(inv_tmp(mob)->wch, 0, pair));
-        mvwprintw(inv_eqwin(mob), 0, 3, "%s\n", inv_tmp(mob)->name);
-        inv_menu(mob)->icons(inv_menu(mob), 1, 1);
+        wcolor_set(inv->equipped_win, pair, NULL);
+        mvwadd_wch(inv->equipped_win, 0, 1, mkcch(inv->tmp->wch, 0, pair));
+        mvwprintw(inv->equipped_win, 0, 3, "%s\n", inv->tmp->name);
+        inv->menu->icons(inv->menu, 1, 1);
 }
 
-static inline void grab_current(struct mob_t *mob)
+static inline void grab_current(struct inventory_t *inv)
 {
-        uint32_t *keyptr = (uint32_t *)inv_menu(mob)->cur_ptr;
-        CUR_KEY(mob) = *keyptr;
-        inv_get(CUR_KEY(mob), mob);
+        uint32_t *keyptr = (uint32_t *)inv->menu->cur_ptr;
+        CUR_KEY(inv) = *keyptr;
+        inv->get(inv, CUR_KEY(inv));
 }
 
 
 enum mobmode { INVENTORY_START, INVENTORY_EXIT, INVENTORY_DEFAULT };
 
-static inline int operate_on(int mode, struct mob_t *mob)
+static inline int operate_on(struct inventory_t *inv, int mode)
 {
         int return_value;
 
-        grab_current(mob);
+        grab_current(inv);
 
         switch (mode) {
         case INVENTORY_START:
         case INVENTORY_DEFAULT:
-                print_item(mob, PUR_GREY);
+                print_item(inv, PUR_GREY);
                 return_value = MODE_PERSIST;
                 break;
 
         case INVENTORY_EXIT:
-                print_item(mob, PUR_PURPLE);
-                inv_menu(mob)->close(inv_menu(mob));
+                print_item(inv, PUR_PURPLE);
+                inv->menu->close(inv->menu);
                 return_value = MODE_RESTORE;
                 break;
         }
@@ -167,12 +180,12 @@ static inline int operate_on(int mode, struct mob_t *mob)
 }
 
 
-void inventory_control(struct mob_t *mob, int input)
+void inventory_control(struct inventory_t *inv, int input)
 {
         int mode = INVENTORY_DEFAULT;
 
-        if (inv_menu(mob) == NULL)
-                inv_mkmenu(mob);
+        if (inv->menu == NULL)
+                inv->mkmenu(inv);
 
         switch (input) {
 
@@ -180,19 +193,19 @@ void inventory_control(struct mob_t *mob, int input)
                 mode = INVENTORY_START;
                 break;
         case 'k':
-                inv_menu(mob)->prev(inv_menu(mob));
+                inv->menu->prev(inv->menu);
                 break;
         case 'j':
-                inv_menu(mob)->next(inv_menu(mob));
+                inv->menu->next(inv->menu);
                 break;
         case 'K':
-                inv_menu(mob)->pgup(inv_menu(mob));
+                inv->menu->pgup(inv->menu);
                 break;
         case 'J':
-                inv_menu(mob)->pgdn(inv_menu(mob));
+                inv->menu->pgdn(inv->menu);
                 break;
         case 'i':
-                inv_menu(mob)->tog(inv_menu(mob));
+                inv->menu->tog(inv->menu);
                 break;
         case KEY_ESC:
         case 'm':
@@ -201,6 +214,6 @@ void inventory_control(struct mob_t *mob, int input)
                 break;
         }
 
-        return operate_on(mode, mob);
+        return operate_on(inv, mode);
 }
 
