@@ -23,7 +23,7 @@ struct noun_t {
         int state;              /* for the AI */
         int value;              /* For the AI */
         bool is_active;
-        bool hit_testing_enabled;
+        bool hit_testing;
 
         /* ----------------------------------------------- Messaging */
         struct verb_t verb;     
@@ -37,7 +37,7 @@ struct noun_t {
         void *obj;              
 
         /* ----------------------------------------------- Rendering */
-        struct ani_t *animate;
+        struct ani_t *animation;
         PANEL  *pan;
         WINDOW *win;
 
@@ -47,11 +47,11 @@ struct noun_t {
         RENDER_METHOD render;   /* Dynamic linkage for rendering */
 
         /* ----------------------------------------------- Static methods */
-        void (*step)(void *self, int dir);
+        void (*step) (void *self, int dir);
+        void (*hit)  (void *self);
+        void (*fall) (void *self);
+        void (*seek) (void *self, void *target);
         void (*setyx)(void *self, int y, int x);
-        void (*hit)(void *self);
-        void (*fall)(void *self);
-        void (*seek)(void *self, void *target);
 };
 
 
@@ -63,12 +63,14 @@ void noun_set_render(struct noun_t *noun, RENDER_METHOD func);
 void noun_set_modify(struct noun_t *noun, MODIFY_METHOD func);
 void noun_set_state(struct noun_t *noun, int state, int value);
 void noun_set_mobile(struct noun_t *noun, bool yesno);
+void set_animation(struct noun_t *noun, struct ani_t *ani);
+
 
 struct noun_t *key_noun(uint32_t id);
 struct noun_t *get_noun(const char *name);
+#define nn(name) get_noun((name))
 struct noun_t *get_noun_at(struct map_t *map, int y, int x);
 
-void load_noun_test(void);
 
 
 

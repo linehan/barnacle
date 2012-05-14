@@ -120,19 +120,19 @@ void use_pickaxe(void *self, struct noun_t *noun)
         switch (noun->pos->hdg) {
         case NORTH:
                 DEC(y, 0);
-                noun->animate = &dig_u_test;
+                set_animation(noun, &dig_u_test);
                 break;
         case SOUTH:
                 INC(y, LINES);
-                noun->animate = &dig_d_test;
+                set_animation(noun, &dig_d_test);
                 break;
         case EAST:
                 INC(x, COLS);
-                noun->animate = &dig_r_test;
+                set_animation(noun, &dig_r_test);
                 break;
         case WEST:
                 DEC(x, 0);
-                noun->animate = &dig_l_test;
+                set_animation(noun, &dig_l_test);
                 break;
         }
 
@@ -172,7 +172,7 @@ void use_shovel(void *self, struct noun_t *noun)
 
         if (tile_d == CAVESOLID) {
                 SET_TILE(ACTIVE, (y+1), x, CAVERUBBLE);
-                noun->animate = &dig_d_test;
+                set_animation(noun, &dig_d_test);
         }
 
         MAPBOOK->render(ACTIVE);

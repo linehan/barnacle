@@ -17,10 +17,10 @@
  */
 void noun_animate(struct noun_t *noun)
 {
-        if (!noun->animate) 
+        if (!noun->animation) 
                 return;
 
-        struct ani_t *ani = noun->animate;
+        struct ani_t *ani = noun->animation;
 
         /* Assign length if it hasn't been */
         if (ani->len == 0)
@@ -40,9 +40,9 @@ void noun_animate(struct noun_t *noun)
                 noun_set_signal(noun, ani->verb_id, ani->verb_dir);
 
         /* Increment the current frame and/or terminate the animation */
-        if (++noun->animate->i == noun->animate->len) {
-                noun->animate->i = 0;
-                noun->animate = NULL;
+        if (++noun->animation->i == noun->animation->len) {
+                noun->animation->i = 0;
+                noun->animation = NULL;
                 return;
         }
 
@@ -85,11 +85,8 @@ void render_human(void *self)
                 wbkgrnd(noun->win, mkcch(L"ⰾ", 0, FLEX));
 
         inv_burn(noun->inv, TORCHKEY(noun->inv));
-
         noun_animate(noun);
-
         noun->step(noun, '*');
-
         top_panel(noun->inv->equipped_pan);
 }
 
@@ -107,40 +104,40 @@ int modify_human(void *self)
                 switch (noun->value) {
                 case 'j':
                 case 's':
-                        noun->animate = &run_d_test;
+                        set_animation(noun, &run_d_test);
                         break;
                 case 'k':
                 case 'w':
-                        noun->animate = &run_u_test;
+                        set_animation(noun, &run_u_test);
                         break;
                 case 'H':
                 case 'A':
-                        noun->animate = &jump_ul;
+                        set_animation(noun, &jump_ul);
                         break;
                 case 'h':
                 case 'a':
-                        noun->animate = &run_l_test;
+                        set_animation(noun, &run_l_test);
                         break;
                 case 'L':
                 case 'D':
-                        noun->animate = &jump_ur;
+                        set_animation(noun, &jump_ur);
                         break;
                 case 'l':
                 case 'd':
-                        noun->animate = &run_r_test;
+                        set_animation(noun, &run_r_test);
                         break;
                 case 'g':
                         top_panel(noun->pan);
                         break;
                 case 't':
-                        noun->animate = &punch_r_test;
+                        set_animation(noun, &punch_r_test);
                         break;
                 case ' ':
                         if (CUR_KEY(noun->inv))
                                 inv_use(noun->inv, CUR_KEY(noun->inv));
                         break;
                 case 'e':
-                        noun->animate = &slashtest;
+                        set_animation(noun, &slashtest);
                         break;
                 case '}':
                         tab_cycle(2);
@@ -218,24 +215,24 @@ int modify_dummy(void *obj)
                 break;
         case VERB_Punch:
                 wprintw(CONSOLE_WIN, "Dummy hit!\n");
-                noun->animate = &bonk_test;
+                set_animation(noun, &bonk_test);
                         dock_say(L"嶴", "FUCK!");
                 break;
         case VERB_GoUp:
-                noun->animate = &dummy_mv_u;
+                set_animation(noun, &dummy_mv_u);
                 break;
         case VERB_GoDown:
                 if (flip_biased(0.4))
                         dock_say(L"䥚", "I'm gonna hop all over you!");
-                noun->animate = &dummy_mv_d;
+                set_animation(noun, &dummy_mv_d);
                 break;
         case VERB_GoLeft:
-                noun->animate = &dummy_mv_l;
+                set_animation(noun, &dummy_mv_l);
                 if (flip_biased(0.4))
                         dock_say(L"䥚", "Get fucked!");
                 break;
         case VERB_GoRight:
-                noun->animate = &dummy_mv_r;
+                set_animation(noun, &dummy_mv_r);
                 break;
         }
         if (noun->state == enter)
@@ -281,6 +278,7 @@ void apply_noun_model(struct noun_t *noun)
         }
 
         astar_init(noun->astar, ACTIVE->tile, pos_y(noun->pos), pos_x(noun->pos));
+        noun->map_id = ACTIVE->id;
 }
 
 

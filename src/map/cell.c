@@ -34,6 +34,14 @@ struct cell_t *new_cell(uint32_t y, uint32_t x)
 }
 
 
+void set_cell(struct cell_t *cell, int y, int x)
+{
+        cell->y = (uint32_t)y;
+        cell->x = (uint32_t)x;
+        cell->key = MORT(y,x);
+}
+
+
 /*
  * same_cell -- if the keys of both cells match, they are the same 
  * @a: pointer to a cell
