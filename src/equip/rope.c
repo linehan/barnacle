@@ -46,7 +46,7 @@ void new_rope(void *self)
 }
 
 
-void use_rope(struct mob_t *mob, void *self)
+void use_rope(void *self, struct noun_t *noun)
 {
         int tile;
         int i;
@@ -57,8 +57,8 @@ void use_rope(struct mob_t *mob, void *self)
         EQUIPMENT(equip, self);
         struct rope_t *rope = (struct rope_t *)equip->data;
 
-        y = ufo_y(mob, ufo); 
-        x = ufo_x(mob, ufo);
+        y = pos_y(noun->pos); 
+        x = pos_x(noun->pos);
 
         if (TILE(ACTIVE, (y+1), (x-1)) == CAVEFLOOR) {
                 tile = L_ROPE_ANCHOR;
@@ -108,31 +108,31 @@ void new_pickaxe(void *self)
         equip->use  = &use_pickaxe;
 }
 
-void use_pickaxe(struct mob_t *mob, void *self)
+void use_pickaxe(void *self, struct noun_t *noun)
 {
         int tile;
         int y;
         int x;
 
-        y = ufo_y(mob, ufo); 
-        x = ufo_x(mob, ufo);
+        y = pos_y(noun->pos); 
+        x = pos_x(noun->pos);
 
-        switch (mob->facing) {
-        case MOB_NORTH:
+        switch (noun->pos->hdg) {
+        case NORTH:
                 DEC(y, 0);
-                mob->animate = &dig_u_test;
+                noun->animate = &dig_u_test;
                 break;
-        case MOB_SOUTH:
+        case SOUTH:
                 INC(y, LINES);
-                mob->animate = &dig_d_test;
+                noun->animate = &dig_d_test;
                 break;
-        case MOB_EAST:
+        case EAST:
                 INC(x, COLS);
-                mob->animate = &dig_r_test;
+                noun->animate = &dig_r_test;
                 break;
-        case MOB_WEST:
+        case WEST:
                 DEC(x, 0);
-                mob->animate = &dig_l_test;
+                noun->animate = &dig_l_test;
                 break;
         }
 
@@ -159,20 +159,20 @@ void new_shovel(void *self)
         equip->use  = &use_shovel;
 }
 
-void use_shovel(struct mob_t *mob, void *self)
+void use_shovel(void *self, struct noun_t *noun)
 {
         int tile_d;
         int y;
         int x;
 
-        y = ufo_y(mob, ufo); 
-        x = ufo_x(mob, ufo);
+        y = pos_y(noun->pos); 
+        x = pos_x(noun->pos);
 
         tile_d = TILE(ACTIVE, (y+1), x);
 
         if (tile_d == CAVESOLID) {
                 SET_TILE(ACTIVE, (y+1), x, CAVERUBBLE);
-                mob->animate = &dig_d_test;
+                noun->animate = &dig_d_test;
         }
 
         MAPBOOK->render(ACTIVE);
@@ -246,7 +246,7 @@ void new_torch(void *self)
 }
 
 
-void use_torch(struct mob_t *mob, void *self)
+void use_torch(void *self, struct noun_t *noun)
 {
         EQUIPMENT(equip, self);
         struct torch_t *torch = equip->data;
@@ -260,7 +260,7 @@ void use_torch(struct mob_t *mob, void *self)
 }
 
 
-void burn_torch(struct mob_t *mob, void *self)
+void burn_torch(void *self, struct noun_t *noun)
 {
         int y;
         int x;
@@ -277,8 +277,8 @@ void burn_torch(struct mob_t *mob, void *self)
         if (!torch->lit)
                 return;
 
-        y = ufo_y(mob, ufo);
-        x = ufo_x(mob, ufo);
+        y = pos_y(noun->pos); 
+        x = pos_x(noun->pos);
 
         /* -------------------------------------- y-adjustments */
         if (y < torch->hr+1) {
@@ -315,7 +315,7 @@ void burn_torch(struct mob_t *mob, void *self)
 
         /* -------------------------------------- copy bg to torch buffer */
         copywin(PLATE(ACTIVE, BGR), torch->win, y0, x0, 0, 0, torch_h-1, torch_w-1, 0);
-        overwrite(mob->win, torch->win);
+        overwrite(noun->win, torch->win);
 
         /* -------------------------------------- re-color the copied wchars */
         for (i=0; i<torch_h; i++) {

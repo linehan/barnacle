@@ -30,5 +30,14 @@ static const float SHOAL   = -0.003;  /* Shoal isoline */
 static const float BEACH   =  0.00;   /* Beach isoline */
 static const float TERRA   =  0.45;   /* Ground isoline */
 
+struct map_t;
+
+void smooth_layers(struct map_t *map);
+void label_regions(struct map_t *map);
+void label_cliffs(struct map_t *map);
+void label_treetops(struct map_t *map);
+void label_treetops_trim(struct map_t *map);
+void label_treetrunks(struct map_t *map);
+void label_shorelines(struct map_t *map);
 
 #endif

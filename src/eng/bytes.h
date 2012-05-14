@@ -19,24 +19,6 @@ static const int NNIBBLES=8;
 #define NSTATES 16  // Number of states each nibble can take.
 #define NBITS   32  // Number of bits (total) in a state word.
 
-/* Directional */
-enum hdg_t {NORTH,NNE,NE,ENE,EAST,ESE,SE,SSE,SOUTH,SSW,SW,WSW,WEST,WNW,NW,NNW};        
-static const char *hdg_tag[NSTATES] = {"NORTH","NNE","NE","ENE","EAST","ESE",
-                                       "SE","SSE","SOUTH","SSW","SW","WSW",
-                                       "WEST","WNW","NW", "NNW"};
-/* Graduated */
-enum grad_t {NIL=1,HI5=2,HI4=3,HI3=4,HI2=5,HI1=6,HI0=7,LO5=8,LO4=9,LO3=10,
-             LO2=11,LO1=12,LO0=13,ALL=14};
-static const char *grad_tag[NSTATES] = {"XXX","NIL","HI5","HI4","HI3","HI2",
-                                        "HI1","HI0","LO5","LO4","LO3","LO2",
-                                        "LO1","LO0","ALL"};
-
-/* Scalar value */
-/* No enum is necessary, since it would be redundant. */
-//static const char *scal_tag[NSTATES] = {"XX","00","01","02","03","04","05",
-                                        //"06","07","08","09","10","11","12",
-                                        //"13","14"};
-
 
 // Lookup table for each possible state of a single byte.
 static uint32_t state[]={

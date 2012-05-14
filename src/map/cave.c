@@ -17,8 +17,8 @@ void gen_cave_passage(struct map_t *map)
         int i;
         int j;
 
-        height = map->ufo.box.h-1;
-        width  = map->ufo.box.w-1;
+        height = pos_boxh(map->pos) - 1;
+        width  = pos_boxw(map->pos) - 1;
 
         y = LINES;
         x = COLS/2;
@@ -50,8 +50,8 @@ void cave_connect_door(struct map_t *map)
         int i;
         int j;
 
-        h = map->ufo.box.h-1;
-        w = map->ufo.box.w-1;
+        h = pos_boxh(map->pos) - 1;
+        w = pos_boxw(map->pos) - 1;
 
         for (i=0; i<h; i++) {
         for (j=0; j<w; j++) {
@@ -81,10 +81,10 @@ void gen_cavern(struct map_t *map)
         int i;
         int j;
 
-        h = map->ufo.box.h-1;
-        w = map->ufo.box.w-1;
+        h = pos_boxh(map->pos) - 1;
+        w = pos_boxw(map->pos) - 1;
 
-        x_start = map->ufo.box.w/4;
+        x_start = w/4;
         x_final = x_start * 3;
 
         perlin_smooth(map->pmap, h, w, PERSIST, OCTAVES);

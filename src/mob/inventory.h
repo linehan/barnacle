@@ -1,38 +1,50 @@
+#pragma once
+#ifndef __INVENTORY_H
+#define __INVENTORY_H
+
 #include "../equip/equipment.h"
 
-#define inv_menu(mob) ((mob)->inv->menu)
-#define inv_tmp(mob) ((mob)->inv->tmp)
-#define inv_eqwin(mob) ((mob)->inv->equipped_win)
+#define inv_menu(inv) ((inv)->menu)
+#define inv_tmp(inv)  ((inv)->tmp)
+#define inv_eqwin(inv) ((inv)->equipped_win)
 
-#define inv_add(eq,mob)   (mob)->inv->add(eq,(mob))
-#define inv_use(key,mob)  (mob)->inv->use((key),(mob))
-#define inv_get(key,mob)  (mob)->inv->get((key),(mob))
-#define inv_burn(key,mob) (mob)->inv->burn((key),(mob))
-#define inv_mkmenu(mob)   (mob)->inv->mkmenu((mob))
+#define inv_add(inv,eq)   (inv)->add((inv), (eq))
+#define inv_use(inv,key)  (inv)->use((inv), (key))
+#define inv_get(inv,key)  (inv)->get((inv), (key))
+#define inv_burn(inv,key) (inv)->burn((inv), (key))
+#define inv_mkmenu(inv)   (inv)->mkmenu((inv))
 
-#define SET_CUR_KEY(mob) ((mob)->inv->cur_key = *(uint32_t *)inv_menu(mob)->cur_ptr)
-#define CUR_KEY(mob)  ((mob)->inv->cur_key)
-#define TORCHKEY(mob) ((mob)->inv->torch_key)
-#define ROPEKEY(mob)  ((mob)->inv->rope_key)
+#define SET_CUR_KEY(inv) ((inv)->cur_key = *(uint32_t *)(inv)->menu->cur_ptr)
+#define CUR_KEY(inv)  ((inv)->cur_key)
+#define TORCHKEY(inv) ((inv)->torch_key)
+#define ROPEKEY(inv)  ((inv)->rope_key)
 
 
 struct inventory_t {
         struct hashtable_t *tbl;
+        struct noun_t *noun;
         int n;
+
         uint32_t key[100];
         uint32_t cur_key;
         uint32_t torch_key;
         uint32_t rope_key;
+
         struct equip_t *tmp;
         struct stdmenu_t *menu;
+
         WINDOW *equipped_win;
         PANEL  *equipped_pan;
-        void (*add)(struct equip_t *equip, struct mob_t *mob);
-        void (*use)(uint32_t key, struct mob_t *mob);
-        void (*get)(uint32_t key, struct mob_t *mob);
-        void (*burn)(uint32_t key, struct mob_t *mob);
-        void (*mkmenu)(struct mob_t *mob);
+
+        void (*add)(void *self, struct equip_t *equip);
+        void (*use)(void *self, uint32_t key);
+        void (*get)(void *self, uint32_t key);
+        void (*burn)(void *self, uint32_t key);
+        void (*mkmenu)(void *self);
 };
 
 
-struct inventory_t *new_inventory(void);
+struct inventory_t *new_inventory(struct noun_t *noun);
+void inventory_control(struct inventory_t *inv, int input);
+
+#endif

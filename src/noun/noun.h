@@ -5,25 +5,53 @@
 #include "../com/arawak.h"
 #include "../verb/verb.h"
 #include "../mob/mob.h"
+#include "../mob/inventory.h"
+#include "../map/map.h"
 #include "models.h"
 
+enum noun_model { NOUN_CREATURE, NOUN_DUMMY };
 
 /* Abstract types 
 ``````````````````````````````````````````````````````````````````````````````*/
 struct noun_t {
+        /* ----------------------------------------------- Identifiers */
         char    *name;          /* String identifier */
-        uint32_t key;           /* Hashed identifier */
-        uint32_t model;         /* Polymorph. model */
+        uint32_t id;            /* Hashed identifier */
+
+        /* ----------------------------------------------- State */
         uint32_t vitals;        /* The state word */
-        uint32_t attributes;    /* The options word */
-        uint32_t options;       /* Used by the query system */
         int state;              /* for the AI */
         int value;              /* For the AI */
-        struct verb_t verb;     /* A verb package for messaging (verb.c) */
-        struct mob_t mob;       /* A mob package for rendering (mob.c) */
-        void *obj;              /* A private data type */
+        bool is_active;
+        bool hit_testing_enabled;
+
+        /* ----------------------------------------------- Messaging */
+        struct verb_t verb;     
+        uint32_t signal;
+
+        /* ----------------------------------------------- Associated data */
+        struct inventory_t *inv;   
+        struct astar_t     *astar;
+        struct pos_t       *pos;
+        uint32_t map_id;
+        void *obj;              
+
+        /* ----------------------------------------------- Rendering */
+        struct ani_t *animate;
+        PANEL  *pan;
+        WINDOW *win;
+
+        /* ----------------------------------------------- Dynamic methods */
+        enum noun_model model;
         MODIFY_METHOD modify;   /* Dynamic linkage for state machine */
         RENDER_METHOD render;   /* Dynamic linkage for rendering */
+
+        /* ----------------------------------------------- Static methods */
+        void (*step)(void *self, int dir);
+        void (*setyx)(void *self, int y, int x);
+        void (*hit)(void *self);
+        void (*fall)(void *self);
+        void (*seek)(void *self, void *target);
 };
 
 
@@ -63,12 +91,12 @@ static inline void *noun_obj(const char *name)
 }
 
 /**
- * &noun->mob -- returns a pointer to the mob member of the noun struct
+ * &noun->pos -- returns a pointer to the mob member of the noun struct
  * @name: name of noun (string)
  */
-static inline struct mob_t *noun_mob(const char *name)
+static inline struct pos_t *noun_pos(const char *name)
 {
-        return &((get_noun(name))->mob);
+        return ((get_noun(name))->pos);
 }
 
 /**
@@ -128,5 +156,20 @@ uint32_t request_id(int option); /* Request the current subj/obj */
 #include "deps/names.h"
 #include "deps/vitals.h"
 
+
+static inline PANEL *noun_pan(struct noun_t *noun)
+{
+        return (noun->pan);
+}
+static inline WINDOW *noun_win(struct noun_t *noun)
+{
+        return panel_window(noun->pan);
+}
+static inline void noun_move(struct noun_t *noun, int dir)
+{
+        noun->step(noun, dir);
+}
+
 #endif
+
 

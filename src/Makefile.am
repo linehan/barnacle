@@ -23,7 +23,7 @@ arawak_SOURCES = arawak.c                       \
                    lib/ncolor/src/ncolor.c      \
                    lib/fifo.c                   \
                    lib/textutils.c              \
-                   lib/ufo.c                    \
+                   lib/pos.c                    \
                    lib/stoc/mersenne.c          \
                    lib/stoc/stoc.c              \
                    lib/stoc/noise.c             \

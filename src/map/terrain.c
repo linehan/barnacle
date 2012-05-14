@@ -18,18 +18,7 @@
 #include "tile.h"
 
 /* -------------------------------------------------------------------------- */
-
-/* Holdunter yer buttz... */
-void smooth_layers(struct map_t *map);
-void label_regions(struct map_t *map);
-void label_cliffs(struct map_t *map);
-void label_treetops(struct map_t *map);
-void label_treetops_trim(struct map_t *map);
-void label_treetrunks(struct map_t *map);
-void label_shorelines(struct map_t *map);
-
 /* -------------------------------------------------------------------------- */
-
 
 
 /*
@@ -43,8 +32,8 @@ void smooth_layers(struct map_t *map)
         int xmax; 
 
         /* Set the loop (pmap) boundaries */
-        ymax = map->ufo.box.h - 1;         
-        xmax = map->ufo.box.w - 1;
+        ymax = pos_boxh(map->pos) - 1;         
+        xmax = pos_boxw(map->pos) - 1;
 
         /* Smooth the Perlin noise map over a given number of octaves */
         perlin_smooth(map->pmap, ymax, xmax, PERSIST, OCTAVES);
@@ -70,8 +59,8 @@ void label_regions(struct map_t *map)
         int y;
         int x;
 
-        for (y=0; y<map->ufo.box.h-1; y++) {
-        for (x=0; x<map->ufo.box.w-1; x++) {
+        for (y=0; y<pos_boxh(map->pos) - 1; y++) {
+        for (x=0; x<pos_boxw(map->pos) - 1; x++) {
 
                 seed.cur = mx_get(map->tile, y, x);
 
@@ -95,8 +84,8 @@ void label_cliffs(struct map_t *map)
         int y; 
         int x;     
 
-        for (y=0; y<map->ufo.box.h-1; y++) {
-        for (x=0; x<map->ufo.box.w-1; x++) {
+        for (y=0; y<pos_boxh(map->pos) - 1; y++) {
+        for (x=0; x<pos_boxw(map->pos) - 1; x++) {
 
                 seed.cur = mx_get(map->tile, y, x);
                 seed.s   = mx_s(map->tile, y, x);
@@ -118,8 +107,8 @@ void label_treetops(struct map_t *map)
         int y; 
         int x;     
 
-        for (y=0; y<map->ufo.box.h-1; y++) {
-        for (x=0; x<map->ufo.box.w-1; x++) {
+        for (y=0; y<pos_boxh(map->pos) - 1; y++) {
+        for (x=0; x<pos_boxw(map->pos) - 1; x++) {
 
                 mx_seed(map->tile, y, x, &seed);
 
@@ -159,8 +148,8 @@ void label_treetops_trim(struct map_t *map)
         int y; 
         int x;     
 
-        for (y=0; y<map->ufo.box.h-1; y++) {
-        for (x=0; x<map->ufo.box.w-1; x++) {
+        for (y=0; y<pos_boxh(map->pos) - 1; y++) {
+        for (x=0; x<pos_boxw(map->pos) - 1; x++) {
 
                 mx_seed(map->tile, y, x, &seed);
 
@@ -194,8 +183,8 @@ void label_treetrunks(struct map_t *map)
         int y; 
         int x;     
 
-        for (y=0; y<map->ufo.box.h-1; y++) {
-        for (x=0; x<map->ufo.box.w-1; x++) {
+        for (y=0; y<pos_boxh(map->pos) - 1; y++) {
+        for (x=0; x<pos_boxw(map->pos) - 1; x++) {
 
                 mx_seed(map->tile, y, x, &seed);
 
@@ -241,8 +230,8 @@ void label_shorelines(struct map_t *map)
                                      L"⠈⠐⠐⠘⠈⠘⠈⠑⠐⠐⠘⠈⠐⠑⠑⠈⠐⠘⠈⠐⠑⠑⠈⠐"  /* 5 NW */
         };
         
-        for (i=0; i<map->ufo.box.h-1; i++) {
-        for (j=0; j<map->ufo.box.w-1; j++) {
+        for (i=0; i<pos_boxh(map->pos) - 1; i++) {
+        for (j=0; j<pos_boxw(map->pos) - 1; j++) {
 
                 mx_seed(map->tile, i, j, &seed);
 
@@ -256,34 +245,6 @@ void label_shorelines(struct map_t *map)
 
                 /* Draw an edge if the following conditions apply... */
 
-                /*if (LAYER(*seed.n,  2, BEA, SHO) */
-                /*||  LAYER(*seed.nw, 2, BEA, SHO)*/
-                /*||  LAYER(*seed.ne, 2, BEA, SHO))*/
-                /*{*/
-                        /*wch = shore[0];*/
-                        /*[>color = D_SEA_LAGOON;<]*/
-                        /*color = SEA__MED;*/
-                /*}*/
-                /*else if (LAYER(*seed.s,  2, BEA, SHO)*/
-                /*||       LAYER(*seed.sw, 2, BEA, SHO)*/
-                /*||       LAYER(*seed.se, 2, BEA, SHO))*/
-                /*{*/
-                        /*wch = shore[1];*/
-                        /*[>color = D_SEA_LAGOON;<]*/
-                        /*color = SEA__MED;*/
-                /*}*/
-                /*else if (LAYER(*seed.w, 2, BEA, SHO)) */
-                /*{*/
-                        /*wch = shore[2];*/
-                        /*[>color = D_SEA_LAGOON;<]*/
-                        /*color = SEA__MED;*/
-                /*}*/
-                /*else if (LAYER(*seed.e, 2, BEA, SHO)) */
-                /*{*/
-                        /*wch = shore[3];*/
-                        /*[>color = D_SEA_LAGOON;<]*/
-                        /*color = SEA__MED;*/
-                /*}*/
                 else if (LAYER(*seed.n, 1, DRP)) 
                 {
                         wch = shore[0];

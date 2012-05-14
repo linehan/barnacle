@@ -265,10 +265,10 @@ double simplex_noise(double yin, double xin)
 /*
  * Return a matrix of simplex noise
  */
-double **simplex_matrix(uint32_t h, uint32_t w)
+double **simplex_matrix(int h, int w)
 {
         int shuffled;       // counts down the number of permutations left
-        uint32_t row, col;  // the row and column number to be iterated over
+        int row, col;  // the row and column number to be iterated over
         double **pmap;      // the perlin map to be returned
         
         shuffled = PERMUTATIONS; 

@@ -113,7 +113,7 @@ void operate_on(int input)
                 build_control(input);
                 break;
         case UI_INVENTORY:
-                inventory_control(noun_mob("Guy"), input);
+                inventory_control((get_noun("Guy"))->inv, input);
                 break;
         }
 }
@@ -165,9 +165,6 @@ void director(int input)
                         break;
                 case '^':
                         map_swap();
-                        break;
-                case '+':
-                        door_trigger(mx_val(ACTIVE->door, (LINES/2)/2-1, (COLS/2)));
                         break;
                 case 'm':
                         setmode(UI_MOB);

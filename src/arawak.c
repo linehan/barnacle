@@ -15,7 +15,7 @@
 #include "map/terrain.h"
 #include "map/weather.h"
 #include "test/test.h"
-#include "lib/ufo.h"
+#include "lib/pos.h"
 #include "lib/morton.h"
 
 #include "noun/noun.h"
@@ -56,10 +56,6 @@ int main(int argc, char *argv[])
         /*new_boat(FIELD, FUNBOAT, "Afarensis");*/
         /*set_mob(noun_mob("Afarensis"), false);*/
 
-        load_noun_test();
-        make_nounmenu(ALL_NOUNS);
-        choose_noun('*');
-
         dock_toggle();
 
         init_pair(FLEX, BLACK, WHITE);
@@ -68,13 +64,11 @@ int main(int argc, char *argv[])
         new_noun("Guy", PERSON, 0);
         new_noun("Dummy", DUMMY, 0);
 
-        noun_set_mobile(get_noun("Guy"), true);
-        mob_move(noun_mob("Guy"), 'd');
-        mob_move(noun_mob("Guy"), 'd');
-        mob_move(noun_mob("Guy"), 'd');
+        noun_move(get_noun("Guy"), 'd');
+        noun_move(get_noun("Guy"), 'd');
+        noun_move(get_noun("Guy"), 'd');
 
-        noun_set_mobile(get_noun("Dummy"), true);
-        mob_move(noun_mob("Dummy"), 'u');
+        noun_move(get_noun("Dummy"), 'u');
 
         fork_sweet_flow();
 

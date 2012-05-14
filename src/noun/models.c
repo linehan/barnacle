@@ -7,6 +7,7 @@
 #include "../equip/equipment.h"
 #include "../mob/inventory.h"
 
+
 #define STATE_RESET(noun) noun_set_state(noun, 0, 0)
 
 
@@ -16,31 +17,32 @@
  */
 void noun_animate(struct noun_t *noun)
 {
-        if (!noun->mob.animate) return;
+        if (!noun->animate) 
+                return;
 
-        struct mob_t *mob = &noun->mob;
+        struct ani_t *ani = noun->animate;
 
         /* Assign length if it hasn't been */
-        if (mob->animate->len == 0)
-                mob->animate->len = wcslen(mob->animate->frame);
+        if (ani->len == 0)
+                ani->len = wcslen(ani->frame);
 
         /* Draw the current frame */
-        wadd_wch(mob->win, mkcch(&mob->animate->frame[mob->animate->i], 0, FLEX));
+        wadd_wch(noun->win, mkcch(&ani->frame[ani->i], 0, FLEX));
 
         /* Move the panel if this is the mv_frame */
-        if (mob->animate->i == mob->animate->mv_frame)
-                mob_move(mob, mob->animate->mv_dir);
-        if (mob->animate->i == mob->animate->mv_frame_alt)
-                mob_move(mob, mob->animate->mv_dir_alt);
+        if (ani->i == ani->mv_frame)
+                noun_move(noun, ani->mv_dir);
+        if (ani->i == ani->mv_frame_alt)
+                noun_move(noun, ani->mv_dir_alt);
 
         /* Signal if this is the sig_frame */
-        if (mob->animate->i == mob->animate->verb_frame)
-                mob_set_signal(mob, mob->animate->verb_id, mob->animate->verb_dir);
+        if (ani->i == ani->verb_frame)
+                noun_set_signal(noun, ani->verb_id, ani->verb_dir);
 
         /* Increment the current frame and/or terminate the animation */
-        if (++mob->animate->i == mob->animate->len) {
-                mob->animate->i = 0;
-                mob->animate = NULL;
+        if (++noun->animate->i == noun->animate->len) {
+                noun->animate->i = 0;
+                noun->animate = NULL;
                 return;
         }
 
@@ -80,14 +82,15 @@ void render_human(void *self)
         static bool done;
 
         if (!done)
-                wbkgrnd(noun->mob.win, mkcch(L"ⰾ", 0, FLEX));
+                wbkgrnd(noun->win, mkcch(L"ⰾ", 0, FLEX));
 
-        inv_burn(TORCHKEY(&noun->mob), &noun->mob);
+        inv_burn(noun->inv, TORCHKEY(noun->inv));
 
         noun_animate(noun);
-        mob_move(&noun->mob, '*');
 
-        top_panel(noun->mob.inv->equipped_pan);
+        noun->step(noun, '*');
+
+        top_panel(noun->inv->equipped_pan);
 }
 
 /*
@@ -104,60 +107,54 @@ int modify_human(void *self)
                 switch (noun->value) {
                 case 'j':
                 case 's':
-                        noun->mob.animate = &run_d_test;
-                        noun->mob.facing = MOB_SOUTH;
+                        noun->animate = &run_d_test;
                         break;
                 case 'k':
                 case 'w':
-                        noun->mob.animate = &run_u_test;
-                        noun->mob.facing = MOB_NORTH;
+                        noun->animate = &run_u_test;
                         break;
                 case 'H':
                 case 'A':
-                        noun->mob.animate = &jump_ul;
-                        noun->mob.facing = MOB_WEST;
+                        noun->animate = &jump_ul;
                         break;
                 case 'h':
                 case 'a':
-                        noun->mob.animate = &run_l_test;
-                        noun->mob.facing = MOB_WEST;
+                        noun->animate = &run_l_test;
                         break;
                 case 'L':
                 case 'D':
-                        noun->mob.animate = &jump_ur;
-                        noun->mob.facing = MOB_EAST;
+                        noun->animate = &jump_ur;
                         break;
                 case 'l':
                 case 'd':
-                        noun->mob.animate = &run_r_test;
-                        noun->mob.facing = MOB_EAST;
+                        noun->animate = &run_r_test;
                         break;
                 case 'g':
-                        top_panel(noun->mob.pan);
+                        top_panel(noun->pan);
                         break;
                 case 't':
-                        noun->mob.animate = &punch_r_test;
+                        noun->animate = &punch_r_test;
                         break;
                 case ' ':
-                        if (CUR_KEY(&noun->mob))
-                                inv_use(CUR_KEY(&noun->mob), &noun->mob);
+                        if (CUR_KEY(noun->inv))
+                                inv_use(noun->inv, CUR_KEY(noun->inv));
                         break;
                 case 'e':
-                        noun->mob.animate = &slashtest;
+                        noun->animate = &slashtest;
                         break;
                 case '}':
                         tab_cycle(2);
                         break;
                 case '@':
-                        if (TORCHKEY(&noun->mob)) {
+                        if (TORCHKEY(noun->inv)) {
                                 tab_tog(0);
-                                inv_use(TORCHKEY(&noun->mob), &noun->mob);
+                                inv_use(noun->inv, TORCHKEY(noun->inv));
                         }
                         break;
                 case '|':
-                        if (ROPEKEY(&noun->mob)) {
+                        if (ROPEKEY(noun->inv)) {
                                 tab_tog(1);
-                                inv_use(ROPEKEY(&noun->mob), &noun->mob);
+                                inv_use(noun->inv, ROPEKEY(noun->inv));
                                 tab_tog(1);
                         }
                         break;
@@ -195,10 +192,10 @@ void render_dummy(void *self)
         static bool done;
 
         if (!done)
-                wbkgrnd(noun->mob.win, mkcch(L"Ⰹ", 0, FLEX));
+                wbkgrnd(noun->win, mkcch(L"Ⰹ", 0, FLEX));
 
         noun_animate(noun);
-        mob_move(&noun->mob, '*');
+        noun->step(noun, '*');
 }
 
 /*
@@ -217,28 +214,28 @@ int modify_dummy(void *obj)
         {
         case VERB_Default:
                 if (wait == 13)
-                        mob_seek(noun, get_noun("Guy"));
+                        noun->seek(noun, get_noun("Guy"));
                 break;
         case VERB_Punch:
                 wprintw(CONSOLE_WIN, "Dummy hit!\n");
-                noun->mob.animate = &bonk_test;
+                noun->animate = &bonk_test;
                         dock_say(L"嶴", "FUCK!");
                 break;
         case VERB_GoUp:
-                noun->mob.animate = &dummy_mv_u;
+                noun->animate = &dummy_mv_u;
                 break;
         case VERB_GoDown:
                 if (flip_biased(0.4))
                         dock_say(L"䥚", "I'm gonna hop all over you!");
-                noun->mob.animate = &dummy_mv_d;
+                noun->animate = &dummy_mv_d;
                 break;
         case VERB_GoLeft:
-                noun->mob.animate = &dummy_mv_l;
+                noun->animate = &dummy_mv_l;
                 if (flip_biased(0.4))
                         dock_say(L"䥚", "Get fucked!");
                 break;
         case VERB_GoRight:
-                noun->mob.animate = &dummy_mv_r;
+                noun->animate = &dummy_mv_r;
                 break;
         }
         if (noun->state == enter)
@@ -266,19 +263,24 @@ void apply_noun_model(struct noun_t *noun)
 
         noun->modify = modify[noun->model];
         noun->render = render[noun->model];
-        noun->mob.name = noun->key;
 
         switch (noun->model) 
         {
         case PERSON:
-                mob_cfg(&noun->mob, ACTIVE, 1, 1, CENTERED);
-                noun->options |= NOUN_CREATURE;
+                noun->pos = new_pos(1, 1, CENTERED, LINES, COLS, 0, 0);
+                noun->win = newwin(1, 1, CENTERED);
+                noun->pan = new_panel(noun->win);
+                noun->model = NOUN_CREATURE;
                 break;
         case DUMMY:
-                mob_cfg(&noun->mob, ACTIVE, 1, 1, CENTERED);
-                noun->options |= NOUN_CREATURE;
+                noun->pos = new_pos(1, 1, CENTERED, LINES, COLS, 0, 0);
+                noun->win = newwin(1, 1, CENTERED);
+                noun->pan = new_panel(noun->win);
+                noun->model = NOUN_CREATURE;
                 break;
         }
+
+        astar_init(noun->astar, ACTIVE->tile, pos_y(noun->pos), pos_x(noun->pos));
 }
 
 

@@ -66,7 +66,7 @@ am_arawak_OBJECTS = arawak.$(OBJEXT) eng/init.$(OBJEXT) \
 	lib/redblack/rb.$(OBJEXT) lib/sort/mergesort.$(OBJEXT) \
 	lib/sort/quicksort.$(OBJEXT) lib/morton.$(OBJEXT) \
 	lib/magic.$(OBJEXT) lib/ncolor/src/ncolor.$(OBJEXT) \
-	lib/fifo.$(OBJEXT) lib/textutils.$(OBJEXT) lib/ufo.$(OBJEXT) \
+	lib/fifo.$(OBJEXT) lib/textutils.$(OBJEXT) lib/pos.$(OBJEXT) \
 	lib/stoc/mersenne.$(OBJEXT) lib/stoc/stoc.$(OBJEXT) \
 	lib/stoc/noise.$(OBJEXT) lib/stoc/dice.$(OBJEXT) \
 	lib/stoc/shuffle.$(OBJEXT) lib/stoc/smooth.$(OBJEXT) \
@@ -212,7 +212,7 @@ arawak_SOURCES = arawak.c                       \
                    lib/ncolor/src/ncolor.c      \
                    lib/fifo.c                   \
                    lib/textutils.c              \
-                   lib/ufo.c                    \
+                   lib/pos.c                    \
                    lib/stoc/mersenne.c          \
                    lib/stoc/stoc.c              \
                    lib/stoc/noise.c             \
@@ -381,7 +381,7 @@ lib/ncolor/src/ncolor.$(OBJEXT): lib/ncolor/src/$(am__dirstamp) \
 lib/fifo.$(OBJEXT): lib/$(am__dirstamp) lib/$(DEPDIR)/$(am__dirstamp)
 lib/textutils.$(OBJEXT): lib/$(am__dirstamp) \
 	lib/$(DEPDIR)/$(am__dirstamp)
-lib/ufo.$(OBJEXT): lib/$(am__dirstamp) lib/$(DEPDIR)/$(am__dirstamp)
+lib/pos.$(OBJEXT): lib/$(am__dirstamp) lib/$(DEPDIR)/$(am__dirstamp)
 lib/stoc/$(am__dirstamp):
 	@$(MKDIR_P) lib/stoc
 	@: > lib/stoc/$(am__dirstamp)
@@ -578,6 +578,7 @@ mostlyclean-compile:
 	-rm -f lib/matrix.$(OBJEXT)
 	-rm -f lib/morton.$(OBJEXT)
 	-rm -f lib/ncolor/src/ncolor.$(OBJEXT)
+	-rm -f lib/pos.$(OBJEXT)
 	-rm -f lib/redblack/rb.$(OBJEXT)
 	-rm -f lib/sort/mergesort.$(OBJEXT)
 	-rm -f lib/sort/quicksort.$(OBJEXT)
@@ -589,7 +590,6 @@ mostlyclean-compile:
 	-rm -f lib/stoc/smooth.$(OBJEXT)
 	-rm -f lib/stoc/stoc.$(OBJEXT)
 	-rm -f lib/textutils.$(OBJEXT)
-	-rm -f lib/ufo.$(OBJEXT)
 	-rm -f map/arena.$(OBJEXT)
 	-rm -f map/cave.$(OBJEXT)
 	-rm -f map/cell.$(OBJEXT)
@@ -640,8 +640,8 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@lib/$(DEPDIR)/magic.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@lib/$(DEPDIR)/matrix.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@lib/$(DEPDIR)/morton.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@lib/$(DEPDIR)/pos.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@lib/$(DEPDIR)/textutils.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@lib/$(DEPDIR)/ufo.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@lib/ncolor/src/$(DEPDIR)/ncolor.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@lib/redblack/$(DEPDIR)/rb.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@lib/sort/$(DEPDIR)/mergesort.Po@am__quote@

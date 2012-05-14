@@ -10,7 +10,7 @@
 
 #include "../test/test.h"
 #include "../map/map.h"
-#include "../lib/ufo.h"
+#include "../lib/pos.h"
 
 #include "ui/dock.h"
 #include "ui/stdpan.h"
@@ -56,7 +56,7 @@ cchar_t *mkcch(wchar_t *wch, attr_t attr, short co);
         wrefresh(win);   \
 
 #define map_refresh(map) \
-        copywin(PEEK(map->W), map->win, ufo_y(map, ufo), ufo_x(map, ufo), 0, 0, LINES-1, COLS-1, 0); \
+        copywin(PEEK(map->W), map->win, pos_y((map)->pos), pos_x((map)->pos), 0, 0, LINES-1, COLS-1, 0); \
         doupdate();\
 
 

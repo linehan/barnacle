@@ -10,6 +10,15 @@
 
 /* ALLOCATORS, INITIALIZERS, AND DESTRUCTORS
 ````````````````````````````````````````````````````````````````````````````` */
+struct astar_t *new_astar(void)
+{
+        struct astar_t *new;
+       
+        new = malloc(sizeof(struct astar_t));
+
+        return (new);
+}
+
 
 
 /*
@@ -18,11 +27,10 @@
  * @map: pointer to an allocated and populated matrix
  * @start: pointer to a cell with the coordinates of the starting node 
  */
-void astar_init(struct astar_t *astar, struct matrix_t *map, 
-                struct cell_t *start)
+void astar_init(struct astar_t *astar, struct matrix_t *map, int y, int x)
 {
         astar->map    = map;
-        astar->start  = start; 
+        astar->start  = new_cell((uint32_t)y, (uint32_t)x); 
         astar->goal   = NULL;
         list_head_init(&astar->path);
         astar->OPEN   = new_bh(astar->map->len);
@@ -301,7 +309,7 @@ bool a_star(struct astar_t *astar, struct cell_t *goal)
                 bh_add(astar->CLOSED, current->f, current->key, current);
                 groom_neighbors(astar, current);
 
-                /*test_rig(astar, current); // displays test output*/
+                test_rig(astar, current); // displays test output
         }
         astar->current = NULL;
         return false;

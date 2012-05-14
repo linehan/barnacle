@@ -11,37 +11,44 @@
 #include "noun.h"
 
 
-#define MAXNOUN 1000
 
+void method_noun_step(void *self, int dir);
+void method_noun_setyx(void *self, int y, int x);
+void method_noun_hit(void *self);
+void method_noun_fall(void *self);
+void method_noun_seek(void *self, void *target);
+
+
+#define NOUN(ptr) (struct noun_t *)(ptr)
+#define MAXNOUN 1000
 
 struct rb_tree *nountree; /* Holds all registered nouns */
 int numnoun;              /* Counts all registered nouns */
 
 
+
+
 /* Helper functions
 ``````````````````````````````````````````````````````````````````````````````*/
-/**
- * check_nountree (PRIVATE) -- ensure the tree is initialized and allocated
- */
-inline bool check_nountree(void)
+/* check_nountree (PRIVATE) -- ensure the tree is initialized and allocated */
+inline void check_nountree(void)
 {
-        if (!nountree) {
+        if (!nountree) { 
                 nountree = rb_new(1);
                 numnoun  = 0;
         }
-        return (nountree) ? true : false;
+        assert(nountree || "Could not allocate noun tree");
 }
 
-/**
- * add_to_nountree (PRIVATE) -- insert a noun into the nountree and refcount
- */
-inline int add_to_nountree(struct noun_t *noun)
+/* add_to_nountree (PRIVATE) -- insert a noun into the nountree and refcount */
+inline void add_to_nountree(struct noun_t *noun)
 {
-        rb_store(nountree, noun->key, noun); 
-        keyring[numnoun] = noun->key;
+        rb_store(nountree, noun->id, noun); 
+        keyring[numnoun++] = noun->id;
 
-        return numnoun++;
+        assert(numnoun < MAXNOUN || "Noun limit reached");
 }
+
 
 
 
@@ -56,21 +63,34 @@ inline int add_to_nountree(struct noun_t *noun)
  */
 struct noun_t *new_noun(const char *name, uint32_t model, void *obj)
 {
-        assert(check_nountree() || "Could not allocate noun tree");
+        check_nountree();
 
         struct noun_t *new;        
         new = malloc(sizeof(struct noun_t));
 
         new->name  = mydup(name);
-        new->key   = fasthash(name, strlen(name));
+        new->id    = fasthash(name, strlen(name));
         new->model = model;
         new->obj   = obj;
+
+        new->inv   = new_inventory(new);
+        new->astar = new_astar();
+
+        new->is_active = false;
+
+        new->step  = &method_noun_step;
+        new->hit   = &method_noun_hit;
+        new->setyx = &method_noun_setyx;
+        new->fall  = &method_noun_fall;
+        new->seek  = &method_noun_seek;
 
         apply_noun_model(new);
         add_to_nountree(new);
 
         return new;
 }
+
+
 
 
 
@@ -86,6 +106,7 @@ void noun_set_render(struct noun_t *noun, RENDER_METHOD func)
         noun->render = func;
 }
 
+
 /**
  * noun_set_modify -- set the modify method of the noun
  * @noun: pointer to a struct noun_t
@@ -95,6 +116,7 @@ void noun_set_modify(struct noun_t *noun, MODIFY_METHOD func)
 {
         noun->modify = func;
 }
+
 
 /**
  * noun_set_state -- set the state and optionial state value of noun
@@ -108,39 +130,39 @@ void noun_set_state(struct noun_t *noun, int state, int value)
         noun->value = value;
 }
 
+
 /**
- * noun_set_mob -- define a noun as being on the world map
- * @noun: pointer to a noun
- * @yesno: whether the noun should be added or removed from the world map
+ * noun_active -- toggle a noun's visibility on-screen
+ * @noun: Pointer to struct noun_t
+ * @opt: Whether or not the noun should be visible
  */
-void noun_set_mobile(struct noun_t *noun, bool yesno)
+void noun_active(struct noun_t *noun, bool opt)
 {
-        set_mob(&noun->mob, yesno);
-        if (yesno == true)
-                noun->options |= NOUN_MOBILE;
-        else
-                noun->options &= ~NOUN_MOBILE;
+        noun->is_active = opt;
+        (noun->is_active) ? show_panel(noun->pan) : hide_panel(noun->pan);
 }
+
+
 
 
 
 /* Queries and retreival 
 ``````````````````````````````````````````````````````````````````````````````*/
 /**
- * key_noun -- given a noun's id, set the 'focused noun' pointer to that noun
+ * key_noun -- return a noun given its id number 
  * @id: unsigned 32-bit unique id
  */
 struct noun_t *key_noun(uint32_t id)
 {
         struct noun_t *tmp;
         tmp = rb_extra(nountree, id);
-        //assert(tmp != NULL);
         focused = tmp;
         return (focused);
 }
 
+
 /**
- * get_noun -- given a name string, return a pointer to the noun
+ * get_noun -- return a noun given it's name string 
  * @name: name of the noun to be returned
  */
 struct noun_t *get_noun(const char *name)
@@ -148,6 +170,7 @@ struct noun_t *get_noun(const char *name)
         key_noun(fasthash(name, strlen(name)));
         return (focused);
 }
+
 
 /**
  * get_noun_at -- given coordinates y, x, return any noun at that position
@@ -166,75 +189,248 @@ struct noun_t *get_noun_at(struct map_t *map, int y, int x)
 
 
 
-static int loaded;
+
+
+
+/* METHOD HELPERS 
+``````````````````````````````````````````````````````````````````````````````*/
+/**
+ * PRIVATE
+ * noun_mark_position -- update the position of the noun id on the map matrix
+ */
+inline void noun_mark_position(struct noun_t *noun)
+{
+        mx_set(ACTIVE->mobs, pos_saved_y(noun->pos), pos_saved_x(noun->pos), 0);
+        mx_set(ACTIVE->mobs, pos_y(noun->pos), pos_x(noun->pos), noun->id);
+}
+
+
+/**
+ * PRIVATE
+ * noun_hit_test -- test whether a terrain collision is occuring 
+ * @noun: pointer to struct noun_t 
+ */
+inline bool noun_hit_test(struct noun_t *noun)
+{
+        return (map_hit(ACTIVE, noun->pos)) ? false : true;
+}
+
+
+/**
+ * PRIVATE
+ * noun_on_move -- called every time a noun's position is changed
+ * @noun: pointer to a struct noun_t
+ */
+inline void noun_on_move(struct noun_t *noun)
+{
+        noun_mark_position(noun);
+        noun->hit(noun);
+
+        move_panel(noun->pan, pos_y(noun->pos), pos_x(noun->pos));
+        update_panels();
+
+        noun->astar->start->y = (uint32_t)pos_y(noun->pos);
+        noun->astar->start->x = (uint32_t)pos_x(noun->pos);
+        noun->astar->start->key = mort(noun->astar->start->y, noun->astar->start->x);
+
+        take_bkgrnd(panel_window(noun->pan), PEEK(ACTIVE->W));
+        doupdate();
+
+        if (DOOR(ACTIVE, pos_y(noun->pos), pos_x(noun->pos)))
+                door_trigger(noun, DOOR(ACTIVE, pos_y(noun->pos), pos_x(noun->pos)));
+}
+
+
+
+
+
+/* METHODS
+``````````````````````````````````````````````````````````````````````````````*/
+/**
+ * method_noun_hit -- perform the collision test
+ * @self: the noun object
+ */
+void method_noun_hit(void *self)
+{
+        struct noun_t *noun = NOUN(self);
+
+        if (noun->hit_testing_enabled && noun_hit_test(noun))
+                noun->pos->restore(&noun->pos);
+}
+
+
+/**
+ * method_noun_setyx -- reposition the noun to coordinates y,x 
+ * @self: the noun object
+ * @y: y-coordinate to position noun at
+ * @x: x-coordinate to position noun at
+ */
+void method_noun_setyx(void *self, int y, int x)
+{
+        struct noun_t *noun = NOUN(self);
+
+        noun->pos->setyx(noun->pos, y, x);
+        noun_on_move(noun);
+}
+
+
+/**
+ * method_noun_step -- move the noun in a given direction 
+ * @self: the noun object
+ * @dir: direction
+ */
+void method_noun_step(void *self, int dir)
+{
+        #define UR 231
+        #define UL 225
+        #define DR 214
+        #define DL 208
+
+        struct noun_t *noun = NOUN(self);
+
+        switch (dir) {
+        case 'u':       
+                pos_u(noun->pos);
+                break;
+        case 'd':       
+                pos_d(noun->pos);
+                break;
+        case 'l':       
+                pos_l(noun->pos);
+                break;
+        case 'r':      
+                pos_r(noun->pos);
+                break;
+        case UR:
+                pos_u(noun->pos);
+                pos_r(noun->pos);
+                break;
+        case UL:
+                pos_u(noun->pos);
+                pos_l(noun->pos);
+                break;
+        case DR:
+                pos_d(noun->pos);
+                pos_r(noun->pos);
+                break;
+        case DL:
+                pos_d(noun->pos);
+                pos_l(noun->pos);
+                break;
+        }
+
+        noun_on_move(noun);
+}
+
+
+/**
+ * method_noun_fall -- shift a noun's position downward if gravity is enabled
+ * @self: the noun object
+ */
+void method_noun_fall(void *self)
+{
+        struct noun_t *noun = NOUN(self);
+        int y;
+        int x;
+
+        if (!gravity_enabled)
+                return;
+
+        y = pos_y(noun->pos);
+        x = pos_x(noun->pos);
+
+        INC(y, pos_ymax(noun->pos));
+
+        if (TILE(ACTIVE, y, x) == CAVEFLOOR)
+                noun->step(noun, 'd');
+}
+
+
+/**
+ * method_noun_seek -- run the A* function to seek a target noun
+ * @self: the noun object
+ * @target: the noun object to seek
+ */
+void method_noun_seek(void *self, void *target)
+{
+        struct noun_t *s = NOUN(self);
+        struct noun_t *g = NOUN(target);
+
+        if ((s->astar->current == NULL) 
+        || !(same_cell(s->astar->current, g->astar->start))) 
+        {
+                if (!a_star(s->astar, g->astar->start))
+                        return;
+        }
+        struct cell_t *tmp;
+        tmp = cellpath_next(&s->astar->path);
+
+        if (tmp->x > s->astar->start->x)
+                noun_set_state(s, VERB_GoRight, 0);
+        if (tmp->x < s->astar->start->x)
+                noun_set_state(s, VERB_GoLeft, 0);
+        if (tmp->y > s->astar->start->y)
+                noun_set_state(s, VERB_GoDown, 0);
+        if (tmp->y < s->astar->start->y)
+                noun_set_state(s, VERB_GoUp, 0);
+}
+
+
+void noun_set_signal(struct noun_t *noun, int verb, int dir)
+{
+        int y = pos_y(noun->pos);
+        int x = pos_x(noun->pos);
+        
+        switch (dir) {
+        case 'u':
+                DEC(y, pos_xmin(noun->pos));
+                break;
+        case 'd':
+                INC(y, pos_ymax(noun->pos));
+                break;
+        case 'l':
+                DEC(x, pos_ymin(noun->pos));
+                break;
+        case 'r':
+                INC(x, pos_xmax(noun->pos));
+                break;
+        }
+
+        send_verb(verb, mx_val(ACTIVE->mobs, y, x), noun->id, 0, NULL);
+}
+
+
+
+
+/* ID TRACKER
+``````````````````````````````````````````````````````````````````````````````*/
+bool id_ready;
 uint32_t active_id[2];
 
-void install_id(uint32_t id, int option)
-{
-        if (option!=OBJECT && option!=SUBJECT) return;
-        else
-                active_id[option] = id;
-}
 
-
-uint32_t request_id(int option)
-{
-        if (!loaded) {
-                active_id[0] = keyring[0];
-                active_id[1] = keyring[0];
-                loaded = 1;
-        }
-        if (option!=OBJECT && option!=SUBJECT) return active_id[0];
-        else
-                return (active_id[option]);
-}
-
-
-/*
- * Load some test data into the nountree
+/**
+ * install_id -- make an id part of the active pair
+ * @id: id number
+ * @opt: SUBJECT or OBJECT
  */
-void load_noun_test(void)
+void install_id(uint32_t id, int opt)
 {
-
-        char *name[24]={ "Robert Aruga", 
-                         "Jonathan Ahab",
-                         "Morgan Cook",
-                         "Mackenzie Bligh",
-                         "Matt Dana",
-                         "Willard Englehorn",
-                         "Maximilian Gault",
-                         "John Haddock",
-                         "Garth Hook",
-                         "Kathryn Hornblower",
-                         "James April",
-                         "Geordi Perry",
-                         "Owen Jat",
-                         "Jean-Luc Maak",
-                         "Christopher Pickle",
-                         "Erik Pugwash",
-                         "William Picard",
-                         "Richard Stubing",
-                         "Montgomery Nelson",
-                         "Tryla Aubrey",
-                         "Benjamin Wilkes",
-                         "Hikaru Bering",
-                         "Clark Truxton",
-                         "Robert Sakuma"};
-
-        uint32_t j[] = {5,3,1,0,9,2,3,4,5,8,12,3,5,7,5,1,2,2,6,8,22,4,0,23};
-
-        int i;
-        for (i=0; i<4; i++) {
-                new_noun(name[i], PERSON, 0);
-        }
-
-        for (i=0; i<numnoun; i++) {
-                set_vital(keyring[i], HP, roll_fair(8));
-                set_vital(keyring[i], SP, roll_fair(8));
-                set_vital(keyring[i], LP, roll_fair(8));
-                set_vital(keyring[i], EP, roll_fair(8));
-                key_noun(keyring[i]);
-                /*focused->verb.fund = 0x80000000>>vit_blocklen(keyring[i]);*/
-        }
+        assert(opt==OBJECT || opt==SUBJECT || "Noun request is invalid");
+        active_id[opt] = id;
 }
 
+
+/**
+ * request_id -- request one of the current active id pair
+ * @opt: SUBJECT or OBJECT
+ */
+uint32_t request_id(int opt)
+{
+        assert(opt==OBJECT || opt==SUBJECT || "Noun request is invalid");
+
+        if (!id_ready) {
+                active_id[0] = active_id[1] = keyring[0];
+                id_ready = true;
+        }
+        return (active_id[opt]);
+}

@@ -102,8 +102,8 @@ void query_noun_menu(uint32_t query, int sort)
         for (i=0; i<nitems; i++) {
                 if (item_opts(item[i]) == O_SELECTABLE) {
                         key_noun(*((uint32_t *)item_userptr(item[i])));
-                        if ((focused->options & query) != query)
-                                item_opts_off(item[i], O_SELECTABLE);
+                        /*if ((focused->model & query) != query)*/
+                                /*item_opts_off(item[i], O_SELECTABLE);*/
                 }
         }
 

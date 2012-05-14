@@ -16,7 +16,7 @@
 #include "../gfx/gfx.h"
 #include "../map/terrain.h"
 #include "../lib/morton.h"
-#include "../lib/ufo.h"
+#include "../lib/pos.h"
 #include "../lib/matrix.h"
 
 /* -------------------------------------------------------------------------- */
@@ -160,8 +160,8 @@ int inspect_control(int dir)
                 return MODE_RELEASE;
         }
 
-        cur_y += ufo_y(ACTIVE, ufo);
-        cur_x += ufo_x(ACTIVE, ufo);
+        cur_y += pos_y(ACTIVE->pos);
+        cur_x += pos_x(ACTIVE->pos);
 
         z = MORT(cur_y, cur_x);
 

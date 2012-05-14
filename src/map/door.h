@@ -1,6 +1,9 @@
 #pragma once
 #ifndef __DOOR_H
 #define __DOOR_H
+#include "../noun/noun.h"
+
+struct noun_t;
 
 enum door_tag { CAVE_DOOR };
 
@@ -11,8 +14,8 @@ struct door_t {
         enum door_tag tag;
         struct map_t *src;
         struct map_t *dst;
-        struct rec_t srcrec;
-        struct rec_t dstrec;
+        struct rec_t *srcrec;
+        struct rec_t *dstrec;
         void (*trigger)(void *self);
 };
 
@@ -22,8 +25,7 @@ void put_door(int tag, struct map_t *src, struct map_t *dst,
               int dst_h, int dst_w, int dst_y, int dst_x);
 
 struct door_t *get_door(uint32_t key);
-//void place_door_tile(struct map_t *map, int y, int x);
-void trigger_door(uint32_t key);
+void door_trigger(struct noun_t *noun, uint32_t key);
 
 
 

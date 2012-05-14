@@ -10,9 +10,9 @@
 /* Abstract data types
 ``````````````````````````````````````````````````````````````````````````````*/
 struct matrix_t {
-        uint32_t rows;  /* Number of rows */
-        uint32_t cols;  /* Number of columns */
-        uint32_t len;   /* Length of the ar array */
+        int rows;  /* Number of rows */
+        int cols;  /* Number of columns */
+        int len;   /* Length of the ar array */
         uint32_t  *ar;  /* Linear array of values */
         uint32_t **mx;  /* The matrix, an array of row pointers into ar */
         void (*die)(void *self); /* Destructor to free all memory */
@@ -34,7 +34,7 @@ static uint32_t DOPE;
 
 /* Public function prototypes 
 ``````````````````````````````````````````````````````````````````````````````*/
-struct matrix_t *new_matrix(uint32_t nrows, uint32_t ncols);
+struct matrix_t *new_matrix(int nrows, int ncols);
 
 
 

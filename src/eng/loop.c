@@ -63,7 +63,8 @@ void render_cb(EV_P_ ev_timer *w, int revents)
         /*noun_update(get_noun("Dummy"));*/
         noun = get_noun("Guy");
         noun_update(noun);
-        mob_fall(&noun->mob);
+
+        noun->fall(noun);
 
         update_panels();  /* Were slowing down performance, unnecessary */
         doupdate();

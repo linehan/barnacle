@@ -6,15 +6,8 @@
 
 #include "stoc.h"
 
-
-
-#define DEC(x, min) ((x) > (min)) ? ((x)-1) : (x)
-#define INC(x, max) ((x) < (max)) ? ((x)+1) : (x)
-
-
-
-
-
+#define INCREASE(a, max) (a < max) ? (a+1) : a
+#define DECREASE(a, min) (a > min) ? (a-1) : a
 
 
 /*
@@ -109,7 +102,6 @@ float **gen_smooth(double **base, int h, int w, int oct)
 void perlin_smooth(double **pmap, int h, int w, float persist, int octs)
 {
         float ***smooth;
-        float scale;
         float amp;
         float tot;
         int i;
@@ -151,8 +143,8 @@ void smooth_vrt(double **pmap, int h, int w, float lim, int opt)
         for (i=0; i<h; i++) {
         for (j=0; j<w; j++) {
 
-                u = DEC(i, 0);
-                d = INC(i, h);
+                u = (i > 0) ? (i-1) : i;
+                d = (i < h) ? (i+1) : i;
 
                 /* Cursor is lower than surroundings */
                 if ((opt == SMOOTH_LO)  &&
@@ -185,8 +177,8 @@ void smooth_hoz(double **pmap, int h, int w, float lim, int opt)
         for (i=0; i<h; i++) {
         for (j=0; j<w; j++) {
 
-                l = DEC(j, 0);
-                r = INC(j, w);
+                l = (j > 0) ? (j-1) : j;
+                r = (j < w) ? (j+1) : j;
 
                 /* Cursor is lower than surroundings */
                 if ((opt == SMOOTH_LO)  &&

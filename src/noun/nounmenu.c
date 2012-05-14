@@ -102,7 +102,7 @@ void nounmenu_print_highlight(void)
         short pair;
 
         noun = current_noun();
-        wattr_get(mob_win(&noun->mob), &attr, &pair, NULL);
+        wattr_get(noun->win, &attr, &pair, NULL);
 
         /* 
          * ncurses doesn't really provide an easy way to compare
@@ -111,11 +111,11 @@ void nounmenu_print_highlight(void)
          * attr == WA_REVERSE, and see what happens. 
          */
         if ((attr & WA_REVERSE) == WA_REVERSE) {
-                wattr_off(mob_win(&noun->mob), WA_REVERSE, NULL);
-                wchgat(mob_win(&noun->mob), -1, WA_NORMAL, pair, NULL);
+                wattr_off(noun->win, WA_REVERSE, NULL);
+                wchgat(noun->win, -1, WA_NORMAL, pair, NULL);
         } else {
-                wattr_on(mob_win(&noun->mob), WA_REVERSE, NULL);
-                wchgat(mob_win(&noun->mob), -1, WA_REVERSE, pair, NULL);
+                wattr_on(noun->win, WA_REVERSE, NULL);
+                wchgat(noun->win, -1, WA_REVERSE, pair, NULL);
         }
 }
 
@@ -184,22 +184,22 @@ void nounmenu_print_vitals(void)
  */
 void nounmenu_print_attributes(void)
 {
-        #define ATTR_STANDOUT PUR_GRE
-        #define ATTR_ORIGINAL PUR_PUR
+        /*#define ATTR_STANDOUT PUR_GRE*/
+        /*#define ATTR_ORIGINAL PUR_PUR*/
 
-        const int STRIDE=5;
-        int val[8];
-        int i;
+        /*const int STRIDE=5;*/
+        /*int val[8];*/
+        /*int i;*/
 
-        werase(WIWIN);
-        wcolor_set(WIWIN, ATTR_STANDOUT, NULL);
-        waddwstr(WIWIN, L"Σ    Φ    Δ    A    Ψ    W    Χ    Λ");
-        wcolor_set(WIWIN, ATTR_ORIGINAL, NULL);
+        /*werase(WIWIN);*/
+        /*wcolor_set(WIWIN, ATTR_STANDOUT, NULL);*/
+        /*waddwstr(WIWIN, L"Σ    Φ    Δ    A    Ψ    W    Χ    Λ");*/
+        /*wcolor_set(WIWIN, ATTR_ORIGINAL, NULL);*/
 
-        unpack_attributes(request_id(SUBJECT), val);
-        for (i=0; i<8; i++) {
-                mvwprintw(WIWIN, 0, (i*STRIDE)+1, "%02u", val[i]);
-        }
-        win_refresh(WIWIN);
+        /*unpack_attributes(request_id(SUBJECT), val);*/
+        /*for (i=0; i<8; i++) {*/
+                /*mvwprintw(WIWIN, 0, (i*STRIDE)+1, "%02u", val[i]);*/
+        /*}*/
+        /*win_refresh(WIWIN);*/
 }
 

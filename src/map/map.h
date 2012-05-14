@@ -10,8 +10,9 @@
 #include "../eng/bytes.h"
 #include "../gfx/gfx.h"
 
-#include "../lib/ufo.h"
+#include "../lib/pos.h"
 #include "../mob/mob.h"
+#include "terrain.h"
 #include "tag.h"
 #include "arena.h"
 #include "door.h"
@@ -24,6 +25,7 @@
 #define FULLSCREEN     LINES+1, COLS+1
 #define PLATE(map,tag) PEEK(((map)->L[(tag)]))
 
+struct mob_t;
 
 /*
  * A map_t holds all the data necessary to fill a screen with terrain.
@@ -45,7 +47,7 @@ struct map_t {
         struct matrix_t *door;
         struct matrix_t *elev;
         double **pmap;
-        struct ufo_t ufo;
+        struct pos_t *pos;
 };
 
 
@@ -102,7 +104,7 @@ void map_render(void *mymap);
 
 /* Map interaction functions  
 ````````````````````````````````````````````````````````````````````````````` */
-int  map_hit(struct map_t *map, struct rec_t *rec);
+int map_hit(struct map_t *map, struct pos_t *pos);
 void map_trigger(struct map_t *map, struct mob_t *mob);
 void map_roll(struct map_t *map, int dir);
 void map_swap(void);
