@@ -22,6 +22,7 @@ void method_noun_seek(void *self, void *target);
 #define NOUN(ptr) (struct noun_t *)(ptr)
 #define MAXNOUN 1000
 
+
 struct rb_tree *nountree; /* Holds all registered nouns */
 int numnoun;              /* Counts all registered nouns */
 
@@ -30,7 +31,9 @@ int numnoun;              /* Counts all registered nouns */
 
 /* Helper functions
 ``````````````````````````````````````````````````````````````````````````````*/
-/* check_nountree (PRIVATE) -- ensure the tree is initialized and allocated */
+/**
+ * PRIVATE 
+ * check_nountree -- ensure the tree is initialized and allocated */ 
 inline void check_nountree(void)
 {
         if (!nountree) { 
@@ -40,7 +43,9 @@ inline void check_nountree(void)
         assert(nountree || "Could not allocate noun tree");
 }
 
-/* add_to_nountree (PRIVATE) -- insert a noun into the nountree and refcount */
+/**
+ * PRIVATE
+ * add_to_nountree -- insert a noun into the nountree and refcount */
 inline void add_to_nountree(struct noun_t *noun)
 {
         rb_store(nountree, noun->id, noun); 
@@ -65,8 +70,7 @@ struct noun_t *new_noun(const char *name, uint32_t model, void *obj)
 {
         check_nountree();
 
-        struct noun_t *new;        
-        new = malloc(sizeof(struct noun_t));
+        struct noun_t *new = malloc(sizeof(struct noun_t));
 
         new->name  = mydup(name);
         new->id    = fasthash(name, strlen(name));
@@ -76,13 +80,14 @@ struct noun_t *new_noun(const char *name, uint32_t model, void *obj)
         new->inv   = new_inventory(new);
         new->astar = new_astar();
 
-        new->is_active = false;
+        new->is_active   = false;
+        new->hit_testing = true;
 
         new->step  = &method_noun_step;
         new->hit   = &method_noun_hit;
-        new->setyx = &method_noun_setyx;
         new->fall  = &method_noun_fall;
         new->seek  = &method_noun_seek;
+        new->setyx = &method_noun_setyx;
 
         apply_noun_model(new);
         add_to_nountree(new);
@@ -132,6 +137,17 @@ void noun_set_state(struct noun_t *noun, int state, int value)
 
 
 /**
+ * noun_set_animation -- set the currently active animation 
+ * @noun: pointer to a struct noun_t
+ * @ani: pointer to a struct ani_t 
+ */
+void set_animation(struct noun_t *noun, struct ani_t *ani)
+{
+        noun->animation = ani;
+}
+
+
+/**
  * noun_active -- toggle a noun's visibility on-screen
  * @noun: Pointer to struct noun_t
  * @opt: Whether or not the noun should be visible
@@ -154,9 +170,7 @@ void noun_active(struct noun_t *noun, bool opt)
  */
 struct noun_t *key_noun(uint32_t id)
 {
-        struct noun_t *tmp;
-        tmp = rb_extra(nountree, id);
-        focused = tmp;
+        focused = rb_extra(nountree, id);
         return (focused);
 }
 
@@ -167,8 +181,7 @@ struct noun_t *key_noun(uint32_t id)
  */
 struct noun_t *get_noun(const char *name)
 {
-        key_noun(fasthash(name, strlen(name)));
-        return (focused);
+        return (key_noun(fasthash(name, strlen(name))));
 }
 
 
@@ -186,18 +199,11 @@ struct noun_t *get_noun_at(struct map_t *map, int y, int x)
 
 
 
-
-
-
-
-
-
 /* METHOD HELPERS 
 ``````````````````````````````````````````````````````````````````````````````*/
 /**
  * PRIVATE
- * noun_mark_position -- update the position of the noun id on the map matrix
- */
+ * noun_mark_position -- update the position of the noun id on the map matrix */
 inline void noun_mark_position(struct noun_t *noun)
 {
         mx_set(ACTIVE->mobs, pos_saved_y(noun->pos), pos_saved_x(noun->pos), 0);
@@ -207,12 +213,12 @@ inline void noun_mark_position(struct noun_t *noun)
 
 /**
  * PRIVATE
- * noun_hit_test -- test whether a terrain collision is occuring 
+ * hit_detected -- test whether a terrain collision is occuring 
  * @noun: pointer to struct noun_t 
  */
-inline bool noun_hit_test(struct noun_t *noun)
+inline bool hit_detected(struct noun_t *noun)
 {
-        return (map_hit(ACTIVE, noun->pos)) ? false : true;
+        return (map_hit(ACTIVE, noun->pos));
 }
 
 
@@ -227,14 +233,10 @@ inline void noun_on_move(struct noun_t *noun)
         noun->hit(noun);
 
         move_panel(noun->pan, pos_y(noun->pos), pos_x(noun->pos));
-        update_panels();
-
-        noun->astar->start->y = (uint32_t)pos_y(noun->pos);
-        noun->astar->start->x = (uint32_t)pos_x(noun->pos);
-        noun->astar->start->key = mort(noun->astar->start->y, noun->astar->start->x);
-
+        astar_set_start(noun->astar, pos_y(noun->pos), pos_x(noun->pos));
         take_bkgrnd(panel_window(noun->pan), PEEK(ACTIVE->W));
-        doupdate();
+
+        scr_refresh();
 
         if (DOOR(ACTIVE, pos_y(noun->pos), pos_x(noun->pos)))
                 door_trigger(noun, DOOR(ACTIVE, pos_y(noun->pos), pos_x(noun->pos)));
@@ -254,8 +256,8 @@ void method_noun_hit(void *self)
 {
         struct noun_t *noun = NOUN(self);
 
-        if (noun->hit_testing_enabled && noun_hit_test(noun))
-                noun->pos->restore(&noun->pos);
+        if (noun->hit_testing && hit_detected(noun))
+                noun->pos->restore(noun->pos);
 }
 
 
@@ -404,7 +406,7 @@ void noun_set_signal(struct noun_t *noun, int verb, int dir)
 
 /* ID TRACKER
 ``````````````````````````````````````````````````````````````````````````````*/
-bool id_ready;
+bool     id_ready;
 uint32_t active_id[2];
 
 
@@ -434,3 +436,4 @@ uint32_t request_id(int opt)
         }
         return (active_id[opt]);
 }
+
