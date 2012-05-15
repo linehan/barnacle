@@ -19,7 +19,7 @@ struct noun_t {
         char    *name;            // String identifier
         uint32_t id;              // Hashed identifier
         uint32_t vitals;          // The state word
-        bool is_active;           // Rendering on/off
+        bool is_mobile;           // Rendering on/off
         bool hit_testing;         // Collisions on/off
 
         /* Associated data --------------------------------*/
@@ -37,15 +37,29 @@ struct noun_t {
 
         /* Dynamic methods --------------------------------*/
         enum noun_model model;    // The noun "subclass"
-        MODIFY_METHOD modify;     // Master FSM 
-        RENDER_METHOD render;     // Draw noun to screen 
+        int  (*_modify)(void *self);     // Master FSM 
+        void (*_render)(void *self);     // Draw noun to screen 
 
         /* Static methods ---------------------------------*/
-        void (*step) (void *self, int dir);
-        void (*hit)  (void *self);
-        void (*fall) (void *self);
-        void (*seek) (void *self, void *target);
-        void (*setyx)(void *self, int y, int x);
+        void (*_mobile)(void *self, bool opt);
+        void (*_step) (void *self, int dir);
+        void (*_hit)  (void *self);
+        void (*_fall) (void *self);
+        void (*_seek) (void *self, void *target);
+        void (*_setyx)(void *self, int y, int x);
+        void (*_update)(void *self);
+
+        /* Member methods ---------------------------------*/
+        int  (*modify)(void);
+        void (*render)(void);
+        void (*update)(void);
+        void (*step) (int dir);
+        void (*fall) (void);
+        void (*hit)  (void);
+        void (*seek) (void *target);
+        void (*setyx)(int y, int x);
+        void (*mobile)(bool opt);
+
 };
 
 
@@ -72,58 +86,6 @@ void noun_set_signal(struct noun_t *noun, enum sm_state verb, int dir);
 /* External pointer for queried nouns
 ``````````````````````````````````````````````````````````````````````````````*/
 struct noun_t *focused;
-
-
-
-
-/* Accessor functions 
-``````````````````````````````````````````````````````````````````````````````*/
-/**
- * noun_obj -- returns a pointer to the obj member of the noun struct
- * @name: name of noun (string)
- */
-static inline void *noun_obj(const char *name)
-{
-        return (void *)(get_noun(name))->obj;
-}
-
-/**
- * noun_render -- call the noun's render method
- * @noun: pointer to a struct noun_t
- */
-static inline void noun_render(struct noun_t *noun)
-{
-        noun->render(noun);
-}
-
-/**
- * noun_modify -- call the noun's modify method
- * @noun: pointer to a struct noun_t
- */
-static inline void noun_modify(struct noun_t *noun)
-{
-        noun->modify(noun);
-}
-
-/**
- * noun_move -- call the noun's step method
- * @noun: pointer to a struct noun_t
- * @dir: direction of step 
- */
-static inline void noun_move(struct noun_t *noun, int dir)
-{
-        noun->step(noun, dir);
-}
-
-/**
- * noun_update -- called by the event loop each game tick
- * @noun: pointer to a noun
- */
-static inline void noun_update(struct noun_t *noun)
-{
-        noun_modify(noun);
-        noun_render(noun);
-}
 
 
 

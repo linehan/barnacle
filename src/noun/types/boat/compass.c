@@ -155,8 +155,8 @@ void approach_helm(void)
         if (buffer < BUF_FULL) buffer = (buffer+BUF_REST);
 
                 if (buffer < BUF_MIN && offset != 0 ) {
-                        change_course(noun_obj("Afarensis"), dir^1);
-                        turn_helm(noun_obj("Afarensis"), dir);
+                        change_course(nn("Afarensis")->obj, dir^1);
+                        turn_helm(nn("Afarensis")->obj, dir);
                 }
 }
 

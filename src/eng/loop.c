@@ -56,15 +56,12 @@ void render_cb(EV_P_ ev_timer *w, int revents)
                 mvwprintw(CONSOLE_WIN, 1, 0, "(%c) render_cb\n", 
                           SPINNER(spindex++));
         }
-        /*view_dock();*/
-        /*draw_compass();*/
-        /*approach_helm();*/
         dock_update();
-        /*noun_update(get_noun("Dummy"));*/
-        noun = get_noun("Guy");
-        noun_update(noun);
 
-        noun->fall(noun);
+        nn("Dummy")->update();
+        nn("Guy")->update();
+
+        nn("Guy")->fall();
 
         update_panels();  /* Were slowing down performance, unnecessary */
         doupdate();

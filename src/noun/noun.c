@@ -15,9 +15,8 @@
 
 
 
-struct rb_tree *nountree; /* Holds all registered nouns */
-int numnoun;              /* Counts all registered nouns */
-
+struct hashtable_t *nountable;
+int numnoun;
 
 
 
@@ -25,22 +24,22 @@ int numnoun;              /* Counts all registered nouns */
 ``````````````````````````````````````````````````````````````````````````````*/
 /**
  * PRIVATE 
- * check_nountree -- ensure the tree is initialized and allocated */ 
-inline void check_nountree(void)
+ * check_nountable -- ensure the hashtable is initialized and allocated */ 
+inline void check_nountable(void)
 {
-        if (!nountree) { 
-                nountree = rb_new(1);
+        if (!nountable) { 
+                nountable = new_hashtable(0);
                 numnoun  = 0;
         }
-        assert(nountree || "Could not allocate noun tree");
+        assert(nountable || "Could not allocate noun table");
 }
 
 /**
  * PRIVATE
- * add_to_nountree -- insert a noun into the nountree and refcount */
-inline void add_to_nountree(struct noun_t *noun)
+ * add_to_nountable -- insert a noun into the noun hash table and refcount */
+inline void add_to_nountable(struct noun_t *noun)
 {
-        rb_store(nountree, noun->id, noun); 
+        hashtable_add(nountable, noun->id, noun); 
         keyring[numnoun++] = noun->id;
 
         assert(numnoun < MAXNOUN || "Noun limit reached");
@@ -70,7 +69,25 @@ void method_noun_setyx(void *self, int y, int x);
 void method_noun_hit(void *self);
 void method_noun_fall(void *self);
 void method_noun_seek(void *self, void *target);
+void method_noun_mobile(void *self, bool opt);
 
+void member_method_noun_modify(void);
+void member_method_noun_render(void);
+void member_method_noun_update(void);
+void member_method_noun_move(int dir);
+void member_method_noun_fall(void);
+void member_method_noun_hit(void);
+void member_method_noun_seek(void *target);
+void member_method_noun_setyx(int y, int x);
+void member_method_noun_mobile(bool opt);
+
+/* Noun destructor
+``````````````````````````````````````````````````````````````````````````````*/
+/*void destroy_noun(void *self)*/
+/*{*/
+        /*struct noun_t *noun = NOUN(self);*/
+
+        /* Remove from the nountree */
 
 /* Noun constructor 
 ``````````````````````````````````````````````````````````````````````````````*/
@@ -83,7 +100,7 @@ void method_noun_seek(void *self, void *target);
  */
 struct noun_t *new_noun(const char *name, uint32_t model, void *obj)
 {
-        check_nountree();
+        check_nountable();
 
         struct noun_t *new = malloc(sizeof(struct noun_t));
 
@@ -98,17 +115,28 @@ struct noun_t *new_noun(const char *name, uint32_t model, void *obj)
         new->sm    = new_sm(new->id, &emit_verb);
         sm_active(new->sm, true);
 
-        new->is_active   = false;
+        new->is_mobile   = false;
         new->hit_testing = true;
 
-        new->step  = &method_noun_step;
-        new->hit   = &method_noun_hit;
-        new->fall  = &method_noun_fall;
-        new->seek  = &method_noun_seek;
-        new->setyx = &method_noun_setyx;
+        /* Assign static methods */
+        new->_step     = &method_noun_step;
+        new->_hit      = &method_noun_hit;
+        new->_fall     = &method_noun_fall;
+        new->_seek     = &method_noun_seek;
+        new->_setyx    = &method_noun_setyx;
+        new->_mobile   = &method_noun_mobile;
+
+        /* Assign member methods */
+        new->mobile   = &member_method_noun_mobile;
+        new->step     = &member_method_noun_move;
+        new->hit      = &member_method_noun_hit;
+        new->fall     = &member_method_noun_fall;
+        new->seek     = &member_method_noun_seek;
+        new->setyx    = &member_method_noun_setyx;
+        new->update   = &member_method_noun_update;
 
         apply_noun_model(new);
-        add_to_nountree(new);
+        add_to_nountable(new);
 
         return new;
 }
@@ -126,7 +154,7 @@ struct noun_t *new_noun(const char *name, uint32_t model, void *obj)
  */
 void noun_set_render(struct noun_t *noun, RENDER_METHOD func)
 {
-        noun->render = func;
+        noun->_render = func;
 }
 
 
@@ -137,7 +165,7 @@ void noun_set_render(struct noun_t *noun, RENDER_METHOD func)
  */
 void noun_set_modify(struct noun_t *noun, MODIFY_METHOD func)
 {
-        noun->modify = func;
+        noun->_modify = func;
 }
 
 
@@ -152,16 +180,7 @@ void set_animation(struct noun_t *noun, struct ani_t *ani)
 }
 
 
-/**
- * noun_active -- toggle a noun's visibility on-screen
- * @noun: Pointer to struct noun_t
- * @opt: Whether or not the noun should be visible
- */
-void noun_active(struct noun_t *noun, bool opt)
-{
-        noun->is_active = opt;
-        (noun->is_active) ? show_panel(noun->pan) : hide_panel(noun->pan);
-}
+
 
 
 
@@ -175,7 +194,7 @@ void noun_active(struct noun_t *noun, bool opt)
  */
 struct noun_t *key_noun(uint32_t id)
 {
-        focused = rb_extra(nountree, id);
+        focused = hashtable_get(nountable, id);
         return (focused);
 }
 
@@ -231,7 +250,7 @@ inline bool hit_detected(struct noun_t *noun)
 inline void noun_on_move(struct noun_t *noun)
 {
         noun_mark_position(noun);
-        noun->hit(noun);
+        noun->_hit(noun);
 
         move_panel(noun->pan, pos_y(noun->pos), pos_x(noun->pos));
         astar_set_start(noun->astar, pos_y(noun->pos), pos_x(noun->pos));
@@ -247,9 +266,28 @@ inline void noun_on_move(struct noun_t *noun)
 
 
 
-/* METHODS
+/* STATIC METHODS
 ``````````````````````````````````````````````````````````````````````````````*/
 /**
+ * _MOBILE METHOD
+ * method_noun_mobile -- set a noun to the active state
+ * @self: the noun object
+ */
+void method_noun_mobile(void *self, bool opt)
+{
+        struct noun_t *noun = NOUN(self);
+
+        noun->is_mobile = opt;
+                
+        if (noun->is_mobile)
+                show_panel(noun->pan);
+        else    hide_panel(noun->pan);
+}
+
+
+
+/**
+ * _HIT METHOD
  * method_noun_hit -- perform the collision test
  * @self: the noun object
  */
@@ -263,6 +301,7 @@ void method_noun_hit(void *self)
 
 
 /**
+ * _SETYX METHOD
  * method_noun_setyx -- reposition the noun to coordinates y,x 
  * @self: the noun object
  * @y: y-coordinate to position noun at
@@ -278,6 +317,7 @@ void method_noun_setyx(void *self, int y, int x)
 
 
 /**
+ * _STEP METHOD
  * method_noun_step -- move the noun in a given direction 
  * @self: the noun object
  * @dir: direction
@@ -321,12 +361,12 @@ void method_noun_step(void *self, int dir)
                 pos_l(noun->pos);
                 break;
         }
-
         noun_on_move(noun);
 }
 
 
 /**
+ * _FALL METHOD
  * method_noun_fall -- shift a noun's position downward if gravity is enabled
  * @self: the noun object
  */
@@ -345,11 +385,12 @@ void method_noun_fall(void *self)
         INC(y, pos_ymax(noun->pos));
 
         if (TILE(ACTIVE, y, x) == CAVEFLOOR)
-                noun->step(noun, 'd');
+                noun->_step(noun, 'd');
 }
 
 
 /**
+ * _SEEK METHOD
  * method_noun_seek -- run the A* function to seek a target noun
  * @self: the noun object
  * @target: the noun object to seek
@@ -401,10 +442,104 @@ void noun_set_signal(struct noun_t *noun, enum sm_state verb, int dir)
                 INC(x, pos_xmax(noun->pos));
                 break;
         }
-
         sm_emit(noun->sm, mx_val(ACTIVE->mobs, y, x), 0, verb);
 }
 
+
+/******************************************************************************
+ * PSEUDO MEMBER METHODS 
+ *
+ * These functions approximate the behavior of member functions in
+ * class-based object oriented programming. These constructs are
+ * not provided for in ANSI-C, but they are implemented here through
+ * the use of a global accessor variable.
+ *
+ * The variable 'struct noun_t *focused' is set to the value last 
+ * retreived from the nountree. Provided this access was accomplished
+ * immediately prior to calling one of these member functions, they
+ * may assume the caller to be the noun at the address pointed to by
+ * 'focused'. 
+ *
+ * Using the nn() accessor, which expands to get_noun(), some typical 
+ * usages might look like:
+ *
+ *      nn("Ophelia")->move('d');
+ *      nn("Ophelia")->update();
+ *      
+ ******************************************************************************/ 
+/**
+ * MODIFY METHOD
+ * member_method_noun_modify -- calls the modify method */
+void member_method_noun_modify(void)
+{
+        focused->_modify(focused);
+}
+
+/**
+ * RENDER METHOD
+ * member_method_noun_render -- calls the render method */
+void member_method_noun_render(void)
+{
+        focused->_render(focused);
+}
+
+/**
+ * UPDATE METHOD
+ * member_method_noun_update -- calls the modify and render methods together */
+void member_method_noun_update(void)
+{
+        focused->_modify(focused);
+        focused->_render(focused);
+}
+
+/**
+ * MOBILE METHOD
+ * member_method_noun_activate -- calls the activate method */
+void member_method_noun_mobile(bool opt)
+{
+        focused->_mobile(focused, opt);
+}
+
+/**
+ * MOVE METHOD
+ * member_method_noun_move -- call the noun's step method
+ * @dir: direction of step */
+void member_method_noun_move(int dir)
+{
+        focused->_step(focused, dir);
+}
+
+/**
+ * SEEK METHOD
+ * member_method_noun_sekk -- seek the target noun with A* pathfinding */
+void member_method_noun_seek(void *target)
+{
+        focused->_seek(focused, target);
+}
+
+/**
+ * FALL METHOD
+ * member_method_noun_fall -- call the noun's fall method */
+void member_method_noun_fall(void)
+{
+        focused->_fall(focused);
+}
+
+/**
+ * HIT METHOD
+ * member_method_noun_hit -- call the noun's hit method */
+void member_method_noun_hit(void)
+{
+        focused->_hit(focused);
+}
+
+/**
+ * SETYX METHOD
+ * member_method_noun_setyx -- call the noun's setyx method */
+void member_method_noun_setyx(int y, int x)
+{
+        focused->_setyx(focused, y, x);
+}
 
 
 
