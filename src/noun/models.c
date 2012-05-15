@@ -2,13 +2,11 @@
 #include "noun.h"
 #include "../eng/fsm.h"
 #include "models.h"
+#include "noun.h"
 #include "../mob/mob.h"
 #include "../equip/rope.h"
 #include "../equip/equipment.h"
 #include "../mob/inventory.h"
-
-
-#define STATE_RESET(noun) noun_set_state(noun, 0, 0)
 
 
 /*
@@ -62,7 +60,7 @@ struct ani_t run_l_test   = {L"ⲑⲑᎲⰾ",              MV(0,'l'), NOMV, NOVB
 struct ani_t run_r_test   = {L"ⲑⲑᎲⰾ",              MV(0,'r'), NOMV, NOVB};
 struct ani_t punch_r_test = {L"ᎲᎲᎲᱽᕤᱽᎲᎲⰾ",         NOMV, NOMV, NOVB};
 struct ani_t punch_l_test = {L"ᎲᎲᎲ᱙ᕦ᱙ᎲᎲⰾ",         NOMV, NOMV, NOVB};
-struct ani_t slashtest    = {L"ᎲᎲᎲᒀᒀᒀᒀᎲᎲⰾ",        NOMV, NOMV, VB(3,VERB_Punch,'u')};
+struct ani_t slashtest    = {L"ᎲᎲᎲᒀᒀᒀᒀᎲᎲⰾ",        NOMV, NOMV, VB(3, SM_Punch,'u')};
 struct ani_t dodgetest    = {L"ᎲᎲᎲᏡᏡᏡᏡȣȣȣȣᏡᎲᎲⰾ",   MV(8,'d'), NOMV, NOVB};
 struct ani_t falltest     = {L"ᎲᎲᎲޗޗޗⲁⲁⲁᥑ",        MV(4,'r'), NOMV, NOVB};
 struct ani_t dodge_l_test = {L"ᎲᎲᎲᥑᥑⲁཚཚཚᎲᎲᎲⰾ",     MV(5,'l'), NOMV, NOVB};
@@ -97,11 +95,12 @@ void render_human(void *self)
 int modify_human(void *self)
 {
         struct noun_t *noun = (struct noun_t *)self;
+        int state = sm_state(noun->sm);
 
-        switch (noun->state) 
+        switch (sm_state(noun->sm)) 
         { 
-        case VERB_Keyboard:
-                switch (noun->value) {
+        case SM_Keyboard:
+                switch (sm_value(noun->sm)) {
                 case 'j':
                 case 's':
                         set_animation(noun, &run_d_test);
@@ -160,7 +159,7 @@ int modify_human(void *self)
                 }
                 break;
         }
-        STATE_RESET(noun);
+        SM_RESET(noun->sm);
 
         return (MODE_PERSIST);
 }
@@ -203,40 +202,40 @@ int modify_dummy(void *obj)
 {
         struct noun_t *noun = (struct noun_t *)obj;
         static int wait = 0;
-        int enter = noun->state;
+        int enter = sm_state(noun->sm);
 
         wait = (wait+1)%20;
         
-        switch (noun->state)
+        switch (sm_state(noun->sm))
         {
-        case VERB_Default:
+        case SM_Default:
                 if (wait == 13)
                         noun->seek(noun, get_noun("Guy"));
                 break;
-        case VERB_Punch:
+        case SM_Punch:
                 wprintw(CONSOLE_WIN, "Dummy hit!\n");
                 set_animation(noun, &bonk_test);
                         dock_say(L"嶴", "FUCK!");
                 break;
-        case VERB_GoUp:
+        case SM_GoUp:
                 set_animation(noun, &dummy_mv_u);
                 break;
-        case VERB_GoDown:
+        case SM_GoDown:
                 if (flip_biased(0.4))
                         dock_say(L"䥚", "I'm gonna hop all over you!");
                 set_animation(noun, &dummy_mv_d);
                 break;
-        case VERB_GoLeft:
+        case SM_GoLeft:
                 set_animation(noun, &dummy_mv_l);
                 if (flip_biased(0.4))
                         dock_say(L"䥚", "Get fucked!");
                 break;
-        case VERB_GoRight:
+        case SM_GoRight:
                 set_animation(noun, &dummy_mv_r);
                 break;
         }
-        if (noun->state == enter)
-                STATE_RESET(noun);
+        if (sm_state(noun->sm) == enter)
+                SM_RESET(noun->sm);
 
         return 0;
 }

@@ -7,6 +7,7 @@
 #include "../mob/mob.h"
 #include "../mob/inventory.h"
 #include "../map/map.h"
+#include "../verb/fsm.h"
 #include "models.h"
 
 enum noun_model { NOUN_CREATURE, NOUN_DUMMY };
@@ -20,14 +21,11 @@ struct noun_t {
 
         /* ----------------------------------------------- State */
         uint32_t vitals;        /* The state word */
-        int state;              /* for the AI */
-        int value;              /* For the AI */
         bool is_active;
         bool hit_testing;
 
         /* ----------------------------------------------- Messaging */
-        struct verb_t verb;     
-        uint32_t signal;
+        struct sm_t *sm;
 
         /* ----------------------------------------------- Associated data */
         struct inventory_t *inv;   
@@ -68,8 +66,9 @@ void set_animation(struct noun_t *noun, struct ani_t *ani);
 
 struct noun_t *key_noun(uint32_t id);
 struct noun_t *get_noun(const char *name);
-#define nn(name) get_noun((name))
+#define nn(name) (get_noun((name)))
 struct noun_t *get_noun_at(struct map_t *map, int y, int x);
+void noun_set_signal(struct noun_t *noun, enum sm_state verb, int dir);
 
 
 
