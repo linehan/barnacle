@@ -74,18 +74,21 @@ bool sm_set(struct sm_t *sm, int state, int value)
         return false;
 }
 
-static inline int sm_state(struct sm_t *sm)
+static inline 
+int sm_state(struct sm_t *sm)
 {
         return (int)(sm->state);
 }
 
-static inline int sm_value(struct sm_t *sm)
+static inline 
+int sm_value(struct sm_t *sm)
 {
         return (sm->value);
 }
 
 #define SM_RESET sm_reset
-static inline void sm_reset(struct sm_t *sm)
+static inline 
+void sm_reset(struct sm_t *sm)
 {
         sm_set(sm, 0, 0);
 }

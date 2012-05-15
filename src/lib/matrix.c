@@ -49,9 +49,9 @@ struct matrix_t *new_matrix(int nrows, int ncols)
                 new->mx[k] = new->ar + (k * ncols);
 
         /* Assign helper values to members in the structure */
-        new->rows = nrows;
-        new->cols = ncols;
-        new->len = (nrows * ncols);
+        new->itr.rows = nrows;
+        new->itr.cols = ncols;
+        new->itr.len = (nrows * ncols);
         new->die = &delete_matrix;
 
         return (new);

@@ -12,6 +12,8 @@
 #define TILE(map,y,x)         (get_byte(mx_val((map)->tile, y, x), LAB))
 #define IS_TILE(map,y,x,val)  (val == TILE(map,y,x)) ? true : false
 
+
+
 #define SET_ELEV(map,y,x,val) (set_byte(mx_get((map)->tile, y, x), ALT, v))
 #define ELEV(map,y,x)         (get_byte(mx_val((map)->tile, y, x), ALT))
 #define IS_ELEV(map,y,x,val)  (val == ELEV(map,y,x)) ? true : false
@@ -19,6 +21,10 @@
 #define SET_DOOR(map,y,x,val) (mx_set((map)->door, y, x, val))
 #define DOOR(map,y,x)         (mx_val((map)->door, y, x))
 #define IS_DOOR(map,y,x,val)  (val == DOOR(map,y,x)) ? true : false
+
+
+#define LABEL(val,...) \
+        or_byte((*(val)), LAB, VA_NUM_ARGS(__VA_ARGS__), __VA_ARGS__)
 
 
 #define LAYER(val,n,...) or_byte(val, LAB, n, __VA_ARGS__)

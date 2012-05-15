@@ -2,6 +2,7 @@
 #ifndef __MATRIX_H
 #define __MATRIX_H
 #include <stdlib.h>
+#include <assert.h>
 #include "../com/arawak.h"
 
 #define NUM_MOORE_NEIGHBORS 8
@@ -9,15 +10,6 @@
 
 /* Abstract data types
 ``````````````````````````````````````````````````````````````````````````````*/
-struct matrix_t {
-        int rows;  /* Number of rows */
-        int cols;  /* Number of columns */
-        int len;   /* Length of the ar array */
-        uint32_t  *ar;  /* Linear array of values */
-        uint32_t **mx;  /* The matrix, an array of row pointers into ar */
-        void (*die)(void *self); /* Destructor to free all memory */
-};
-
 struct seed_t {
         uint32_t *cur;
         uint32_t *n;
@@ -30,7 +22,28 @@ struct seed_t {
         uint32_t *se;
 };
 
-static uint32_t DOPE;
+struct mx_index {
+        int rows;
+        int cols;
+        int len;
+
+        int row;
+        int col;
+        int adr;
+};
+
+
+struct matrix_t {
+        uint32_t  *ar;  /* Linear array of values */
+        uint32_t **mx;  /* The matrix, an array of row pointers into ar */
+        struct mx_index itr;
+        void (*die)(void *self); /* Destructor to free all memory */
+};
+
+
+
+static uint32_t DOPE = ~0;
+
 
 /* Public function prototypes 
 ``````````````````````````````````````````````````````````````````````````````*/
@@ -107,9 +120,9 @@ void mx_set(struct matrix_t *matrix, int y, int x, uint32_t val)
  * @x: x coordinate index
  */
 static inline
-int mx_adr(struct matrix_t *matrix, int y, int x)
+int mx_adr_yx(struct matrix_t *matrix, int y, int x)
 {
-        return x + (y * matrix->cols);
+        return x + (y * matrix->itr.cols);
 }
 
 /*
@@ -118,7 +131,7 @@ int mx_adr(struct matrix_t *matrix, int y, int x)
  * @adr: integer address of word
  */
 static inline
-uint32_t *mxar_get(struct matrix_t *matrix, int adr)
+uint32_t *mx_arget(struct matrix_t *matrix, int adr)
 {
         return &matrix->ar[adr];
 }
@@ -166,9 +179,9 @@ void mx_del(struct matrix_t *matrix)
  * within the bounds of the matrix.
  ******************************************************************************/
 #define safe_address_w(mx,x) (x > 0) ? 1 : 0
-#define safe_address_e(mx,x) (x < (mx)->cols - 1) ? 1 : 0
+#define safe_address_e(mx,x) (x < (mx)->itr.cols - 1) ? 1 : 0
 #define safe_address_n(mx,y) (y > 0) ? 1 : 0 
-#define safe_address_s(mx,y) (y < (mx)->rows - 1) ? 1 : 0
+#define safe_address_s(mx,y) (y < (mx)->itr.rows - 1) ? 1 : 0
 
 #define safe_address_nw(mx,y,x) safe_address_n(mx, y) && safe_address_w(mx, x)
 #define safe_address_ne(mx,y,x) safe_address_n(mx, y) && safe_address_e(mx, x)
@@ -308,15 +321,164 @@ static inline
 void mx_seed(struct matrix_t *matrix, int y, int x, struct seed_t *seed)
 {
         seed->cur = mx_get(matrix, y, x);
-        seed->n = mx_n(matrix, y, x);
-        seed->s = mx_s(matrix, y, x);
-        seed->e = mx_e(matrix, y, x);
-        seed->w = mx_w(matrix, y, x);
-        seed->nw = mx_nw(matrix, y, x);
-        seed->ne = mx_ne(matrix, y, x);
-        seed->sw = mx_sw(matrix, y, x);
-        seed->se = mx_se(matrix, y, x);
+        seed->n   = mx_n(matrix, y, x);
+        seed->s   = mx_s(matrix, y, x);
+        seed->e   = mx_e(matrix, y, x);
+        seed->w   = mx_w(matrix, y, x);
+        seed->nw  = mx_nw(matrix, y, x);
+        seed->ne  = mx_ne(matrix, y, x);
+        seed->sw  = mx_sw(matrix, y, x);
+        seed->se  = mx_se(matrix, y, x);
 }
+
+
+
+/* Iteration Accessors
+``````````````````````````````````````````````````````````````````````````````*/
+/**
+ * mx_row -- returns the current row index of the matrix
+ */
+static inline int mx_row(struct matrix_t *mx)
+{
+        return (mx->itr.row);
+}
+
+/**
+ * mx_col -- returns the current column index of the matrix
+ */
+static inline int mx_col(struct matrix_t *mx)
+{
+        return (mx->itr.col);
+}
+
+/**
+ * mx_adr -- returns the current vector address of the matrix 
+ */
+static inline int mx_adr(struct matrix_t *mx)
+{
+        return (mx->itr.adr);
+}
+
+/**
+ * mx_rows -- returns the number of rows in a matrix 
+ */
+static inline int mx_rows(struct matrix_t *mx)
+{
+        return (mx->itr.rows);
+}
+
+/**
+ * mx_cols -- returns the number of rows in a matrix 
+ */
+static inline int mx_cols(struct matrix_t *mx)
+{
+        return (mx->itr.cols);
+}
+
+/**
+ * mx_len -- returns the number of rows in a matrix 
+ */
+static inline int mx_len(struct matrix_t *mx)
+{
+        return (mx->itr.len);
+}
+
+/**
+ * mx_cell -- returns the current cell of the matrix
+ */
+static inline uint32_t *mx_cell(struct matrix_t *mx)
+{
+        return mx_arget(mx, mx_adr(mx)); 
+}
+
+
+/* Foreach loops 
+``````````````````````````````````````````````````````````````````````````````*/
+/**
+ * mx_itr_start -- the initial condition of the foreach loop
+ */
+static inline void mx_itr_start(struct matrix_t *matrix)
+{
+        matrix->itr.adr = 0;
+        matrix->itr.row = 0;
+        matrix->itr.col = 0;
+}
+
+/**
+ * mx_itr_until -- the termination condition of the foreach loop
+ */
+static inline bool mx_itr_until(struct matrix_t *mx)
+{
+        return (mx_adr(mx) < mx_len(mx)) ? true : false; 
+}
+
+/**
+ * mx_itr_next -- advances the len, col, and row indices of the foreach loop
+ */
+static inline void mx_itr_next(struct matrix_t *matrix)
+{
+        matrix->itr.adr++;
+
+        matrix->itr.col = matrix->itr.adr % matrix->itr.cols;
+        matrix->itr.row = matrix->itr.adr / matrix->itr.cols;
+
+        assert(matrix->itr.col< matrix->itr.cols || "Matrix column overflow");
+        assert(matrix->itr.row< matrix->itr.rows || "Matrix row overflow");
+}
+
+/**
+ * mx_itr_seed -- fill a seed on traversal
+ * @matrix: pointer to the struct matrix_t
+ */
+static inline
+void mx_itr_seed(struct seed_t *seed, struct matrix_t *matrix)
+{
+        mx_seed(matrix, mx_row(matrix), mx_col(matrix), seed);
+}
+
+
+/**
+ * mx_foreach -- traverses a matrix
+ * @cell: pointer to a uint32_t
+ * @mx: pointer to a struct matrix_t
+ */
+#define mx_foreach(cell, mx)                      \
+        for (mx_itr_start(mx);                    \
+             mx_itr_until(mx);                    \
+             mx_itr_next(mx), cell = mx_cell(mx))
+
+/**
+ * mx_foreach_seed -- traverses a matrix and generate seed
+ * @mx: pointer to a struct matrix_t
+ */
+#define mx_foreach_seed(seed, mx)                     \
+        for (mx_itr_start(mx), mx_itr_seed(seed,mx);  \
+             mx_itr_until(mx);                        \
+             mx_itr_seed(seed,mx), mx_itr_next(mx))
+
+/**
+ * mx_foreach_yx -- traverses a matrix; provides row and column indices
+ * @cell: pointer to a uint32_t
+ * @y: row index
+ * @x: column index
+ * @mx: pointer to a struct matrix_t
+ */
+#define mx_foreach_yx(cell, y, x, mx)                                       \
+        for (mx_itr_start(mx);                                              \
+             mx_itr_until(mx);                                              \
+             mx_itr_next(mx), cell=mx_cell(mx), y=mx_row(mx), x=mx_col(mx))
+
+/**
+ * mx_foreach_seed_yx -- traverses a matrix; provides row and column indices
+ * @cell: pointer to a uint32_t
+ * @y: row index
+ * @x: column index
+ * @mx: pointer to a struct matrix_t
+ */
+#define mx_foreach_seed_yx(seed, y, x, mx)                                     \
+        for (mx_itr_start(mx), mx_itr_seed(seed,mx), y=mx_row(mx),x=mx_col(mx);\
+             mx_itr_until(mx);                                                 \
+             mx_itr_seed(seed,mx), mx_itr_next(mx),  y=mx_row(mx),x=mx_col(mx))
 
 
 #endif

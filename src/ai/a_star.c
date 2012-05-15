@@ -33,8 +33,8 @@ void astar_init(struct astar_t *astar, struct matrix_t *map, int y, int x)
         astar->start  = new_cell((uint32_t)y, (uint32_t)x); 
         astar->goal   = NULL;
         list_head_init(&astar->path);
-        astar->OPEN   = new_bh(astar->map->len);
-        astar->CLOSED = new_bh(astar->map->len);
+        astar->OPEN   = new_bh(astar->map->itr.len);
+        astar->CLOSED = new_bh(astar->map->itr.len);
 }
 
 
@@ -177,14 +177,14 @@ struct cell_t **gen_neighbors(struct astar_t *astar, struct cell_t *cell)
                 neighbor[1] = new_cell(cell->y-1, cell->x);
         }
         /* Neighbor to the east of cell */
-        if (((cell->x < astar->map->cols-1)                      // In-bounds
+        if (((cell->x < astar->map->itr.cols-1)                      // In-bounds
         && (mapval(astar, cell->y, cell->x+1) < WALL_VALUE))     // Not wall
         && !((parent_x == cell->x+1) && (parent_y == cell->y)))  // Not parent
         {
                 neighbor[2] = new_cell(cell->y, cell->x+1);
         }
         /* Neighbor to the south of cell */
-        if (((cell->y < astar->map->rows-1)                      // In-bounds
+        if (((cell->y < astar->map->itr.rows-1)                      // In-bounds
         && (mapval(astar, cell->y+1, cell->x) < WALL_VALUE))     // Not wall
         && !((parent_x == cell->x) && (parent_y == cell->y+1)))  // Not parent
         {
