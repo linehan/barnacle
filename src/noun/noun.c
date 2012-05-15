@@ -10,17 +10,9 @@
 #include "../lib/redblack/rb.h"
 #include "noun.h"
 
-
-
-void method_noun_step(void *self, int dir);
-void method_noun_setyx(void *self, int y, int x);
-void method_noun_hit(void *self);
-void method_noun_fall(void *self);
-void method_noun_seek(void *self, void *target);
-
-
 #define NOUN(ptr) (struct noun_t *)(ptr)
 #define MAXNOUN 1000
+
 
 
 struct rb_tree *nountree; /* Holds all registered nouns */
@@ -56,8 +48,7 @@ inline void add_to_nountree(struct noun_t *noun)
 
 /**
  * PRIVATE
- * emit -- the verb sending method for the state machine configuration
- */
+ * emit_verb -- the verb sending method for the state machine configuration */
 bool emit_verb(void *self)
 {
         struct verb_t *verb = (struct verb_t *)self;
@@ -70,6 +61,15 @@ bool emit_verb(void *self)
         return false;
 }
 
+
+
+/* Method forward references
+``````````````````````````````````````````````````````````````````````````````*/
+void method_noun_step(void *self, int dir);
+void method_noun_setyx(void *self, int y, int x);
+void method_noun_hit(void *self);
+void method_noun_fall(void *self);
+void method_noun_seek(void *self, void *target);
 
 
 /* Noun constructor 
@@ -218,9 +218,7 @@ inline void noun_mark_position(struct noun_t *noun)
 
 /**
  * PRIVATE
- * hit_detected -- test whether a terrain collision is occuring 
- * @noun: pointer to struct noun_t 
- */
+ * hit_detected -- test whether a terrain collision is occuring */
 inline bool hit_detected(struct noun_t *noun)
 {
         return (map_hit(ACTIVE, noun->pos));
@@ -229,9 +227,7 @@ inline bool hit_detected(struct noun_t *noun)
 
 /**
  * PRIVATE
- * noun_on_move -- called every time a noun's position is changed
- * @noun: pointer to a struct noun_t
- */
+ * noun_on_move -- called every time a noun's position is changed */
 inline void noun_on_move(struct noun_t *noun)
 {
         noun_mark_position(noun);

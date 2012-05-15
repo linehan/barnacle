@@ -38,8 +38,7 @@ struct sm_t {
 static inline
 struct sm_t *new_sm(uint32_t id, bool (*send)(void *self))
 {
-        struct sm_t *new;
-        new = calloc(1, sizeof(struct sm_t));
+        struct sm_t *new = calloc(1, sizeof(struct sm_t));
 
         new->id   = id;
         new->send = send;
@@ -56,15 +55,13 @@ void sm_emit(struct sm_t *sm, uint32_t to, uint32_t delay, enum sm_state state)
 }
 
 
-static inline
-void sm_active(struct sm_t *sm, bool yesno)
+static inline void sm_active(struct sm_t *sm, bool yesno)
 {
         sm->accepting = yesno;
 }
 
 
-static inline
-bool sm_set(struct sm_t *sm, int state, int value)
+static inline bool sm_set(struct sm_t *sm, int state, int value)
 {
         if (sm->accepting) {
                 sm->state = state;
@@ -74,21 +71,19 @@ bool sm_set(struct sm_t *sm, int state, int value)
         return false;
 }
 
-static inline 
-int sm_state(struct sm_t *sm)
+static inline int sm_state(struct sm_t *sm)
 {
         return (int)(sm->state);
 }
 
-static inline 
-int sm_value(struct sm_t *sm)
+static inline int sm_value(struct sm_t *sm)
 {
         return (sm->value);
 }
 
 #define SM_RESET sm_reset
-static inline 
-void sm_reset(struct sm_t *sm)
+
+static inline void sm_reset(struct sm_t *sm)
 {
         sm_set(sm, 0, 0);
 }

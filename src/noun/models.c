@@ -215,7 +215,7 @@ int modify_dummy(void *obj)
         case SM_Punch:
                 wprintw(CONSOLE_WIN, "Dummy hit!\n");
                 set_animation(noun, &bonk_test);
-                        dock_say(L"嶴", "FUCK!");
+                dock_say(L"嶴", "FUCK!");
                 break;
         case SM_GoUp:
                 set_animation(noun, &dummy_mv_u);

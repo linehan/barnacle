@@ -12,13 +12,18 @@ enum noun_models {
         DUMMY
 };
 
+
 typedef int  (*MODIFY_METHOD)(void *self);
 typedef void (*RENDER_METHOD)(void *self);
+
+
 /* Function tables for different noun models */
 MODIFY_METHOD modify[100];
 RENDER_METHOD render[100];
 
+
 void apply_noun_model(struct noun_t *noun);
+
 
 /* Model (class) definitions 
 ``````````````````````````````````````````````````````````````````````````````*/
@@ -26,6 +31,7 @@ void apply_noun_model(struct noun_t *noun);
 #define VB(frame,verb,dir) frame, verb, dir
 #define NOMV MV(0,0) 
 #define NOVB VB(0,0,0) 
+
 
 /* Animation of nouns during rendering 
 ``````````````````````````````````````````````````````````````````````````````*/

@@ -12,39 +12,35 @@
 
 enum noun_model { NOUN_CREATURE, NOUN_DUMMY };
 
-/* Abstract types 
+/* The noun type
 ``````````````````````````````````````````````````````````````````````````````*/
 struct noun_t {
-        /* ----------------------------------------------- Identifiers */
-        char    *name;          /* String identifier */
-        uint32_t id;            /* Hashed identifier */
+        /* State ------------------------------------------*/
+        char    *name;            // String identifier
+        uint32_t id;              // Hashed identifier
+        uint32_t vitals;          // The state word
+        bool is_active;           // Rendering on/off
+        bool hit_testing;         // Collisions on/off
 
-        /* ----------------------------------------------- State */
-        uint32_t vitals;        /* The state word */
-        bool is_active;
-        bool hit_testing;
+        /* Associated data --------------------------------*/
+        struct sm_t *sm;          // State machine
+        struct pos_t *pos;        // Position object
+        struct inventory_t *inv;  // Inventory object 
+        struct astar_t *astar;    // A* pathfinding object
+        uint32_t map_id;          // Current map 
+        void *obj;                // Misc.
 
-        /* ----------------------------------------------- Messaging */
-        struct sm_t *sm;
-
-        /* ----------------------------------------------- Associated data */
-        struct inventory_t *inv;   
-        struct astar_t     *astar;
-        struct pos_t       *pos;
-        uint32_t map_id;
-        void *obj;              
-
-        /* ----------------------------------------------- Rendering */
-        struct ani_t *animation;
+        /* Rendering --------------------------------------*/
+        struct ani_t *animation;  // Animation sequence 
         PANEL  *pan;
         WINDOW *win;
 
-        /* ----------------------------------------------- Dynamic methods */
-        enum noun_model model;
-        MODIFY_METHOD modify;   /* Dynamic linkage for state machine */
-        RENDER_METHOD render;   /* Dynamic linkage for rendering */
+        /* Dynamic methods --------------------------------*/
+        enum noun_model model;    // The noun "subclass"
+        MODIFY_METHOD modify;     // Master FSM 
+        RENDER_METHOD render;     // Draw noun to screen 
 
-        /* ----------------------------------------------- Static methods */
+        /* Static methods ---------------------------------*/
         void (*step) (void *self, int dir);
         void (*hit)  (void *self);
         void (*fall) (void *self);
@@ -83,21 +79,12 @@ struct noun_t *focused;
 /* Accessor functions 
 ``````````````````````````````````````````````````````````````````````````````*/
 /**
- * noun->obj -- returns a pointer to the obj member of the noun struct
+ * noun_obj -- returns a pointer to the obj member of the noun struct
  * @name: name of noun (string)
  */
 static inline void *noun_obj(const char *name)
 {
         return (void *)(get_noun(name))->obj;
-}
-
-/**
- * &noun->pos -- returns a pointer to the mob member of the noun struct
- * @name: name of noun (string)
- */
-static inline struct pos_t *noun_pos(const char *name)
-{
-        return ((get_noun(name))->pos);
 }
 
 /**
@@ -112,11 +99,20 @@ static inline void noun_render(struct noun_t *noun)
 /**
  * noun_modify -- call the noun's modify method
  * @noun: pointer to a struct noun_t
- * @opt: value to be interpreted by the modify method
  */
 static inline void noun_modify(struct noun_t *noun)
 {
         noun->modify(noun);
+}
+
+/**
+ * noun_move -- call the noun's step method
+ * @noun: pointer to a struct noun_t
+ * @dir: direction of step 
+ */
+static inline void noun_move(struct noun_t *noun, int dir)
+{
+        noun->step(noun, dir);
 }
 
 /**
@@ -128,6 +124,7 @@ static inline void noun_update(struct noun_t *noun)
         noun_modify(noun);
         noun_render(noun);
 }
+
 
 
 /* Reference counting
@@ -158,18 +155,7 @@ uint32_t request_id(int option); /* Request the current subj/obj */
 #include "deps/vitals.h"
 
 
-static inline PANEL *noun_pan(struct noun_t *noun)
-{
-        return (noun->pan);
-}
-static inline WINDOW *noun_win(struct noun_t *noun)
-{
-        return panel_window(noun->pan);
-}
-static inline void noun_move(struct noun_t *noun, int dir)
-{
-        noun->step(noun, dir);
-}
+
 
 #endif
 

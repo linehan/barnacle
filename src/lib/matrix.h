@@ -422,8 +422,8 @@ static inline void mx_itr_next(struct matrix_t *matrix)
         matrix->itr.col = matrix->itr.adr % matrix->itr.cols;
         matrix->itr.row = matrix->itr.adr / matrix->itr.cols;
 
-        assert(matrix->itr.col< matrix->itr.cols || "Matrix column overflow");
-        assert(matrix->itr.row< matrix->itr.rows || "Matrix row overflow");
+        assert(matrix->itr.col < matrix->itr.cols || "Matrix column overflow");
+        assert(matrix->itr.row < matrix->itr.rows || "Matrix row overflow");
 }
 
 /**
@@ -454,7 +454,7 @@ void mx_itr_seed(struct seed_t *seed, struct matrix_t *matrix)
 #define mx_foreach_seed(seed, mx)                     \
         for (mx_itr_start(mx), mx_itr_seed(seed,mx);  \
              mx_itr_until(mx);                        \
-             mx_itr_seed(seed,mx), mx_itr_next(mx))
+             mx_itr_next(mx), mx_itr_seed(seed,mx))
 
 /**
  * mx_foreach_yx -- traverses a matrix; provides row and column indices
@@ -478,7 +478,7 @@ void mx_itr_seed(struct seed_t *seed, struct matrix_t *matrix)
 #define mx_foreach_seed_yx(seed, y, x, mx)                                     \
         for (mx_itr_start(mx), mx_itr_seed(seed,mx), y=mx_row(mx),x=mx_col(mx);\
              mx_itr_until(mx);                                                 \
-             mx_itr_seed(seed,mx), mx_itr_next(mx),  y=mx_row(mx),x=mx_col(mx))
+             mx_itr_next(mx), mx_itr_seed(seed,mx), y=mx_row(mx),x=mx_col(mx))
 
 
 #endif
