@@ -9,21 +9,18 @@ struct list_head delayed_verbs; /* Holds any delayed verbs */
 inline void add_delayed(struct verb_t *verb);
 void send_delayed_verbs(void);
 
+
+
 /*
  * route_verb -- decides when, where, and whether to send a verb
  * @verb: pointer to the verb being routed
  */
 void route_verb(struct verb_t *verb)
 {
-        struct noun_t *recipient;
-
         if (verb->delay > 0) {
                 add_delayed(verb);
         } else {
-                if (recipient = key_noun(verb->to), recipient) {
-                        /*wprintw(CONSOLE_WIN, "Sending to %u\n", verb->to);*/
-                        noun_set_state(recipient, verb->name, verb->value);
-                }
+                verb->send(verb);
                 free(verb);
         }
 }
@@ -37,7 +34,7 @@ void route_verb(struct verb_t *verb)
  * @delay: ticks of delay
  * @data:  any other data required
  */
-void send_verb(int name, uint32_t to, uint32_t from, int delay, void *data)
+void send_verb(int name, uint32_t to, uint32_t from, int delay, bool (*send)(void *self))
 {
         struct verb_t *new = malloc(sizeof(struct verb_t));
 
@@ -45,7 +42,7 @@ void send_verb(int name, uint32_t to, uint32_t from, int delay, void *data)
         new->to         = to;
         new->from       = from;
         new->delay      = delay;
-        new->data       = data;
+        new->send       = send;
 
         route_verb(new);
 }

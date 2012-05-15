@@ -107,13 +107,13 @@ void operate_on(int input)
                 /*noun_set_state(get_noun("Afarensis"), VERB_Keyboard, input);*/
                 break;
         case UI_MOB:
-                noun_set_state(get_noun("Guy"), VERB_Keyboard, input);
+                sm_set(nn("Guy")->sm, SM_Keyboard, input);
                 break;
         case UI_BUILD:
                 build_control(input);
                 break;
         case UI_INVENTORY:
-                inventory_control((get_noun("Guy"))->inv, input);
+                inventory_control(nn("Guy")->inv, input);
                 break;
         }
 }

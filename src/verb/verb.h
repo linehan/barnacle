@@ -5,26 +5,6 @@
 #include "../com/arawak.h"
 #include "../lib/llist/list.h"
 
-/* Messages and reserved states
-````````````````````````````````````````````````````````````````````````````` */
-static const uint32_t VERB_RESERVED_Enter  = 9999;
-static const uint32_t VERB_RESERVED_Exit   = 9998;
-static const uint32_t VERB_RESERVED_Update = 9997;
-
-enum verb_messages {
-        VERB_Default,
-        VERB_Keyboard,
-        VERB_GoUp,
-        VERB_GoDown,
-        VERB_GoLeft,
-        VERB_GoRight,
-        VERB_Die,
-        VERB_Punch,
-        VERB_Run,
-        VERB_Walk,
-        VERB_Jump,
-};
-
 
 /* Abstract types 
 ````````````````````````````````````````````````````````````````````````````` */
@@ -35,14 +15,17 @@ struct verb_t {
         uint32_t to;           /* Receiver (noun) identifier */
         uint32_t delay;        /* Delay between transmission and delivery */
         uint32_t value;        /* A value if the verb has a magnitude */
-        void     *data;        /* Private data */
+        bool (*send)(void *self);
 };
         
+
+
 
 /* Public functions 
 ````````````````````````````````````````````````````````````````````````````` */
 void send_delayed_verbs(void);
-void send_verb(int name, uint32_t to, uint32_t from, int delay, void *data);
+void send_verb(int verb, uint32_t to, uint32_t from, int delay, bool (*send)(void *self));
+
 
 
 /* State machine macros

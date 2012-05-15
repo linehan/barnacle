@@ -54,6 +54,21 @@ inline void add_to_nountree(struct noun_t *noun)
         assert(numnoun < MAXNOUN || "Noun limit reached");
 }
 
+/**
+ * PRIVATE
+ * emit -- the verb sending method for the state machine configuration
+ */
+bool emit_verb(void *self)
+{
+        struct verb_t *verb = (struct verb_t *)self;
+        struct noun_t *noun;
+
+        if (noun = key_noun(verb->to), noun) {
+                sm_set(noun->sm, verb->name, verb->value);
+                return true;
+        }
+        return false;
+}
 
 
 
@@ -79,6 +94,9 @@ struct noun_t *new_noun(const char *name, uint32_t model, void *obj)
 
         new->inv   = new_inventory(new);
         new->astar = new_astar();
+
+        new->sm    = new_sm(new->id, &emit_verb);
+        sm_active(new->sm, true);
 
         new->is_active   = false;
         new->hit_testing = true;
@@ -120,19 +138,6 @@ void noun_set_render(struct noun_t *noun, RENDER_METHOD func)
 void noun_set_modify(struct noun_t *noun, MODIFY_METHOD func)
 {
         noun->modify = func;
-}
-
-
-/**
- * noun_set_state -- set the state and optionial state value of noun
- * @noun: pointer to a struct noun_t
- * @state: state to transition into 
- * @value: value of the state (optional)
- */
-void noun_set_state(struct noun_t *noun, int state, int value)
-{
-        noun->state = state;
-        noun->value = value;
 }
 
 
@@ -368,17 +373,20 @@ void method_noun_seek(void *self, void *target)
         tmp = cellpath_next(&s->astar->path);
 
         if (tmp->x > s->astar->start->x)
-                noun_set_state(s, VERB_GoRight, 0);
+                sm_set(s->sm, SM_GoRight, 0);
         if (tmp->x < s->astar->start->x)
-                noun_set_state(s, VERB_GoLeft, 0);
+                sm_set(s->sm, SM_GoLeft, 0);
         if (tmp->y > s->astar->start->y)
-                noun_set_state(s, VERB_GoDown, 0);
+                sm_set(s->sm, SM_GoDown, 0);
         if (tmp->y < s->astar->start->y)
-                noun_set_state(s, VERB_GoUp, 0);
+                sm_set(s->sm, SM_GoUp, 0);
 }
 
 
-void noun_set_signal(struct noun_t *noun, int verb, int dir)
+
+
+
+void noun_set_signal(struct noun_t *noun, enum sm_state verb, int dir)
 {
         int y = pos_y(noun->pos);
         int x = pos_x(noun->pos);
@@ -398,7 +406,7 @@ void noun_set_signal(struct noun_t *noun, int verb, int dir)
                 break;
         }
 
-        send_verb(verb, mx_val(ACTIVE->mobs, y, x), noun->id, 0, NULL);
+        sm_emit(noun->sm, mx_val(ACTIVE->mobs, y, x), 0, verb);
 }
 
 

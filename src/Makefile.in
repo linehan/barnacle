@@ -81,7 +81,7 @@ am_arawak_OBJECTS = arawak.$(OBJEXT) eng/init.$(OBJEXT) \
 	map/snake.$(OBJEXT) map/arena.$(OBJEXT) map/cave.$(OBJEXT) \
 	map/door.$(OBJEXT) map/sweet_flow.$(OBJEXT) \
 	ai/a_star.$(OBJEXT) txt/gloss_m.$(OBJEXT) \
-	txt/gloss_v.$(OBJEXT) txt/gloss_c.$(OBJEXT) mob/mob.$(OBJEXT) \
+	txt/gloss_v.$(OBJEXT) txt/gloss_c.$(OBJEXT) \
 	mob/inventory.$(OBJEXT) noun/noun.$(OBJEXT) \
 	noun/models.$(OBJEXT) noun/nounmenu.$(OBJEXT) \
 	noun/nounmenu_control.$(OBJEXT) \
@@ -247,7 +247,6 @@ arawak_SOURCES = arawak.c                       \
                    txt/gloss_m.c                \
                    txt/gloss_v.c                \
                    txt/gloss_c.c                \
-                   mob/mob.c                    \
                    mob/inventory.c              \
                    noun/noun.c                  \
                    noun/models.c                \
@@ -486,7 +485,6 @@ mob/$(am__dirstamp):
 mob/$(DEPDIR)/$(am__dirstamp):
 	@$(MKDIR_P) mob/$(DEPDIR)
 	@: > mob/$(DEPDIR)/$(am__dirstamp)
-mob/mob.$(OBJEXT): mob/$(am__dirstamp) mob/$(DEPDIR)/$(am__dirstamp)
 mob/inventory.$(OBJEXT): mob/$(am__dirstamp) \
 	mob/$(DEPDIR)/$(am__dirstamp)
 noun/$(am__dirstamp):
@@ -599,7 +597,6 @@ mostlyclean-compile:
 	-rm -f map/sweet_flow.$(OBJEXT)
 	-rm -f map/terrain.$(OBJEXT)
 	-rm -f mob/inventory.$(OBJEXT)
-	-rm -f mob/mob.$(OBJEXT)
 	-rm -f noun/models.$(OBJEXT)
 	-rm -f noun/noun.$(OBJEXT)
 	-rm -f noun/nounmenu.$(OBJEXT)
@@ -662,7 +659,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@map/$(DEPDIR)/sweet_flow.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@map/$(DEPDIR)/terrain.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@mob/$(DEPDIR)/inventory.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@mob/$(DEPDIR)/mob.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@noun/$(DEPDIR)/models.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@noun/$(DEPDIR)/noun.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@noun/$(DEPDIR)/nounmenu.Po@am__quote@
