@@ -56,7 +56,7 @@ void label_regions(struct map_t *map)
         int y;
         int x;
 
-        mx_foreach_yx(seed.cur, y, x, map->tile) {
+        mx_foreach_seed_yx(&seed, y, x, map->tile) {
 
                 if (map->pmap[y][x] < SHOAL) place_ocean_label(seed.cur); else
                 if (map->pmap[y][x] < BEACH) place_shoal_label(seed.cur); else
@@ -240,7 +240,7 @@ void label_shorelines(struct map_t *map)
                 }
 
                 for (k=0; k<SURF_FRAMES; k++) {
-                        mvwp(PEEK(map->L[RIM]), y, x-1, &wch[roll1d(10)], color, 0);
+                        mvwp(PEEK(map->L[RIM]), y, x, &wch[roll1d(10)], color, 0);
                         NEXT(map->L[RIM]);
                 }
                 set_byte(seed.cur, LAB, RIM);
