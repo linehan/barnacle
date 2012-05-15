@@ -213,10 +213,10 @@ void sail_boat(void *mynoun)
         W = 3;
 
         if ((S!=POL)&&(W!=H)) { /*not in irons*/
-                if NORTHING(H)          noun_move(noun, 'u');
-                else if EASTING(H)      noun_move(noun, 'r');
-                else if SOUTHING(H)     noun_move(noun, 'd');
-                else if WESTING(H)      noun_move(noun, 'l');
+                if NORTHING(H)          noun->_step(noun, 'u');
+                else if EASTING(H)      noun->_step(noun, 'r');
+                else if SOUTHING(H)     noun->_step(noun, 'd');
+                else if WESTING(H)      noun->_step(noun, 'l');
         }
         /*else path_pop(noun->mob.path);*/
 

@@ -30,12 +30,12 @@ void door_trigger(struct noun_t *noun, uint32_t key)
         /* Mob is at src map */
         if (noun->map_id == door->src->id) {
                 map_set_extra(door->dst);
-                noun->setyx(noun, door->dstrec->y, door->dstrec->x+1);
+                noun->_setyx(noun, door->dstrec->y, door->dstrec->x+1);
                 noun->map_id = door->dst->id;
         /* Mob is at dst map */
         } else {
                 map_set_extra(door->src);
-                noun->setyx(noun, door->srcrec->y+2, door->srcrec->x);
+                noun->_setyx(noun, door->srcrec->y+2, door->srcrec->x);
                 noun->map_id = door->src->id;
         }
 }

@@ -65,14 +65,14 @@ int main(int argc, char *argv[])
         new_noun("Guy", PERSON, 0);
         new_noun("Dummy", DUMMY, 0);
 
-        noun_active(nn("Guy"), true);
-        noun_active(nn("Dummy"), false);
+        nn("Guy")->mobile(true);
+        nn("Dummy")->mobile(true);
 
-        noun_move(nn("Guy"), 'd');
-        noun_move(nn("Guy"), 'd');
-        noun_move(nn("Guy"), 'd');
+        nn("Guy")->step('d');
+        nn("Guy")->step('d');
+        nn("Guy")->step('d');
 
-        noun_move(nn("Dummy"), 'u');
+        nn("Dummy")->step('u');
 
         fork_sweet_flow();
 

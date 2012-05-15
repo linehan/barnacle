@@ -29,9 +29,9 @@ void noun_animate(struct noun_t *noun)
 
         /* Move the panel if this is the mv_frame */
         if (ani->i == ani->mv_frame)
-                noun_move(noun, ani->mv_dir);
+                noun->_step(noun, ani->mv_dir);
         if (ani->i == ani->mv_frame_alt)
-                noun_move(noun, ani->mv_dir_alt);
+                noun->_step(noun, ani->mv_dir_alt);
 
         /* Signal if this is the sig_frame */
         if (ani->i == ani->verb_frame)
@@ -84,7 +84,7 @@ void render_human(void *self)
 
         inv_burn(noun->inv, TORCHKEY(noun->inv));
         noun_animate(noun);
-        noun->step(noun, '*');
+        noun->_step(noun, '*');
         top_panel(noun->inv->equipped_pan);
 }
 
@@ -191,7 +191,7 @@ void render_dummy(void *self)
                 wbkgrnd(noun->win, mkcch(L"Ⰹ", 0, FLEX));
 
         noun_animate(noun);
-        noun->step(noun, '*');
+        noun->_step(noun, '*');
 }
 
 /*
@@ -210,7 +210,7 @@ int modify_dummy(void *obj)
         {
         case SM_Default:
                 if (wait == 13)
-                        noun->seek(noun, get_noun("Guy"));
+                        noun->_seek(noun, get_noun("Guy"));
                 break;
         case SM_Punch:
                 wprintw(CONSOLE_WIN, "Dummy hit!\n");
@@ -257,8 +257,8 @@ void apply_noun_model(struct noun_t *noun)
         modify[DUMMY]  = (modify[DUMMY])  ? modify[DUMMY]  : &modify_dummy;
         render[DUMMY]  = (render[DUMMY])  ? render[DUMMY]  : &render_dummy;
 
-        noun->modify = modify[noun->model];
-        noun->render = render[noun->model];
+        noun->_modify = modify[noun->model];
+        noun->_render = render[noun->model];
 
         switch (noun->model) 
         {
