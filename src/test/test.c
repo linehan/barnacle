@@ -194,8 +194,8 @@ void print_matrix(WINDOW *win, void *matrix)
         int i;
         int j;
 
-        for (i=0; i<mx->rows; i++) {
-        for (j=0; j<mx->cols; j++) {
+        for (i=0; i<mx->itr.rows; i++) {
+        for (j=0; j<mx->itr.cols; j++) {
                 if (mx->mx[i][j] != 0)
                         mvwprintw(win, i, j, "#");
                 else

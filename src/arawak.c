@@ -33,6 +33,7 @@
 #include "ai/a_star_test.h"
 #include "equip/rope.h"
 
+
 /* Rolling start */
 int main(int argc, char *argv[]) 
 {

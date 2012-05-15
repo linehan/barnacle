@@ -110,7 +110,7 @@ struct map_t *new_inset(struct map_t *map, int h, int w, int y, int x)
         int i;
         int j;
 
-        val = empty_simplex_matrix(LINES, COLS);
+        val = empty_simplex_matrix(FULLSCREEN);
 
         old_h_range = (LINES - 0);
         old_w_range = (COLS - 0);
@@ -269,8 +269,8 @@ void map_render(void *mymap)
         int i;
         int j;
 
-        for (i=0; i<map->tile->rows; i++) {
-        for (j=0; j<map->tile->cols; j++) {
+        for (i=0; i<map->tile->itr.rows; i++) {
+        for (j=0; j<map->tile->itr.cols; j++) {
                 place_tile(map, i, j, get_byte(mx_val(map->tile, i, j), LAB));
         }
         }

@@ -42,7 +42,7 @@ struct map_t *map_preset_arena(void)
         int i;
         int j;
 
-        armap = empty_simplex_matrix(LINES, COLS);
+        armap = empty_simplex_matrix(FULLSCREEN);
        
         for (i=0; i<LINES; i++) {
         for (j=0; j<COLS; j++) {
