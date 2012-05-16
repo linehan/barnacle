@@ -3,7 +3,7 @@
 #define __VERB_MODEL_H
 
 #include "../com/arawak.h"
-#include "../lib/llist/list.h"
+#include "../lib/list.h"
 
 
 /* Abstract types 
@@ -24,7 +24,7 @@ struct verb_t {
 /* Public functions 
 ````````````````````````````````````````````````````````````````````````````` */
 void send_delayed_verbs(void);
-void send_verb(int verb, uint32_t to, uint32_t from, int delay, bool (*send)(void *self));
+void send_verb(int verb, uint32_t from, uint32_t to, int delay, bool (*send)(void *self));
 
 
 

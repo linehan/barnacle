@@ -1,7 +1,6 @@
 /*
  * noun_model.c -- provides an interface for the noun database
  */
-#include <assert.h>
 #include "../com/arawak.h"
 #include "../lib/matrix.h"
 #include "../lib/hash.h"
@@ -10,66 +9,110 @@
 #include "../lib/redblack/rb.h"
 #include "noun.h"
 
-#define NOUN(ptr) (struct noun_t *)(ptr)
-#define MAXNOUN 1000
 
 
+/* NOUN STORAGE 
+``````````````````````````````````````````````````````````````````````````````*/
+/*
+ * SEQUENTIAL ACCESS
+ * Active noun keys are cached in a circular linked list called 'keyring'.
+ * This arrangement is useful for iterating over every noun. Each node of
+ * 'keyring' has type struct noun_key, defined below.
+ */
+LIST_HEAD(keyring);
+struct noun_key { struct list_node node; uint32_t key; };
 
+
+/*
+ * RANDOM ACCESS
+ * Nouns are stored and queried from a hashtable which hashes the name of
+ * each noun (a string) to generate a key. Accessor functions mediate
+ * interaction with 'nountable'.
+ */
 struct hashtable_t *nountable;
-int numnoun;
 
 
 
-/* Helper functions
+
+/* NOUN STORAGE FUNCTIONS
 ``````````````````````````````````````````````````````````````````````````````*/
 /**
- * PRIVATE 
+ * CHECK 
  * check_nountable -- ensure the hashtable is initialized and allocated */ 
 inline void check_nountable(void)
 {
         if (!nountable) { 
                 nountable = new_hashtable(0);
-                numnoun  = 0;
         }
         assert(nountable || "Could not allocate noun table");
 }
 
 /**
- * PRIVATE
- * add_to_nountable -- insert a noun into the noun hash table and refcount */
-inline void add_to_nountable(struct noun_t *noun)
+ * HASH
+ * hash -- the hash function for noun name strings */
+static inline uint32_t hash(const char *name)
 {
-        hashtable_add(nountable, noun->id, noun); 
-        keyring[numnoun++] = noun->id;
-
-        assert(numnoun < MAXNOUN || "Noun limit reached");
+        return (fasthash(name, strlen(name)));
 }
 
 /**
- * PRIVATE
- * emit_verb -- the verb sending method for the state machine configuration */
-bool emit_verb(void *self)
+ * STORE
+ * add_to_nountable -- insert a noun into the noun hash table and refcount */
+inline void add_to_nountable(struct noun_t *noun)
 {
-        struct verb_t *verb = (struct verb_t *)self;
-        struct noun_t *noun;
+        struct noun_key *new = calloc(1, sizeof(struct noun_key));
 
-        if (noun = key_noun(verb->to), noun) {
-                sm_set(noun->sm, verb->name, verb->value);
-                return true;
+        new->key = noun->id;
+        list_add(&keyring, &new->node);
+
+        hashtable_add(nountable, noun->id, noun); 
+}
+
+/**
+ * DELETE 
+ * del_from_nountable -- remove a noun from the noun hash table and refcount */
+inline void del_from_nountable(struct noun_t *noun)
+{
+        struct noun_key *tmp, *nxt;
+
+        list_for_each_safe(&keyring, tmp, nxt, node) {
+                if (tmp->key == noun->id) {
+                        list_del_from(&keyring, &tmp->node);
+                        break;
+                }
         }
-        return false;
+        hashtable_pop(nountable, noun->id); 
 }
 
 
 
-/* Method forward references
+
+/* NOUN CONSTRUCTOR 
 ``````````````````````````````````````````````````````````````````````````````*/
+/******************************************************************************
+ * THE NOUN OBJECT 
+ * A noun is a container, an object that holds an aggregate of smaller 
+ * objects called 'members'. The noun type is a true object: it contains
+ * methods to transform the state it contains. Information about each of
+ * the methods and their considerations can be found in the "STATIC METHODS",
+ * "DYNAMIC METHODS", and "MEMBER METHODS" sections.
+ ******************************************************************************/
+
+
+/*
+ * NOUN METHOD REFERENCES
+ * The method functions must be forward-referenced so that they are visible
+ * in the scope of the new_noun() function. Their implementation occurs
+ * further down in the file.
+ */
 void method_noun_step(void *self, int dir);
 void method_noun_setyx(void *self, int y, int x);
 void method_noun_hit(void *self);
 void method_noun_fall(void *self);
 void method_noun_seek(void *self, void *target);
 void method_noun_mobile(void *self, bool opt);
+void method_noun_delete(void *self);
+void method_noun_animate(void *self, void *animation);
 
 void member_method_noun_modify(void);
 void member_method_noun_render(void);
@@ -80,53 +123,52 @@ void member_method_noun_hit(void);
 void member_method_noun_seek(void *target);
 void member_method_noun_setyx(int y, int x);
 void member_method_noun_mobile(bool opt);
+void member_method_noun_delete(void);
+void member_method_noun_animate(void *animation);
 
-/* Noun destructor
-``````````````````````````````````````````````````````````````````````````````*/
-/*void destroy_noun(void *self)*/
-/*{*/
-        /*struct noun_t *noun = NOUN(self);*/
+bool emit_verb(void *self);
 
-        /* Remove from the nountree */
 
-/* Noun constructor 
-``````````````````````````````````````````````````````````````````````````````*/
-/*
+/**
+ * CONSTRUCTOR
  * new_noun -- Create a new noun object and store it in the nountree
  * @name: the name of the noun
  * @model: the type enum of the noun
- * @job: the job or subtype enum of the noun
  * @obj: the class struct containing type-specific data
  */
 struct noun_t *new_noun(const char *name, uint32_t model, void *obj)
 {
         check_nountable();
 
-        struct noun_t *new = malloc(sizeof(struct noun_t));
+        struct noun_t *new = calloc(1, sizeof(struct noun_t));
 
+        /* Identity state */
         new->name  = mydup(name);
-        new->id    = fasthash(name, strlen(name));
+        new->id    = hash(name);
         new->model = model;
         new->obj   = obj;
 
+        /* Member objects */
+        new->sm    = new_sm(new->id, &emit_verb);
         new->inv   = new_inventory(new);
         new->astar = new_astar();
 
-        new->sm    = new_sm(new->id, &emit_verb);
-        sm_active(new->sm, true);
-
+        /* Boolean state */
         new->is_mobile   = false;
+        new->is_doomed   = false;
         new->hit_testing = true;
 
-        /* Assign static methods */
+        /* Static methods */
         new->_step     = &method_noun_step;
         new->_hit      = &method_noun_hit;
         new->_fall     = &method_noun_fall;
         new->_seek     = &method_noun_seek;
         new->_setyx    = &method_noun_setyx;
         new->_mobile   = &method_noun_mobile;
+        new->_animate  = &method_noun_animate;
+        new->_del      = &method_noun_delete;
 
-        /* Assign member methods */
+        /* Member methods */
         new->mobile   = &member_method_noun_mobile;
         new->step     = &member_method_noun_move;
         new->hit      = &member_method_noun_hit;
@@ -134,8 +176,13 @@ struct noun_t *new_noun(const char *name, uint32_t model, void *obj)
         new->seek     = &member_method_noun_seek;
         new->setyx    = &member_method_noun_setyx;
         new->update   = &member_method_noun_update;
+        new->animate  = &member_method_noun_animate;
+        new->del      = &member_method_noun_delete;
 
+        /* Apply dynamic linkage */
         apply_noun_model(new);
+
+        /* Store the noun */
         add_to_nountable(new);
 
         return new;
@@ -145,50 +192,10 @@ struct noun_t *new_noun(const char *name, uint32_t model, void *obj)
 
 
 
-/* Class assignment and dynamic linkages 
+/* NOUN RETREIVAL AND QUERIES 
 ``````````````````````````````````````````````````````````````````````````````*/
 /**
- * noun_set_render -- set the render method of the noun
- * @noun: pointer to a struct noun_t
- * @func: pointer to a function returning void and accepting void *
- */
-void noun_set_render(struct noun_t *noun, RENDER_METHOD func)
-{
-        noun->_render = func;
-}
-
-
-/**
- * noun_set_modify -- set the modify method of the noun
- * @noun: pointer to a struct noun_t
- * @func: pointer to a function returning int and accepting void * and int
- */
-void noun_set_modify(struct noun_t *noun, MODIFY_METHOD func)
-{
-        noun->_modify = func;
-}
-
-
-/**
- * noun_set_animation -- set the currently active animation 
- * @noun: pointer to a struct noun_t
- * @ani: pointer to a struct ani_t 
- */
-void set_animation(struct noun_t *noun, struct ani_t *ani)
-{
-        noun->animation = ani;
-}
-
-
-
-
-
-
-
-
-/* Queries and retreival 
-``````````````````````````````````````````````````````````````````````````````*/
-/**
+ * BY ID (KEY)
  * key_noun -- return a noun given its id number 
  * @id: unsigned 32-bit unique id
  */
@@ -198,18 +205,20 @@ struct noun_t *key_noun(uint32_t id)
         return (focused);
 }
 
-
 /**
+ * BY VALUE (STRING)
  * get_noun -- return a noun given it's name string 
  * @name: name of the noun to be returned
  */
 struct noun_t *get_noun(const char *name)
 {
-        return (key_noun(fasthash(name, strlen(name))));
+        uint32_t key = fasthash(name, strlen(name));
+
+        return (hash_exists(nountable, key)) ? key_noun(key) : NULL;
 }
 
-
 /**
+ * BY COORDINATES (Y,X)
  * get_noun_at -- given coordinates y, x, return any noun at that position
  * @y: y-coordinate
  * @x: x-coordinate
@@ -223,34 +232,47 @@ struct noun_t *get_noun_at(struct map_t *map, int y, int x)
 
 
 
-/* METHOD HELPERS 
+/* NOUN METHODS 
 ``````````````````````````````````````````````````````````````````````````````*/
+/******************************************************************************
+ * A noun object contains methods in two forms. One effects a direct method
+ * call, providing a void *self argument to the method function, which
+ * unambiguously references the caller (the noun object). We're calling those
+ * "static methods" here. The other kind of method expects no arguments at all, 
+ * but calls one of the static methods, providing a global object reference as
+ * the void *self argument. These we will call "member methods".
+ *
+ * Each time a noun is retreived from the hash table, the object reference
+ * (struct noun_t *focused) is set to the address of the retreived noun
+ * object. If a method of the noun object is called immediately following 
+ * retreival of that object, it can expect the address at 'focused' to be
+ * the address of the caller.
+ ******************************************************************************/
+
 /**
- * PRIVATE
+ * PRIVATE METHOD HELPER
  * noun_mark_position -- update the position of the noun id on the map matrix */
-inline void noun_mark_position(struct noun_t *noun)
+static inline void noun_mark_position(struct noun_t *noun)
 {
         mx_set(ACTIVE->mobs, pos_saved_y(noun->pos), pos_saved_x(noun->pos), 0);
         mx_set(ACTIVE->mobs, pos_y(noun->pos), pos_x(noun->pos), noun->id);
 }
 
-
 /**
- * PRIVATE
+ * PRIVATE METHOD HELPER
  * hit_detected -- test whether a terrain collision is occuring */
-inline bool hit_detected(struct noun_t *noun)
+static inline bool hit_detected(struct noun_t *noun)
 {
         return (map_hit(ACTIVE, noun->pos));
 }
 
-
 /**
- * PRIVATE
+ * PRIVATE METHOD HELPER
  * noun_on_move -- called every time a noun's position is changed */
-inline void noun_on_move(struct noun_t *noun)
+static inline void noun_on_move(struct noun_t *noun)
 {
-        noun_mark_position(noun);
         noun->_hit(noun);
+        noun_mark_position(noun);
 
         move_panel(noun->pan, pos_y(noun->pos), pos_x(noun->pos));
         astar_set_start(noun->astar, pos_y(noun->pos), pos_x(noun->pos));
@@ -262,12 +284,30 @@ inline void noun_on_move(struct noun_t *noun)
                 door_trigger(noun, DOOR(ACTIVE, pos_y(noun->pos), pos_x(noun->pos)));
 }
 
-
-
-
-
 /* STATIC METHODS
 ``````````````````````````````````````````````````````````````````````````````*/
+/**
+ * _DEL METHOD
+ * method_noun_delete -- delete a noun object
+ * @self: the noun object
+ */
+void method_noun_delete(void *self)
+{
+        struct noun_t *noun = NOUN(self);
+
+        del_panel(noun->pan);
+        delwin(noun->win);
+
+        noun->sm->del(noun->sm);
+        noun->inv->del(noun->inv);
+
+        mx_set(ACTIVE->mobs, pos_y(noun->pos), pos_x(noun->pos), 0);
+        noun->pos->del(noun->pos);
+
+        /* Remove from the nountable */
+        del_from_nountable(noun);
+}
+
 /**
  * _MOBILE METHOD
  * method_noun_mobile -- set a noun to the active state
@@ -420,6 +460,33 @@ void method_noun_seek(void *self, void *target)
 }
 
 
+/**
+ * _ANIMATE METHOD
+ * method_noun_animate -- set the current animation
+ * @self: the noun object
+ * @animation: the new animation pointer
+ */
+void method_noun_animate(void *self, void *animation)
+{
+        struct noun_t *noun = NOUN(self);
+        noun->animation = (struct ani_t *)animation;
+}
+
+
+/**
+ * PRIVATE
+ * emit_verb -- the verb sending method for the state machine configuration */
+bool emit_verb(void *self)
+{
+        struct verb_t *verb = (struct verb_t *)self;
+        struct noun_t *noun;
+
+        if (noun = key_noun(verb->to), noun) {
+                sm_set(noun->sm, verb->name, verb->value);
+                return true;
+        }
+        return false;
+}
 
 
 
@@ -430,13 +497,13 @@ void noun_set_signal(struct noun_t *noun, enum sm_state verb, int dir)
         
         switch (dir) {
         case 'u':
-                DEC(y, pos_xmin(noun->pos));
+                DEC(y, pos_ymin(noun->pos));
                 break;
         case 'd':
                 INC(y, pos_ymax(noun->pos));
                 break;
         case 'l':
-                DEC(x, pos_ymin(noun->pos));
+                DEC(x, pos_xmin(noun->pos));
                 break;
         case 'r':
                 INC(x, pos_xmax(noun->pos));
@@ -446,6 +513,8 @@ void noun_set_signal(struct noun_t *noun, enum sm_state verb, int dir)
 }
 
 
+/* MEMBER METHODS
+``````````````````````````````````````````````````````````````````````````````*/
 /******************************************************************************
  * PSEUDO MEMBER METHODS 
  *
@@ -467,6 +536,14 @@ void noun_set_signal(struct noun_t *noun, enum sm_state verb, int dir)
  *      nn("Ophelia")->update();
  *      
  ******************************************************************************/ 
+/**
+ * DESTRUCTOR METHOD
+ * member_method_noun_delete -- calls the delete method */
+void member_method_noun_delete(void)
+{
+        focused->_del(focused);
+}
+
 /**
  * MODIFY METHOD
  * member_method_noun_modify -- calls the modify method */
@@ -541,6 +618,16 @@ void member_method_noun_setyx(int y, int x)
         focused->_setyx(focused, y, x);
 }
 
+/**
+ * ANIMATE METHOD
+ * member_method_noun_animate -- set the current animation
+ * @animation: the new animation pointer
+ */
+void member_method_noun_animate(void *animation)
+{
+        focused->_animate(focused, animation);
+}
+
 
 
 /* ID TRACKER
@@ -569,10 +656,14 @@ uint32_t request_id(int opt)
 {
         assert(opt==OBJECT || opt==SUBJECT || "Noun request is invalid");
 
+        struct noun_key *tmp;
+
         if (!id_ready) {
-                active_id[0] = active_id[1] = keyring[0];
+                tmp = list_top(&keyring, struct noun_key, node);
+                active_id[0] = active_id[1] = tmp->key;
                 id_ready = true;
         }
         return (active_id[opt]);
 }
+
 

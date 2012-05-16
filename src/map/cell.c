@@ -2,7 +2,7 @@
 #include "../com/arawak.h"
 #include "cell.h"
 #include "../lib/morton.h"
-#include "../lib/llist/list.h"
+#include "../lib/list.h"
 
 void cell_destroy(void *self)
 {

@@ -2,6 +2,10 @@
 #ifndef __ITEMS_H
 #define __ITEMS_H
 
+#include "../noun/noun.h"
+
+struct noun_t;
+
 enum equipments {
         ITEM_ROPE,
         ITEM_TORCH,

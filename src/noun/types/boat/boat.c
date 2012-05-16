@@ -5,7 +5,6 @@
 #include "../../../lib/hash.h"
 #include "../../../test/test.h"
 #include "../../../lib/stoc/brnoise.h"
-#include "../../../mob/mob.h"
 #include "../../noun.h"
 
 
@@ -140,7 +139,8 @@ void new_boat(struct map_t *map, int type, const char *name)
         struct boat_t *new = malloc(sizeof(struct boat_t)); 
 
         noun = new_noun(name, SAILBOAT, new);
-        noun_set_render(noun, sail_boat);
+        /*noun_set_render(noun, sail_boat);*/
+        noun->_render = &sail_boat;
         /*noun_set_modify(noun, boat_control);*/
 
         /*mob_cfg(&noun->mob, map, BOAT_H, BOAT_W, 0, 0);*/

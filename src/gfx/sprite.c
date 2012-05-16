@@ -11,7 +11,7 @@
 #include <wchar.h>
 #include <locale.h>
 
-#include "../lib/llist/list.h"
+#include "../lib/list.h"
 #include "../lib/stoc/stoc.h"
 #include "sprite.h"
 #include "gfx.h"

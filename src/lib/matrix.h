@@ -32,7 +32,6 @@ struct mx_index {
         int adr;
 };
 
-
 struct matrix_t {
         uint32_t  *ar;  /* Linear array of values */
         uint32_t **mx;  /* The matrix, an array of row pointers into ar */
@@ -42,7 +41,7 @@ struct matrix_t {
 
 
 
-static uint32_t DOPE = ~0;
+static uint32_t DOPE;
 
 
 /* Public function prototypes 
@@ -131,7 +130,7 @@ int mx_adr_yx(struct matrix_t *matrix, int y, int x)
  * @adr: integer address of word
  */
 static inline
-uint32_t *mx_arget(struct matrix_t *matrix, int adr)
+uint32_t *mx_arget(struct matrix_t *matrix, size_t adr)
 {
         return &matrix->ar[adr];
 }
@@ -142,7 +141,7 @@ uint32_t *mx_arget(struct matrix_t *matrix, int adr)
  * @adr: integer address of value
  */
 static inline
-uint32_t mxar_val(struct matrix_t *matrix, int adr)
+uint32_t mxar_val(struct matrix_t *matrix, size_t adr)
 {
         return matrix->ar[adr];
 }

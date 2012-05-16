@@ -62,31 +62,31 @@ struct noun_t *current_noun(void)
  */
 void make_nounmenu(int query)
 {
-        uint32_t **key;
-        char **name;
-        int nitem;
-        int i;
+        /*uint32_t **key;*/
+        /*char **name;*/
+        /*int nitem;*/
+        /*int i;*/
 
-        nitem = numnoun;
+        /*nitem = numnoun;*/
 
-        name = calloc(nitem, sizeof(char *));      /* Noun names */
-        key  = calloc(nitem, sizeof(uint32_t *));  /* Noun ids */
+        /*name = calloc(nitem, sizeof(char *));      [> Noun names <]*/
+        /*key  = calloc(nitem, sizeof(uint32_t *));  [> Noun ids <]*/
 
-        for (i=0; i<nitem; i++) {
-                name[i] = fullname(keyring[i]);
-                key[i]  = &keyring[i];
-        }
+        /*for (i=0; i<nitem; i++) {*/
+                /*name[i] = fullname(keyring[i]);*/
+                /*key[i]  = &keyring[i];*/
+        /*}*/
 
-        nounmenu = new_stdmenu(name, name, NULL, (void **)key, nitem);
-        nounmenu->nitem = nitem;
+        /*nounmenu = new_stdmenu(name, name, NULL, (void **)key, nitem);*/
+        /*nounmenu->nitem = nitem;*/
 
-        stdmenu_win(nounmenu, MENU_H, MENU_W, MENU_Y, MENU_X, 1, 1, 1, 1);
-        stdmenu_buf(nounmenu, IDWIN);
-        stdmenu_color_item(nounmenu, STANDOUT, ORIGINAL, __PUR_GREY);
-        stdmenu_color_name(nounmenu, PUR_YEL, ORIGINAL, __PUR_GREY);
-        stdmenu_cfg(nounmenu, DESC, false, NULL);
+        /*stdmenu_win(nounmenu, MENU_H, MENU_W, MENU_Y, MENU_X, 1, 1, 1, 1);*/
+        /*stdmenu_buf(nounmenu, IDWIN);*/
+        /*stdmenu_color_item(nounmenu, STANDOUT, ORIGINAL, __PUR_GREY);*/
+        /*stdmenu_color_name(nounmenu, PUR_YEL, ORIGINAL, __PUR_GREY);*/
+        /*stdmenu_cfg(nounmenu, DESC, false, NULL);*/
 
-        nounmenu->post(nounmenu);
+        /*nounmenu->post(nounmenu);*/
 }
 
 

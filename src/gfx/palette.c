@@ -11,11 +11,8 @@
 #include <ncurses.h>
 #include <panel.h>
 
-#include "../lib/llist/list.h"
-#include "fjord_palette.h"
+#include "../lib/list.h"
 #include "gfx.h"
-#include "fall.h"
-#include "colloc.h"
 
 #define ARRAY_SIZE(a) (sizeof(a) / sizeof(a[0]))
 #define CTRLD 4
@@ -93,10 +90,6 @@ void lighten_colors(int step)
  * pairs with the initialized colors. */
 void init_palette(int set)
 {
-        init_colloc();
-
-        load_fjord_palette();
-
 /* Hexadecimal values for colors used
 
                                 SHADOW 1        SHADOW 2

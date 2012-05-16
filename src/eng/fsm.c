@@ -6,7 +6,6 @@
 
 #include "../noun/noun.h"
 #include "../gfx/gfx.h"
-#include "../mob/mob.h"
 #include "../map/map.h"
 #include "../test/test.h"
 #include "fsm.h"
@@ -159,9 +158,6 @@ void director(int input)
                         break;
                 case 'z':
                         dock_toggle();
-                        break;
-                case 'F':
-                        fall_screen();
                         break;
                 case '^':
                         map_swap();

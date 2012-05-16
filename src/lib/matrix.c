@@ -26,17 +26,18 @@ struct matrix_t *new_matrix(int nrows, int ncols)
         int k;
 
         /* Allocate the structure */
-        if (new = malloc(sizeof(struct matrix_t)), new == NULL) {
+        if (new = calloc(1, sizeof(struct matrix_t)), new == NULL) {
                 puts("\nFailure to allocate room for the struct matrix_t");
                 exit(0);
         }
+
         /* Allocate the 1D array to contain all values in contiguous memory */
-        if (new->ar = malloc(nrows * ncols * sizeof(uint32_t)), new == NULL) {
+        if (new->ar = calloc(nrows * ncols, sizeof(uint32_t)), new == NULL) {
                 puts("\nFailure to allocate memory for the matrix array");
                 exit(0);
         }
         /* Allocate the array of row pointers, one for each row of the matrix */
-        if (new->mx= malloc(nrows * sizeof(uint32_t *)), new->mx == NULL) {
+        if (new->mx = calloc(nrows, sizeof(uint32_t *)), new->mx == NULL) {
                 puts("\nFailure to allocate memory for matrix pointers.");
                 exit(0);
         }
@@ -52,6 +53,9 @@ struct matrix_t *new_matrix(int nrows, int ncols)
         new->itr.rows = nrows;
         new->itr.cols = ncols;
         new->itr.len = (nrows * ncols);
+        new->itr.row = 0;
+        new->itr.col = 0;
+        new->itr.adr = 0;
         new->die = &delete_matrix;
 
         return (new);

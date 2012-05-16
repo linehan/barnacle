@@ -2,7 +2,7 @@
 #include "../com/arawak.h"
 #include "../lib/stoc/stoc.h"
 #include "equipment.h"
-#include "rope.h"
+#include "equipment_items.h"
 
 
 void (*item_novum[])(void *self) = {
