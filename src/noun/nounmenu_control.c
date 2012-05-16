@@ -25,7 +25,6 @@
 #include "nounmenu.h"
 #include "nounmenu_control.h"
 #include "nounmenu_discrim.h"
-#include "../verb/verb.h"
 #include "../gfx/ui/stdmenu.h"
 
 

@@ -15,6 +15,7 @@ bin_PROGRAMS = arawak
 arawak_SOURCES = arawak.c                       \
                    (wildcard lib/ccan/*/*.c)    \
                    eng/init.c                   \
+                   lib/fsm/fsm.c                \
                    lib/redblack/rb.c            \
                    lib/matrix.c                 \
                    lib/sort/mergesort.c         \
@@ -62,7 +63,6 @@ arawak_SOURCES = arawak.c                       \
                    noun/nounmenu_discrim.c      \
                    noun/types/boat/boat.c       \
                    noun/types/boat/compass.c    \
-                   verb/verb.c                  \
                    camp/builder.c               \
                    equip/equipment.c            \
                    equip/equipment_items.c      \

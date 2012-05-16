@@ -7,7 +7,6 @@
 #include "../map/map.h"
 #include "../noun/noun.h"
 #include "../noun/types/boat/boat.h"
-#include "../verb/verb.h"
 #include "../txt/gloss.h"
 #include "../map/terrain.h"
 #include "../map/sweet_flow.h"

@@ -1,0 +1,19 @@
+#pragma once
+#ifndef __FSM_STATES_H
+#define __FSM_STATES_H
+
+enum sm_state {
+        SM_Default,
+        SM_Keyboard,
+        SM_GoUp,
+        SM_GoDown,
+        SM_GoLeft,
+        SM_GoRight,
+        SM_Die,
+        SM_Punch,
+        SM_Run,
+        SM_Walk,
+        SM_Jump,
+};
+
+#endif

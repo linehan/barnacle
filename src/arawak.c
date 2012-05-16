@@ -7,14 +7,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "lib/list.h"
 #include "gfx/gfx.h"
 #include "map/map.h"
-#include "map/special/arena.h"
-#include "map/terrain.h"
 #include "test/test.h"
-#include "lib/pos.h"
-#include "lib/morton.h"
 
 #include "noun/noun.h"
 #include "noun/nounmenu.h"
@@ -25,10 +20,7 @@
 #include "map/special/cave.h"
 #include "map/special/arena.h"
 #include "map/flow.h"
-#include "noun/types/boat/boat.h"
-#include "noun/types/creature/creature.h"
 #include "gfx/ui/titlecard.h"
-#include "equip/equipment_items.h"
 
 
 /* Rolling start */
