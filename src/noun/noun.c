@@ -126,7 +126,8 @@ void member_method_noun_mobile(bool opt);
 void member_method_noun_delete(void);
 void member_method_noun_animate(void *animation);
 
-bool emit_verb(void *self);
+
+bool route_to_noun(void *self);
 
 
 /**
@@ -149,7 +150,7 @@ struct noun_t *new_noun(const char *name, uint32_t model, void *obj)
         new->obj   = obj;
 
         /* Member objects */
-        new->sm    = new_sm(new->id, &emit_verb);
+        new->sm    = new_sm(new->id, &route_to_noun);
         new->inv   = new_inventory(new);
         new->astar = new_astar();
 
@@ -475,14 +476,14 @@ void method_noun_animate(void *self, void *animation)
 
 /**
  * PRIVATE
- * emit_verb -- the verb sending method for the state machine configuration */
-bool emit_verb(void *self)
+ * route_to_noun -- the routing method for the state machine configuration */
+bool route_to_noun(void *self)
 {
-        struct verb_t *verb = (struct verb_t *)self;
+        struct msg_t *msg = (struct msg_t *)self;
         struct noun_t *noun;
 
-        if (noun = key_noun(verb->to), noun) {
-                sm_set(noun->sm, verb->name, verb->value);
+        if (noun = key_noun(msg->to), noun) {
+                sm_set(noun->sm, msg->tag, msg->mag);
                 return true;
         }
         return false;
@@ -490,7 +491,7 @@ bool emit_verb(void *self)
 
 
 
-void noun_set_signal(struct noun_t *noun, enum sm_state verb, int dir)
+void noun_set_signal(struct noun_t *noun, enum sm_state tag, int dir)
 {
         int y = pos_y(noun->pos);
         int x = pos_x(noun->pos);
@@ -509,7 +510,7 @@ void noun_set_signal(struct noun_t *noun, enum sm_state verb, int dir)
                 INC(x, pos_xmax(noun->pos));
                 break;
         }
-        sm_emit(noun->sm, mx_val(ACTIVE->mobs, y, x), 0, verb);
+        noun->sm->emit(noun->sm, mx_val(ACTIVE->mobs, y, x), tag, 0, 0);
 }
 
 

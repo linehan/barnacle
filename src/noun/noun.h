@@ -3,9 +3,8 @@
 #define __NOUN_MODEL
 
 #include "../com/arawak.h"
-#include "../verb/verb.h"
 #include "../map/map.h"
-#include "../verb/fsm.h"
+#include "../lib/fsm/fsm.h"
 #include "../ai/astar.h"
 #include "inventory.h"
 #include "models.h"
@@ -77,7 +76,7 @@ struct noun_t *key_noun(uint32_t id);
 struct noun_t *get_noun(const char *name);
 struct noun_t *get_noun_at(struct map_t *map, int y, int x);
 
-void noun_set_signal(struct noun_t *noun, enum sm_state verb, int dir);
+void noun_set_signal(struct noun_t *noun, enum sm_state tag, int dir);
 
 
 
@@ -109,7 +108,6 @@ uint32_t request_id(int option); /* Request the current subj/obj */
 
 #define NOUN_DOSORT 1
 #define NOUN_NOSORT 0
-
 
 
 /* Support modules 

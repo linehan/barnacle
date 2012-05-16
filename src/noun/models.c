@@ -99,7 +99,7 @@ int modify_human(void *self)
         switch (sm_state(noun->sm)) 
         { 
         case SM_Keyboard:
-                switch (sm_value(noun->sm)) {
+                switch (sm_mag(noun->sm)) {
                 case 'j':
                 case 's':
                         noun->animate(&run_d_test);
@@ -158,7 +158,7 @@ int modify_human(void *self)
                 }
                 break;
         }
-        SM_RESET(noun->sm);
+        sm_reset(noun->sm);
 
         return (MODE_PERSIST);
 }
@@ -239,7 +239,7 @@ int modify_dummy(void *obj)
                 break;
         }
         if (!noun->is_doomed && sm_state(noun->sm) == enter)
-                SM_RESET(noun->sm);
+                sm_reset(noun->sm);
 
         return 0;
 }
