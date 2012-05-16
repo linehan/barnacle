@@ -7,13 +7,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "lib/llist/list.h"
-
+#include "lib/list.h"
 #include "gfx/gfx.h"
 #include "map/map.h"
-#include "map/arena.h"
+#include "map/special/arena.h"
 #include "map/terrain.h"
-#include "map/weather.h"
 #include "test/test.h"
 #include "lib/pos.h"
 #include "lib/morton.h"
@@ -24,14 +22,13 @@
 
 #include "eng/init.h"
 #include "eng/loop.h"
-
-#include "mob/mob.h"
-#include "map/sweet_flow.h"
+#include "map/special/cave.h"
+#include "map/special/arena.h"
+#include "map/flow.h"
 #include "noun/types/boat/boat.h"
 #include "noun/types/creature/creature.h"
 #include "gfx/ui/titlecard.h"
-#include "ai/a_star_test.h"
-#include "equip/rope.h"
+#include "equip/equipment_items.h"
 
 
 /* Rolling start */
@@ -74,7 +71,7 @@ int main(int argc, char *argv[])
 
         nn("Dummy")->step('u');
 
-        fork_sweet_flow();
+        fork_flow();
 
         start_event_watchers(); /* Enter the event loop */
 

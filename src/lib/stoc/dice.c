@@ -64,7 +64,7 @@ other probabilistic results.
 #include <stdlib.h>
 #include <math.h>
 
-#include "../../lib/llist/list.h"
+#include "../../lib/list.h"
 #include "stoc.h"
 
 

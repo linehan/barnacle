@@ -6,8 +6,6 @@
 #include "../../noun.h"
 #include "../../../gfx/gfx.h"
 #include "../../../lib/pos.h"
-#include "../../../map/snake.h"
-#include "../../../mob/mob.h"
 #include "compass.h"
 
 /*

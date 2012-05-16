@@ -52,7 +52,7 @@ void smooth_layers(struct map_t *map)
  */
 void label_regions(struct map_t *map)
 {
-        struct seed_t seed;
+        struct seed_t seed = {0};
         int y;
         int x;
 
@@ -73,7 +73,7 @@ void label_regions(struct map_t *map)
  */
 void label_cliffs(struct map_t *map)
 {
-        struct seed_t seed;
+        struct seed_t seed = {0};
 
         mx_foreach_seed(&seed, map->tile) {
 
@@ -89,7 +89,7 @@ void label_cliffs(struct map_t *map)
  */
 void label_treetops(struct map_t *map)
 {
-        struct seed_t seed;
+        struct seed_t seed = {0};
 
         mx_foreach_seed(&seed, map->tile) {
 
@@ -124,7 +124,7 @@ void label_treetops(struct map_t *map)
  */
 void label_treetops_trim(struct map_t *map)
 {
-        struct seed_t seed;
+        struct seed_t seed = {0};
 
         mx_foreach_seed(&seed, map->tile) {
 
@@ -153,7 +153,7 @@ void label_treetops_trim(struct map_t *map)
  */
 void label_treetrunks(struct map_t *map)
 {
-        struct seed_t seed;
+        struct seed_t seed = {0};
 
         mx_foreach_seed(&seed, map->tile) {
 
@@ -184,7 +184,7 @@ void label_shorelines(struct map_t *map)
 {
         #define SURF_FRAMES 4
 
-        struct seed_t seed;
+        struct seed_t seed = {0};
         wchar_t *wch;
         short color;
         int y;

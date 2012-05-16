@@ -4,7 +4,6 @@
 
 #include <stdint.h>
 #include "terrain.h"
-#include "weather.h"
 #include "map.h"
 #include "../eng/bytes.h"
 #include "../gfx/gfx.h"

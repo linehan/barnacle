@@ -1,5 +1,4 @@
 #include "boat.h"
-#include "../../../map/weather.h"
 
 
 enum gfxtags {DN=0,UP=1,GH=2,VR=0,HZ=1,TL=2,TR=3,BL=4,BR=5};

@@ -24,7 +24,6 @@
 #include "../gfx/gfx.h"
 #include "../gfx/ui/titlecard.h"
 #include "../lib/stoc/stoc.h"
-#include "../mob/mob.h"
 #include "../test/test.h"
 #include "map.h"
 #include "terrain.h"

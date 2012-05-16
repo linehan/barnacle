@@ -2,7 +2,7 @@
 #ifndef __CELL_H
 #define __CELL_H
 
-#include "../lib/llist/list.h"
+#include "../lib/list.h"
 
 
 struct cell_t { 

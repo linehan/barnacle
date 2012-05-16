@@ -61,7 +61,7 @@ struct stdmenu_t {
         int cur_top;
         int cur_row;
         /*---------------------------- Methods */
-        void (*die)(void *self);
+        void (*del)(void *self);
         void (*post)(void *self);
         void (*unpost)(void *self);
         void (*open)(void *self);

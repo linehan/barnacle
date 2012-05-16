@@ -3,10 +3,9 @@
 #include "../eng/fsm.h"
 #include "models.h"
 #include "noun.h"
-#include "../mob/mob.h"
-#include "../equip/rope.h"
 #include "../equip/equipment.h"
-#include "../mob/inventory.h"
+#include "../equip/equipment_items.h"
+#include "inventory.h"
 
 
 /*
@@ -103,40 +102,40 @@ int modify_human(void *self)
                 switch (sm_value(noun->sm)) {
                 case 'j':
                 case 's':
-                        set_animation(noun, &run_d_test);
+                        noun->animate(&run_d_test);
                         break;
                 case 'k':
                 case 'w':
-                        set_animation(noun, &run_u_test);
+                        noun->animate(&run_u_test);
                         break;
                 case 'H':
                 case 'A':
-                        set_animation(noun, &jump_ul);
+                        noun->animate(&jump_ul);
                         break;
                 case 'h':
                 case 'a':
-                        set_animation(noun, &run_l_test);
+                        noun->animate(&run_l_test);
                         break;
                 case 'L':
                 case 'D':
-                        set_animation(noun, &jump_ur);
+                        noun->animate(&jump_ur);
                         break;
                 case 'l':
                 case 'd':
-                        set_animation(noun, &run_r_test);
+                        noun->animate(&run_r_test);
                         break;
                 case 'g':
                         top_panel(noun->pan);
                         break;
                 case 't':
-                        set_animation(noun, &punch_r_test);
+                        noun->animate(&punch_r_test);
                         break;
                 case ' ':
                         if (CUR_KEY(noun->inv))
                                 inv_use(noun->inv, CUR_KEY(noun->inv));
                         break;
                 case 'e':
-                        set_animation(noun, &slashtest);
+                        noun->animate(&slashtest);
                         break;
                 case '}':
                         tab_cycle(2);
@@ -192,6 +191,9 @@ void render_dummy(void *self)
 
         noun_animate(noun);
         noun->_step(noun, '*');
+
+        if (noun->is_doomed)
+                noun->_del(noun);
 }
 
 /*
@@ -214,27 +216,29 @@ int modify_dummy(void *obj)
                 break;
         case SM_Punch:
                 wprintw(CONSOLE_WIN, "Dummy hit!\n");
-                set_animation(noun, &bonk_test);
+                noun->_animate(noun, &bonk_test);
                 dock_say(L"嶴", "FUCK!");
+                doom(noun);
+                oops = false;
                 break;
         case SM_GoUp:
-                set_animation(noun, &dummy_mv_u);
+                noun->_animate(noun, &dummy_mv_u);
                 break;
         case SM_GoDown:
                 if (flip_biased(0.4))
                         dock_say(L"䥚", "I'm gonna hop all over you!");
-                set_animation(noun, &dummy_mv_d);
+                noun->_animate(noun, &dummy_mv_d);
                 break;
         case SM_GoLeft:
-                set_animation(noun, &dummy_mv_l);
+                noun->_animate(noun, &dummy_mv_l);
                 if (flip_biased(0.4))
                         dock_say(L"䥚", "Get fucked!");
                 break;
         case SM_GoRight:
-                set_animation(noun, &dummy_mv_r);
+                noun->_animate(noun, &dummy_mv_r);
                 break;
         }
-        if (sm_state(noun->sm) == enter)
+        if (!noun->is_doomed && sm_state(noun->sm) == enter)
                 SM_RESET(noun->sm);
 
         return 0;
@@ -273,6 +277,7 @@ void apply_noun_model(struct noun_t *noun)
                 noun->win = newwin(1, 1, CENTERED);
                 noun->pan = new_panel(noun->win);
                 noun->model = NOUN_CREATURE;
+                oops = true;
                 break;
         }
 

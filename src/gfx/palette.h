@@ -1,7 +1,7 @@
 #pragma once
 #ifndef __PALETTE_H
 #define __PALETTE_H
-#include "fall.h"
+#include "../lib/ncolor/src/ncolor.h"
 /* The system's colors go from 0-7 */
 enum arne_colors {
         BLACK      = 17,
@@ -368,6 +368,13 @@ void blend(short color1, float i1, short color2, float i2, short dest)
         init_color(dest, r1, g1, b1);
 }
 
+
+struct rgb_t {
+        short tag;
+        int r;
+        int g;
+        int b;
+};
 
 static struct rgb_t wallfg[3] = { {252, 431, 372, 290},{252, 431, 372, 290},{252, 431, 372, 290}};
 static struct rgb_t wallbg[3] = { {254, 310, 270, 208},{254, 310, 270, 208},{254, 310, 270, 208}};

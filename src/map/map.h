@@ -9,12 +9,12 @@
 #include "../com/arawak.h"
 #include "../eng/bytes.h"
 #include "../gfx/gfx.h"
+#include "../lib/matrix.h"
 
 #include "../lib/pos.h"
-#include "../mob/mob.h"
 #include "terrain.h"
 #include "tag.h"
-#include "arena.h"
+#include "special/arena.h"
 #include "door.h"
 
 

@@ -16,6 +16,7 @@ arawak_SOURCES = arawak.c                       \
                    (wildcard lib/ccan/*/*.c)    \
                    eng/init.c                   \
                    lib/redblack/rb.c            \
+                   lib/matrix.c                 \
                    lib/sort/mergesort.c         \
                    lib/sort/quicksort.c         \
                    lib/morton.c                 \
@@ -31,12 +32,9 @@ arawak_SOURCES = arawak.c                       \
                    lib/stoc/shuffle.c           \
                    lib/stoc/smooth.c            \
                    lib/stoc/brnoise.c           \
-                   lib/matrix.c                 \
                    eng/bytes.c                  \
                    eng/fsm.c                    \
                    eng/loop.c                   \
-                   thr/thr_pool.c               \
-                   gfx/colloc.c                 \
                    gfx/palette.c                \
                    gfx/sprite.c                 \
                    gfx/gfx.c                    \
@@ -45,22 +43,20 @@ arawak_SOURCES = arawak.c                       \
                    gfx/ui/stdpan.c              \
                    gfx/ui/stdmenu.c             \
                    gfx/ui/titlecard.c           \
-                   gfx/fall.c                   \
                    map/terrain.c                \
                    map/map.c                    \
                    map/cell.c                   \
-                   map/snake.c                  \
-                   map/arena.c                  \
-                   map/cave.c                   \
                    map/door.c                   \
-                   map/sweet_flow.c             \
-                   ai/a_star.c                  \
+                   map/special/arena.c          \
+                   map/special/cave.c           \
+                   map/flow.c                   \
+                   ai/astar.c                   \
                    txt/gloss_m.c                \
                    txt/gloss_v.c                \
                    txt/gloss_c.c                \
-                   mob/inventory.c              \
                    noun/noun.c                  \
                    noun/models.c                \
+                   noun/inventory.c             \
                    noun/nounmenu.c              \
                    noun/nounmenu_control.c      \
                    noun/nounmenu_discrim.c      \
@@ -69,6 +65,6 @@ arawak_SOURCES = arawak.c                       \
                    verb/verb.c                  \
                    camp/builder.c               \
                    equip/equipment.c            \
-                   equip/rope.c                 \
+                   equip/equipment_items.c      \
                    test/test.c                  
 

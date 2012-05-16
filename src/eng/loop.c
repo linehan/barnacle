@@ -51,17 +51,17 @@ print_cb(EV_P_ ev_timer *w, int revents)
 void render_cb(EV_P_ ev_timer *w, int revents)
 {
         static int spindex;
-        struct noun_t *noun;
         if (loop_test_active) {
                 mvwprintw(CONSOLE_WIN, 1, 0, "(%c) render_cb\n", 
                           SPINNER(spindex++));
         }
         dock_update();
 
-        nn("Dummy")->update();
         nn("Guy")->update();
-
         nn("Guy")->fall();
+
+        if (oops)
+                nn("Dummy")->update();
 
         update_panels();  /* Were slowing down performance, unnecessary */
         doupdate();
@@ -86,7 +86,7 @@ void flow_cb(EV_P_ ev_timer *w, int revents)
                 mvwprintw(CONSOLE_WIN, 2, 0, "(%c) flow_cb\n", 
                           SPINNER(spindex++));
         }
-        render_sweet_flow(ACTIVE);
+        render_flow(ACTIVE);
 
         MAPBOOK->restack(ACTIVE);
         map_refresh(ACTIVE);

@@ -5,7 +5,8 @@
 #include <stdint.h>
 #include <string.h>
 #include <limits.h>
-#include "llist/list.h"
+#include <assert.h>
+#include "list.h"
 /******************************************************************************
  * Paul Hsieh's blazing fast hash function.                             
  * See http://www.azillionmonkeys.com/qed/hash.html
@@ -82,6 +83,38 @@ struct hashtable_t {
 };
 
 
+static inline
+void destroy_node(struct hash_node_t *hashnode)
+{
+        struct hash_record_t *tmp;
+        struct hash_record_t *nxt;
+
+        if (!list_empty(&hashnode->head)) {
+                list_for_each_safe(&hashnode->head, tmp, nxt, node) {
+                        list_del_from(&hashnode->head, &tmp->node);
+                        free(tmp); /* Does not free *data member! */
+                }
+                assert(list_empty(&hashnode->head) || "Could not delete list\n");
+        }
+        free(hashnode);
+}
+
+
+
+static inline
+void hashtable_del(struct hashtable_t *tbl)
+{
+        int i;
+
+        for (i=0; i<TABLESIZE; i++) {
+                if (tbl->tbl[i])
+                        destroy_node(tbl->tbl[i]);
+        }
+        free(tbl);
+}
+
+
+        
 
 static inline 
 struct hash_node_t *new_hash_node(void)
@@ -136,6 +169,40 @@ void add_record(struct hashtable_t *tbl, struct hash_record_t *record)
         tbl->n++;               /* Increment the table's record count */
 }
 
+static inline
+void *hashtable_pop(struct hashtable_t *tbl, uint32_t key)
+{
+        struct hash_record_t *tmp;
+        struct hash_record_t *nxt;
+        uint16_t hashkey;
+
+        hashkey = HASH(key);
+
+        if (!tbl->tbl[hashkey])
+                return NULL;
+
+        list_for_each_safe(&tbl->tbl[hashkey]->head, tmp, nxt, node) {
+
+                if (tmp->key == key) {
+
+                        list_del_from(&tbl->tbl[hashkey]->head, &tmp->node);
+
+                        tbl->tbl[hashkey]->n--;
+                        tbl->n--;
+
+                        if (list_empty(&tbl->tbl[hashkey]->head))
+                                destroy_node(tbl->tbl[hashkey]);
+
+                        break;
+                }
+        }
+        return (tmp->data);
+}
+
+
+
+
+
 
 static inline 
 void hashtable_add(struct hashtable_t *tbl, uint32_t key, void *data)
@@ -163,6 +230,13 @@ void *hashtable_get(struct hashtable_t *tbl, uint32_t key)
         }
         return (tmp->data);
 }
+
+static inline
+bool hash_exists(struct hashtable_t *tbl, uint32_t key) 
+{
+        return (hashtable_get(tbl, key) == NULL) ? false : true;
+}
+
 
 
 static inline uint32_t fasthash(const char *data, int len) 
@@ -210,4 +284,6 @@ static inline uint32_t fasthash(const char *data, int len)
 
             return hash;
 }
+
+
 #endif

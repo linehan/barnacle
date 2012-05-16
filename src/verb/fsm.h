@@ -31,8 +31,15 @@ struct sm_t {
         int value;
         bool accepting;
         bool (*send)(void *self);
+        void (*del)(void *self);
 };
 
+
+static inline
+void sm_delete(void *self)
+{
+        free((struct sm_t *)self);
+}
 
 
 static inline
@@ -42,6 +49,8 @@ struct sm_t *new_sm(uint32_t id, bool (*send)(void *self))
 
         new->id   = id;
         new->send = send;
+        new->del  = &sm_delete;
+        new->accepting = true;
 
         return (new);
 }
@@ -49,7 +58,7 @@ struct sm_t *new_sm(uint32_t id, bool (*send)(void *self))
 
 
 static inline
-void sm_emit(struct sm_t *sm, uint32_t to, uint32_t delay, enum sm_state state)
+void sm_emit(struct sm_t *sm, uint32_t to, int delay, enum sm_state state)
 {
         send_verb((int)state, sm->id, to, delay, sm->send);
 }

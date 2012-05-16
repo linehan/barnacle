@@ -65,7 +65,7 @@ struct stdmenu_t *new_stdmenu(char **name, char **desc, wchar_t **icon, void **u
 
         new->menu = new_menu((ITEM **)new->item);
 
-        new->die     = &stdmenu_destroy;
+        new->del     = &stdmenu_destroy;
         new->post    = &stdmenu_post;
         new->unpost  = &stdmenu_unpost;
         new->open    = &stdmenu_open;

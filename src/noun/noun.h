@@ -4,13 +4,15 @@
 
 #include "../com/arawak.h"
 #include "../verb/verb.h"
-#include "../mob/mob.h"
-#include "../mob/inventory.h"
 #include "../map/map.h"
 #include "../verb/fsm.h"
+#include "../ai/astar.h"
+#include "inventory.h"
 #include "models.h"
 
 enum noun_model { NOUN_CREATURE, NOUN_DUMMY };
+
+bool oops;
 
 /* The noun type
 ``````````````````````````````````````````````````````````````````````````````*/
@@ -21,6 +23,7 @@ struct noun_t {
         uint32_t vitals;          // The state word
         bool is_mobile;           // Rendering on/off
         bool hit_testing;         // Collisions on/off
+        bool is_doomed;           // Ready for deletion
 
         /* Associated data --------------------------------*/
         struct sm_t *sm;          // State machine
@@ -36,7 +39,7 @@ struct noun_t {
         WINDOW *win;
 
         /* Dynamic methods --------------------------------*/
-        enum noun_model model;    // The noun "subclass"
+        enum noun_model model;           // The noun "subclass"
         int  (*_modify)(void *self);     // Master FSM 
         void (*_render)(void *self);     // Draw noun to screen 
 
@@ -48,6 +51,8 @@ struct noun_t {
         void (*_seek) (void *self, void *target);
         void (*_setyx)(void *self, int y, int x);
         void (*_update)(void *self);
+        void (*_animate)(void *self, void *animation);
+        void (*_del)(void *self);
 
         /* Member methods ---------------------------------*/
         int  (*modify)(void);
@@ -59,7 +64,8 @@ struct noun_t {
         void (*seek) (void *target);
         void (*setyx)(int y, int x);
         void (*mobile)(bool opt);
-
+        void (*animate)(void *animation);
+        void (*del)(void);
 };
 
 
@@ -67,19 +73,11 @@ struct noun_t {
 /* Public functions 
 ``````````````````````````````````````````````````````````````````````````````*/
 struct noun_t *new_noun(const char *name, uint32_t model, void *obj);
-void noun_set_render(struct noun_t *noun, RENDER_METHOD func);
-void noun_set_modify(struct noun_t *noun, MODIFY_METHOD func);
-void noun_set_state(struct noun_t *noun, int state, int value);
-void noun_set_mobile(struct noun_t *noun, bool yesno);
-void set_animation(struct noun_t *noun, struct ani_t *ani);
-
-
 struct noun_t *key_noun(uint32_t id);
 struct noun_t *get_noun(const char *name);
-#define nn(name) (get_noun((name)))
 struct noun_t *get_noun_at(struct map_t *map, int y, int x);
-void noun_set_signal(struct noun_t *noun, enum sm_state verb, int dir);
 
+void noun_set_signal(struct noun_t *noun, enum sm_state verb, int dir);
 
 
 
@@ -89,10 +87,15 @@ struct noun_t *focused;
 
 
 
+#define NOUN(ptr) (struct noun_t *)(ptr)
+#define nn(name) get_noun((name))
+#define doom(noun) (noun)->is_doomed = true
+
+
+
 /* Reference counting
 ``````````````````````````````````````````````````````````````````````````````*/
-extern int numnoun;     /* Number of currently registered nouns */
-uint32_t keyring[100];  /* Contains all noun keys */
+struct list_head keyring;  /* Contains all noun keys */
 
 enum install_key_opts {SUBJECT, OBJECT};
 void     install_id(uint32_t id, int option); /* Make a noun the subj/obj */

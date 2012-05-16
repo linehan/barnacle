@@ -34,7 +34,7 @@ void route_verb(struct verb_t *verb)
  * @delay: ticks of delay
  * @data:  any other data required
  */
-void send_verb(int name, uint32_t to, uint32_t from, int delay, bool (*send)(void *self))
+void send_verb(int name, uint32_t from, uint32_t to, int delay, bool (*send)(void *self))
 {
         struct verb_t *new = malloc(sizeof(struct verb_t));
 

@@ -2,7 +2,6 @@
 #include "../test/test.h"
 #include "../lib/stoc/mersenne.h"
 #include "../lib/hash.h"
-#include "../mob/mob.h"
 #include "map.h"
 #include "door.h"
 #include "tile.h"
