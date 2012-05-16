@@ -10,7 +10,7 @@
  * Delayed msgs are stored in a linked list until their delay has expired, 
  * at which time they are routed to their destination.
  */
-struct list_head delayed_msgs;
+LIST_HEAD(delayed_msgs);
 
 
 /**
@@ -44,15 +44,18 @@ void route_msg(struct msg_t *msg)
  */
 void send_delayed_msgs(void)
 {
+        if (list_empty(&delayed_msgs))
+                return;
+
         struct msg_t *tmp;
         struct msg_t *nxt;
 
         list_for_each_safe(&delayed_msgs, tmp, nxt, node) {
-                if (tmp->delay != 0) {
+                if (tmp->delay > 0) {
                         tmp->delay--;
                 } else {
+                        list_del_from(&delayed_msgs, &tmp->node); 
                         route_msg(tmp);
-                        list_del(&tmp->node); 
                 }
         }
 }

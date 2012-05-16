@@ -55,6 +55,7 @@ void render_cb(EV_P_ ev_timer *w, int revents)
                           SPINNER(spindex++));
         }
         dock_update();
+        send_delayed_msgs();
 
         nn("Guy")->update();
         nn("Guy")->fall();

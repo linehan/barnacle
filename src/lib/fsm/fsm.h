@@ -92,6 +92,7 @@ struct sm_t {
 /* PUBLIC FUNCTIONS
 ``````````````````````````````````````````````````````````````````````````````*/
 struct sm_t *new_sm(uint32_t id, SM_CB_ROUTE);
+void send_delayed_msgs(void);
 
 
 

@@ -14,6 +14,13 @@ enum sm_state {
         SM_Run,
         SM_Walk,
         SM_Jump,
+        SM_Kill,
+        SM_Destroy,
+        SM_DigUp,
+        SM_DigDown,
+        SM_DigLeft,
+        SM_DigRight,
+        SM_Reset,
 };
 
 #endif
