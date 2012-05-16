@@ -491,7 +491,7 @@ bool route_to_noun(void *self)
 
 
 
-void noun_set_signal(struct noun_t *noun, enum sm_state tag, int dir)
+void noun_set_signal_delayed(struct noun_t *noun, enum sm_state tag, int dir, int delay)
 {
         int y = pos_y(noun->pos);
         int x = pos_x(noun->pos);
@@ -509,10 +509,16 @@ void noun_set_signal(struct noun_t *noun, enum sm_state tag, int dir)
         case 'r':
                 INC(x, pos_xmax(noun->pos));
                 break;
+        default:
+                break; /* Signal will be sent to the sender */
         }
-        noun->sm->emit(noun->sm, mx_val(ACTIVE->mobs, y, x), tag, 0, 0);
+        noun->sm->emit(noun->sm, mx_val(ACTIVE->mobs, y, x), tag, 0, delay);
 }
 
+void noun_set_signal(struct noun_t *noun, enum sm_state tag, int dir)
+{
+        noun_set_signal_delayed(noun, tag, dir, 0);
+}
 
 /* MEMBER METHODS
 ``````````````````````````````````````````````````````````````````````````````*/
