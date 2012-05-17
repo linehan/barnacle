@@ -45,6 +45,7 @@ struct map_t {
         struct matrix_t *tile;
         struct matrix_t *mobs;
         struct matrix_t *door;
+        struct matrix_t *item;
         struct matrix_t *elev;
         double **pmap;
         struct pos_t *pos;

@@ -77,17 +77,18 @@ am_arawak_OBJECTS = arawak.$(OBJEXT) eng/init.$(OBJEXT) \
 	gfx/sprite.$(OBJEXT) gfx/gfx.$(OBJEXT) gfx/multiwin.$(OBJEXT) \
 	gfx/ui/dock.$(OBJEXT) gfx/ui/stdpan.$(OBJEXT) \
 	gfx/ui/stdmenu.$(OBJEXT) gfx/ui/titlecard.$(OBJEXT) \
-	map/terrain.$(OBJEXT) map/map.$(OBJEXT) map/cell.$(OBJEXT) \
-	map/door.$(OBJEXT) map/special/arena.$(OBJEXT) \
-	map/special/cave.$(OBJEXT) map/flow.$(OBJEXT) \
-	ai/astar.$(OBJEXT) txt/gloss_m.$(OBJEXT) txt/gloss_v.$(OBJEXT) \
-	txt/gloss_c.$(OBJEXT) noun/noun.$(OBJEXT) \
-	noun/models.$(OBJEXT) noun/inventory.$(OBJEXT) \
-	noun/nounmenu.$(OBJEXT) noun/nounmenu_control.$(OBJEXT) \
+	gfx/ui/menu_inventory.$(OBJEXT) map/terrain.$(OBJEXT) \
+	map/map.$(OBJEXT) map/cell.$(OBJEXT) map/door.$(OBJEXT) \
+	map/special/arena.$(OBJEXT) map/special/cave.$(OBJEXT) \
+	map/flow.$(OBJEXT) ai/astar.$(OBJEXT) txt/gloss_m.$(OBJEXT) \
+	txt/gloss_v.$(OBJEXT) txt/gloss_c.$(OBJEXT) \
+	noun/noun.$(OBJEXT) noun/models.$(OBJEXT) \
+	noun/inventory.$(OBJEXT) noun/nounmenu.$(OBJEXT) \
+	noun/nounmenu_control.$(OBJEXT) \
 	noun/nounmenu_discrim.$(OBJEXT) noun/types/boat/boat.$(OBJEXT) \
 	noun/types/boat/compass.$(OBJEXT) camp/builder.$(OBJEXT) \
 	equip/equipment.$(OBJEXT) equip/equipment_items.$(OBJEXT) \
-	test/test.$(OBJEXT)
+	equip/edible.$(OBJEXT) test/test.$(OBJEXT)
 arawak_OBJECTS = $(am_arawak_OBJECTS)
 arawak_LDADD = $(LDADD)
 DEFAULT_INCLUDES = -I.@am__isrc@
@@ -232,6 +233,7 @@ arawak_SOURCES = arawak.c                       \
                    gfx/ui/stdpan.c              \
                    gfx/ui/stdmenu.c             \
                    gfx/ui/titlecard.c           \
+                   gfx/ui/menu_inventory.c      \
                    map/terrain.c                \
                    map/map.c                    \
                    map/cell.c                   \
@@ -254,6 +256,7 @@ arawak_SOURCES = arawak.c                       \
                    camp/builder.c               \
                    equip/equipment.c            \
                    equip/equipment_items.c      \
+                   equip/edible.c               \
                    test/test.c                  
 
 all: all-am
@@ -436,6 +439,8 @@ gfx/ui/stdmenu.$(OBJEXT): gfx/ui/$(am__dirstamp) \
 	gfx/ui/$(DEPDIR)/$(am__dirstamp)
 gfx/ui/titlecard.$(OBJEXT): gfx/ui/$(am__dirstamp) \
 	gfx/ui/$(DEPDIR)/$(am__dirstamp)
+gfx/ui/menu_inventory.$(OBJEXT): gfx/ui/$(am__dirstamp) \
+	gfx/ui/$(DEPDIR)/$(am__dirstamp)
 map/$(am__dirstamp):
 	@$(MKDIR_P) map
 	@: > map/$(am__dirstamp)
@@ -523,6 +528,8 @@ equip/equipment.$(OBJEXT): equip/$(am__dirstamp) \
 	equip/$(DEPDIR)/$(am__dirstamp)
 equip/equipment_items.$(OBJEXT): equip/$(am__dirstamp) \
 	equip/$(DEPDIR)/$(am__dirstamp)
+equip/edible.$(OBJEXT): equip/$(am__dirstamp) \
+	equip/$(DEPDIR)/$(am__dirstamp)
 test/$(am__dirstamp):
 	@$(MKDIR_P) test
 	@: > test/$(am__dirstamp)
@@ -543,6 +550,7 @@ mostlyclean-compile:
 	-rm -f eng/fsm.$(OBJEXT)
 	-rm -f eng/init.$(OBJEXT)
 	-rm -f eng/loop.$(OBJEXT)
+	-rm -f equip/edible.$(OBJEXT)
 	-rm -f equip/equipment.$(OBJEXT)
 	-rm -f equip/equipment_items.$(OBJEXT)
 	-rm -f gfx/gfx.$(OBJEXT)
@@ -550,6 +558,7 @@ mostlyclean-compile:
 	-rm -f gfx/palette.$(OBJEXT)
 	-rm -f gfx/sprite.$(OBJEXT)
 	-rm -f gfx/ui/dock.$(OBJEXT)
+	-rm -f gfx/ui/menu_inventory.$(OBJEXT)
 	-rm -f gfx/ui/stdmenu.$(OBJEXT)
 	-rm -f gfx/ui/stdpan.$(OBJEXT)
 	-rm -f gfx/ui/titlecard.$(OBJEXT)
@@ -601,6 +610,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@eng/$(DEPDIR)/fsm.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@eng/$(DEPDIR)/init.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@eng/$(DEPDIR)/loop.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@equip/$(DEPDIR)/edible.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@equip/$(DEPDIR)/equipment.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@equip/$(DEPDIR)/equipment_items.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@gfx/$(DEPDIR)/gfx.Po@am__quote@
@@ -608,6 +618,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@gfx/$(DEPDIR)/palette.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@gfx/$(DEPDIR)/sprite.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@gfx/ui/$(DEPDIR)/dock.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@gfx/ui/$(DEPDIR)/menu_inventory.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@gfx/ui/$(DEPDIR)/stdmenu.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@gfx/ui/$(DEPDIR)/stdpan.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@gfx/ui/$(DEPDIR)/titlecard.Po@am__quote@

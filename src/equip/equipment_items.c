@@ -18,14 +18,12 @@ struct rope_t {
         struct cell_t *tail;
 };
 
-
+/* NEW */
 void new_rope(void *self)
 {
-        #define ROPE_S_WCH L"∮"
-        #define ROPE_M_WCH L"∯"
-        #define ROPE_L_WCH L"∰"
-        #define ROPE_S_LEN 3
-        #define ROPE_M_LEN 6 
+        #define ROPE_S_ICON L"∮"
+        #define ROPE_M_ICON L"∯"
+        #define ROPE_L_ICON L"∰"
         #define ROPE_L_LEN 9 
 
         EQUIPMENT(equip, self);
@@ -41,52 +39,66 @@ void new_rope(void *self)
         equip->data = new;
         equip->tag  = ITEM_ROPE;
         equip->name = "Rope";
-        equip->wch  = ROPE_L_WCH;
+        equip->desc = "for roping dopes";
+        equip->icon = ROPE_L_ICON;
         equip->use  = &use_rope;
 }
 
 
+/* USE */
 void use_rope(void *self, struct noun_t *noun)
 {
+        struct equip_t *equip;
+        struct rope_t *rope;
         int tile;
         int i;
         int y;
-        int y_ahead;
+        int next;
         int x;
 
-        EQUIPMENT(equip, self);
-        struct rope_t *rope = (struct rope_t *)equip->data;
+        if (pos_hdg(noun->pos) != WEST 
+        &&  pos_hdg(noun->pos) != EAST)
+                return;
 
-        y = pos_y(noun->pos); 
-        x = pos_x(noun->pos);
+        equip = (struct equip_t *)self;
+        rope  = (struct rope_t *)equip->data;
+        y     = pos_y(noun->pos);
+        x     = pos_x(noun->pos);
 
-        if (TILE(ACTIVE, (y+1), (x-1)) == CAVEFLOOR) {
+        /* Decide which way the rope will dangle */
+        if (pos_hdg(noun->pos) == WEST) {
                 tile = L_ROPE_ANCHOR;
                 DEC(x, 0);
         }
-        else if (TILE(ACTIVE, (y+1), (x+1)) == CAVEFLOOR) {
+        else if (pos_hdg(noun->pos) == EAST) {
                 tile = R_ROPE_ANCHOR;
                 INC(x, COLS);
         }
 
+        /* Don't draw anything if the tile isn't the floor */
+        if (TILE(ACTIVE, y, x) != CAVEFLOOR)
+                return;
+
         rope->head = new_cell(y, x);
-        rope->tail = rope->head;
+        rope->tail = rope->head; /* Whoa */
 
-        SET_TILE(ACTIVE, rope->head->y, rope->head->x, tile);
+        SET_TILE(ACTIVE, y, x, tile);
 
+        /* Unwind the rope */
         for (i=0; i<rope->len; i++) {
-                y = (rope->tail->y < LINES) ? rope->tail->y+1 : rope->tail->y;
-                y_ahead = (y < LINES) ? y+1 : y;
-                x = rope->tail->x;
 
-                if (IS_TILE(ACTIVE, y_ahead, x, CAVESOLID))
-                        break;
+                struct cell_t *new;
+
+                INC(y, LINES);
+                /* Look ahead */
+                if (TILE(ACTIVE, ADDONE(y, LINES), x) == CAVESOLID)
+                       break; 
                 
-                struct cell_t *new = new_cell(y, x);
+                new         = new_cell(y, x);
                 new->parent = rope->tail;
-                rope->tail = new;
+                rope->tail  = new;
 
-                SET_TILE(ACTIVE, rope->tail->y, rope->tail->x, ROPE);
+                SET_TILE(ACTIVE, y, x, ROPE);
         }
         MAPBOOK->render(ACTIVE);
 }
@@ -104,7 +116,7 @@ void new_pickaxe(void *self)
         equip->data = NULL;
         equip->tag  = ITEM_PICKAXE;
         equip->name = "Pickaxe";
-        equip->wch  = PICKAXE_WCH;
+        equip->icon = PICKAXE_WCH;
         equip->use  = &use_pickaxe;
 }
 
@@ -155,7 +167,7 @@ void new_shovel(void *self)
         equip->data = NULL;
         equip->tag  = ITEM_SHOVEL;
         equip->name = "Shovel";
-        equip->wch  = SHOVEL_WCH;
+        equip->icon = SHOVEL_WCH;
         equip->use  = &use_shovel;
 }
 
@@ -239,7 +251,7 @@ void new_torch(void *self)
 
         equip->data = new;
         equip->tag  = ITEM_TORCH;
-        equip->wch  = TORCH_WCH;
+        equip->icon = TORCH_WCH;
         equip->name = "Torch";
         equip->use = &use_torch;
         equip->burn = &burn_torch;

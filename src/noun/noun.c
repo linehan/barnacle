@@ -150,8 +150,8 @@ struct noun_t *new_noun(const char *name, uint32_t model, void *obj)
 
         /* Member objects */
         new->sm    = new_sm(new->id, &route_to_noun);
-        new->inv   = new_inventory(new);
         new->astar = new_astar();
+        list_head_init(&new->inv);
 
         /* Boolean state */
         new->is_mobile   = false;
@@ -299,7 +299,6 @@ void method_noun_delete(void *self)
         delwin(noun->win);
 
         noun->sm->del(noun->sm);
-        noun->inv->del(noun->inv);
 
         mx_set(ACTIVE->mobs, pos_y(noun->pos), pos_x(noun->pos), 0);
         noun->pos->del(noun->pos);

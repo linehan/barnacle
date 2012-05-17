@@ -44,6 +44,7 @@ arawak_SOURCES = arawak.c                       \
                    gfx/ui/stdpan.c              \
                    gfx/ui/stdmenu.c             \
                    gfx/ui/titlecard.c           \
+                   gfx/ui/menu_inventory.c      \
                    map/terrain.c                \
                    map/map.c                    \
                    map/cell.c                   \
@@ -66,5 +67,6 @@ arawak_SOURCES = arawak.c                       \
                    camp/builder.c               \
                    equip/equipment.c            \
                    equip/equipment_items.c      \
+                   equip/edible.c               \
                    test/test.c                  
 
