@@ -21,6 +21,7 @@
 #include "map/special/arena.h"
 #include "map/flow.h"
 #include "gfx/ui/titlecard.h"
+#include "gfx/ui/menu_inventory.h"
 
 
 /* Rolling start */
@@ -51,6 +52,10 @@ int main(int argc, char *argv[])
         init_pair(FLEX, BLACK, WHITE);
         init_pair(FLEX2, BLACK, WHITE);
 
+        struct equip_t *eq = new_equipment(ITEM_APPLE);
+        eq->put(eq, LINES/3, COLS/3);
+        
+
         new_noun("Guy", PERSON, 0);
         new_noun("Dummy", DUMMY, 0);
 
@@ -62,6 +67,8 @@ int main(int argc, char *argv[])
         nn("Guy")->step('d');
 
         nn("Dummy")->step('u');
+
+        inventory_mkmenu(&nn("Guy")->inv);
 
         fork_flow();
 

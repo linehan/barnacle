@@ -8,6 +8,7 @@
 #include "../gfx/gfx.h"
 #include "../map/map.h"
 #include "../test/test.h"
+#include "../gfx/ui/menu_inventory.h"
 #include "fsm.h"
 
 enum uimodes { 
@@ -112,7 +113,7 @@ void operate_on(int input)
                 build_control(input);
                 break;
         case UI_INVENTORY:
-                inventory_control(nn("Guy")->inv, input);
+                inventory_menu_control(input);
                 break;
         }
 }

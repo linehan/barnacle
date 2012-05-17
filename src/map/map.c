@@ -69,6 +69,7 @@ struct map_t *new_map(int h, int w)
         new->tile   = new_matrix(h, w);
         new->mobs   = new_matrix(h, w);
         new->door   = new_matrix(h, w);
+        new->item   = new_matrix(h, w);
         new->pos    = new_pos(SCR_HEIGHT, SCR_WIDTH, SCR_Y0, SCR_X0, h, w, 0, 0);
 
         /* Build windows, pads, and panels */

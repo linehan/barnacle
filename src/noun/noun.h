@@ -27,7 +27,7 @@ struct noun_t {
         /* Associated data --------------------------------*/
         struct sm_t *sm;          // State machine
         struct pos_t *pos;        // Position object
-        struct inventory_t *inv;  // Inventory object 
+        struct list_head inv;     // Inventory object 
         struct astar_t *astar;    // A* pathfinding object
         uint32_t map_id;          // Current map 
         void *obj;                // Misc.

@@ -291,6 +291,9 @@ enum fsm_reserved_modes {
 #define INC(x, max) x = ((x) < (max)) ? ((x)+1) : (x)
 #define BETWEEN(x, min, max) ((x) > (min) && (x) < (max)) ? true : false
 
+#define ADDONE(x, max) ((x) < (max)) ? ((x)+1) : (x)
+#define SUBONE(x, min) ((x) > (min)) ? ((x)-1) : (x)
+
 #define NUM_HEADINGS 16
 enum hdg_t {NORTH,NNE,NE,ENE,EAST,ESE,SE,SSE,SOUTH,SSW,SW,WSW,WEST,WNW,NW,NNW};        
 

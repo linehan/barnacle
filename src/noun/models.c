@@ -141,8 +141,8 @@ void render_human(void *self)
 
         noun_animate(noun);
         /*noun->_step(noun, '*');*/
-        inv_burn(noun->inv, TORCHKEY(noun->inv));
-        top_panel(noun->inv->equipped_pan);
+        /*inv_burn(noun->inv, TORCHKEY(noun->inv));*/
+        /*top_panel(noun->inv->equipped_pan);*/
 }
 
 /*
@@ -202,8 +202,8 @@ int modify_human(void *self)
                         noun->animate(punch_r_test);
                         break;
                 case ' ':
-                        if (CUR_KEY(noun->inv))
-                                inv_use(noun->inv, CUR_KEY(noun->inv));
+                        /*if (CUR_KEY(noun->inv))*/
+                                /*inv_use(noun->inv, CUR_KEY(noun->inv));*/
                         break;
                 case 'e':
                         noun->animate(slashtest);
@@ -212,17 +212,17 @@ int modify_human(void *self)
                         tab_cycle(2);
                         break;
                 case '@':
-                        if (TORCHKEY(noun->inv)) {
-                                tab_tog(0);
-                                inv_use(noun->inv, TORCHKEY(noun->inv));
-                        }
+                        /*if (TORCHKEY(noun->inv)) {*/
+                                /*tab_tog(0);*/
+                                /*inv_use(noun->inv, TORCHKEY(noun->inv));*/
+                        /*}*/
                         break;
                 case '|':
-                        if (ROPEKEY(noun->inv)) {
-                                tab_tog(1);
-                                inv_use(noun->inv, ROPEKEY(noun->inv));
-                                tab_tog(1);
-                        }
+                        /*if (ROPEKEY(noun->inv)) {*/
+                                /*tab_tog(1);*/
+                                /*inv_use(noun->inv, ROPEKEY(noun->inv));*/
+                                /*tab_tog(1);*/
+                        /*}*/
                         break;
                 case KEY_ESC:
                         return (MODE_RELEASE);
