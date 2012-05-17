@@ -2,7 +2,7 @@
 #include "../com/arawak.h"
 #include "../gfx/gfx.h"
 #include "../gfx/ui/stdmenu.h"
-#include "../lib/hash.h"
+#include "../lib/hash/hash.h"
 #include "../lib/stoc/stoc.h"
 #include "../equip/equipment.h"
 #include "../equip/equipment_items.h"
@@ -29,7 +29,7 @@ struct inventory_t *new_inventory(struct noun_t *noun)
 {
         struct inventory_t *new = calloc(1, sizeof(struct inventory_t));
 
-        new->tbl = new_hashtable(0);
+        new->tbl = new_htab(0);
         new->noun = noun;
 
         new->use    = &inventory_use;
@@ -51,7 +51,7 @@ void inventory_delete(void *self)
 {
         struct inventory_t *inv = (struct inventory_t *)self;
 
-        hashtable_del(inv->tbl);
+        del_htab(inv->tbl);
 
         del_panel(inv->equipped_pan);
         delwin(inv->equipped_win);
@@ -68,8 +68,7 @@ void inventory_delete(void *self)
 void inventory_get(void *self, uint32_t key)
 {
         struct inventory_t *inv = (struct inventory_t *)self; 
-
-        inv->tmp = (struct equip_t *)hashtable_get(inv->tbl, key);
+        inv->tmp = (struct equip_t *)htab_get(inv->tbl, key);
 }
 
 
@@ -78,7 +77,7 @@ void inventory_add(void *self, struct equip_t *equip)
 {
         struct inventory_t *inv = (struct inventory_t *)self; 
 
-        hashtable_add(inv->tbl, equip->id, equip);
+        htab_add(inv->tbl, equip->id, equip);
         
         inv->key[inv->n++] = equip->id;
 
@@ -95,7 +94,8 @@ void inventory_use(void *self, uint32_t key)
         struct inventory_t *inv = (struct inventory_t *)self; 
 
         inv->get(inv, key);
-        inv->tmp->use(inv->tmp, inv->noun);
+        if (inv->tmp)
+                inv->tmp->use(inv->tmp, inv->noun);
 }
 
 /* inventory_burn -- retreive the hashed object and call its 'burn' method */

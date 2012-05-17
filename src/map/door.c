@@ -1,20 +1,20 @@
 #include "../com/arawak.h"
 #include "../test/test.h"
 #include "../lib/stoc/mersenne.h"
-#include "../lib/hash.h"
+#include "../lib/hash/hash.h"
 #include "map.h"
 #include "door.h"
 #include "tile.h"
 
 
-struct hashtable_t *doortbl;
+struct htab_t *doortbl;
 
 /*
  * Make sure everything is set up properly
  */
 inline void init_doortbl(void)
 {
-        doortbl = new_hashtable(0); 
+        doortbl = new_htab(0); 
 }
 
 
@@ -74,13 +74,13 @@ void put_door(int tag, struct map_t *src, struct map_t *dst,
         if (!doortbl)
                 init_doortbl();
 
-        hashtable_add(doortbl, new->id, new);
+        htab_add(doortbl, new->id, new);
 }
 
 
 struct door_t *get_door(uint32_t key)
 {
-        return (struct door_t *)hashtable_get(doortbl, key);
+        return (struct door_t *)htab_get(doortbl, key);
 }
 
 

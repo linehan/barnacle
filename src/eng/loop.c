@@ -57,8 +57,8 @@ void render_cb(EV_P_ ev_timer *w, int revents)
         dock_update();
         send_delayed_msgs();
 
-        nn("Guy")->update();
         nn("Guy")->fall();
+        nn("Guy")->update();
 
         if (oops)
                 nn("Dummy")->update();

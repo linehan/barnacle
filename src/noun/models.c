@@ -17,7 +17,7 @@ struct ani_t *mk_ani(const wchar_t *wcs,
         new->len       = wcslen(new->frame);
         new->mv_frame  = mv_frame;
         new->mv_dir    = mv_dir;
-        new->msg_frame = (msg_frame < 0) ? (new->len-1) : msg_frame;
+        new->msg_frame = (msg_frame < 0) ? (new->len-2) : msg_frame;
         new->msg_tag   = msg_tag;
         new->msg_dir   = msg_dir;
 
@@ -30,6 +30,7 @@ struct ani_t *mk_ani(const wchar_t *wcs,
 #define NO_MV  MV(0,0) 
 #define NO_MSG MSG(0,0,0) 
 #define MSG_RESET MSG(-1, SM_Reset, '*')
+#define MSG_DELAY(msg, to) MSG(-1, msg, to)
 
 
 /*
@@ -38,8 +39,10 @@ struct ani_t *mk_ani(const wchar_t *wcs,
  */
 void noun_animate(struct noun_t *noun)
 {
-        if (!noun->animation) 
+        if (!noun->animation) {
+
                 return;
+        }
 
         struct ani_t *ani = noun->animation;
 
@@ -58,6 +61,7 @@ void noun_animate(struct noun_t *noun)
         if (++noun->animation->i == noun->animation->len) {
                 noun->animation->i = 0;
                 noun->animation = NULL;
+                noun_set_signal(noun, SM_Default, '*');
                 return;
         }
 
@@ -89,7 +93,6 @@ struct ani_t *dig_d;
 struct ani_t *dig_l;
 struct ani_t *dig_r;
 /*----------------------------------------------------------------------------*/
-wchar_t *base = L"ⰾ";//ⱚᏅᎤ
 void build_person_animations(void)
 {
         static bool built = false;
@@ -97,21 +100,21 @@ void build_person_animations(void)
         if (built)
                 return;
 
-        run_u_test   = mk_ani(L"ⲑⲑᎲⰾ"              , MV(0,'u'), NO_MSG);
-        run_d_test   = mk_ani(L"ⲑⲑᎲⰾ"              , MV(0,'d'), NO_MSG);
-        run_l_test   = mk_ani(L"ⲑⲑᎲⰾ"              , MV(0,'l'), NO_MSG);
-        run_r_test   = mk_ani(L"ⲑⲑᎲⰾ"              , MV(0,'r'), NO_MSG);
-        punch_r_test = mk_ani(L"ᎲᎲᎲᱽᕤᱽᎲᎲⰾ"         , NO_MV,     NO_MSG);
-        punch_l_test = mk_ani(L"ᎲᎲᎲ᱙ᕦ᱙ᎲᎲⰾ"         , NO_MV,     NO_MSG);
+        run_u_test   = mk_ani(L"ⲑⲑᎲⰾ"              , MV(0,'u'), MSG_RESET);
+        run_d_test   = mk_ani(L"ⲑⲑᎲⰾ"              , MV(0,'d'), MSG_RESET);
+        run_l_test   = mk_ani(L"ⲑⲑᎲⰾ"              , MV(0,'l'), MSG_RESET);
+        run_r_test   = mk_ani(L"ⲑⲑᎲⰾ"              , MV(0,'r'), MSG_RESET);
+        punch_r_test = mk_ani(L"ᎲᎲᎲᱽᕤᱽᎲᎲⰾ"         , NO_MV,     MSG_RESET);
+        punch_l_test = mk_ani(L"ᎲᎲᎲ᱙ᕦ᱙ᎲᎲⰾ"         , NO_MV,     MSG_RESET);
         slashtest    = mk_ani(L"ᎲᎲᎲᒀᒀᒀᒀᎲᎲⰾ"        , NO_MV,     MSG(3,SM_Punch,'u'));
-        dodgetest    = mk_ani(L"ᎲᎲᎲᏡᏡᏡᏡȣȣȣȣᏡᎲᎲⰾ"   , MV(8,'d'), NO_MSG);
-        falltest     = mk_ani(L"ᎲᎲᎲޗޗޗⲁⲁⲁᥑ"        , MV(4,'r'), NO_MSG);
-        dodge_l_test = mk_ani(L"ᎲᎲᎲᥑᥑⲁཚཚཚᎲᎲᎲⰾ"     , MV(5,'l'), NO_MSG);
-        dodge_r_test = mk_ani(L"ᎲᎲᎲᥑᥑⲁཚཚཚᎲᎲᎲⰾ"     , MV(5,'r'), NO_MSG);
-        kick_r_test  = mk_ani(L"ᎲᎲᎲ࿂࿂ᱯ࿂࿂༱༱ꝬꝬỿᓀᓀᎲⰾ" , MV(9,'r'), NO_MSG);
-        kick_l_test  = mk_ani(L"ᎲᎲᎲ࿂࿂ᱯᱯ࿂࿂༱ꝬꝬꝬᓂᓂᎲⰾ" , MV(9,'l'), NO_MSG);
-        jump_ul      = mk_ani(L"ᎲᎲᎲⰾⰾᎹᎹᎹᎹᎹᎹᎲᎲⰾ"    , MV(7,'u'+'l'), NO_MSG);
-        jump_ur      = mk_ani(L"ᎲᎲᎲⰾⰾᎹᎹᎹᎹᎹᎹᎲᎲⰾ"    , MV(7,'u'+'r'), NO_MSG);
+        dodgetest    = mk_ani(L"ᎲᎲᎲᏡᏡᏡᏡȣȣȣȣᏡᎲᎲⰾ"   , MV(8,'d'), MSG_RESET);
+        falltest     = mk_ani(L"ᎲᎲᎲޗޗޗⲁⲁⲁᥑ"        , MV(4,'r'), MSG_RESET);
+        dodge_l_test = mk_ani(L"ᎲᎲᎲᥑᥑⲁཚཚཚᎲᎲᎲⰾ"     , MV(5,'l'), MSG_RESET);
+        dodge_r_test = mk_ani(L"ᎲᎲᎲᥑᥑⲁཚཚཚᎲᎲᎲⰾ"     , MV(5,'r'), MSG_RESET);
+        kick_r_test  = mk_ani(L"ᎲᎲᎲ࿂࿂ᱯ࿂࿂༱༱ꝬꝬỿᓀᓀᎲⰾ" , MV(9,'r'), MSG_RESET);
+        kick_l_test  = mk_ani(L"ᎲᎲᎲ࿂࿂ᱯᱯ࿂࿂༱ꝬꝬꝬᓂᓂᎲⰾ" , MV(9,'l'), MSG_RESET);
+        jump_ul      = mk_ani(L"ᎲᎲᎲⰾⰾᎹᎹᎹᎹᎹᎹᎲᎲⰾ"    , MV(7,'u'+'l'), MSG_RESET);
+        jump_ur      = mk_ani(L"ᎲᎲᎲⰾⰾᎹᎹᎹᎹᎹᎹᎲᎲⰾ"    , MV(7,'u'+'r'), MSG_RESET);
 
         dig_u = mk_ani(L"ᎲᎲᎲᱽᕤᱽᎲᎲⰾⲑⲑᎲⰾ", MV(7,'u'), MSG_RESET);
         dig_d = mk_ani(L"ᎲᎲᎲᱽᕤᱽᎲᎲⰾⲑⲑᎲⰾ", MV(7,'d'), MSG_RESET);
@@ -121,21 +124,6 @@ void build_person_animations(void)
         built = true;
 }
 
-/*struct ani_t run_u_test   = {L"ⲑⲑᎲⰾ",              MV(0,'u'), NO_MV, NOVB};*/
-/*struct ani_t run_d_test   = {L"ⲑⲑᎲⰾ",              MV(0,'d'), NO_MV, NOVB};*/
-/*struct ani_t run_l_test   = {L"ⲑⲑᎲⰾ",              MV(0,'l'), NO_MV, NOVB};*/
-/*struct ani_t run_r_test   = {L"ⲑⲑᎲⰾ",              MV(0,'r'), NO_MV, NOVB};*/
-/*struct ani_t punch_r_test = {L"ᎲᎲᎲᱽᕤᱽᎲᎲⰾ",         NO_MV, NO_MV, NOVB};*/
-/*struct ani_t punch_l_test = {L"ᎲᎲᎲ᱙ᕦ᱙ᎲᎲⰾ",         NO_MV, NO_MV, NOVB};*/
-/*struct ani_t slashtest    = {L"ᎲᎲᎲᒀᒀᒀᒀᎲᎲⰾ",        NO_MV, NO_MV, VB(3, SM_Punch,'u')};*/
-/*struct ani_t dodgetest    = {L"ᎲᎲᎲᏡᏡᏡᏡȣȣȣȣᏡᎲᎲⰾ",   MV(8,'d'), NO_MV, NOVB};*/
-/*struct ani_t falltest     = {L"ᎲᎲᎲޗޗޗⲁⲁⲁᥑ",        MV(4,'r'), NO_MV, NOVB};*/
-/*struct ani_t dodge_l_test = {L"ᎲᎲᎲᥑᥑⲁཚཚཚᎲᎲᎲⰾ",     MV(5,'l'), NO_MV, NOVB};*/
-/*struct ani_t dodge_r_test = {L"ᎲᎲᎲᥑᥑⲁཚཚཚᎲᎲᎲⰾ",     MV(5,'r'), NO_MV, NOVB};*/
-/*struct ani_t kick_r_test  = {L"ᎲᎲᎲ࿂࿂ᱯ࿂࿂༱༱ꝬꝬỿᓀᓀᎲⰾ", MV(9,'r'), NO_MV, NOVB};*/
-/*struct ani_t kick_l_test  = {L"ᎲᎲᎲ࿂࿂ᱯᱯ࿂࿂༱ꝬꝬꝬᓂᓂᎲⰾ", MV(9,'l'), NO_MV, NOVB};*/
-/*struct ani_t jump_ul      = {L"ᎲᎲᎲⰾⰾᎹᎹᎹᎹᎹᎹᎲᎲⰾ",    MV(7,'u'+'l'), NOVB};*/
-/*struct ani_t jump_ur      = {L"ᎲᎲᎲⰾⰾᎹᎹᎹᎹᎹᎹᎲᎲⰾ",    MV(7,'u'+'r'), NOVB};*/
 /*----------------------------------------------------------------------------*/
 /*
  * render_human -- the rendering method for human noun models
@@ -146,12 +134,14 @@ void render_human(void *self)
         struct noun_t *noun = (struct noun_t *)self;
         static bool done;
 
-        if (!done)
+        if (!done) {
                 wbkgrnd(noun->win, mkcch(L"ⰾ", 0, FLEX));
+                done = true;
+        }
 
-        inv_burn(noun->inv, TORCHKEY(noun->inv));
         noun_animate(noun);
-        noun->_step(noun, '*');
+        /*noun->_step(noun, '*');*/
+        inv_burn(noun->inv, TORCHKEY(noun->inv));
         top_panel(noun->inv->equipped_pan);
 }
 
@@ -164,12 +154,8 @@ int modify_human(void *self)
         struct noun_t *noun = (struct noun_t *)self;
         int enter = sm_state(noun->sm);
 
-        switch (sm_state(noun->sm)) 
+        switch (enter) 
         { 
-        case SM_Reset:
-                sm_reset(noun->sm);
-                break;
-
         case SM_DigUp:
                 noun->animate(dig_u);
                 break;
@@ -242,10 +228,10 @@ int modify_human(void *self)
                         return (MODE_RELEASE);
                 }
                 break;
-        }
-        if (sm_state(noun->sm) == enter)
+        case SM_Reset:
                 sm_reset(noun->sm);
-
+                break;
+        }
         return (MODE_PERSIST);
 }
 
@@ -255,8 +241,6 @@ int modify_human(void *self)
  * NOTES: Test unit for combat and collision
  ******************************************************************************/
 /*----------------------------------------------------------------------------*/
-wchar_t *dummy_base = L"Ⰹ";
-
 struct ani_t *bonk_test;
 struct ani_t *dummy_mv_u;
 struct ani_t *dummy_mv_d;
@@ -271,25 +255,16 @@ static void build_dummy_animations(void)
         if (built)
                 return;
 
-        bonk_test  = mk_ani(L"ⰊⰊⰊⰊⰉ",         NO_MV,     NO_MSG);
-        dummy_mv_u = mk_ani(L"ⰹⰹⰺⰺⰹⰹⰹⰉ",      MV(4,'u'), NO_MSG);
-        dummy_mv_d = mk_ani(L"ⰹⰹⰺⰺⰹⰹⰹⰉ",      MV(4,'d'), NO_MSG);
-        dummy_mv_l = mk_ani(L"ⰹⰹⰺⰺⰹⰹⰹⰉ",      MV(4,'l'), NO_MSG);
-        dummy_mv_r = mk_ani(L"ⰹⰹⰺⰺⰹⰹⰹⰉ",      MV(4,'r'), NO_MSG);
-        dummy_die  = mk_ani(L"ⰊⰊⰊⰊⰉ✶✶✺✺✺❁❁✴", NO_MV,     MSG(12, SM_Destroy, '*'));
+        bonk_test  = mk_ani(L"ⰊⰊⰊⰊⰉ",         NO_MV,     MSG_RESET);
+        dummy_mv_u = mk_ani(L"ⰹⰹⰺⰺⰹⰹⰹⰉ",      MV(4,'u'), MSG_RESET);
+        dummy_mv_d = mk_ani(L"ⰹⰹⰺⰺⰹⰹⰹⰉ",      MV(4,'d'), MSG_RESET);
+        dummy_mv_l = mk_ani(L"ⰹⰹⰺⰺⰹⰹⰹⰉ",      MV(4,'l'), MSG_RESET);
+        dummy_mv_r = mk_ani(L"ⰹⰹⰺⰺⰹⰹⰹⰉ",      MV(4,'r'), MSG_RESET);
+        dummy_die  = mk_ani(L"ⰊⰊⰊⰊⰉ✶✶✺✺✺❁❁✴", NO_MV,     MSG_DELAY(SM_Destroy, '*'));
 
         built = true;
 }
 
-/*struct ani_t bonk_test = {L"ⰊⰊⰊⰊⰉ", NO_MV, NOVB};*/
-/*struct ani_t dummy_mv_u = {L"ⰹⰹⰺⰺⰹⰹⰹⰉ", MV(4,'u'), NOVB};*/
-/*struct ani_t dummy_mv_d = {L"ⰹⰹⰺⰺⰹⰹⰹⰉ", MV(4,'d'), NOVB};*/
-/*struct ani_t dummy_mv_l = {L"ⰹⰹⰺⰺⰹⰹⰹⰉ", MV(4,'l'), NOVB};*/
-/*struct ani_t dummy_mv_r = {L"ⰹⰹⰺⰺⰹⰹⰹⰉ", MV(4,'r'), NOVB};*/
-/*struct ani_t dummy_die  = {L"ⰊⰊⰊⰊⰉ✶✶✺✺✺❁❁✴", NO_MV, VB(12, SM_Destroy, '*')};*/
-
-//Ⰺ✶✺❁✴
-/*/ⰊⰺⰹꝾⰹⰑ⚲ꝿ*ⰋⰔⱄⰫ*/
 /*----------------------------------------------------------------------------*/
 /*
  * render_dummy -- the rendering method for dummy noun models
@@ -300,14 +275,17 @@ void render_dummy(void *self)
         struct noun_t *noun = (struct noun_t *)self;
         static bool done;
 
-        if (!done)
+        if (noun->is_doomed) {
+                noun->_del(noun);
+                return;
+        }
+
+        if (!done) {
                 wbkgrnd(noun->win, mkcch(L"Ⰹ", 0, FLEX));
+                done = true;
+        }
 
         noun_animate(noun);
-        noun->_step(noun, '*');
-
-        if (noun->is_doomed)
-                noun->_del(noun);
 }
 
 /*
@@ -319,45 +297,44 @@ int modify_dummy(void *obj)
         struct noun_t *noun = (struct noun_t *)obj;
         static int wait = 0;
         int enter = sm_state(noun->sm);
-
         wait = (wait+1)%20;
-        
-        switch (sm_state(noun->sm))
+
+        switch (enter)
         {
-        case SM_Default:
-                if (wait == 13)
-                        noun->_seek(noun, get_noun("Guy"));
-                break;
         case SM_Punch:
                 wprintw(CONSOLE_WIN, "Dummy hit!\n");
-                noun->_animate(noun, dummy_die);
+                noun->animate(dummy_die);
                 dock_say(L"嶴", "FUCK!");
                 break;
         case SM_GoUp:
-                noun->_animate(noun, dummy_mv_u);
+                noun->animate(dummy_mv_u);
                 break;
         case SM_GoDown:
                 if (flip_biased(0.4))
                         dock_say(L"䥚", "I'm gonna hop all over you!");
-                noun->_animate(noun, dummy_mv_d);
+                noun->animate(dummy_mv_d);
                 break;
         case SM_GoLeft:
-                noun->_animate(noun, dummy_mv_l);
+                noun->animate(dummy_mv_l);
                 if (flip_biased(0.4))
                         dock_say(L"䥚", "Get fucked!");
                 break;
         case SM_GoRight:
-                noun->_animate(noun, dummy_mv_r);
+                noun->animate(dummy_mv_r);
                 break;
         case SM_Destroy:
                 doom(noun);
                 oops = false;
                 dock_say(L"\n","\n");
                 break;
-        }
-        if (!noun->is_doomed && sm_state(noun->sm) == enter)
+        case SM_Reset:
                 sm_reset(noun->sm);
-
+                break;
+        case SM_Default:
+                if (wait == 13)
+                        noun->_seek(noun, get_noun("Guy"));
+                break;
+        }
         return 0;
 }
 

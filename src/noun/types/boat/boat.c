@@ -2,7 +2,7 @@
 #include "boat.h"
 
 #include "../../../lib/textutils.h"
-#include "../../../lib/hash.h"
+#include "../../../lib/hash/hash.h"
 #include "../../../test/test.h"
 #include "../../../lib/stoc/brnoise.h"
 #include "../../noun.h"

@@ -385,19 +385,39 @@ void map_roll(struct map_t *map, int dir)
  * Notes
  * Returns 1 (true) if collision detected, otherwise returns 0 (false).
  */
-int map_hit(struct map_t *map, struct pos_t *pos)
+bool map_hit(struct map_t *map, struct noun_t *noun)
 {
-        int i;
-        int j;
+        int i, j;
+        int y, x;
+        int h, w;
 
-        for (i=pos_y(pos); i<(pos_y(pos) + pos_h(pos)); i++) {
-                for (j=pos_x(pos); j<(pos_x(pos) + pos_w(pos)); j++) {
-                        if (TILE(map, i, j) == DRP) return (1);
-                        if (TILE(map, i, j) == TTO) return (1);
-                        if (TILE(map, i, j) == CAVEWALL) return (1);
-                        if (TILE(map, i, j) == CAVESOLID) return (1);
-                }
+        y = pos_y(noun->pos);
+        x = pos_x(noun->pos);
+        h = pos_h(noun->pos);
+        w = pos_w(noun->pos);
+
+        for (i=y; i<(y + h); i++) {
+        for (j=x; j<(x + w); j++) {
+                if (LABEL(mx_get(map->tile, i, j), DRP,TTO,CAVEWALL,CAVESOLID)) 
+                        return true;
         }
-        return (0);
+        }
+        return false;
 }
+
+
+bool mob_hit(struct map_t *map, struct noun_t *noun)
+{
+        int y;
+        int x;
+        uint32_t val;
+       
+        y = pos_y(noun->pos);
+        x = pos_x(noun->pos);
+
+        val = mx_val(map->mobs, y, x);
+
+        return (val != 0 && val != noun->id) ? true : false;
+}
+
 

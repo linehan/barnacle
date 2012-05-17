@@ -7,7 +7,7 @@ struct noun_t;
 
 enum door_tag { CAVE_DOOR };
 
-struct hashtable_t *doortbl;
+struct htab_t *doortbl;
 
 struct door_t {
         uint32_t id;
