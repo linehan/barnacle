@@ -172,8 +172,9 @@ int inspect_control(int dir)
         wprintw(INSPECTORMSGWIN, "LINES: %d COLS: %d\tY: %2u X: %2u M: %2u\t"
                                  "ELEV: %2u "
                                  "PERLIN: %+4f\t" 
-                                 "DOOR: %u\t\t"
-                                 "MOBS: %u",
+                                 "DOOR: %u\t"
+                                 "MOBS: %u\t"
+                                 "ITEM: %u",
                         LINES,
                         COLS,
                         cur_y, 
@@ -182,7 +183,8 @@ int inspect_control(int dir)
                         ELEV(ACTIVE, cur_y, cur_x),
                         ACTIVE->pmap[cur_y][cur_x],
                         mx_val(ACTIVE->door, cur_y, cur_x),
-                        mx_val(ACTIVE->mobs, cur_y, cur_x));
+                        mx_val(ACTIVE->mobs, cur_y, cur_x),
+                        mx_val(ACTIVE->item, cur_y, cur_x));
         scr_refresh();
         return MODE_PERSIST;
 }

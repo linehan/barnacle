@@ -6,7 +6,6 @@
 #include "../map/map.h"
 #include "../lib/fsm/fsm.h"
 #include "../ai/astar.h"
-#include "inventory.h"
 #include "models.h"
 
 enum noun_model { NOUN_CREATURE, NOUN_DUMMY };
@@ -28,6 +27,7 @@ struct noun_t {
         struct sm_t *sm;          // State machine
         struct pos_t *pos;        // Position object
         struct list_head inv;     // Inventory object 
+        struct equip_t *equip;    // Equipped object
         struct astar_t *astar;    // A* pathfinding object
         uint32_t map_id;          // Current map 
         void *obj;                // Misc.
@@ -52,6 +52,7 @@ struct noun_t {
         void (*_update)(void *self);
         void (*_animate)(void *self, void *animation);
         void (*_del)(void *self);
+        void (*_take)(void *self, int y, int x);
 
         /* Member methods ---------------------------------*/
         int  (*modify)(void);
@@ -65,6 +66,7 @@ struct noun_t {
         void (*mobile)(bool opt);
         void (*animate)(void *animation);
         void (*del)(void);
+        void (*take)(int y, int x);
 };
 
 
