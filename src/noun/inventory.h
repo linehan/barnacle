@@ -21,7 +21,7 @@
 
 
 struct inventory_t {
-        struct hashtable_t *tbl;
+        struct htab_t *tbl;
         struct noun_t *noun;
         int n;
 

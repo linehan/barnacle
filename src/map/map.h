@@ -104,7 +104,8 @@ void map_render(void *mymap);
 
 /* Map interaction functions  
 ````````````````````````````````````````````````````````````````````````````` */
-int map_hit(struct map_t *map, struct pos_t *pos);
+bool map_hit(struct map_t *map, struct noun_t *noun);
+bool mob_hit(struct map_t *map, struct noun_t *noun);
 void map_trigger(struct map_t *map, struct mob_t *mob);
 void map_roll(struct map_t *map, int dir);
 void map_swap(void);

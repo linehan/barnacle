@@ -3,10 +3,9 @@
  */
 #include "../com/arawak.h"
 #include "../lib/matrix.h"
-#include "../lib/hash.h"
 #include "../lib/stoc/stoc.h"
 #include "../lib/textutils.h"
-#include "../lib/redblack/rb.h"
+#include "../lib/hash/hash.h"
 #include "noun.h"
 
 
@@ -29,7 +28,7 @@ struct noun_key { struct list_node node; uint32_t key; };
  * each noun (a string) to generate a key. Accessor functions mediate
  * interaction with 'nountable'.
  */
-struct hashtable_t *nountable;
+struct htab_t *nountable;
 
 
 
@@ -42,7 +41,7 @@ struct hashtable_t *nountable;
 inline void check_nountable(void)
 {
         if (!nountable) { 
-                nountable = new_hashtable(0);
+                nountable = new_htab(0);
         }
         assert(nountable || "Could not allocate noun table");
 }
@@ -65,7 +64,7 @@ inline void add_to_nountable(struct noun_t *noun)
         new->key = noun->id;
         list_add(&keyring, &new->node);
 
-        hashtable_add(nountable, noun->id, noun); 
+        htab_add(nountable, noun->id, noun); 
 }
 
 /**
@@ -81,7 +80,7 @@ inline void del_from_nountable(struct noun_t *noun)
                         break;
                 }
         }
-        hashtable_pop(nountable, noun->id); 
+        htab_pop(nountable, noun->id); 
 }
 
 
@@ -202,7 +201,7 @@ struct noun_t *new_noun(const char *name, uint32_t model, void *obj)
  */
 struct noun_t *key_noun(uint32_t id)
 {
-        focused = hashtable_get(nountable, id);
+        focused = htab_get(nountable, id);
         return (focused);
 }
 
@@ -215,7 +214,7 @@ struct noun_t *get_noun(const char *name)
 {
         uint32_t key = fasthash(name, strlen(name));
 
-        return (hash_exists(nountable, key)) ? key_noun(key) : NULL;
+        return (htab_exists(nountable, key)) ? key_noun(key) : NULL;
 }
 
 /**
@@ -264,7 +263,7 @@ static inline void noun_mark_position(struct noun_t *noun)
  * hit_detected -- test whether a terrain collision is occuring */
 static inline bool hit_detected(struct noun_t *noun)
 {
-        return (map_hit(ACTIVE, noun->pos));
+        return (map_hit(ACTIVE, noun) || mob_hit(ACTIVE, noun)) ? true : false;
 }
 
 /**
@@ -279,7 +278,7 @@ static inline void noun_on_move(struct noun_t *noun)
         astar_set_start(noun->astar, pos_y(noun->pos), pos_x(noun->pos));
         take_bkgrnd(panel_window(noun->pan), PEEK(ACTIVE->W));
 
-        scr_refresh();
+        update_panels();
 
         if (DOOR(ACTIVE, pos_y(noun->pos), pos_x(noun->pos)))
                 door_trigger(noun, DOOR(ACTIVE, pos_y(noun->pos), pos_x(noun->pos)));
