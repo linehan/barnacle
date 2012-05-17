@@ -85,6 +85,21 @@ void lighten_colors(int step)
 }
 
 
+void torch_colors(void)
+{
+        blend(LIGHT1, 0.2, __DGREY, 1.0, LIGHT3);
+        blend(LIGHT1, 0.5, __DGREY, 1.0, LIGHT2);
+        blend(LIGHT1, 1.0, __DGREY, 1.0, LIGHT1);
+        blend(__DGREY, 0.3, BLACK, 1.0, LIGHTB3);
+        blend(__DGREY, 0.5, BLACK, 1.0, LIGHTB2);
+        blend(__DGREY, 1.0, BLACK, 1.0, LIGHTB1);
+
+        init_pair(LIGHTP1, LIGHT1, LIGHTB1);
+        init_pair(LIGHTP2, LIGHT2, LIGHTB2);
+        init_pair(LIGHTP3, LIGHT3, LIGHTB3);
+        init_pair(LIGHTP4, LIGHT4, LIGHTB4);
+}
+
 /******************************************************************************/
 /* Initialize the color palette with R,G,B values from 0-1000 and the color
  * pairs with the initialized colors. */
@@ -377,12 +392,8 @@ void init_palette(int set)
         init_pair(ESAND, DARK_SAND1, DARK_SAND2);
         init_pair(FSAND, DARK_SAND4, DARK_SAND3);
 
-        init_pair(LIGHTP1, LIGHT1, LIGHTB1);
-        init_pair(LIGHTP2, LIGHT2, LIGHTB2);
-        init_pair(LIGHTP3, LIGHT3, LIGHTB3);
-        init_pair(LIGHTP4, LIGHT4, LIGHTB4);
-
         init_pair(BLACK_BEIGE, __BROWN, BLACK);
 
+        torch_colors();
         mix_colors();
 }

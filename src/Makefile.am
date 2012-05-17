@@ -58,15 +58,14 @@ arawak_SOURCES = arawak.c                       \
                    txt/gloss_c.c                \
                    noun/noun.c                  \
                    noun/models.c                \
-                   noun/inventory.c             \
                    noun/nounmenu.c              \
                    noun/nounmenu_control.c      \
                    noun/nounmenu_discrim.c      \
                    noun/types/boat/boat.c       \
                    noun/types/boat/compass.c    \
                    camp/builder.c               \
-                   equip/equipment.c            \
-                   equip/equipment_items.c      \
-                   equip/edible.c               \
+                   item/item.c                  \
+                   item/tools.c                 \
+                   item/edible.c                \
                    test/test.c                  
 

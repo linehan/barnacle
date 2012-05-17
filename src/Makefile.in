@@ -83,12 +83,11 @@ am_arawak_OBJECTS = arawak.$(OBJEXT) eng/init.$(OBJEXT) \
 	map/flow.$(OBJEXT) ai/astar.$(OBJEXT) txt/gloss_m.$(OBJEXT) \
 	txt/gloss_v.$(OBJEXT) txt/gloss_c.$(OBJEXT) \
 	noun/noun.$(OBJEXT) noun/models.$(OBJEXT) \
-	noun/inventory.$(OBJEXT) noun/nounmenu.$(OBJEXT) \
-	noun/nounmenu_control.$(OBJEXT) \
+	noun/nounmenu.$(OBJEXT) noun/nounmenu_control.$(OBJEXT) \
 	noun/nounmenu_discrim.$(OBJEXT) noun/types/boat/boat.$(OBJEXT) \
 	noun/types/boat/compass.$(OBJEXT) camp/builder.$(OBJEXT) \
-	equip/equipment.$(OBJEXT) equip/equipment_items.$(OBJEXT) \
-	equip/edible.$(OBJEXT) test/test.$(OBJEXT)
+	item/item.$(OBJEXT) item/tools.$(OBJEXT) item/edible.$(OBJEXT) \
+	test/test.$(OBJEXT)
 arawak_OBJECTS = $(am_arawak_OBJECTS)
 arawak_LDADD = $(LDADD)
 DEFAULT_INCLUDES = -I.@am__isrc@
@@ -247,16 +246,15 @@ arawak_SOURCES = arawak.c                       \
                    txt/gloss_c.c                \
                    noun/noun.c                  \
                    noun/models.c                \
-                   noun/inventory.c             \
                    noun/nounmenu.c              \
                    noun/nounmenu_control.c      \
                    noun/nounmenu_discrim.c      \
                    noun/types/boat/boat.c       \
                    noun/types/boat/compass.c    \
                    camp/builder.c               \
-                   equip/equipment.c            \
-                   equip/equipment_items.c      \
-                   equip/edible.c               \
+                   item/item.c                  \
+                   item/tools.c                 \
+                   item/edible.c                \
                    test/test.c                  
 
 all: all-am
@@ -492,8 +490,6 @@ noun/noun.$(OBJEXT): noun/$(am__dirstamp) \
 	noun/$(DEPDIR)/$(am__dirstamp)
 noun/models.$(OBJEXT): noun/$(am__dirstamp) \
 	noun/$(DEPDIR)/$(am__dirstamp)
-noun/inventory.$(OBJEXT): noun/$(am__dirstamp) \
-	noun/$(DEPDIR)/$(am__dirstamp)
 noun/nounmenu.$(OBJEXT): noun/$(am__dirstamp) \
 	noun/$(DEPDIR)/$(am__dirstamp)
 noun/nounmenu_control.$(OBJEXT): noun/$(am__dirstamp) \
@@ -518,18 +514,18 @@ camp/$(DEPDIR)/$(am__dirstamp):
 	@: > camp/$(DEPDIR)/$(am__dirstamp)
 camp/builder.$(OBJEXT): camp/$(am__dirstamp) \
 	camp/$(DEPDIR)/$(am__dirstamp)
-equip/$(am__dirstamp):
-	@$(MKDIR_P) equip
-	@: > equip/$(am__dirstamp)
-equip/$(DEPDIR)/$(am__dirstamp):
-	@$(MKDIR_P) equip/$(DEPDIR)
-	@: > equip/$(DEPDIR)/$(am__dirstamp)
-equip/equipment.$(OBJEXT): equip/$(am__dirstamp) \
-	equip/$(DEPDIR)/$(am__dirstamp)
-equip/equipment_items.$(OBJEXT): equip/$(am__dirstamp) \
-	equip/$(DEPDIR)/$(am__dirstamp)
-equip/edible.$(OBJEXT): equip/$(am__dirstamp) \
-	equip/$(DEPDIR)/$(am__dirstamp)
+item/$(am__dirstamp):
+	@$(MKDIR_P) item
+	@: > item/$(am__dirstamp)
+item/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) item/$(DEPDIR)
+	@: > item/$(DEPDIR)/$(am__dirstamp)
+item/item.$(OBJEXT): item/$(am__dirstamp) \
+	item/$(DEPDIR)/$(am__dirstamp)
+item/tools.$(OBJEXT): item/$(am__dirstamp) \
+	item/$(DEPDIR)/$(am__dirstamp)
+item/edible.$(OBJEXT): item/$(am__dirstamp) \
+	item/$(DEPDIR)/$(am__dirstamp)
 test/$(am__dirstamp):
 	@$(MKDIR_P) test
 	@: > test/$(am__dirstamp)
@@ -550,9 +546,6 @@ mostlyclean-compile:
 	-rm -f eng/fsm.$(OBJEXT)
 	-rm -f eng/init.$(OBJEXT)
 	-rm -f eng/loop.$(OBJEXT)
-	-rm -f equip/edible.$(OBJEXT)
-	-rm -f equip/equipment.$(OBJEXT)
-	-rm -f equip/equipment_items.$(OBJEXT)
 	-rm -f gfx/gfx.$(OBJEXT)
 	-rm -f gfx/multiwin.$(OBJEXT)
 	-rm -f gfx/palette.$(OBJEXT)
@@ -562,6 +555,9 @@ mostlyclean-compile:
 	-rm -f gfx/ui/stdmenu.$(OBJEXT)
 	-rm -f gfx/ui/stdpan.$(OBJEXT)
 	-rm -f gfx/ui/titlecard.$(OBJEXT)
+	-rm -f item/edible.$(OBJEXT)
+	-rm -f item/item.$(OBJEXT)
+	-rm -f item/tools.$(OBJEXT)
 	-rm -f lib/fifo.$(OBJEXT)
 	-rm -f lib/fsm/fsm.$(OBJEXT)
 	-rm -f lib/magic.$(OBJEXT)
@@ -587,7 +583,6 @@ mostlyclean-compile:
 	-rm -f map/special/arena.$(OBJEXT)
 	-rm -f map/special/cave.$(OBJEXT)
 	-rm -f map/terrain.$(OBJEXT)
-	-rm -f noun/inventory.$(OBJEXT)
 	-rm -f noun/models.$(OBJEXT)
 	-rm -f noun/noun.$(OBJEXT)
 	-rm -f noun/nounmenu.$(OBJEXT)
@@ -610,9 +605,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@eng/$(DEPDIR)/fsm.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@eng/$(DEPDIR)/init.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@eng/$(DEPDIR)/loop.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@equip/$(DEPDIR)/edible.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@equip/$(DEPDIR)/equipment.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@equip/$(DEPDIR)/equipment_items.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@gfx/$(DEPDIR)/gfx.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@gfx/$(DEPDIR)/multiwin.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@gfx/$(DEPDIR)/palette.Po@am__quote@
@@ -622,6 +614,9 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@gfx/ui/$(DEPDIR)/stdmenu.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@gfx/ui/$(DEPDIR)/stdpan.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@gfx/ui/$(DEPDIR)/titlecard.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@item/$(DEPDIR)/edible.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@item/$(DEPDIR)/item.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@item/$(DEPDIR)/tools.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@lib/$(DEPDIR)/fifo.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@lib/$(DEPDIR)/magic.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@lib/$(DEPDIR)/matrix.Po@am__quote@
@@ -647,7 +642,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@map/$(DEPDIR)/terrain.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@map/special/$(DEPDIR)/arena.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@map/special/$(DEPDIR)/cave.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@noun/$(DEPDIR)/inventory.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@noun/$(DEPDIR)/models.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@noun/$(DEPDIR)/noun.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@noun/$(DEPDIR)/nounmenu.Po@am__quote@
@@ -811,12 +805,12 @@ distclean-generic:
 	-rm -f camp/$(am__dirstamp)
 	-rm -f eng/$(DEPDIR)/$(am__dirstamp)
 	-rm -f eng/$(am__dirstamp)
-	-rm -f equip/$(DEPDIR)/$(am__dirstamp)
-	-rm -f equip/$(am__dirstamp)
 	-rm -f gfx/$(DEPDIR)/$(am__dirstamp)
 	-rm -f gfx/$(am__dirstamp)
 	-rm -f gfx/ui/$(DEPDIR)/$(am__dirstamp)
 	-rm -f gfx/ui/$(am__dirstamp)
+	-rm -f item/$(DEPDIR)/$(am__dirstamp)
+	-rm -f item/$(am__dirstamp)
 	-rm -f lib/$(DEPDIR)/$(am__dirstamp)
 	-rm -f lib/$(am__dirstamp)
 	-rm -f lib/fsm/$(DEPDIR)/$(am__dirstamp)
@@ -850,7 +844,7 @@ clean: clean-am
 clean-am: clean-binPROGRAMS clean-generic mostlyclean-am
 
 distclean: distclean-am
-	-rm -rf ./$(DEPDIR) ai/$(DEPDIR) camp/$(DEPDIR) eng/$(DEPDIR) equip/$(DEPDIR) gfx/$(DEPDIR) gfx/ui/$(DEPDIR) lib/$(DEPDIR) lib/fsm/$(DEPDIR) lib/ncolor/src/$(DEPDIR) lib/redblack/$(DEPDIR) lib/sort/$(DEPDIR) lib/stoc/$(DEPDIR) map/$(DEPDIR) map/special/$(DEPDIR) noun/$(DEPDIR) noun/types/boat/$(DEPDIR) test/$(DEPDIR) txt/$(DEPDIR)
+	-rm -rf ./$(DEPDIR) ai/$(DEPDIR) camp/$(DEPDIR) eng/$(DEPDIR) gfx/$(DEPDIR) gfx/ui/$(DEPDIR) item/$(DEPDIR) lib/$(DEPDIR) lib/fsm/$(DEPDIR) lib/ncolor/src/$(DEPDIR) lib/redblack/$(DEPDIR) lib/sort/$(DEPDIR) lib/stoc/$(DEPDIR) map/$(DEPDIR) map/special/$(DEPDIR) noun/$(DEPDIR) noun/types/boat/$(DEPDIR) test/$(DEPDIR) txt/$(DEPDIR)
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
 	distclean-tags
@@ -896,7 +890,7 @@ install-ps-am:
 installcheck-am:
 
 maintainer-clean: maintainer-clean-am
-	-rm -rf ./$(DEPDIR) ai/$(DEPDIR) camp/$(DEPDIR) eng/$(DEPDIR) equip/$(DEPDIR) gfx/$(DEPDIR) gfx/ui/$(DEPDIR) lib/$(DEPDIR) lib/fsm/$(DEPDIR) lib/ncolor/src/$(DEPDIR) lib/redblack/$(DEPDIR) lib/sort/$(DEPDIR) lib/stoc/$(DEPDIR) map/$(DEPDIR) map/special/$(DEPDIR) noun/$(DEPDIR) noun/types/boat/$(DEPDIR) test/$(DEPDIR) txt/$(DEPDIR)
+	-rm -rf ./$(DEPDIR) ai/$(DEPDIR) camp/$(DEPDIR) eng/$(DEPDIR) gfx/$(DEPDIR) gfx/ui/$(DEPDIR) item/$(DEPDIR) lib/$(DEPDIR) lib/fsm/$(DEPDIR) lib/ncolor/src/$(DEPDIR) lib/redblack/$(DEPDIR) lib/sort/$(DEPDIR) lib/stoc/$(DEPDIR) map/$(DEPDIR) map/special/$(DEPDIR) noun/$(DEPDIR) noun/types/boat/$(DEPDIR) test/$(DEPDIR) txt/$(DEPDIR)
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 

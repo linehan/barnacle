@@ -22,6 +22,7 @@
 #include "map/flow.h"
 #include "gfx/ui/titlecard.h"
 #include "gfx/ui/menu_inventory.h"
+#include "item/item.h"
 
 
 /* Rolling start */
@@ -52,8 +53,8 @@ int main(int argc, char *argv[])
         init_pair(FLEX, BLACK, WHITE);
         init_pair(FLEX2, BLACK, WHITE);
 
-        struct equip_t *eq = new_equipment(ITEM_APPLE);
-        eq->put(eq, LINES/3, COLS/3);
+        struct item_t *item = make_item(ITEM_APPLE);
+        item->put(item, LINES/3, COLS/3);
         
 
         new_noun("Guy", PERSON, 0);

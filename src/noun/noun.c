@@ -6,6 +6,7 @@
 #include "../lib/stoc/stoc.h"
 #include "../lib/textutils.h"
 #include "../lib/hash/hash.h"
+#include "../item/item.h"
 #include "noun.h"
 
 
@@ -124,6 +125,7 @@ void member_method_noun_setyx(int y, int x);
 void member_method_noun_mobile(bool opt);
 void member_method_noun_delete(void);
 void member_method_noun_animate(void *animation);
+void member_method_noun_take(int y, int x);
 
 
 bool route_to_noun(void *self);
@@ -167,6 +169,7 @@ struct noun_t *new_noun(const char *name, uint32_t model, void *obj)
         new->_mobile   = &method_noun_mobile;
         new->_animate  = &method_noun_animate;
         new->_del      = &method_noun_delete;
+        new->_take     = &method_noun_take;
 
         /* Member methods */
         new->mobile   = &member_method_noun_mobile;
@@ -178,6 +181,7 @@ struct noun_t *new_noun(const char *name, uint32_t model, void *obj)
         new->update   = &member_method_noun_update;
         new->animate  = &member_method_noun_animate;
         new->del      = &member_method_noun_delete;
+        new->take     = &member_method_noun_take;
 
         /* Apply dynamic linkage */
         apply_noun_model(new);
@@ -633,6 +637,16 @@ void member_method_noun_animate(void *animation)
         focused->_animate(focused, animation);
 }
 
+
+/**
+ * TAKE METHOD
+ * member_method_noun_take -- add an item to your inventory 
+ * @eq_id : the hash key of the equipment item
+ */
+void member_method_noun_take(int y, int x)
+{
+        focused->_take(focused, y, x);
+}
 
 
 /* ID TRACKER

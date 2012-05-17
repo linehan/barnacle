@@ -3,9 +3,9 @@
 #include "models.h"
 #include "noun.h"
 #include "../eng/fsm.h"
-#include "../equip/equipment.h"
-#include "../equip/equipment_items.h"
-#include "inventory.h"
+#include "../item/item.h"
+#include "../item/tools.h"
+#include "../gfx/ui/menu_inventory.h"
 
 struct ani_t *mk_ani(const wchar_t *wcs, 
                      int mv_frame, int mv_dir, 
@@ -140,9 +140,13 @@ void render_human(void *self)
         }
 
         noun_animate(noun);
-        /*noun->_step(noun, '*');*/
-        /*inv_burn(noun->inv, TORCHKEY(noun->inv));*/
-        /*top_panel(noun->inv->equipped_pan);*/
+
+        struct item_t *item;
+
+        list_for_each(&noun->inv, item, node) {
+                if (item->equipped && item->burn)
+                        item->burn(item, noun);
+        }
 }
 
 /*
@@ -202,8 +206,8 @@ int modify_human(void *self)
                         noun->animate(punch_r_test);
                         break;
                 case ' ':
-                        /*if (CUR_KEY(noun->inv))*/
-                                /*inv_use(noun->inv, CUR_KEY(noun->inv));*/
+                        if (equipped) 
+                                equipped->use(equipped, noun);
                         break;
                 case 'e':
                         noun->animate(slashtest);
@@ -212,10 +216,8 @@ int modify_human(void *self)
                         tab_cycle(2);
                         break;
                 case '@':
-                        /*if (TORCHKEY(noun->inv)) {*/
-                                /*tab_tog(0);*/
-                                /*inv_use(noun->inv, TORCHKEY(noun->inv));*/
-                        /*}*/
+                        if (equipped)
+                                equipped->equip(equipped, true);
                         break;
                 case '|':
                         /*if (ROPEKEY(noun->inv)) {*/
@@ -224,9 +226,13 @@ int modify_human(void *self)
                                 /*tab_tog(1);*/
                         /*}*/
                         break;
+                case '#':
+                        noun->take(pos_y(noun->pos), pos_x(noun->pos));
+                        break;
                 case KEY_ESC:
                         return (MODE_RELEASE);
                 }
+                sm_reset(noun->sm);
                 break;
         case SM_Reset:
                 sm_reset(noun->sm);
