@@ -38,6 +38,21 @@ void astar_init(struct astar_t *astar, struct matrix_t *map, int y, int x)
 }
 
 
+void del_astar(struct astar_t *astar)
+{
+        /*astar->map is owned by the world map */
+
+        struct cell_t *tmp, *nxt;
+        /* Takes care of start, goal, and current */
+        list_for_each_safe(&astar->path, tmp, nxt, node) {
+                list_del(&tmp->node);
+                del_cell(tmp);
+        }
+
+        del_bh(astar->OPEN);
+        del_bh(astar->CLOSED);
+};
+
 
 
 /* HELPER FUNCTIONS 

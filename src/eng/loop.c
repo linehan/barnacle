@@ -11,6 +11,7 @@
 #include "../map/terrain.h"
 #include "../map/sweet_flow.h"
 #include "fsm.h"
+#include "tick.h"
 
 
 static bool loop_test_active;
@@ -39,6 +40,16 @@ print_cb(EV_P_ ev_timer *w, int revents)
 
 /* -------------------------------------------------------------------------- */
 
+static inline void spinloop(int y, int x, const char *str, int sp)
+{
+        mvwprintw(CONSOLE_WIN, y, x, "(%c) %s\n", SPINNER(sp), str);
+}
+static inline void tickloop(int y, int x, const char *str)
+{
+        mvwprintw(CONSOLE_WIN, y, x, "%s %u\n", str, get_tick());
+}
+
+
 /*
  * render_cb 
  *
@@ -49,11 +60,12 @@ print_cb(EV_P_ ev_timer *w, int revents)
  */
 void render_cb(EV_P_ ev_timer *w, int revents)
 {
-        static int spindex;
+        static int sp;
         if (loop_test_active) {
-                mvwprintw(CONSOLE_WIN, 1, 0, "(%c) render_cb\n", 
-                          SPINNER(spindex++));
+                spinloop(1, 0, "render_cb", sp++);
+                tickloop(7, 0, "Game tick");
         }
+        tick();
         dock_update();
         update_inventory_menu();
         send_delayed_msgs();
@@ -82,10 +94,9 @@ void render_cb(EV_P_ ev_timer *w, int revents)
  */
 void flow_cb(EV_P_ ev_timer *w, int revents)
 {
-        static int spindex;
+        static int sp;
         if (loop_test_active) {
-                mvwprintw(CONSOLE_WIN, 2, 0, "(%c) flow_cb\n", 
-                          SPINNER(spindex++));
+                spinloop(2, 0, "flow_cb", sp++);
         }
         render_flow(ACTIVE);
 
@@ -107,10 +118,9 @@ void flow_cb(EV_P_ ev_timer *w, int revents)
  */
 void move_cb(EV_P_ ev_timer *w, int revents)
 {
-        static int spindex;
+        static int sp;
         if (loop_test_active) {
-                mvwprintw(CONSOLE_WIN, 3, 0, "(%c) move_cb\n", 
-                          SPINNER(spindex++));
+                spinloop(3, 0, "move_cb", sp++);
         }
         /*do_pulse();*/
         /*noun_render(get_noun("Afarensis"));*/
@@ -132,10 +142,9 @@ void move_cb(EV_P_ ev_timer *w, int revents)
  */
 void animate_cb(EV_P_ ev_timer *w, int revents)
 {
-        static int spindex;
+        static int sp;
         if (loop_test_active) {
-                mvwprintw(CONSOLE_WIN, 4, 0, "(%c) animate_cb\n", 
-                          SPINNER(spindex++));
+                spinloop(4, 0, "animate_cb", sp++);
         }
         NEXT(ACTIVE->L[RIM]);
         tab_update();
@@ -157,10 +166,9 @@ void animate_cb(EV_P_ ev_timer *w, int revents)
  */
 void *iolisten_cb(EV_P_ ev_io *w, int revents)
 {
-        static int spindex;
+        static int sp;
         if (loop_test_active) {
-                mvwprintw(CONSOLE_WIN, 5, 0, "(%c) iolisten_cb\n", 
-                          SPINNER(spindex++));
+                spinloop(5, 0, "iolisten_cb", sp++);
         }
         ev_io_stop (EV_A, w);
 

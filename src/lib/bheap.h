@@ -105,10 +105,10 @@ static inline struct bh_t *new_bh(uint32_t maxsize)
 
 
 /**
- * bh_destroy -- free all memory associated with a binary heap
+ * del_bh -- free all memory associated with a binary heap
  * @bh: pointer to an allocated binary heap
  */
-static inline void bh_destroy(struct bh_t *bh)
+static inline void del_bh(struct bh_t *bh)
 {
         int i; 
         for (i=BH_ROOT; i<bh->n; i++) {
@@ -308,16 +308,13 @@ static inline void *bh_pop(struct bh_t *bh)
 {
         struct bh_node *top;
 
-        if (bh_is_empty(bh))
+        if (bh->n < BH_ROOT) 
                 return NULL;
-       
+
         top = bh->node[BH_ROOT];
         bh->node[BH_ROOT] = bh->node[--bh->n];
 
         bh_siftdown(bh, BH_ROOT, bh->n);
-
-        if (bh->n < BH_ROOT) 
-                return NULL;
 
         return (top->data);
 }

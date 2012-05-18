@@ -75,6 +75,9 @@ inline void del_from_nountable(struct noun_t *noun)
 {
         struct noun_key *tmp, *nxt;
 
+        if (list_empty(&keyring))
+                return;
+
         list_for_each_safe(&keyring, tmp, nxt, node) {
                 if (tmp->key == noun->id) {
                         list_del_from(&keyring, &tmp->node);
@@ -302,7 +305,8 @@ void method_noun_delete(void *self)
         del_panel(noun->pan);
         delwin(noun->win);
 
-        noun->sm->del(noun->sm);
+        del_sm(noun->sm);
+        del_astar(noun->astar);
 
         mx_set(ACTIVE->mobs, pos_y(noun->pos), pos_x(noun->pos), 0);
         noun->pos->del(noun->pos);
@@ -487,12 +491,14 @@ bool route_to_noun(void *self)
         struct msg_t *msg = (struct msg_t *)self;
         struct noun_t *noun;
 
-        if (noun = key_noun(msg->to), noun) {
-                assert(noun || !"Message router is boned!");
+        noun = key_noun(msg->to);
+
+        if (noun != NULL) {
+                assert(noun && msg || !"Message router is boned!");
                 sm_accept(noun->sm, msg);
-                return true;
+                return SM_ROUTE_OK;
         }
-        return false;
+        return SM_NO_ROUTE;
 }
 
 
@@ -518,12 +524,37 @@ void noun_set_signal_delayed(struct noun_t *noun, enum sm_state tag, int dir, in
         default:
                 break; /* Signal will be sent to the sender */
         }
-        noun->sm->emit(noun->sm, mx_val(ACTIVE->mobs, y, x), tag, 0, delay, 1);
+        sm_emit(noun->sm, mx_val(ACTIVE->mobs, y, x), tag, 0, delay, 1);
 }
 
 void noun_set_signal(struct noun_t *noun, enum sm_state tag, int dir)
 {
         noun_set_signal_delayed(noun, tag, dir, 0);
+}
+
+
+void emit_to_noun(struct noun_t *noun, int dir, enum sm_state tag, int mag, int delay, int pri)
+{
+        int y = pos_y(noun->pos);
+        int x = pos_x(noun->pos);
+        
+        switch (dir) {
+        case 'u':
+                DEC(y, pos_ymin(noun->pos));
+                break;
+        case 'd':
+                INC(y, pos_ymax(noun->pos));
+                break;
+        case 'l':
+                DEC(x, pos_xmin(noun->pos));
+                break;
+        case 'r':
+                INC(x, pos_xmax(noun->pos));
+                break;
+        default:
+                break; /* Signal will be sent to the sender */
+        }
+        sm_emit(noun->sm, mx_val(ACTIVE->mobs, y, x), tag, mag, delay, pri);
 }
 
 /* MEMBER METHODS

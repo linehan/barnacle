@@ -9,8 +9,9 @@
 #include "../list.h"
 #include "hashfunc.h"
 
-
-
+/*
+ * MACROS
+ */
 #define TABLESIZE UINT16_MAX 
 #define HASH_LEN 16 
 #define HASH(k) (k >> HASH_LEN)
@@ -20,9 +21,13 @@
 /* ABSTRACT TYPES
 ``````````````````````````````````````````````````````````````````````````````*/
 /* 
- * Each HASH NODE contains a circular linked list of HASH RECORDS 
+ * HASH NODE contains a circular linked list of HASH RECORDS 
  */
-struct htab_record { struct list_node node; uint32_t key; void *data; };
+struct htab_record { 
+        struct list_node node; 
+        uint32_t key; 
+        void *data; 
+};
 
 /* 
  * HASHTABLE
@@ -35,7 +40,9 @@ struct htab_t {
 
 
 
-/* HELPER FUNCTIONS
+
+
+/* HASH RECORD FUNCTIONS 
 ``````````````````````````````````````````````````````````````````````````````*/
 /*
  * NEW HTAB RECORD
@@ -86,12 +93,17 @@ void add_htab_record(struct htab_t *tbl, struct htab_record *record)
 static inline 
 struct htab_record *get_htab_record(struct htab_t *tbl, uint32_t key)
 {
+        assert(tbl || !"Hash table does not exist");
+
         struct htab_record *tmp;
         uint16_t hashkey;
 
         hashkey = HASH(key);
 
-        if (!tbl->tbl[hashkey] || list_empty(tbl->tbl[hashkey]))
+        if (!tbl->tbl[hashkey])
+                return NULL;
+
+        if (list_empty(tbl->tbl[hashkey]))
                 return NULL;
 
         list_for_each(tbl->tbl[hashkey], tmp, node) {
@@ -102,6 +114,7 @@ struct htab_record *get_htab_record(struct htab_t *tbl, uint32_t key)
 }
 
 
+
 /*
  * POP HTAB RECORD
  * pop_htab_record -- pop a record from the hashtable
@@ -109,6 +122,8 @@ struct htab_record *get_htab_record(struct htab_t *tbl, uint32_t key)
 static inline 
 struct htab_record *pop_htab_record(struct htab_t *tbl, uint32_t key)
 {
+        assert(tbl || !"Hash table does not exist");
+
         struct htab_record *record;
         uint16_t hashkey;
 
@@ -122,12 +137,9 @@ struct htab_record *pop_htab_record(struct htab_t *tbl, uint32_t key)
         list_del_from(tbl->tbl[hashkey], &record->node);
         tbl->n--;
 
-        /* Delete the list if it's now empty */
-        if (list_empty(tbl->tbl[hashkey]))
-                free(tbl->tbl[hashkey]);
-
         return (record);
 }
+
 
 
 /*
@@ -137,6 +149,8 @@ struct htab_record *pop_htab_record(struct htab_t *tbl, uint32_t key)
 static inline
 void del_htab_record_list(struct list_head *head) 
 {
+        assert(head || !"Hash record list does not exist");
+
         struct htab_record *tmp;
         struct htab_record *nxt;
 
@@ -145,7 +159,7 @@ void del_htab_record_list(struct list_head *head)
                 free(tmp);
         }
 
-        assert(list_empty(head) || !"Unable to delete hash record list\n");
+        assert(list_empty(head) || !"Unable to delete hash record list");
 
         free(head);
 }
@@ -161,6 +175,7 @@ void del_htab_record_list(struct list_head *head)
 static inline
 void *htab_pop(struct htab_t *tbl, uint32_t key)
 {
+        assert(tbl || !"Hash table does not exist");
         struct htab_record *record;
         void *data;
 
@@ -194,9 +209,10 @@ void *htab_get(struct htab_t *tbl, uint32_t key)
 {
         struct htab_record *record;
 
-        record = get_htab_record(tbl, key);
-
-        return (record) ? record->data : NULL;
+        if (record = get_htab_record(tbl, key), record)
+                return record->data;
+        else
+                return NULL;
 }
 
 

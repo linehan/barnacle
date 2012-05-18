@@ -14,7 +14,7 @@ struct ani_t *mk_ani(const wchar_t *wcs,
         struct ani_t *new = calloc(1, sizeof(struct ani_t));
 
         new->frame     = wcdup(wcs);
-        new->len       = wcslen(new->frame);
+        new->len       = wcslen(wcs);
         new->mv_frame  = mv_frame;
         new->mv_dir    = mv_dir;
         new->msg_frame = (msg_frame < 0) ? (new->len-2) : msg_frame;
@@ -28,9 +28,11 @@ struct ani_t *mk_ani(const wchar_t *wcs,
 #define MV(frame,dir) frame, dir
 #define MSG(frame,verb,dir) frame, verb, dir
 #define NO_MV  MV(0,0) 
-#define NO_MSG MSG(0,0,0) 
+#define NO_MSG MSG(999,999,999) 
 #define MSG_RESET MSG(-1, SM_Reset, '*')
 #define MSG_DELAY(msg, to) MSG(-1, msg, to)
+
+
 
 
 /*
@@ -53,8 +55,8 @@ void noun_animate(struct noun_t *noun)
                 noun->_step(noun, ani->mv_dir);
 
         /* Signal if this is the sig_frame */
-        if (ani->i == ani->msg_frame)
-                noun_set_signal(noun, ani->msg_tag, ani->msg_dir);
+        /*if (ani->i == ani->msg_frame)*/
+                /*noun_set_signal(noun, ani->msg_tag, ani->msg_dir);*/
 
         /* Increment the current frame and/or terminate the animation */
         if (++noun->animation->i == noun->animation->len) {
@@ -105,7 +107,7 @@ void build_person_animations(void)
         run_r_test   = mk_ani(L"ⲑⲑᎲⰾ"              , MV(0,'r'), MSG_RESET);
         punch_r_test = mk_ani(L"ᎲᎲᎲᱽᕤᱽᎲᎲⰾ"         , NO_MV,     MSG_RESET);
         punch_l_test = mk_ani(L"ᎲᎲᎲ᱙ᕦ᱙ᎲᎲⰾ"         , NO_MV,     MSG_RESET);
-        slashtest    = mk_ani(L"ᎲᎲᎲᒀᒀᒀᒀᎲᎲⰾ"        , NO_MV,     MSG(3,SM_Punch,'u'));
+        slashtest    = mk_ani(L"ᎲᎲᎲᒀᒀᒀᒀᎲᎲⰾ"        , NO_MV,     MSG_RESET);
         dodgetest    = mk_ani(L"ᎲᎲᎲᏡᏡᏡᏡȣȣȣȣᏡᎲᎲⰾ"   , MV(8,'d'), MSG_RESET);
         falltest     = mk_ani(L"ᎲᎲᎲޗޗޗⲁⲁⲁᥑ"        , MV(4,'r'), MSG_RESET);
         dodge_l_test = mk_ani(L"ᎲᎲᎲᥑᥑⲁཚཚཚᎲᎲᎲⰾ"     , MV(5,'l'), MSG_RESET);
@@ -146,7 +148,6 @@ void render_human(void *self)
                 if (item->equipped && item->burn)
                         item->burn(item, noun);
         }
-
         sm_consume(noun->sm);
 }
 
@@ -214,6 +215,7 @@ int modify_human(void *self)
                         break;
                 case 'e':
                         noun->animate(slashtest);
+                        emit_to_noun(noun, 'u', SM_Punch, 0, 3, 1);
                         break;
                 case '}':
                         tab_cycle(2);
@@ -223,11 +225,6 @@ int modify_human(void *self)
                                 equipped->equip(equipped, true);
                         break;
                 case '|':
-                        /*if (ROPEKEY(noun->inv)) {*/
-                                /*tab_tog(1);*/
-                                /*inv_use(noun->inv, ROPEKEY(noun->inv));*/
-                                /*tab_tog(1);*/
-                        /*}*/
                         break;
                 case '#':
                         noun->take(pos_y(noun->pos), pos_x(noun->pos));
@@ -268,7 +265,7 @@ static void build_dummy_animations(void)
         dummy_mv_d = mk_ani(L"ⰹⰹⰺⰺⰹⰹⰹⰉ",      MV(4,'d'), MSG_RESET);
         dummy_mv_l = mk_ani(L"ⰹⰹⰺⰺⰹⰹⰹⰉ",      MV(4,'l'), MSG_RESET);
         dummy_mv_r = mk_ani(L"ⰹⰹⰺⰺⰹⰹⰹⰉ",      MV(4,'r'), MSG_RESET);
-        dummy_die  = mk_ani(L"ⰊⰊⰊⰊⰉ✶✶✺✺✺❁❁✴", NO_MV,     MSG_DELAY(SM_Destroy, '*'));
+        dummy_die  = mk_ani(L"ⰊⰊⰊⰊⰉ✶✶✺✺✺❁❁✴", NO_MV,     MSG_RESET);
 
         built = true;
 }
@@ -292,7 +289,6 @@ void render_dummy(void *self)
                 wbkgrnd(noun->win, mkcch(L"Ⰹ", 0, FLEX));
                 done = true;
         }
-
         noun_animate(noun);
         sm_consume(noun->sm);
 }
@@ -315,6 +311,7 @@ int modify_dummy(void *obj)
                 wprintw(CONSOLE_WIN, "Dummy hit!\n");
                 noun->animate(dummy_die);
                 dock_say(L"嶴", "FUCK!");
+                sm_emit(noun->sm, SM_SELF, SM_Destroy, 0, 13, 9);
                 break;
         case SM_GoUp:
                 noun->animate(dummy_mv_u);
@@ -339,12 +336,9 @@ int modify_dummy(void *obj)
                 break;
         case SM_Seek:
                 noun->_seek(noun, get_noun("Guy"));
+                sm_emit(noun->sm, noun->sm->id, SM_Seek, 0, 20, 0);
                 break;
         case SM_Default:
-                if (wait++ == 20) {
-                        wait = 0;
-                        noun->sm->emit(noun->sm, noun->sm->id, SM_Seek, 0, 20, 0);
-                }
                 break;
         }
 
@@ -389,6 +383,7 @@ void apply_noun_model(struct noun_t *noun)
                 noun->win = newwin(1, 1, CENTERED);
                 noun->pan = new_panel(noun->win);
                 noun->model = NOUN_CREATURE;
+                sm_set(noun->sm, SM_Seek, 0);
                 oops = true;
                 break;
         }

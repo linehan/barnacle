@@ -23,8 +23,10 @@ static const int SM_RESERVED_Update = 9997;
 #include "states.h"
 
 #define NUM_PENDING 20
-
-
+#define SM_NO_ROUTE false 
+#define SM_ROUTE_OK true 
+#define SM_SELF UINT32_MAX 
+#define SM_ZERO 0, 0, 0
 
 /* CONTAINER TYPES 
 ````````````````````````````````````````````````````````````````````````````` */
@@ -33,16 +35,8 @@ static const int SM_RESERVED_Update = 9997;
  * A callback assigned to the state machine by the constructor. It will be 
  * passed to the message constructor and will eventually be called by the 
  * message router. 
- *
- * SM_METHOD_EMIT 
- * Used to create and send new messages.
- *
- * SM_METHOD_DEL 
- * State machine destructor method.
  */
 typedef bool (*SM_CB_ROUTE)(void *self);
-typedef void (*SM_METHOD_EMIT)(void *self, uint32_t to, enum sm_state tag, int mag, int delay, int pri);
-typedef void (*SM_METHOD_DEL)(void *self);
 
 
 /* 
@@ -66,7 +60,7 @@ struct msg_t {
         enum sm_state tag;     /* Message identifier */
         int mag;               /* A magnitude */
         int pri;
-        int delay;             /* Delay between transmission and delivery */
+        uint32_t time;         /* Send at this time */
         SM_CB_ROUTE route;
 };
 
@@ -88,8 +82,6 @@ struct sm_t {
         int mag;               /* Magnitude of the current state */
         struct bh_t *state;
         SM_CB_ROUTE route;     /* 'route' callback */
-        SM_METHOD_EMIT emit;   /* 'emit' method */
-        SM_METHOD_DEL del;     /* 'del' method */
 };
 
 
@@ -98,6 +90,12 @@ struct sm_t {
 /* PUBLIC FUNCTIONS
 ``````````````````````````````````````````````````````````````````````````````*/
 struct sm_t *new_sm(uint32_t id, SM_CB_ROUTE);
+void del_sm(struct sm_t *sm);
+
+
+
+void sm_emit(struct sm_t *sm, uint32_t to, enum sm_state tag, int mag, int delay, int pri);
+
 void send_delayed_msgs(void);
 
 
@@ -147,16 +145,9 @@ static inline void sm_consume(struct sm_t *sm)
         }
 }
 
-/* SET SELF AFTER
- * sm_set_after -- set the state and state magnitude of a state machine at time
- * @sm: pointer to a state machine
- * @msg: the state msg
- * @mag: the state magnitude 
- * @delay: the number of ticks to wait */
-static inline void sm_set_self_after(struct sm_t *sm, enum sm_state tag, int mag, int delay, int pri)
-{
-        sm->emit(sm, sm->id, tag, mag, delay, pri);
-}
+
+
+
 
 
 /* SET ACTIVE 
