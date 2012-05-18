@@ -23,6 +23,7 @@ struct astar_t {
 struct astar_t *new_astar(void);
 bool a_star(struct astar_t *astar, struct cell_t *goal);
 void astar_init(struct astar_t *astar, struct matrix_t *map, int y, int x);
+void del_astar(struct astar_t *astar);
 
 
 static inline void astar_set_start(struct astar_t *astar, int y, int x)

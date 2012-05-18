@@ -15,7 +15,6 @@ LIST_HEAD(delayed_msgs);
 
 
 /**
- * ADD TO DELAYED LIST 
  * add_delayed -- add a msg to the data structure containing delayed msgs
  * @msg: pointer to the msg being routed
  */
@@ -24,20 +23,49 @@ inline void add_delayed(struct msg_t *msg)
         list_add(&delayed_msgs, &msg->node);
 }
 
+
+
+/**
+ * NEW MESSAGE 
+ * new_msg -- creates a new msg_t and hands it to route_msg 
+ * @from:  noun id of sender 
+ * @to:    noun id of intended recipient
+ * @msg:   msg identifier
+ * @mag:   magnitude of the msg (optional)
+ * @delay: ticks of delay
+ * @route: custom function pointer for routing msg to target 
+ */
+inline struct msg_t *
+new_msg(uint32_t from, uint32_t to, enum sm_state tag, int mag, uint32_t time, int pri, SM_CB_ROUTE route)
+{
+        struct msg_t *new = malloc(sizeof(struct msg_t));
+
+        new->tag   = tag;
+        new->mag   = mag;
+        new->to    = to;
+        new->from  = from;
+        new->time  = time;
+        new->pri   = pri;
+        new->route = route;
+
+
+        return (new);
+}
+
+
 /**
  * ROUTE
- * route_msg -- decides when, where, and whether to send a msg
+ * do_route -- decides when, where, and whether to send a msg
  * @msg: pointer to the msg being routed
  */
-void route_msg(struct msg_t *msg)
+void do_route(struct msg_t *msg)
 {
-        if (msg->delay > 0)
+        if (msg->time != get_tick()) 
                 add_delayed(msg);
-        else {
+        else 
                 msg->route(msg);
-                /*free(msg);*/
-        }
 }
+
 
 /**
  * UPDATE
@@ -50,72 +78,24 @@ void send_delayed_msgs(void)
 
         struct msg_t *tmp;
         struct msg_t *nxt;
+        uint32_t current_time;
+
+        current_time = get_tick();
 
         list_for_each_safe(&delayed_msgs, tmp, nxt, node) {
-                if (tmp->delay > 0) {
-                        tmp->delay--;
-                } else {
-                        list_del_from(&delayed_msgs, &tmp->node); 
-                        route_msg(tmp);
+                if (tmp->time == current_time) {
+                        list_del(&tmp->node); 
+                        do_route(tmp);
                 }
         }
 }
 
-/**
- * EMIT 
- * emit_msg -- creates a new msg_t and hands it to route_msg 
- * @from:  noun id of sender 
- * @to:    noun id of intended recipient
- * @msg:   msg identifier
- * @mag:   magnitude of the msg (optional)
- * @delay: ticks of delay
- * @route: custom function pointer for routing msg to target 
- */
-void emit_msg(uint32_t from, uint32_t to, enum sm_state tag, int mag, int delay, int pri, SM_CB_ROUTE route)
-{
-        struct msg_t *new = malloc(sizeof(struct msg_t));
 
-        new->tag   = tag;
-        new->mag   = mag;
-        new->to    = to;
-        new->from  = from;
-        new->delay = delay;
-        new->pri   = pri;
-        new->route = route;
-
-        route_msg(new);
-}
 
 
 
 /* STATE MACHINE METHODS 
 ``````````````````````````````````````````````````````````````````````````````*/
-/**
- * DESTROY METHOD
- * method_sm_destroy -- simple destructor
- * @self: pointer to state machine object */
-void method_sm_destroy(void *self)
-{
-        struct sm_t *sm = (struct sm_t *)self;
-
-        bh_destroy(sm->state);
-        free(sm);
-}
-
-/**
- * EMIT METHOD
- * method_sm_emit -- draft a new message and pass it to the emitter
- * @self:  pointer to the state machine object 
- * @to:    noun id of intended recipient
- * @msg:   msg identifier
- * @mag:   magnitude of the msg (optional)
- * @delay: ticks of delay */ 
-void method_sm_emit(void *self, uint32_t to, enum sm_state tag, int mag, int delay, int pri)
-{
-        struct sm_t *sm = (struct sm_t *)self;
-        emit_msg(sm->id, to, tag, mag, delay, pri, sm->route);
-}
-
 /**
  * CONSTRUCTOR
  * new_sm -- creates and returns a new state machine object
@@ -130,10 +110,45 @@ struct sm_t *new_sm(uint32_t id, bool (*route)(void *self))
         new->state  = new_bh(NUM_PENDING);
 
         new->route  = route;
-        new->emit   = &method_sm_emit;
-        new->del    = &method_sm_destroy;
         new->accept = true;
 
         return (new);
 }
+
+/**
+ * DESTRUCTOR 
+ * del_sm -- simple destructor
+ * @self: pointer to state machine object */
+void del_sm(struct sm_t *sm)
+{
+        del_bh(sm->state);
+        free(sm);
+}
+
+
+/**
+ * EMIT 
+ * sm_emit -- draft a new message and pass it to the emitter
+ * @self:  pointer to the state machine object 
+ * @to:    noun id of intended recipient
+ * @msg:   msg identifier
+ * @mag:   magnitude of the msg (optional)
+ * @delay: ticks of delay */ 
+void sm_emit(struct sm_t *sm, uint32_t to, enum sm_state tag, int mag, int delay, int pri)
+{
+        uint32_t recipient; 
+        uint32_t time;
+        struct msg_t *msg;
+
+        if (to == SM_SELF)
+                recipient = sm->id;
+        else    recipient = to;
+
+        time = get_tick() + delay;
+
+        msg = new_msg(sm->id, recipient, tag, mag, time, pri, sm->route);
+
+        do_route(msg);
+}
+
 

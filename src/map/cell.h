@@ -14,7 +14,6 @@ struct cell_t {
         float f;               /* f(n) total movement cost (used by A*) */
         struct list_node node; /* Cells are nodes in a circular linked list */
         struct cell_t *parent;
-        void (*die)(void *self);
 };
 
 
@@ -33,6 +32,7 @@ struct cell_t *cell_after(struct cell_t *cell, struct cell_t *match);
 struct cell_t *cell_dup(struct cell_t *cell);
 struct cell_t *cellpath_next(struct list_head *path);
 void set_cell(struct cell_t *cell, int y, int x);
+void del_cell(struct cell_t *cell);
 
 /*
  * The caller may request a specific neighbor

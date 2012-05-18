@@ -4,9 +4,8 @@
 #include "../lib/morton.h"
 #include "../lib/list.h"
 
-void cell_destroy(void *self)
+void del_cell(struct cell_t *cell)
 {
-        struct cell_t *cell = (struct cell_t *)self;
         free(cell);
 }
 
@@ -28,7 +27,6 @@ struct cell_t *new_cell(uint32_t y, uint32_t x)
         new->y   = y;
         new->x   = x;
         new->key = mort(y,x); 
-        new->die = &cell_destroy;
 
         return (new);
 }
