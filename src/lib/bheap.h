@@ -1,3 +1,6 @@
+#pragma once
+#ifndef __BINHEAP_H
+#define __BINHEAP_H
 /******************************************************************************
  * bheap.h -- Binary heap structures and operations
  *
@@ -49,11 +52,11 @@
  * right operand) of the radix. Since the radix of a binary number is 2, 
  * it can be seen that (i << 1) is equivalent to (i * 2^1), or (i * 2). 
  ******************************************************************************/
-#define leftof(i) ((i) << 1)
-#define rightof(i) (((i) << 1) + 1)
+#define leftof(i)   ((i) << 1)
+#define rightof(i)  (((i) << 1) + 1)
 #define parentof(i) ((i) >> 1)
 
-#define BH_ROOT 1      /* The index of the root node */
+#define BH_ROOT 1   /* The index of the root node */
 #define MAXPRI 999  /* The maximum admissible priority of a node */
 
 /******************************************************************************
@@ -222,68 +225,6 @@ static inline void heapify(struct bh_t *bh)
 
 
 /******************************************************************************
- * Heap operations 
- *
- * bh_add
- * bh_pop
- * bh_peek
- *
- * These are the textbook operations of add, pop (remove top element) and 
- * peek (return pointer to top element) which are supported on binary heaps. 
- * By "supported", I mean those operations with time complexities that benefit
- * from heap structure.
- ******************************************************************************/
-/**
- * bh_add -- insert a new node into the binary heap
- * @bh: pointer to a binary heap
- * @pri: priority of the new node 
- * @x: caller-defined data that will be stored at the node (can be NULL)
- * Returns: FALSE if heap is full, else returns TRUE 
- */
-static inline bool bh_add(struct bh_t *bh, int pri, uint32_t key, void *x) 
-{
-        if (bh->n >= bh->max) 
-                return false;
-
-        bh->node[bh->n]->key  = key;
-        bh->node[bh->n]->pri  = pri;
-        bh->node[bh->n]->data = x;
-        bh_siftup(bh, bh->n++, BH_ROOT);
-
-        return true;
-}
-
-/**
- * bh_pop -- Retreive the root node of the binary heap
- * @bh: pointer to a binary heap
- * Returns: pointer to user-defined data stored at the root node (can be NULL)
- */
-static inline void *bh_pop(struct bh_t *bh)
-{
-        struct bh_node *top;
-       
-        top = bh->node[BH_ROOT];
-        bh->node[BH_ROOT] = bh->node[--bh->n];
-
-        bh_siftdown(bh, BH_ROOT, bh->n);
-
-        if (bh->n < BH_ROOT) 
-                return NULL;
-
-        return (top->data);
-}
-
-/**
- * bh_peek -- Reference the top item of the heap; the item is not removed
- * @bh: pointer to a binary heap
- */
-static inline void *bh_peek(struct bh_t *bh, int i)
-{
-        return (i < bh->n) ? (bh->node[i]->data) : NULL;
-}
-
-
-/******************************************************************************
  * Heap predicates 
  *
  * bh_is_empty
@@ -324,6 +265,74 @@ static inline bool bh_has_member(struct bh_t *bh, uint32_t key)
         }
         return false;
 }
+
+
+/******************************************************************************
+ * Heap operations 
+ *
+ * bh_add
+ * bh_pop
+ * bh_peek
+ *
+ * These are the textbook operations of add, pop (remove top element) and 
+ * peek (return pointer to top element) which are supported on binary heaps. 
+ * By "supported", I mean those operations with time complexities that benefit
+ * from heap structure.
+ ******************************************************************************/
+/**
+ * bh_add -- insert a new node into the binary heap
+ * @bh: pointer to a binary heap
+ * @pri: priority of the new node 
+ * @x: caller-defined data that will be stored at the node (can be NULL)
+ * Returns: FALSE if heap is full, else returns TRUE 
+ */
+static inline bool bh_add(struct bh_t *bh, int pri, uint32_t key, void *x) 
+{
+        if (bh->n >= bh->max) 
+                return false;
+
+        bh->node[bh->n]->key  = key;
+        bh->node[bh->n]->pri  = pri;
+        bh->node[bh->n]->data = x;
+        bh_siftup(bh, bh->n++, BH_ROOT);
+
+        return true;
+}
+
+/**
+ * bh_pop -- Retreive the root node of the binary heap
+ * @bh: pointer to a binary heap
+ * Returns: pointer to user-defined data stored at the root node (can be NULL)
+ */
+static inline void *bh_pop(struct bh_t *bh)
+{
+        struct bh_node *top;
+
+        if (bh_is_empty(bh))
+                return NULL;
+       
+        top = bh->node[BH_ROOT];
+        bh->node[BH_ROOT] = bh->node[--bh->n];
+
+        bh_siftdown(bh, BH_ROOT, bh->n);
+
+        if (bh->n < BH_ROOT) 
+                return NULL;
+
+        return (top->data);
+}
+
+/**
+ * bh_peek -- Reference the top item of the heap; the item is not removed
+ * @bh: pointer to a binary heap
+ */
+static inline void *bh_peek(struct bh_t *bh, int i)
+{
+        return (i < bh->n) ? (bh->node[i]->data) : NULL;
+}
+
+
+
 
 
 /******************************************************************************
@@ -375,4 +384,4 @@ static inline uint32_t bh_getkey(struct bh_t *bh, int i)
         return (bh->node[i]->key);
 }
 
-
+#endif

@@ -18,14 +18,13 @@ PANEL  *equipped_pan;
 inline void add_test_items(struct list_head *inv)
 {
         int i;
-        struct item_t *test[4];
+        struct item_t *test[3];
 
         test[0] = make_item(ITEM_ROPE);
         test[1] = make_item(ITEM_PICKAXE);
-        test[2] = make_item(ITEM_SHOVEL);
-        test[3] = make_item(ITEM_TORCH);
+        test[2] = make_item(ITEM_TORCH);
 
-        for (i=0; i<4; i++)
+        for (i=0; i<3; i++)
                 list_add(inv, &test[i]->node);
 }
 

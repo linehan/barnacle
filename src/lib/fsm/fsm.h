@@ -2,6 +2,7 @@
 #ifndef STATE_MACHINE_H
 #define STATE_MACHINE_H
 #include "../list.h"
+#include "../bheap.h"
 
 
 /* MESSAGE TYPES 
@@ -21,6 +22,8 @@ static const int SM_RESERVED_Update = 9997;
  */
 #include "states.h"
 
+#define NUM_PENDING 20
+
 
 
 /* CONTAINER TYPES 
@@ -38,7 +41,7 @@ static const int SM_RESERVED_Update = 9997;
  * State machine destructor method.
  */
 typedef bool (*SM_CB_ROUTE)(void *self);
-typedef void (*SM_METHOD_EMIT)(void *self, uint32_t to, enum sm_state tag, int mag, int delay);
+typedef void (*SM_METHOD_EMIT)(void *self, uint32_t to, enum sm_state tag, int mag, int delay, int pri);
 typedef void (*SM_METHOD_DEL)(void *self);
 
 
@@ -62,6 +65,7 @@ struct msg_t {
         uint32_t to;           /* Receiver (noun) identifier */
         enum sm_state tag;     /* Message identifier */
         int mag;               /* A magnitude */
+        int pri;
         int delay;             /* Delay between transmission and delivery */
         SM_CB_ROUTE route;
 };
@@ -79,8 +83,10 @@ struct msg_t {
 struct sm_t {
         uint32_t id;           /* Who owns the sm (the "sender") */
         bool accept;           /* Whether the sm is accepting messages */
+        bool pending;          /* Has the current state been consumed? */
         enum sm_state tag;     /* Current state in the sm */
         int mag;               /* Magnitude of the current state */
+        struct bh_t *state;
         SM_CB_ROUTE route;     /* 'route' callback */
         SM_METHOD_EMIT emit;   /* 'emit' method */
         SM_METHOD_DEL del;     /* 'del' method */
@@ -109,12 +115,51 @@ static inline bool sm_set(struct sm_t *sm, enum sm_state tag, int mag)
         if (sm->accept) {
                 sm->tag = tag;
                 sm->mag = mag;
+                sm->pending = true; /* A new state is pending */
                 return true;
         }
         return false;
 }
 
-/* ACCEPT 
+/* ACCEPT
+ * sm_accept -- receive a message and add it to the message heap
+ * @sm: pointer to a state machine
+ * @msg: the message structure
+ */
+static inline void sm_accept(struct sm_t *sm, struct msg_t *msg)
+{
+        bh_add(sm->state, msg->pri, msg->from, msg);
+}
+
+/* CONSUME
+ * sm_consume -- set the state and magnitude to the pending state at hipri
+ * @sm: pointer to a state machine
+ */
+static inline void sm_consume(struct sm_t *sm)
+{
+        struct msg_t *msg;
+
+        msg = (struct msg_t *)bh_pop(sm->state);
+
+        if (msg) {
+                sm_set(sm, msg->tag, msg->mag);
+                free(msg);
+        }
+}
+
+/* SET SELF AFTER
+ * sm_set_after -- set the state and state magnitude of a state machine at time
+ * @sm: pointer to a state machine
+ * @msg: the state msg
+ * @mag: the state magnitude 
+ * @delay: the number of ticks to wait */
+static inline void sm_set_self_after(struct sm_t *sm, enum sm_state tag, int mag, int delay, int pri)
+{
+        sm->emit(sm, sm->id, tag, mag, delay, pri);
+}
+
+
+/* SET ACTIVE 
  * sm_accept -- set the 'accept' boolean value of a state machine
  * @sm: pointer to a state machine
  * @yn: true or false */
@@ -123,12 +168,29 @@ static inline void sm_active(struct sm_t *sm, bool yn)
         sm->accept = yn;
 }
 
+/* PEEK
+ * sm_peek -- return the current state without consuming the pending flag
+ * @sm: pointer to a state machine */
+static inline int sm_peek(struct sm_t *sm)
+{
+        return (int)(sm->tag);
+}
+
 /* STATE 
  * sm_state -- return the current state msg of a state machine 
  * @sm: pointer to a state machine */
 static inline int sm_state(struct sm_t *sm)
 {
+        sm->pending = false; /* The state has now been observed */
         return (int)(sm->tag);
+}
+
+/* PENDING
+ * sm_pending -- check if there is a new state pending
+ * @sm: pointer to a state machine */
+static inline bool sm_pending(struct sm_t *sm)
+{
+        return (sm->pending);
 }
 
 /* MAGNITUDE
@@ -146,6 +208,16 @@ static inline void sm_reset(struct sm_t *sm)
 {
         sm_set(sm, 0, 0);
 }
+
+/* REFRESH 
+ * sm_refresh -- if no new state is pending, reset the state machine
+ * @sm: pointer to a state machine */
+static inline void sm_refresh(struct sm_t *sm)
+{
+        if (!sm_pending(sm))
+                sm_reset(sm);
+}
+
 
 
 #endif

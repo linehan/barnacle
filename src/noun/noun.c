@@ -280,7 +280,7 @@ static inline void noun_on_move(struct noun_t *noun)
 
         move_panel(noun->pan, pos_y(noun->pos), pos_x(noun->pos));
         astar_set_start(noun->astar, pos_y(noun->pos), pos_x(noun->pos));
-        take_bkgrnd(panel_window(noun->pan), PEEK(ACTIVE->W));
+        take_bkgrnd(panel_window(noun->pan), PEEK(ACTIVE->W), FLEX);
 
         update_panels();
 
@@ -309,6 +309,9 @@ void method_noun_delete(void *self)
 
         /* Remove from the nountable */
         del_from_nountable(noun);
+
+        /* Goodbye */
+        free(noun);
 }
 
 /**
@@ -485,7 +488,8 @@ bool route_to_noun(void *self)
         struct noun_t *noun;
 
         if (noun = key_noun(msg->to), noun) {
-                sm_set(noun->sm, msg->tag, msg->mag);
+                assert(noun || !"Message router is boned!");
+                sm_accept(noun->sm, msg);
                 return true;
         }
         return false;
@@ -514,7 +518,7 @@ void noun_set_signal_delayed(struct noun_t *noun, enum sm_state tag, int dir, in
         default:
                 break; /* Signal will be sent to the sender */
         }
-        noun->sm->emit(noun->sm, mx_val(ACTIVE->mobs, y, x), tag, 0, delay);
+        noun->sm->emit(noun->sm, mx_val(ACTIVE->mobs, y, x), tag, 0, delay, 1);
 }
 
 void noun_set_signal(struct noun_t *noun, enum sm_state tag, int dir)
