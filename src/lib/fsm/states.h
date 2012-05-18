@@ -20,6 +20,7 @@ enum sm_state {
         SM_DigDown,
         SM_DigLeft,
         SM_DigRight,
+        SM_Seek,
         SM_Reset,
 };
 

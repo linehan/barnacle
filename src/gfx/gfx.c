@@ -155,7 +155,7 @@ inline short WINPAIR(WINDOW *win, int y, int x)
 }
 
 
-void take_bkgrnd(WINDOW *dst, WINDOW *src)
+void take_bkgrnd(WINDOW *dst, WINDOW *src, short pair)
 {
         cchar_t src_cch;
         cchar_t dst_cch;
@@ -185,7 +185,7 @@ void take_bkgrnd(WINDOW *dst, WINDOW *src)
         pair_content(dst_pair, &dst_fg, &dst_bg);
 
         /* Re-init the FLEX pair's existing fg with the bg of src */
-        init_pair(FLEX, FLEXFG, src_bg);
+        init_pair(pair, FGCOLOR(pair), src_bg);
 
         /* ? when a pair changes, characters rendered with it are re-drawn */
 }

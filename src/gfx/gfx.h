@@ -64,7 +64,7 @@ cchar_t *mkcch(wchar_t *wch, attr_t attr, short co);
 void mvwp(WINDOW *win, int y, int x, wchar_t *wch, short pair, attr_t attr);
 void mvwnpaint(WINDOW *win, int y, int x, wchar_t *wcs, short pair, int n);
 
-void take_bkgrnd(WINDOW *dest, WINDOW *src);
+void take_bkgrnd(WINDOW *dst, WINDOW *src, short pair);
 
 
 #endif

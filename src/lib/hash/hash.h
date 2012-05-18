@@ -91,8 +91,7 @@ struct htab_record *get_htab_record(struct htab_t *tbl, uint32_t key)
 
         hashkey = HASH(key);
 
-        //assert(tbl->tbl[hashkey] || !"Record missing from hash table\n");
-        if (!tbl->tbl[hashkey])
+        if (!tbl->tbl[hashkey] || list_empty(tbl->tbl[hashkey]))
                 return NULL;
 
         list_for_each(tbl->tbl[hashkey], tmp, node) {
@@ -116,7 +115,8 @@ struct htab_record *pop_htab_record(struct htab_t *tbl, uint32_t key)
         hashkey = HASH(key);
 
         /* Retreive record from hash table */
-        record = get_htab_record(tbl, key);
+        if (record = get_htab_record(tbl, key), !record)
+                return NULL;
 
         /* Delete record from list */
         list_del_from(tbl->tbl[hashkey], &record->node);
@@ -164,9 +164,10 @@ void *htab_pop(struct htab_t *tbl, uint32_t key)
         struct htab_record *record;
         void *data;
 
-        record = pop_htab_record(tbl, key);
-        data   = record->data;
+        if (record = pop_htab_record(tbl, key), !record);
+                return NULL;
 
+        data = record->data;
         free(record);
 
         return (data);

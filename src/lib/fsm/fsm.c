@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include "../../com/arawak.h"
 #include "../list.h"
+#include "../bheap.h"
 #include "fsm.h"
 
 
@@ -34,7 +35,7 @@ void route_msg(struct msg_t *msg)
                 add_delayed(msg);
         else {
                 msg->route(msg);
-                free(msg);
+                /*free(msg);*/
         }
 }
 
@@ -70,7 +71,7 @@ void send_delayed_msgs(void)
  * @delay: ticks of delay
  * @route: custom function pointer for routing msg to target 
  */
-void emit_msg(uint32_t from, uint32_t to, enum sm_state tag, int mag, int delay, SM_CB_ROUTE route)
+void emit_msg(uint32_t from, uint32_t to, enum sm_state tag, int mag, int delay, int pri, SM_CB_ROUTE route)
 {
         struct msg_t *new = malloc(sizeof(struct msg_t));
 
@@ -79,6 +80,7 @@ void emit_msg(uint32_t from, uint32_t to, enum sm_state tag, int mag, int delay,
         new->to    = to;
         new->from  = from;
         new->delay = delay;
+        new->pri   = pri;
         new->route = route;
 
         route_msg(new);
@@ -94,7 +96,10 @@ void emit_msg(uint32_t from, uint32_t to, enum sm_state tag, int mag, int delay,
  * @self: pointer to state machine object */
 void method_sm_destroy(void *self)
 {
-        free((struct sm_t *)self);
+        struct sm_t *sm = (struct sm_t *)self;
+
+        bh_destroy(sm->state);
+        free(sm);
 }
 
 /**
@@ -105,10 +110,10 @@ void method_sm_destroy(void *self)
  * @msg:   msg identifier
  * @mag:   magnitude of the msg (optional)
  * @delay: ticks of delay */ 
-void method_sm_emit(void *self, uint32_t to, enum sm_state tag, int mag, int delay)
+void method_sm_emit(void *self, uint32_t to, enum sm_state tag, int mag, int delay, int pri)
 {
         struct sm_t *sm = (struct sm_t *)self;
-        emit_msg(sm->id, to, tag, mag, delay, sm->route);
+        emit_msg(sm->id, to, tag, mag, delay, pri, sm->route);
 }
 
 /**
@@ -122,6 +127,8 @@ struct sm_t *new_sm(uint32_t id, bool (*route)(void *self))
         struct sm_t *new = calloc(1, sizeof(struct sm_t));
 
         new->id     = id;
+        new->state  = new_bh(NUM_PENDING);
+
         new->route  = route;
         new->emit   = &method_sm_emit;
         new->del    = &method_sm_destroy;

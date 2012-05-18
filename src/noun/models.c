@@ -40,7 +40,6 @@ struct ani_t *mk_ani(const wchar_t *wcs,
 void noun_animate(struct noun_t *noun)
 {
         if (!noun->animation) {
-
                 return;
         }
 
@@ -61,7 +60,7 @@ void noun_animate(struct noun_t *noun)
         if (++noun->animation->i == noun->animation->len) {
                 noun->animation->i = 0;
                 noun->animation = NULL;
-                noun_set_signal(noun, SM_Default, '*');
+                /*noun_set_signal(noun, SM_Default, '*');*/
                 return;
         }
 
@@ -139,14 +138,16 @@ void render_human(void *self)
                 done = true;
         }
 
-        noun_animate(noun);
-
         struct item_t *item;
+
+        noun_animate(noun);
 
         list_for_each(&noun->inv, item, node) {
                 if (item->equipped && item->burn)
                         item->burn(item, noun);
         }
+
+        sm_consume(noun->sm);
 }
 
 /*
@@ -156,9 +157,11 @@ void render_human(void *self)
 int modify_human(void *self)
 {
         struct noun_t *noun = (struct noun_t *)self;
-        int enter = sm_state(noun->sm);
+        int state;
+       
+        state = sm_state(noun->sm);
 
-        switch (enter) 
+        switch (state) 
         { 
         case SM_DigUp:
                 noun->animate(dig_u);
@@ -232,12 +235,11 @@ int modify_human(void *self)
                 case KEY_ESC:
                         return (MODE_RELEASE);
                 }
-                sm_reset(noun->sm);
-                break;
-        case SM_Reset:
-                sm_reset(noun->sm);
                 break;
         }
+
+        sm_refresh(noun->sm);
+
         return (MODE_PERSIST);
 }
 
@@ -292,6 +294,7 @@ void render_dummy(void *self)
         }
 
         noun_animate(noun);
+        sm_consume(noun->sm);
 }
 
 /*
@@ -302,10 +305,11 @@ int modify_dummy(void *obj)
 {
         struct noun_t *noun = (struct noun_t *)obj;
         static int wait = 0;
-        int enter = sm_state(noun->sm);
-        wait = (wait+1)%20;
+        int state;
 
-        switch (enter)
+        state = sm_state(noun->sm);
+
+        switch (state)
         {
         case SM_Punch:
                 wprintw(CONSOLE_WIN, "Dummy hit!\n");
@@ -333,14 +337,19 @@ int modify_dummy(void *obj)
                 oops = false;
                 dock_say(L"\n","\n");
                 break;
-        case SM_Reset:
-                sm_reset(noun->sm);
+        case SM_Seek:
+                noun->_seek(noun, get_noun("Guy"));
                 break;
         case SM_Default:
-                if (wait == 13)
-                        noun->_seek(noun, get_noun("Guy"));
+                if (wait++ == 20) {
+                        wait = 0;
+                        noun->sm->emit(noun->sm, noun->sm->id, SM_Seek, 0, 20, 0);
+                }
                 break;
         }
+
+        sm_refresh(noun->sm);
+
         return 0;
 }
 
