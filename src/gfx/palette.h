@@ -137,6 +137,9 @@ enum flex {
 
 
 
+
+
+
 /* ----- PAIRS ------ */
 
 /* FG_BG color pairs; odd ones are swaps of even ones. */
@@ -332,6 +335,14 @@ enum black_pair {
         BLACK_BEIGE = 160,
 };
 
+enum edible_pairs {
+        FLEX_APPLE = 161,
+        FLEX_GRAPEFRUIT = 162,
+        FLEX_LG_POTION = 163,
+        FLEX_SM_POTION = 164,
+        FLEX_ELIXIR = 165,
+        FLEX_PALM = 166,
+};
 
 
 void darken_colors(int step);

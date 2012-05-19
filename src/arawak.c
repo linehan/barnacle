@@ -53,8 +53,12 @@ int main(int argc, char *argv[])
         init_pair(FLEX, BLACK, WHITE);
         init_pair(FLEX2, BLACK, WHITE);
 
-        struct item_t *item = make_item(ITEM_APPLE);
-        item->put(item, LINES/3, COLS/3);
+        struct item_t *item1 = make_item(ITEM_APPLE);
+        struct item_t *item2 = make_item(ITEM_GRAPEFRUIT);
+        struct item_t *item3 = make_item(ITEM_PALM);
+        item1->put(item1, LINES/3, COLS/3);
+        item2->put(item2, (LINES/3)+5, (COLS/3)+3);
+        item3->put(item3, (LINES/3)+8, (COLS/3)+10);
         
 
         new_noun("Guy", PERSON, 0);

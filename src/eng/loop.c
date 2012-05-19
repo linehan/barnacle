@@ -62,8 +62,8 @@ void render_cb(EV_P_ ev_timer *w, int revents)
 {
         static int sp;
         if (loop_test_active) {
-                spinloop(1, 0, "render_cb", sp++);
-                tickloop(7, 0, "Game tick");
+                spinloop(2, 0, "render_cb", sp++);
+                tickloop(8, 0, "Game tick");
         }
         tick();
         dock_update();
@@ -96,7 +96,7 @@ void flow_cb(EV_P_ ev_timer *w, int revents)
 {
         static int sp;
         if (loop_test_active) {
-                spinloop(2, 0, "flow_cb", sp++);
+                spinloop(3, 0, "flow_cb", sp++);
         }
         render_flow(ACTIVE);
 
@@ -120,7 +120,7 @@ void move_cb(EV_P_ ev_timer *w, int revents)
 {
         static int sp;
         if (loop_test_active) {
-                spinloop(3, 0, "move_cb", sp++);
+                spinloop(4, 0, "move_cb", sp++);
         }
         /*do_pulse();*/
         /*noun_render(get_noun("Afarensis"));*/
@@ -144,7 +144,7 @@ void animate_cb(EV_P_ ev_timer *w, int revents)
 {
         static int sp;
         if (loop_test_active) {
-                spinloop(4, 0, "animate_cb", sp++);
+                spinloop(5, 0, "animate_cb", sp++);
         }
         NEXT(ACTIVE->L[RIM]);
         tab_update();
@@ -168,7 +168,7 @@ void *iolisten_cb(EV_P_ ev_io *w, int revents)
 {
         static int sp;
         if (loop_test_active) {
-                spinloop(5, 0, "iolisten_cb", sp++);
+                spinloop(6, 0, "iolisten_cb", sp++);
         }
         ev_io_stop (EV_A, w);
 

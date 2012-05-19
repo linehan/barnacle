@@ -184,7 +184,7 @@ void label_shorelines(struct map_t *map)
 {
         #define SURF_FRAMES 4
 
-        struct seed_t seed = {0};
+        struct seed_t seed;
         wchar_t *wch;
         short color;
         int y;

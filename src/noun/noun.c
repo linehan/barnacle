@@ -460,13 +460,13 @@ void method_noun_seek(void *self, void *target)
         tmp = cellpath_next(&s->astar->path);
 
         if (tmp->x > s->astar->start->x)
-                sm_set(s->sm, SM_GoRight, 0);
+                sm_set(s->sm, SM_GoRight);
         if (tmp->x < s->astar->start->x)
-                sm_set(s->sm, SM_GoLeft, 0);
+                sm_set(s->sm, SM_GoLeft);
         if (tmp->y > s->astar->start->y)
-                sm_set(s->sm, SM_GoDown, 0);
+                sm_set(s->sm, SM_GoDown);
         if (tmp->y < s->astar->start->y)
-                sm_set(s->sm, SM_GoUp, 0);
+                sm_set(s->sm, SM_GoUp);
 }
 
 
@@ -491,10 +491,10 @@ bool route_to_noun(void *self)
         struct msg_t *msg = (struct msg_t *)self;
         struct noun_t *noun;
 
-        noun = key_noun(msg->to);
+        noun = key_noun(msg_to(msg));
 
         if (noun != NULL) {
-                assert(noun && msg || !"Message router is boned!");
+                assert((noun && msg) || !"Message router is boned!");
                 sm_accept(noun->sm, msg);
                 return SM_ROUTE_OK;
         }
@@ -503,7 +503,7 @@ bool route_to_noun(void *self)
 
 
 
-void noun_set_signal_delayed(struct noun_t *noun, enum sm_state tag, int dir, int delay)
+void noun_set_signal_delayed(struct noun_t *noun, uint32_t state, int dir)
 {
         int y = pos_y(noun->pos);
         int x = pos_x(noun->pos);
@@ -524,16 +524,16 @@ void noun_set_signal_delayed(struct noun_t *noun, enum sm_state tag, int dir, in
         default:
                 break; /* Signal will be sent to the sender */
         }
-        sm_emit(noun->sm, mx_val(ACTIVE->mobs, y, x), tag, 0, delay, 1);
+        sm_msg(noun->sm, mx_val(ACTIVE->mobs, y, x), state);
 }
 
-void noun_set_signal(struct noun_t *noun, enum sm_state tag, int dir)
+void noun_set_signal(struct noun_t *noun, uint32_t state, int dir)
 {
-        noun_set_signal_delayed(noun, tag, dir, 0);
+        noun_set_signal_delayed(noun, state, dir);
 }
 
 
-void emit_to_noun(struct noun_t *noun, int dir, enum sm_state tag, int mag, int delay, int pri)
+void emit_to_noun(struct noun_t *noun, int dir, uint32_t state)
 {
         int y = pos_y(noun->pos);
         int x = pos_x(noun->pos);
@@ -554,7 +554,7 @@ void emit_to_noun(struct noun_t *noun, int dir, enum sm_state tag, int mag, int 
         default:
                 break; /* Signal will be sent to the sender */
         }
-        sm_emit(noun->sm, mx_val(ACTIVE->mobs, y, x), tag, mag, delay, pri);
+        sm_msg(noun->sm, mx_val(ACTIVE->mobs, y, x), state);
 }
 
 /* MEMBER METHODS

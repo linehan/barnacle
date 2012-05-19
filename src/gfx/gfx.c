@@ -155,6 +155,27 @@ inline short WINPAIR(WINDOW *win, int y, int x)
 }
 
 
+short bgcolor_yx(WINDOW *win, int y, int x)
+{
+        cchar_t cch;
+        wchar_t wch;
+        short pair;
+        short bg;
+        short fg;
+        attr_t attr;
+
+        mvwin_wch(win, y, x, &cch);    /* Get the cch at position in src */
+
+        /* Extract character renditions */
+        getcchar(&cch, &wch, &attr, &pair, NULL);
+
+        /* Extract the fg and bg color components of the pairs */
+        pair_content(pair, &fg, &bg);
+
+        return (bg);
+}
+
+
 void take_bkgrnd(WINDOW *dst, WINDOW *src, short pair)
 {
         cchar_t src_cch;
