@@ -66,6 +66,7 @@ void render_cb(EV_P_ ev_timer *w, int revents)
                 tickloop(8, 0, "Game tick");
         }
         tick();
+        free_nouns();
         dock_update();
         update_inventory_menu();
         send_delayed_msgs();

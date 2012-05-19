@@ -13,6 +13,7 @@
 
 /* NOUN STORAGE 
 ``````````````````````````````````````````````````````````````````````````````*/
+struct noun_key { struct list_node node; uint32_t key; };
 /*
  * SEQUENTIAL ACCESS
  * Active noun keys are cached in a circular linked list called 'keyring'.
@@ -20,7 +21,12 @@
  * 'keyring' has type struct noun_key, defined below.
  */
 LIST_HEAD(keyring);
-struct noun_key { struct list_node node; uint32_t key; };
+/*
+ * DOOM RING
+ * Nouns scheduled for deletion will be culled at the beginning of each
+ * tick, before any processing on them would be done. See the doom() function.
+ */
+LIST_HEAD(doomring);
 
 
 /*
@@ -87,7 +93,25 @@ inline void del_from_nountable(struct noun_t *noun)
         htab_pop(nountable, noun->id); 
 }
 
+/**
+ * FREE DOOMED NOUNS
+ * free_nouns -- frees all the nouns on the doomring
+ */
+void free_nouns(void)
+{
+        struct noun_key *tmp, *nxt;
+        struct noun_t *noun;
 
+        if (list_empty(&doomring))
+                return;
+
+        list_for_each_safe(&doomring, tmp, nxt, node) {
+                noun = key_noun(tmp->key);
+                noun->_del(noun);
+
+                list_del(&tmp->node);
+        }
+}
 
 
 /* NOUN CONSTRUCTOR 
@@ -116,6 +140,7 @@ void method_noun_seek(void *self, void *target);
 void method_noun_mobile(void *self, bool opt);
 void method_noun_delete(void *self);
 void method_noun_animate(void *self, void *animation);
+void method_noun_doom(void *self);
 
 void member_method_noun_modify(void);
 void member_method_noun_render(void);
@@ -129,6 +154,7 @@ void member_method_noun_mobile(bool opt);
 void member_method_noun_delete(void);
 void member_method_noun_animate(void *animation);
 void member_method_noun_take(int y, int x);
+void member_method_noun_doom(void);
 
 
 bool route_to_noun(void *self);
@@ -160,7 +186,6 @@ struct noun_t *new_noun(const char *name, uint32_t model, void *obj)
 
         /* Boolean state */
         new->is_mobile   = false;
-        new->is_doomed   = false;
         new->hit_testing = true;
 
         /* Static methods */
@@ -173,6 +198,7 @@ struct noun_t *new_noun(const char *name, uint32_t model, void *obj)
         new->_animate  = &method_noun_animate;
         new->_del      = &method_noun_delete;
         new->_take     = &method_noun_take;
+        new->_doom     = &method_noun_doom;
 
         /* Member methods */
         new->mobile   = &member_method_noun_mobile;
@@ -185,6 +211,7 @@ struct noun_t *new_noun(const char *name, uint32_t model, void *obj)
         new->animate  = &member_method_noun_animate;
         new->del      = &member_method_noun_delete;
         new->take     = &member_method_noun_take;
+        new->doom     = &member_method_noun_doom;
 
         /* Apply dynamic linkage */
         apply_noun_model(new);
@@ -484,6 +511,25 @@ void method_noun_animate(void *self, void *animation)
 
 
 /**
+ * _DOOM METHOD
+ * method_noun_doom -- doom the current noun to deletion
+ * @self: the noun object
+ */
+void method_noun_doom(void *self)
+{
+        struct noun_t *noun = NOUN(self);
+        struct noun_key *new; 
+
+        new = calloc(1, sizeof(struct noun_key));
+
+        new->key = noun->id;
+
+        list_add(&doomring, &new->node);
+}
+
+
+
+/**
  * PRIVATE
  * route_to_noun -- the routing method for the state machine configuration */
 bool route_to_noun(void *self)
@@ -682,6 +728,17 @@ void member_method_noun_take(int y, int x)
 {
         focused->_take(focused, y, x);
 }
+
+
+/**
+ * DOOM METHOD
+ * member_method_noun_doom -- doom a noun to deletion
+ */
+void member_method_noun_doom(void)
+{
+        focused->_doom(focused);
+}
+
 
 
 /* ID TRACKER
