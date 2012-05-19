@@ -117,7 +117,17 @@ void send_delayed_msgs(void)
         }
 }
 
-
+/**
+ * TO 
+ * msg_to -- returns the identity of the recipient of a message
+ * @msg: pointer to a message
+ *
+ * Note: The reason this function exists is that the route() callback is
+ * implementation-defined and thus needs to access the 'to' member of a
+ * message struct, in order to route the message. However, we want to keep
+ * the message type hidden in this source file. This function provides
+ * the minimum amount of data sharing necessary to implement the callback.
+ */
 uint32_t msg_to(struct msg_t *msg)
 {
         return (msg->to);

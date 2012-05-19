@@ -4,7 +4,6 @@
 
 enum sm_tag {
         SM_Default,
-        SM_Keyboard,
         SM_GoUp,
         SM_GoDown,
         SM_GoLeft,

@@ -260,11 +260,6 @@ void render_dummy(void *self)
         struct noun_t *noun = (struct noun_t *)self;
         static bool done;
 
-        if (noun->is_doomed) {
-                noun->_del(noun);
-                return;
-        }
-
         if (!done) {
                 wbkgrnd(noun->win, mkcch(L"Ⰹ", 0, FLEX));
                 done = true;
@@ -311,7 +306,7 @@ int modify_dummy(void *obj)
                 noun->animate(dummy_mv_r);
                 break;
         case SM_Destroy:
-                doom(noun);
+                noun->doom();
                 oops = false;
                 dock_say(L"\n","\n");
                 break;

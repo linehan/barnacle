@@ -21,7 +21,6 @@ struct noun_t {
         uint32_t vitals;          // The state word
         bool is_mobile;           // Rendering on/off
         bool hit_testing;         // Collisions on/off
-        bool is_doomed;           // Ready for deletion
 
         /* Associated data --------------------------------*/
         struct sm_t *sm;          // State machine
@@ -53,6 +52,7 @@ struct noun_t {
         void (*_animate)(void *self, void *animation);
         void (*_del)(void *self);
         void (*_take)(void *self, int y, int x);
+        void (*_doom)(void *self);
 
         /* Member methods ---------------------------------*/
         int  (*modify)(void);
@@ -67,6 +67,7 @@ struct noun_t {
         void (*animate)(void *animation);
         void (*del)(void);
         void (*take)(int y, int x);
+        void (*doom)(void);
 };
 
 
@@ -77,6 +78,8 @@ struct noun_t *new_noun(const char *name, uint32_t model, void *obj);
 struct noun_t *key_noun(uint32_t id);
 struct noun_t *get_noun(const char *name);
 struct noun_t *get_noun_at(struct map_t *map, int y, int x);
+
+void free_nouns(void);
 
 void noun_set_signal_delayed(struct noun_t *noun, uint32_t state, int dir);
 void noun_set_signal(struct noun_t *noun, uint32_t state, int dir);
@@ -92,7 +95,6 @@ struct noun_t *focused;
 
 #define NOUN(ptr) (struct noun_t *)(ptr)
 #define nn(name) get_noun((name))
-#define doom(noun) (noun)->is_doomed = true
 
 
 
