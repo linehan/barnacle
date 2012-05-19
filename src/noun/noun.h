@@ -78,9 +78,9 @@ struct noun_t *key_noun(uint32_t id);
 struct noun_t *get_noun(const char *name);
 struct noun_t *get_noun_at(struct map_t *map, int y, int x);
 
-void noun_set_signal_delayed(struct noun_t *noun, enum sm_state tag, int dir, int delay);
-void noun_set_signal(struct noun_t *noun, enum sm_state tag, int dir);
-void emit_to_noun(struct noun_t *noun, int dir, enum sm_state tag, int mag, int delay, int pri);
+void noun_set_signal_delayed(struct noun_t *noun, uint32_t state, int dir);
+void noun_set_signal(struct noun_t *noun, uint32_t state, int dir);
+void emit_to_noun(struct noun_t *noun, int dir, uint32_t state);
 
 
 

@@ -32,9 +32,6 @@ struct ani_t {
         wchar_t *frame;  /* Frames in the animation reel */
         int mv_frame;    /* Frame on which to issue a move signal */
         int mv_dir;      /* Direction in which to move */
-        int msg_frame;   /* Frame on which to issue a verb signal */
-        int msg_tag;     /* Verb to issue */
-        int msg_dir;     /* Neighbor to address the verb to */
         int len;         /* Length of the animation (late binding) */
         int i;           /* Incrementer for internal use */ 
 };

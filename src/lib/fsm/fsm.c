@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include "../../com/arawak.h"
+#include "../../eng/tick.h"
 #include "../list.h"
 #include "../bheap.h"
 #include "fsm.h"
@@ -12,6 +13,32 @@
  * at which time they are routed to their destination.
  */
 LIST_HEAD(delayed_msgs);
+
+
+/* 
+ * MESSAGE
+ * The message is the "packet" or "letter" sent from one state machine to
+ * another. It contains identifiers for the sender and recipient, the
+ * message itself, a magnitude value associated with the message, and a
+ * delay value that will determine how many game ticks must pass before
+ * the message is routed to its intended recipient. 
+ *
+ * The message type also contains a 'route' method, which is assigned to
+ * the message by the state machine when the message is created. It is
+ * implementation defined, and must contain logic to route the message
+ * from the state machine belonging to the 'from' identity to the state
+ * machine belonging to the 'to' identity.
+ */
+struct msg_t {
+        struct list_node node; /* Allows msgs to be added to linked list */
+        uint32_t from;         /* Sender (noun) identifier */
+        uint32_t to;           /* Receiver (noun) identifier */
+        uint32_t time;         /* Send at this time */
+        int pri;               /* Message priority */
+        enum sm_tag tag;       /* Message identifier */
+        SM_CB_ROUTE route;
+};
+
 
 
 /**
@@ -36,17 +63,17 @@ inline void add_delayed(struct msg_t *msg)
  * @route: custom function pointer for routing msg to target 
  */
 inline struct msg_t *
-new_msg(uint32_t from, uint32_t to, enum sm_state tag, int mag, uint32_t time, int pri, SM_CB_ROUTE route)
+new_msg(uint32_t from, uint32_t to, enum sm_tag tag, uint32_t time, int pri, SM_CB_ROUTE route)
 {
         struct msg_t *new = malloc(sizeof(struct msg_t));
 
         new->tag   = tag;
-        new->mag   = mag;
         new->to    = to;
         new->from  = from;
         new->time  = time;
         new->pri   = pri;
         new->route = route;
+
 
 
         return (new);
@@ -91,10 +118,13 @@ void send_delayed_msgs(void)
 }
 
 
+uint32_t msg_to(struct msg_t *msg)
+{
+        return (msg->to);
+}
 
 
-
-/* STATE MACHINE METHODS 
+/* FSM INSTANTIATION 
 ``````````````````````````````````````````````````````````````````````````````*/
 /**
  * CONSTRUCTOR
@@ -110,7 +140,6 @@ struct sm_t *new_sm(uint32_t id, bool (*route)(void *self))
         new->state  = new_bh(NUM_PENDING);
 
         new->route  = route;
-        new->accept = true;
 
         return (new);
 }
@@ -126,15 +155,45 @@ void del_sm(struct sm_t *sm)
 }
 
 
+
+/* FSM CONTROL 
+``````````````````````````````````````````````````````````````````````````````*/
+/** 
+ * SET
+ * sm_set -- set the state and state magnitude of a state machine
+ * @sm: pointer to a state machine
+ * @msg: the state msg
+ * @mag: the state magnitude */
+bool sm_set(struct sm_t *sm, enum sm_tag tag)
+{
+        sm->tag     = tag;
+        sm->pending = true; /* A new state is pending */
+
+        return true;
+}
+
 /**
- * EMIT 
- * sm_emit -- draft a new message and pass it to the emitter
+ * STATE 
+ * sm_state -- return the current state msg of a state machine 
+ * @sm: pointer to a state machine */
+int sm_state(struct sm_t *sm)
+{
+        sm->pending = false; /* The state has now been observed */
+
+        return (int)(sm->tag);
+}
+
+
+/** 
+ * MSG 
+ * sm_msg -- send a new message (draft + pass to the emitter)
  * @self:  pointer to the state machine object 
  * @to:    noun id of intended recipient
  * @msg:   msg identifier
- * @mag:   magnitude of the msg (optional)
- * @delay: ticks of delay */ 
-void sm_emit(struct sm_t *sm, uint32_t to, enum sm_state tag, int mag, int delay, int pri)
+ * @delay: ticks of delay
+ * @pri:   priority of message */ 
+/*void sm_msg(struct sm_t *sm, uint32_t to, enum sm_tag tag, int delay, int pri)*/
+void sm_msg(struct sm_t *sm, uint32_t to, uint32_t state)
 {
         uint32_t recipient; 
         uint32_t time;
@@ -144,11 +203,61 @@ void sm_emit(struct sm_t *sm, uint32_t to, enum sm_state tag, int mag, int delay
                 recipient = sm->id;
         else    recipient = to;
 
-        time = get_tick() + delay;
+        time = get_tick() + SM_WAIT(state);
 
-        msg = new_msg(sm->id, recipient, tag, mag, time, pri, sm->route);
+        msg = new_msg(sm->id, recipient, SM_TAG(state), time, SM_PRI(state), sm->route);
 
         do_route(msg);
 }
 
+
+
+/* FSM TRANSITIONING 
+``````````````````````````````````````````````````````````````````````````````*/
+/* ACCEPT
+ * sm_accept -- receive a message and add it to the message heap
+ * @sm: pointer to a state machine
+ * @msg: the message structure
+ */
+void sm_accept(struct sm_t *sm, struct msg_t *msg)
+{
+        if (msg->pri < sm->screen)
+                free(msg);
+        else
+                bh_add(sm->state, msg->pri, msg->from, msg);
+}
+
+/* CONSUME
+ * sm_consume -- set the state and magnitude to the pending state at hipri
+ * @sm: pointer to a state machine
+ */
+void sm_consume(struct sm_t *sm)
+{
+        struct msg_t *msg;
+
+        msg = (struct msg_t *)bh_pop(sm->state);
+
+        if (msg) {
+                sm_set(sm, msg->tag);
+                free(msg);
+        }
+}
+
+
+/* RESET
+ * sm_reset -- set the state and state magnitude of a state machine to 0
+ * @sm: pointer to a state machine */
+void sm_reset(struct sm_t *sm)
+{
+        sm_set(sm, 0);
+}
+
+/* REFRESH 
+ * sm_refresh -- if no new state is pending, reset the state machine
+ * @sm: pointer to a state machine */
+void sm_refresh(struct sm_t *sm)
+{
+        if (!sm_is_pending(sm))
+                sm_reset(sm);
+}
 

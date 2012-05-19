@@ -23,13 +23,12 @@ struct seed_t {
 };
 
 struct mx_index {
-        int rows;
-        int cols;
-        int len;
-
-        int row;
-        int col;
-        int adr;
+        long rows;
+        long cols;
+        long len;
+        long row;
+        long col;
+        long adr;
 };
 
 struct matrix_t {
@@ -41,7 +40,7 @@ struct matrix_t {
 
 
 
-static uint32_t DOPE;
+static uint32_t DOPE = 0x00000000;
 
 
 /* Public function prototypes 
@@ -84,7 +83,7 @@ struct matrix_t *new_matrix(int nrows, int ncols);
 static inline
 uint32_t *mx_get(struct matrix_t *matrix, int y, int x)
 {
-        return &matrix->mx[y][x];
+        return &(matrix->mx[y][x]);
 }
 
 /*
@@ -130,7 +129,7 @@ int mx_adr_yx(struct matrix_t *matrix, int y, int x)
  * @adr: integer address of word
  */
 static inline
-uint32_t *mx_arget(struct matrix_t *matrix, size_t adr)
+uint32_t *mx_arget(struct matrix_t *matrix, int adr)
 {
         return &matrix->ar[adr];
 }
@@ -387,7 +386,7 @@ static inline int mx_len(struct matrix_t *mx)
  */
 static inline uint32_t *mx_cell(struct matrix_t *mx)
 {
-        return mx_arget(mx, mx_adr(mx)); 
+        return mx_get(mx, mx->itr.row, mx->itr.col);
 }
 
 
@@ -408,21 +407,25 @@ static inline void mx_itr_start(struct matrix_t *matrix)
  */
 static inline bool mx_itr_until(struct matrix_t *mx)
 {
-        return (mx_adr(mx) < mx_len(mx)) ? true : false; 
+        if (mx_row(mx) == (mx->itr.rows - 1)
+        && (mx_col(mx) == (mx->itr.cols - 1)))
+                return false;
+        else
+                return true;
 }
 
 /**
  * mx_itr_next -- advances the len, col, and row indices of the foreach loop
  */
-static inline void mx_itr_next(struct matrix_t *matrix)
+static inline void mx_itr_next(struct matrix_t *mx)
 {
-        matrix->itr.adr++;
+        mx->itr.col = (mx->itr.col+1) % mx->itr.cols;
 
-        matrix->itr.col = matrix->itr.adr % matrix->itr.cols;
-        matrix->itr.row = matrix->itr.adr / matrix->itr.cols;
+        if (mx->itr.col == 0)
+                mx->itr.row++;
 
-        assert(matrix->itr.col < matrix->itr.cols || "Matrix column overflow");
-        assert(matrix->itr.row < matrix->itr.rows || "Matrix row overflow");
+        assert(mx->itr.col < mx->itr.cols || "Matrix column overflow");
+        assert(mx->itr.row < mx->itr.rows || "Matrix row overflow");
 }
 
 /**
@@ -475,9 +478,9 @@ void mx_itr_seed(struct seed_t *seed, struct matrix_t *matrix)
  * @mx: pointer to a struct matrix_t
  */
 #define mx_foreach_seed_yx(seed, y, x, mx)                                     \
-        for (mx_itr_start(mx), mx_itr_seed(seed,mx), y=mx_row(mx),x=mx_col(mx);\
+        for (mx_itr_start(mx), mx_itr_seed(seed,mx), (y)=mx_row(mx),(x)=mx_col(mx);\
              mx_itr_until(mx);                                                 \
-             mx_itr_next(mx), mx_itr_seed(seed,mx), y=mx_row(mx),x=mx_col(mx))
+             mx_itr_next(mx), mx_itr_seed(seed,mx), (y)=mx_row(mx),(x)=mx_col(mx))
 
 
 #endif

@@ -80,25 +80,7 @@ void operate_on(int input)
         case UI_NOUN:
                 setmode(choose_noun(input));
                 break;
-        case UI_VERB:
-                /*setmode(choose_verb(input));*/
-                break;
         case UI_WORLDMAP:
-                /*switch(input) */
-                /*{*/
-                /*case 'w':*/
-                        /*map_roll(GLOBE, 'u');*/
-                        /*break;*/
-                /*case 'a':*/
-                        /*map_roll(GLOBE, 'l');*/
-                        /*break;*/
-                /*case 's':*/
-                        /*map_roll(GLOBE, 'd');*/
-                        /*break;*/
-                /*case 'd':*/
-                        /*map_roll(GLOBE, 'r');*/
-                        /*break;*/
-                /*}*/
                 break;
         case UI_INSPECTOR:
                 inspect_control(input);
@@ -107,7 +89,7 @@ void operate_on(int input)
                 /*noun_set_state(get_noun("Afarensis"), VERB_Keyboard, input);*/
                 break;
         case UI_MOB:
-                sm_set(nn("Guy")->sm, SM_Keyboard, input);
+                sm_set(nn("Guy")->sm, SM_Key(input));
                 break;
         case UI_BUILD:
                 build_control(input);
@@ -129,33 +111,11 @@ void director(int input)
         else {
                 switch (input) 
                 { 
-                /*case '#':*/
-                        /*TOGPAN(colortest_panel());*/
-                        /*paint_ramp(0);*/
-                        /*break;*/
-                /*case '%':*/
-                        /*testplex(0);*/
-                        /*break;*/
-                /*case ')':*/
-                        /*inc_surface_flow();*/
-                        /*break;*/
-                /*case '(':*/
-                        /*dec_surface_flow();*/
-                        /*break;*/
-                /*case '_':*/
-                        /*rot_surface_rule();*/
-                        /*break;*/
                 case '1':
                         tab_sig(1);
                         break;
                 case '2':
                         tab_sig(2);
-                        break;
-                case ',':
-                        /*tab_cur('l');*/
-                        break;
-                case '.':
-                        /*tab_cur('r');*/
                         break;
                 case 'z':
                         dock_toggle();
@@ -168,8 +128,6 @@ void director(int input)
                         setmode(MODE_STARTED);
                         break;
                 case 'b':
-                        /*setmode(UI_BOAT);*/
-                        /*setmode(MODE_STARTED);*/
                         setmode(UI_BUILD);
                         setmode(MODE_STARTED);
                         break;
@@ -188,7 +146,7 @@ void director(int input)
                 case '`':
                         TOGPAN(CONSOLE_PAN);
                         doupdate();
-                        test_request();
+                        /*test_request();*/
                         break;
                 case '~':
                         TOGPAN(DIAGNOSTIC_PAN);
@@ -202,6 +160,9 @@ void director(int input)
                         break;
                 case '&':
                         dock_say(L"䥚", "I am the computer king.");
+                        break;
+                case 'L':
+                        loop_test();
                         break;
                 case 'T':
                         switch (getchar()) {

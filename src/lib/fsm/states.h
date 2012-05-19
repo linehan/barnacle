@@ -2,7 +2,7 @@
 #ifndef __FSM_STATES_H
 #define __FSM_STATES_H
 
-enum sm_state {
+enum sm_tag {
         SM_Default,
         SM_Keyboard,
         SM_GoUp,
