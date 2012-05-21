@@ -13,10 +13,11 @@
 /* 
  * Constants that can be adjusted to yield different characteristics 
  */ 
-const double c  = 1.0;  /* Wave velocity */
+const double c  = 9.0;  /* Wave velocity */
 const double h  = 2.0;  /* Field height; distance b/t two vertices */
-const double dt = 0.8;  /* The time/sampling interval */
-const double d  = 1.18; /* A "dampening" factor, for collisions */
+const double dt = 0.08;  /* The time/sampling interval */
+/*const double d  = 1.18; [> A "dampening" factor, for collisions <]*/
+const double d = 1.25;
 
 /* 
  * Precomputed integral coefficients for the wave equation in 2D
@@ -52,8 +53,6 @@ void init_flow(struct map_t *map)
         A = ((c * dt/h)*(c * dt/h));
         B = (2 - 4*A);
 
-        pthread_mutex_init(&flow_lock, NULL);
-
         flowmap = map;
         rows = pos_h(map->pos) - 1;
         cols = pos_w(map->pos) - 1;
@@ -73,42 +72,31 @@ void init_flow(struct map_t *map)
  * flow -- hacky in-place shallow water DFT with matrix swap 
  * @map: pointer to an allocated struct map_t
  */
-void *flow(void *mapstruct)
+void *flow(struct map_t *map)
 {
         /*assert (z != NULL && z1 != NULL);*/
-        struct map_t *map = (struct map_t *)mapstruct;
-
         double **tmp; /* For when we swap matrices at the end */
         int i;
         int j;
 
-        if (z == NULL)
-                init_flow(map);
+        for (i=1; i<rows; i++) {
+                for (j=1; j<cols; j++) {
 
-        for (;;) {
-                /*------------------------------------ CRITICAL SECTION */
-                pthread_mutex_lock(&flow_lock);
-                for (i=1; i<rows; i++) {
-                        for (j=1; j<cols; j++) {
-
-                                /* Compute the integral */
-                                z1[i][j] = A*(z[i-1][j] + z[i+1][j] + z[i][j+1])
-                                         + B*z[i][j] - z1[i][j];
-                                /* 
-                                 * If the value corresponds to a map tile above
-                                 * sea level, multiply it by the dampening
-                                 * factor
-                                 */
-                                if (ELEV(flowmap, i, j) != 0)
-                                        z1[i][j] *= d;
-                        }
+                        /* Compute the integral */
+                        z1[i][j] = A*(z[i-1][j] + z[i+1][j] + z[i][j+1])
+                                 + B*z[i][j] - z1[i][j];
+                        /* 
+                         * If the value corresponds to a map tile above
+                         * sea level, multiply it by the dampening
+                         * factor
+                         */
+                        if (ELEV(flowmap, i, j) != 0)
+                                z1[i][j] *= d;
                 }
-                tmp = z1;
-                z1  = z;
-                z   = tmp;
-                /*------------------------------------ CRITICAL SECTION */
         }
-        return NULL;
+        tmp = z1;
+        z1  = z;
+        z   = tmp;
 }
 
 
@@ -120,16 +108,11 @@ void *flow(void *mapstruct)
 /*
  * render_flow -- request that the flow state be rendered on screen
  */
-void *render_flow(void *mapstruct)
+void *render_flow(struct map_t *map)
 {
         /*assert(z != NULL && z1 != NULL);*/
-        struct map_t *map = (struct map_t *)mapstruct;
-
         int i;
         int j;
-
-        if (map->id != flowmap->id)
-                flowmap = map;
 
         for (i=1; i<rows; i++) {
                 for (j=1; j<cols; j++) {
@@ -150,8 +133,6 @@ void *render_flow(void *mapstruct)
                                 mvwchgat(PLATE(flowmap, BGR), i, j, 1, 0, SEA_MED, NULL);
                 }
         }
-        pthread_mutex_unlock(&flow_lock);
-
         return NULL;
 }
 
@@ -159,11 +140,22 @@ void *render_flow(void *mapstruct)
 
 /* -------------------------------------------------------------------------- */
 
-
-
-void fork_flow(void)
+void do_flow(struct map_t *map)
 {
-        pthread_create(&flowth, NULL, &flow, ACTIVE);
+        if (z == NULL)
+                init_flow(map);
+
+        if (map->id != flowmap->id)
+                flowmap = map;
+
+        flow(map);
+        render_flow(map);
 }
+
+
+/*void fork_flow(void)*/
+/*{*/
+        /*pthread_create(&flowth, NULL, &flow, ACTIVE);*/
+/*}*/
 
 

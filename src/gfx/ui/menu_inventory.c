@@ -8,17 +8,40 @@ struct item_t *equipped;
 WINDOW *equipped_win;
 PANEL  *equipped_pan;
 
+typedef struct item_t INVENTORY_ITEM;
 
-#define MENU_W 12
+#define MENU_W 15
 #define MENU_H (LINES/6)
 #define MENU_X 1 
 #define MENU_Y (LINES-MENU_H)
 
+/*
+ * Count the number if items in the inventory
+ */
+inline int inventory_count(struct list_head *inv)
+{
+        INVENTORY_ITEM *tmp;
+        int n=0;
+
+        list_for_each(inv, tmp, node)
+                n++;
+
+        return (n);
+}
+
+static inline void print_item(struct item_t *item, short pair)
+{
+        top_panel(equipped_pan);
+        wcolor_set(equipped_win, pair, NULL);
+        mvwadd_wch(equipped_win, 0, 1, mkcch(item->icon, 0, pair));
+        mvwprintw(equipped_win, 0, 3, "%s\n", item->name);
+        invmenu->icons(invmenu, 1, 1);
+}
 
 inline void add_test_items(struct list_head *inv)
 {
+        INVENTORY_ITEM *test[3];
         int i;
-        struct item_t *test[3];
 
         test[0] = make_item(ITEM_ROPE);
         test[1] = make_item(ITEM_PICKAXE);
@@ -29,13 +52,53 @@ inline void add_test_items(struct list_head *inv)
 }
 
 
+void inventory_to_menu(struct list_head *inv)
+{
+        INVENTORY_ITEM **item;
+        INVENTORY_ITEM *tmp;
+        char     **name;
+        wchar_t  **icon;
+        int i;
+        int n;
+
+        if (list_empty(inv))
+                return;
+
+        n = inventory_count(inv);
+
+        name = calloc(n, sizeof(char *));      /* Item names */
+        icon = calloc(n, sizeof(wchar_t *));
+        item = calloc(n, sizeof(struct item_t *));
+
+        i=0;
+        list_for_each(inv, tmp, node) {
+                name[i] = tmp->name;
+                icon[i] = tmp->icon;
+                item[i] = tmp;
+                i++;
+        }
+
+        if (!equipped_win) {
+                inventory_setup();
+                invmenu = new_stdmenu(name, name, icon, (void **)item, n);
+        } else {
+                invmenu->unpost(invmenu);
+                invmenu->build(invmenu, name, name, icon, (void **)item, n);
+                invmenu->post(invmenu);
+                invmenu->next(invmenu);
+                invmenu->prev(invmenu);
+                invmenu->icons(invmenu, 1, 1);
+        }
+}
+
+
 /*
  * SETUP
  * Create the windows and panels and set the backgrounds
  */
 inline void inventory_setup(void)
 {
-        equipped_win = newwin(1, 12, LINES-1, 1);
+        equipped_win = newwin(1, MENU_W, LINES-1, 1);
         wbkgrnd(equipped_win, &PURPLE[2]);
         equipped_pan = new_panel(equipped_win);
 }
@@ -50,35 +113,10 @@ void inventory_mkmenu(struct list_head *inv)
         #define ORIGINAL PUR_GRE
         #define STANDOUT WARNING
         #define OTANDOUT PUR_RED
-        char     **name;
-        wchar_t  **icon;
-        struct item_t **item;
-        struct item_t *tmp;
-        int i=0;
-        int n=0;
 
-        if (list_empty(inv))
-                add_test_items(inv);
+        add_test_items(inv);
 
-        if (!equipped_win)
-                inventory_setup();
-
-        list_for_each(inv, tmp, node)
-                n++;
-
-        name = calloc(n, sizeof(char *));      /* Item names */
-        icon = calloc(n, sizeof(wchar_t *));
-        item = calloc(n, sizeof(struct item_t *));
-
-        i=0;
-        list_for_each(inv, tmp, node) {
-                name[i] = tmp->name;
-                icon[i] = tmp->icon;
-                item[i] = tmp;
-                i++;
-        }
-
-        invmenu = new_stdmenu(name, name, icon, (void **)item, n);
+        inventory_to_menu(inv);
 
         stdmenu_win(invmenu, MENU_H, MENU_W, MENU_Y, MENU_X, 1, 0, 3, 0);
         stdmenu_color_item(invmenu, STANDOUT, ORIGINAL, __PUR_GREY);
@@ -89,17 +127,6 @@ void inventory_mkmenu(struct list_head *inv)
         invmenu->post(invmenu);
         invmenu->next(invmenu);
         invmenu->prev(invmenu);
-}
-
-
-
-static inline void print_item(struct item_t *item, short pair)
-{
-        top_panel(equipped_pan);
-        wcolor_set(equipped_win, pair, NULL);
-        mvwadd_wch(equipped_win, 0, 1, mkcch(item->icon, 0, pair));
-        mvwprintw(equipped_win, 0, 3, "%s\n", item->name);
-        invmenu->icons(invmenu, 1, 1);
 }
 
 

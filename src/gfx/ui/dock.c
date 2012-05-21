@@ -2,6 +2,7 @@
 #include "../gfx.h"
 #include "../../noun/noun.h"
 #include "../../noun/nounmenu.h"
+#include "../../txt/gloss.h"
 #include "dock.h"
 
 
@@ -18,16 +19,40 @@ struct ui_tab_t {
         PANEL  *pan;
 };
 
-#define NUMTABS  5 
-#define TAB_H    1
-#define TAB_W    3
-#define TAB_Y    (LINES-(TAB_H))
-#define TAB_X(i) (COLS-(NUMTABS*TAB_W)+(TAB_W*i))
-#define TAB_YOFS 0
-#define TAB_XOFS 1
+
+
+#define DOCK_HEIGHT 1
+#define DOCK_WIDTH COLS
+#define DOCK_Y LINES-DOCK_HEIGHT
+#define DOCK_X 0
+
+#define NAME_HEIGHT 1
+#define NAME_WIDTH 20
+#define NAME_Y LINES - NAME_HEIGHT
+#define NAME_X 5
+
+#define STAT_HEIGHT 1
+#define STAT_WIDTH  12 
+#define STAT_Y LINES - STAT_HEIGHT 
+#define STAT_X (COLS - STAT_WIDTH)
+
+#define TEXT_HEIGHT 1 
+#define TEXT_WIDTH 40
+#define TEXT_Y LINES - TEXT_HEIGHT 
+#define TEXT_X 20 
+
+
+#define NUMTABS     5 
+#define TAB_H       1
+#define TAB_W       3
+#define TAB_Y       (LINES-(TAB_H))
+#define TAB_X(i)    (STAT_X-(NUMTABS*TAB_W)+(TAB_W*i))
+#define TAB_YOFS    0
+#define TAB_XOFS    1
+#define TAB_W_TOTAL (COLS-(NUMTABS*TAB_W))
 
 //{L"⸭"}
-struct ui_tab_t ui_tab[] = { {L"༈"},{L"∰∯∮"},{L"◆◈◇"},{L"ℌ"},{L"ℜ"} };
+/*struct ui_tab_t ui_tab[] = { {L"༈"},{L"∰∯∮"},{L"◆◈◇"},{L"ℌ"},{L"ℜ"} };*/
                              
 
 /*
@@ -146,25 +171,7 @@ struct ui_dock_t ui_dock; /* The one and only dock */
  */
 void init_dock(void)
 {
-        #define DOCK_HEIGHT 1
-        #define DOCK_WIDTH COLS
-        #define DOCK_Y LINES-DOCK_HEIGHT
-        #define DOCK_X 0
 
-        #define NAME_HEIGHT 1
-        #define NAME_WIDTH 20
-        #define NAME_Y LINES - NAME_HEIGHT
-        #define NAME_X 5
-        
-        #define STAT_HEIGHT 1
-        #define STAT_WIDTH 32
-        #define STAT_Y LINES - STAT_HEIGHT 
-        #define STAT_X 5
-
-        #define TEXT_HEIGHT 1 
-        #define TEXT_WIDTH 32
-        #define TEXT_Y LINES - TEXT_HEIGHT 
-        #define TEXT_X COLS/2 
 
         init_tabs();
 
@@ -189,7 +196,7 @@ void init_dock(void)
  * Return a particular window of the dock structure (used by the noun
  * and verb view routines)
  */
-WINDOW *dock_window(int id)
+WINDOW *dock_win(int id)
 {
         WINDOW *win;
 
@@ -221,6 +228,7 @@ inline void check_for_init(void)
         if (!ui_dock.dock_pan) 
                 init_dock();
 }
+
 
 /*
  * Implementation note
@@ -255,8 +263,6 @@ void view_dock(void)
 
         for (i=0; i<NUMTABS; i++) 
                 show_panel(ui_tab[i].pan);
-
-        scr_refresh();
 }
 
 /*
@@ -287,34 +293,5 @@ void dock_toggle(void)
 {
         (ui_dock.is_visible) ? hide_dock() : view_dock();
 }
-
-/*
- * dock_update -- hook for the event loop to keep the dock rendering 
- */
-void dock_update(void)
-{
-        if (!ui_dock.is_visible)
-                return;
-
-        view_dock();
-        /*nounmenu_print_name(PUR_YELLOW);*/
-        /*nounmenu_print_vitals();*/
-}
-
-
-
-/* Special junk
-````````````````````````````````````````````````````````````````````````````` */
-void dock_say(const wchar_t *who, const char *msg)
-{
-        werase(ui_dock.text_win);
-
-        mvwadd_wch(ui_dock.text_win, 0, 0, mkcch(who, 0, PUR_YELLOW));
-        wcolor_set(ui_dock.text_win, PUR_YELLOW, NULL);
-        mvwprintw(ui_dock.text_win, 0, 3, "%s\n", msg);
-
-        wrefresh(ui_dock.text_win);
-}
-
 
 

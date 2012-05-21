@@ -302,4 +302,17 @@ static const char *hdg_tag[NUM_HEADINGS]={"NORTH","NNE","NE","ENE","EAST","ESE",
                                           "WEST","WNW","NW", "NNW"};
 
 
+#include <stdlib.h>
+/* Because we intend to re-use or re-reference *pptr, the idea of re-lease
+ * is appropriate. */
+inline static void release(void **pptr)
+{
+        if (pptr != NULL && *pptr != NULL) { 
+                free(*pptr);                     
+                *pptr = NULL;                 
+        }
+}
+
+
+
 #endif /* header */
