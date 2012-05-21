@@ -21,8 +21,8 @@
 #define MENU_X 1
 #define MENU_Y (LINES-MENU_H-1)
 
-#define IDWIN dock_window(NAME_WIN)
-#define WIWIN dock_window(STAT_WIN)
+#define IDWIN dock_win(NAME_WIN)
+#define WIWIN dock_win(STAT_WIN)
 
 #define ORIGINAL PUR_GRE
 #define STANDOUT WARNING
@@ -64,21 +64,21 @@ void make_nounmenu(int query)
 {
         /*uint32_t **key;*/
         /*char **name;*/
-        /*int nitem;*/
+        /*int n;*/
         /*int i;*/
 
-        /*nitem = numnoun;*/
+        /*n = numnoun;*/
 
-        /*name = calloc(nitem, sizeof(char *));      [> Noun names <]*/
-        /*key  = calloc(nitem, sizeof(uint32_t *));  [> Noun ids <]*/
+        /*name = calloc(n, sizeof(char *));      [> Noun names <]*/
+        /*key  = calloc(n, sizeof(uint32_t *));  [> Noun ids <]*/
 
-        /*for (i=0; i<nitem; i++) {*/
+        /*for (i=0; i<n; i++) {*/
                 /*name[i] = fullname(keyring[i]);*/
                 /*key[i]  = &keyring[i];*/
         /*}*/
 
-        /*nounmenu = new_stdmenu(name, name, NULL, (void **)key, nitem);*/
-        /*nounmenu->nitem = nitem;*/
+        /*nounmenu = new_stdmenu(name, name, NULL, (void **)key, n);*/
+        /*nounmenu->n = n;*/
 
         /*stdmenu_win(nounmenu, MENU_H, MENU_W, MENU_Y, MENU_X, 1, 1, 1, 1);*/
         /*stdmenu_buf(nounmenu, IDWIN);*/

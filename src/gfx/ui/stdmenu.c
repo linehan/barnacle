@@ -21,53 +21,139 @@ void stdmenu_pgup(void *self);
 void stdmenu_pgdn(void *self);
 void stdmenu_print_icons(void *self, int yofs, int xofs);
 
+
+void stdmenu_delmenu(void *self)
+{
+        struct stdmenu_t *smenu = STDMENU(self);
+        int i;
+
+        unpost_menu(smenu->menu);
+        /*free_menu(smenu->menu);*/
+
+        for (i=0; i<smenu->n; i++) {
+                free_item(smenu->item[i]);
+                free(smenu->icon[i]);
+        }
+}
+
+/*
+ * DEL ITEMS
+ * Remove the items stored in the stdmenu
+ */
+void del_items(struct stdmenu_t *smenu)
+{
+        int i;
+        for (i=0; i<smenu->n; i++)
+                free_item(smenu->item[i]);
+}
+
+
+/*
+ * DEL ICONS 
+ * Remove the icons stored in the stdmenu
+ */
+void del_icons(struct stdmenu_t *smenu)
+{
+        int i;
+        for (i=0; i<smenu->n; i++)
+                free(smenu->icon[i]);
+}
+
+
+/*
+ * BUILD ITEMS
+ * Return an ITEM wad that can be used to build a menu
+ */
+ITEM **build_items(char **name, char **desc, void **usrptr, int n)
+{
+        ITEM **item;
+        int i;
+
+        item = calloc(n+1, sizeof(ITEM *));
+
+        for (i=0; i<n; i++) {
+                item[i] = new_item(name[i], desc[i]);
+                if (usrptr)
+                        set_item_userptr(item[i], usrptr[i]);
+        }
+        item[n] = (ITEM *)NULL;
+
+        return item;
+}
+
+
+/* 
+ * BUILD ICONS
+ * Copy an icon array
+ */
+wchar_t **build_icons(wchar_t **icon, int n)
+{
+        wchar_t **icon_copy;
+        int i;
+
+        icon_copy = calloc(n+1, sizeof(wchar_t *));
+
+        for (i=0; i<n; i++) {
+                icon_copy[i] = wcsdup(icon[i]);
+        }
+
+        return icon_copy;
+}
+
+
+
 /* Creators and Destructors
 ``````````````````````````````````````````````````````````````````````````````*/
 void stdmenu_destroy(void *self)
 {
         struct stdmenu_t *smenu = STDMENU(self);
-        int i;
+
+        unpost_menu(smenu->menu);
 
         del_panel(smenu->pan);
         delwin(smenu->buf);
         delwin(smenu->sub);
         delwin(smenu->win);
 
-        unpost_menu(smenu->menu);
         free_menu(smenu->menu);
-
-        for (i=0; i<smenu->nitem; i++) {
-                free_item(smenu->item[i]);
-                free(smenu->icon[i]);
-        }
+        del_items(smenu);
+        del_icons(smenu);
 
         free(smenu);
 }
 
+
+
+
+void stdmenu_build(void *self, char **name, char **desc, wchar_t **icon, void **usrptr, int n)
+{
+        struct stdmenu_t *smenu = STDMENU(self);
+
+        del_items(smenu);
+        del_icons(smenu);
+
+        smenu->item = build_items(name, desc, usrptr, n);
+        smenu->icon = build_icons(icon, n);
+        smenu->n    = n;
+
+        if (smenu->menu) {
+                set_menu_items(smenu->menu, (ITEM **)smenu->item);
+        }
+        else 
+                smenu->menu = new_menu((ITEM **)smenu->item);
+}
+
+
+
+
 struct stdmenu_t *new_stdmenu(char **name, char **desc, wchar_t **icon, void **usrptr, int n)
 {
         struct stdmenu_t *new;
-        int i;
 
         new = malloc(sizeof(struct stdmenu_t));
 
-        new->item = calloc(n+1, sizeof(ITEM *));
-        new->icon = calloc(n+1, sizeof(wchar_t *));
-
-        for (i=0; i<n; i++) {
-                new->item[i] = new_item(name[i], desc[i]);
-                if (usrptr != NULL)
-                        set_item_userptr(new->item[i], usrptr[i]);
-                if (icon != NULL)
-                        new->icon[i] = wcdup(icon[i]);
-        }
-        new->item[n] = (ITEM *)NULL;
-
-        new->menu = new_menu((ITEM **)new->item);
-
-        new->nitem = n;
-
         new->del     = &stdmenu_destroy;
+        new->build   = &stdmenu_build;
         new->post    = &stdmenu_post;
         new->unpost  = &stdmenu_unpost;
         new->open    = &stdmenu_open;
@@ -80,6 +166,8 @@ struct stdmenu_t *new_stdmenu(char **name, char **desc, wchar_t **icon, void **u
         new->prev    = &stdmenu_prev;
         new->pgup    = &stdmenu_pgup;
         new->pgdn    = &stdmenu_pgdn;
+
+        new->build(new, name, desc, icon, usrptr, n);
 
         return (new);
 }
@@ -283,11 +371,11 @@ void stdmenu_pgdn(void *self)
 void stdmenu_print_icons(void *self, int yofs, int xofs)
 {
         struct stdmenu_t *smenu = STDMENU(self);
-        short pair;          
         cchar_t cch;         
+        short pair;          
         int i;
 
-        for (i=(smenu->cur_top); i<(smenu->nitem); i++) {
+        for (i=smenu->cur_top; i<smenu->n; i++) {
 
                 pair = (i == smenu->cur_row) ? PUR_GREY : PUR_PURPLE;
                 setcchar(&cch, smenu->icon[i], 0, pair, NULL);

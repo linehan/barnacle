@@ -45,13 +45,11 @@ int main(int argc, char *argv[])
         map_roll(ACTIVE, 0);
         map_roll(ACTIVE, 0);
 
-        /*new_boat(FIELD, FUNBOAT, "Afarensis");*/
-        /*set_mob(noun_mob("Afarensis"), false);*/
-
         dock_toggle();
 
         init_pair(FLEX, BLACK, WHITE);
         init_pair(FLEX2, BLACK, WHITE);
+
 
         struct item_t *item1 = make_item(ITEM_APPLE);
         struct item_t *item2 = make_item(ITEM_GRAPEFRUIT);
@@ -59,7 +57,8 @@ int main(int argc, char *argv[])
         item1->put(item1, LINES/3, COLS/3);
         item2->put(item2, (LINES/3)+5, (COLS/3)+3);
         item3->put(item3, (LINES/3)+8, (COLS/3)+10);
-        
+
+
 
         new_noun("Guy", PERSON, 0);
         new_noun("Dummy", DUMMY, 0);
@@ -74,8 +73,6 @@ int main(int argc, char *argv[])
         nn("Dummy")->step('u');
 
         inventory_mkmenu(&nn("Guy")->inv);
-
-        fork_flow();
 
         start_event_watchers(); /* Enter the event loop */
 

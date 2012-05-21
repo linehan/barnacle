@@ -1,6 +1,7 @@
 #pragma once
 #ifndef __STDMENU_H
 #define __STDMENU_H
+#include "../../com/arawak.h"
 
 /*
  * +-----------------+
@@ -33,9 +34,9 @@ struct stdmenu_t {
         PANEL *bufpan;
         PANEL *nfopan;
         /*---------------------------- Dimensions */
-        int nitem;       /* Number of items in stdmenu */
-        int nrows;       /* Number of rows at a time in the menu */
-        int ncols;       /* Number of columns at a time in the menu */
+        int n;        /* Number of items in stdmenu */
+        int nrows;    /* Number of rows at a time in the menu */
+        int ncols;    /* Number of columns at a time in the menu */
         /*---------------------------- Menu components */
         MENU *menu;     
         ITEM **item;  
@@ -62,6 +63,7 @@ struct stdmenu_t {
         int cur_row;
         /*---------------------------- Methods */
         void (*del)(void *self);
+        void (*build)(void *self, char **name, char **desc, wchar_t **icon, void **userptr, int n);
         void (*post)(void *self);
         void (*unpost)(void *self);
         void (*open)(void *self);

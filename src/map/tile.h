@@ -370,4 +370,11 @@ static inline void place_tile(struct map_t *map, int y, int x, int type)
         }
 }
 
+
+static inline void erase_tile(struct map_t *map, int y, int x)
+{
+        place_tile(map, y, x, TILE(map, y, x));
+}
+
+
 #endif

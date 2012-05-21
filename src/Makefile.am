@@ -45,6 +45,7 @@ arawak_SOURCES = arawak.c                       \
                    gfx/ui/stdmenu.c             \
                    gfx/ui/titlecard.c           \
                    gfx/ui/menu_inventory.c      \
+                   gfx/ui/notify.c              \
                    map/terrain.c                \
                    map/map.c                    \
                    map/cell.c                   \
@@ -53,14 +54,11 @@ arawak_SOURCES = arawak.c                       \
                    map/special/cave.c           \
                    map/flow.c                   \
                    ai/astar.c                   \
-                   txt/gloss_m.c                \
-                   txt/gloss_v.c                \
-                   txt/gloss_c.c                \
+                   txt/gloss.c                  \
+                   txt/effects.c                \
                    noun/noun.c                  \
                    noun/models.c                \
-                   noun/nounmenu.c              \
-                   noun/nounmenu_control.c      \
-                   noun/nounmenu_discrim.c      \
+                   noun/stats.c                 \
                    noun/types/boat/boat.c       \
                    noun/types/boat/compass.c    \
                    camp/builder.c               \

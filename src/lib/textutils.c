@@ -1,6 +1,22 @@
-#define _XOPEN_SOURCE_EXTENDED = 1  /* extended character sets */
+#include <stdlib.h>
+#include <stdint.h>
+#include <stddef.h>
+#include <stdio.h>
+#include <stdarg.h>
+#include <errno.h>
+#include <wchar.h>
+#include <string.h>
 #include <assert.h>
 #include "textutils.h"
+#include "../test/test.h"
+#include "../com/arawak.h"
+#include "../gfx/gfx.h"
+
+
+
+
+
+
 
 /*
  * Allocates memory appropriate to duplicate the char * string pointed
@@ -20,21 +36,32 @@ char *mydup(const char *str)
         return p ? memcpy(p, str, len) : NULL;
 }
 
+
+/*	$OpenBSD: wcsdup.c,v 1.1 2011/07/04 04:37:34 nicm Exp $	*/
+/*	$NetBSD: wcsdup.c,v 1.3 2008/05/26 13:17:48 haad Exp $	*/
+
 /*
- * Like mydup(), but for wide-character strings. 
+ * Copyright (C) 2006 Aleksey Cheusov
  *
- * SUCCESS: Pointer to new copy
- * FAILURE: NULL
+ * This material is provided "as is", with absolutely no warranty expressed
+ * or implied. Any use is at your own risk.
+ *
+ * Permission to use or copy this software for any purpose is hereby granted
+ * without fee. Permission to modify the code and to distribute modified
+ * code is also granted without any restrictions.
  */
-wchar_t *wcdup(const wchar_t *wcs)
-{	
-        wchar_t *p;
+wchar_t *wcsdup(const wchar_t *str)
+{
+	wchar_t *copy;
 	size_t len;
 
-	len = wcslen(wcs) + 1;
-	p   = malloc(len * sizeof (wchar_t));
+	len = wcslen(str) + 1;
+	copy = malloc(len * sizeof (wchar_t));
 
-        return p ? wmemcpy(p, wcs, len) : NULL;
+	if (!copy)
+		return (NULL);
+
+	return (wmemcpy(copy, str, len));
 }
 
 
@@ -63,4 +90,95 @@ wchar_t *mbdup(const char *str)
 
 
 
-        
+
+/**
+ * pumpf -- write a formatted character string into an auto-allocated buffer
+ * @strp : pointer to a character buffer (will be allocated)
+ * @fmt  : format string
+ * @...  : format string arguments
+ * @ret  : length of the formatted string at *strp
+ */
+void pumpf(char **strp, const char *fmt, ...) 
+{
+        va_list args;
+        size_t len;
+        FILE *stream;
+
+        /* Open a new FILE stream. *strp will be dynamically allocated to
+         * contain characters written to the stream, and len will reflect
+         * these changes. See man(3) open_memstream. */
+        stream = open_memstream(strp, &len);
+        assert(stream || !"pumpf: Unable to open FILE stream");
+
+        /* Write formatted output to stream */
+        va_start(args, fmt);
+        vfprintf(stream, fmt, args);
+        va_end(args);
+
+        fflush(stream);
+        fclose(stream);
+
+        if (!*strp)
+                return -ENOMEM;
+}       
+
+
+
+/**
+ * wpumpf -- write a formatted wchar_t string into an auto-allocated buffer
+ * @wcsp : pointer to a wide-character buffer (will be allocated)
+ * @wfmt : wide-character format string
+ * @...  : format string arguments
+ * @ret  : length of the formatted wide-character string at *wcsp
+ */
+void wpumpf(wchar_t **wcsp, const wchar_t *wfmt, ...)
+{
+        va_list args;
+        size_t len;
+        FILE *stream;
+
+        /* Open a new FILE stream. *wcsp will be dynamically allocated to
+         * contain wide-characters written to the stream, and len will 
+         * reflect these changes. See man(3) open_wmemstream. */
+        stream = open_wmemstream(wcsp, &len);
+        assert(stream || !"wpumpf: Unable to open FILE stream");
+
+        /* Write formatted output to stream */
+        va_start(args, wfmt);
+        vfwprintf(stream, wfmt, args);
+        va_end(args);
+
+        fflush(stream);
+        fclose(stream);
+
+        if (!*wcsp)
+                return -ENOMEM;
+}
+
+
+
+
+/**
+ * wpumpf -- write a formatted wchar_t string into an auto-allocated buffer
+ * @win  : WINDOW pointer (ncurses)
+ * @wfmt : wide-character format string
+ * @...  : format string arguments
+ * @ret  : length of the formatted wide-character string at *wcsp
+ */
+void wpumpw(WINDOW *win, const wchar_t *wfmt, ...)
+{
+        #define WPUMPW_MAXLEN 100
+        wchar_t buf[WPUMPW_MAXLEN];
+        va_list args;
+        size_t len;
+
+        /* Write formatted output to stream */
+        va_start(args, wfmt);
+        vswprintf(buf, WPUMPW_MAXLEN, wfmt, args);
+        va_end(args);
+
+        waddwstr(win, buf);
+}
+
+
+

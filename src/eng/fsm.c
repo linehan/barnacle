@@ -78,7 +78,6 @@ void operate_on(int input)
         switch (mode) 
         {
         case UI_NOUN:
-                setmode(choose_noun(input));
                 break;
         case UI_WORLDMAP:
                 break;
@@ -157,9 +156,6 @@ void director(int input)
                         break;
                 case '_':
                         MAPBOOK->render(ACTIVE);
-                        break;
-                case '&':
-                        dock_say(L"䥚", "I am the computer king.");
                         break;
                 case 'L':
                         loop_test();

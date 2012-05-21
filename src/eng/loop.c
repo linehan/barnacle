@@ -8,37 +8,15 @@
 #include "../noun/noun.h"
 #include "../noun/types/boat/boat.h"
 #include "../txt/gloss.h"
+#include "../gfx/ui/notify.h"
 #include "../map/terrain.h"
 #include "../map/sweet_flow.h"
 #include "fsm.h"
 #include "tick.h"
+#include "../noun/stats.h"
 
 
 static bool loop_test_active;
-
-
-/* -------------------------------------------------------------------------- */
-void
-print_cb(EV_P_ ev_timer *w, int revents)
-{
-        static bool loop_ready;
-        static struct gloss_t *test;
-
-        if (!loop_ready || test == NULL) {
-                loop_ready = (roll_fair(40)==2) ? true : false;
-                if (!loop_ready) return;
-                else
-                        test = rand_gloss(dock_window(TEXT_WIN));
-        }
-
-        loop_ready = say(test);
-
-        scr_refresh();
-        ev_timer_again(EV_DEFAULT, w);
-}
-
-
-/* -------------------------------------------------------------------------- */
 
 static inline void spinloop(int y, int x, const char *str, int sp)
 {
@@ -49,7 +27,9 @@ static inline void tickloop(int y, int x, const char *str)
         mvwprintw(CONSOLE_WIN, y, x, "%s %u\n", str, get_tick());
 }
 
+STATS st = 0x0009030F;
 
+/* -------------------------------------------------------------------------- */
 /*
  * render_cb 
  *
@@ -63,13 +43,15 @@ void render_cb(EV_P_ ev_timer *w, int revents)
         static int sp;
         if (loop_test_active) {
                 spinloop(2, 0, "render_cb", sp++);
-                tickloop(8, 0, "Game tick");
+                tickloop(8, 0, "Game tick:");
+                mvwprintw(CONSOLE_WIN, 9, 0, "Maxi tick: %u", UINT32_MAX);
         }
         tick();
         free_nouns();
-        dock_update();
+
         update_inventory_menu();
         send_delayed_msgs();
+        do_gloss();
 
         nn("Guy")->fall();
         nn("Guy")->update();
@@ -77,15 +59,18 @@ void render_cb(EV_P_ ev_timer *w, int revents)
         if (oops)
                 nn("Dummy")->update();
 
+
+        print_stats(st);
         update_panels();  /* Were slowing down performance, unnecessary */
         doupdate();
+        MAPBOOK->restack(ACTIVE);
+        map_refresh(ACTIVE);
 
         ev_timer_again(EV_DEFAULT, w);
 }
 
 
 /* -------------------------------------------------------------------------- */
-
 /*
  * flow_cb
  *
@@ -99,16 +84,13 @@ void flow_cb(EV_P_ ev_timer *w, int revents)
         if (loop_test_active) {
                 spinloop(3, 0, "flow_cb", sp++);
         }
-        render_flow(ACTIVE);
-
-        MAPBOOK->restack(ACTIVE);
-        map_refresh(ACTIVE);
+        do_flow(ACTIVE);
 
         ev_timer_again(EV_DEFAULT, w);
 }
 
-/* -------------------------------------------------------------------------- */
 
+/* -------------------------------------------------------------------------- */
 /*
  * move_cb
  *
@@ -131,7 +113,6 @@ void move_cb(EV_P_ ev_timer *w, int revents)
 
 
 /* -------------------------------------------------------------------------- */
-
 /*
  * animate_cb
  *
@@ -155,8 +136,6 @@ void animate_cb(EV_P_ ev_timer *w, int revents)
 
 
 /* -------------------------------------------------------------------------- */
-
-
 /*
  * iolisten_cb
  *
@@ -194,24 +173,24 @@ int start_event_watchers(void)
 
         ev_io read;         // stdin is readable
         ev_timer render;    // boat state & compass state
-        ev_timer flow;      /* The water effects */
-        ev_timer move;      // weather state shift (particles)
+        ev_timer flow;      // The water effects
+        /*ev_timer move;      // weather state shift (particles)*/
         ev_timer animate;   // map state shift
 
         ev_io_init(&read, &iolisten_cb, 0, EV_READ);
         ev_init(&render, &render_cb);
-        ev_init(&move, &move_cb);
+        /*ev_init(&move, &move_cb);*/
         ev_init(&animate, &animate_cb);
         ev_init(&flow, &flow_cb);
 
         render.repeat  = .025;
-        move.repeat    = .08;
+        /*move.repeat    = .9;*/
         animate.repeat = 3.5;
-        flow.repeat    = .1;
+        flow.repeat    = 0.08;
 
         ev_io_start(readloop, &read);
         ev_timer_again(execloop, &render);
-        ev_timer_again(execloop, &move);
+        /*ev_timer_again(execloop, &move);*/
         ev_timer_again(execloop, &animate);
         ev_timer_again(execloop, &flow);
 
@@ -220,6 +199,9 @@ int start_event_watchers(void)
 
         return 0;
 }
+
+
+
 
 
 void loop_test(void)

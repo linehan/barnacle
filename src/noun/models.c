@@ -1,5 +1,6 @@
 #include "../com/arawak.h"
 #include "../lib/textutils.h"
+#include "../gfx/ui/notify.h"
 #include "models.h"
 #include "noun.h"
 #include "../eng/fsm.h"
@@ -11,7 +12,7 @@ struct ani_t *mk_ani(const wchar_t *wcs, int mv_frame, int mv_dir)
 {
         struct ani_t *new = calloc(1, sizeof(struct ani_t));
 
-        new->frame     = wcdup(wcs);
+        new->frame     = wcsdup(wcs);
         new->len       = wcslen(wcs);
         new->mv_frame  = mv_frame;
         new->mv_dir    = mv_dir;
@@ -199,6 +200,9 @@ int modify_human(void *self)
                 noun->animate(slashtest);
                 emit_to_noun(noun, 'u', SM_Punch | SM_Wait(3) | SM_Pri(1));
                 break;
+        case SM_Key('r'):
+                noun->take(pos_y(noun->pos), pos_x(noun->pos));
+                break;
         case SM_Key('}'):
                 tab_cycle(2);
                 break;
@@ -207,9 +211,6 @@ int modify_human(void *self)
                         equipped->equip(equipped, true);
                 break;
         case SM_Key('|'):
-                break;
-        case SM_Key('#'):
-                noun->take(pos_y(noun->pos), pos_x(noun->pos));
                 break;
         case SM_Key(KEY_ESC):
                 return (MODE_RELEASE);
@@ -283,9 +284,8 @@ int modify_dummy(void *obj)
         switch (state)
         {
         case SM_Punch:
-                wprintw(CONSOLE_WIN, "Dummy hit!\n");
                 noun->animate(dummy_die);
-                dock_say(L"嶴", "FUCK!");
+                say(L"嶴", "FUCK!");
                 sm_msg(noun->sm, SM_SELF, SM_Destroy|SM_Wait(13)|SM_Pri(9));
                 sm_screen(noun->sm, 9);
                 break;
@@ -294,21 +294,22 @@ int modify_dummy(void *obj)
                 break;
         case SM_GoDown:
                 if (flip_biased(0.4))
-                        dock_say(L"䥚", "I'm gonna hop all over you!");
+                        say(L"䥚", "I'm gonna hop all over you!");
                 noun->animate(dummy_mv_d);
                 break;
         case SM_GoLeft:
                 noun->animate(dummy_mv_l);
                 if (flip_biased(0.4))
-                        dock_say(L"䥚", "Get fucked!");
+                        say(L"䥚", "Get fucked!");
                 break;
         case SM_GoRight:
                 noun->animate(dummy_mv_r);
                 break;
         case SM_Destroy:
+                alert(I_KILL, noun->name);
                 noun->doom();
                 oops = false;
-                dock_say(L"\n","\n");
+                say(L"\n","\n");
                 break;
         case SM_Seek:
                 noun->_seek(noun, get_noun("Guy"));
