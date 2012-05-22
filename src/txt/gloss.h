@@ -19,6 +19,7 @@ struct gloss_t {
         void (*put[NSTYLES])(void *self, int loop);
 };
 
+typedef struct gloss_t GLOSS;
 
 struct gloss_t *new_gloss(WINDOW *win, wchar_t *wcs, short co, short hi);
 struct gloss_t *str_gloss(WINDOW *win,    char *str, short co, short hi);

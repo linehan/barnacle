@@ -110,12 +110,6 @@ void director(int input)
         else {
                 switch (input) 
                 { 
-                case '1':
-                        tab_sig(1);
-                        break;
-                case '2':
-                        tab_sig(2);
-                        break;
                 case 'z':
                         dock_toggle();
                         break;

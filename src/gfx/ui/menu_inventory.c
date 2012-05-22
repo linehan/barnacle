@@ -200,7 +200,7 @@ int inventory_menu_control(int input)
 
 void update_inventory_menu(void)
 {
-        if (equipped_pan)
-                top_panel(equipped_pan);
+        /*if (equipped_pan)*/
+                /*top_panel(equipped_pan);*/
 }
 
