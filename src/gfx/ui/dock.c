@@ -10,7 +10,13 @@
 /* Widths for the subdivisions of the dock buffer */
 #define item_field_w (20)
 #define stat_field_w (16)
-#define text_field_w (COLS - stat_field_w - item_field_w - 3)
+#define text_field_w (COLS - stat_field_w - item_field_w - 2)
+
+/* X-offsets of the subdivisions of the dock buffer */
+#define item_field_ofs (2)
+#define stat_field_ofs (COLS - stat_field_w)
+#define text_field_ofs (item_field_w)
+#define stat_ofs(i)    (stat_field_ofs + 3 + ((i)*4))
 
 /* Dock buffer dimensions */
 #define dock_h (1)
@@ -40,8 +46,7 @@ GLOSS   *GLOSSMSG;   /* Gloss object if notification active */
 STATS   STAT_WORD;   /* Character stat word of the player character */
 
 
-
-/* DOCK VARIABLES 
+/* DOCK ELEMENT ACCESSORS 
 ``````````````````````````````````````````````````````````````````````````````*/
 /* EQUIPMENT
  * say_equip -- specify an icon and name for the currently equipped item
@@ -109,11 +114,11 @@ void init_dock(void)
         say_speak(L"","");
         say_stats(0x00000008UL);
 
-        dock_win = newwin(dock_h, dock_w, dock_y, dock_x);
-        dock_pan = new_panel(dock_win);
-
         gloss_win = newwin(gloss_h, gloss_w, gloss_y, gloss_x);
         gloss_pan = new_panel(gloss_win);
+
+        dock_win = newwin(dock_h, dock_w, dock_y, dock_x);
+        dock_pan = new_panel(dock_win);
 
         wbkgrnd(gloss_win, &PURPLE[2]);
         wbkgrnd(dock_win,  &PURPLE[2]);
@@ -184,7 +189,7 @@ void print_dock(void)
         wchar_t text_field[SZ];
         wchar_t stat_field[SZ];
 
-        swpumpf(item_field, SZ, L"  %ls %s", EQUIPICON, EQUIPNAME);
+        swpumpf(item_field, SZ, L"%ls %s", EQUIPICON, EQUIPNAME);
         swpumpf(text_field, SZ, L"%ls %s",   SPEAKER, MESSAGE);
         swpumpf(stat_field, SZ, L"༈ ⦗%02u⦘⦗%02u⦘⦗%02u⦘", STAT_SPLIT(STAT_WORD));
 
@@ -194,10 +199,12 @@ void print_dock(void)
         do_gloss(); /* Draw the gloss message if it exists */
         werase(dock_win);
 
-        wpumpw(dock_win, L"%-*ls %-*ls %*ls", item_field_w, item_field,
-                                              text_field_w, text_field,
-                                              stat_field_w, stat_field);
+        mvwpumpw(dock_win, 0, item_field_ofs, L"%ls", item_field);
+        mvwpumpw(dock_win, 0, text_field_ofs, L"%ls", text_field);
+        mvwpumpw(dock_win, 0, stat_field_ofs, L"%ls", stat_field);
 
-        /*mvwchgat(dock_win, 0, 0, item_field_w, 0, item_pair, NULL);*/
+        mvwchgat(dock_win, 0, stat_ofs(0), 2, 0, PUR_DRED,   NULL);
+        mvwchgat(dock_win, 0, stat_ofs(1), 2, 0, PUR_PURPLE, NULL);
+        mvwchgat(dock_win, 0, stat_ofs(2), 2, 0, PUR_DGREEN, NULL);
 }
 
