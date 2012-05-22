@@ -12,6 +12,9 @@ wchar_t *wcsdup(const wchar_t *wcs);
 void pumpf(char **strp, const char *fmt, ...);
 void wpumpf(wchar_t **wcsp, const wchar_t *wfmt, ...);
 void wpumpw(WINDOW *win, const wchar_t *wfmt, ...);
+void mvwpumpw(WINDOW *win, int y, int x, const wchar_t *wfmt, ...);
+void mvcwpumpw(WINDOW *win, short pair, int y, int x, const wchar_t *wfmt, ...);
 size_t swpumpf(wchar_t *buf, size_t maxlen, const wchar_t *wfmt, ...);
+
 
 #endif

@@ -8,17 +8,6 @@
 
 
 /*
- * say -- print a message to the dock messager
- * @who: the portrait of the "person" doing the talking
- * @msg: the string message
- */
-void say(const wchar_t *who, const char *msg)
-{
-        say_speak(who, msg);
-}
-
-
-/*
  * alert -- create a gloss object to do the talking 
  * @msg: the message to be used in the gloss object
  */

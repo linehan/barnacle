@@ -153,8 +153,6 @@ void wpumpf(wchar_t **wcsp, const wchar_t *wfmt, ...)
 }
 
 
-
-
 /**
  * wpumpf -- write a formatted wchar_t string into an auto-allocated buffer
  * @win  : WINDOW pointer (ncurses)
@@ -178,54 +176,53 @@ void wpumpw(WINDOW *win, const wchar_t *wfmt, ...)
 
 
 /**
- * pumpc -- scan for custom window attribute tokens
- * @wfmt: wide-character format string
- * @args: format string argument list
+ * mvwpumpw -- call wpumpw after moving the cursor 
+ * @win  : WINDOW pointer (ncurses)
+ * @yof  : y offset 
+ * @xof  : x offset
+ * @wfmt : wide-character format string
+ * @...  : format string arguments
  */
-/*wchar_t *pumpc(int *pos, int *len, const wchar_t *wfmt, ...)*/
-/*{*/
-        /*#define ATTR_TOKEN L"%@"*/
-        /*va_list args_cpy;*/
-        /*wchar_t *new_fmt, *tok, *state;*/
-        /*int pos[64], len[64];*/
-        /*int fmtlen;*/
-        /*int i=0;*/
+void mvwpumpw(WINDOW *win, int y, int x, const wchar_t *wfmt, ...)
+{
+        #define WPUMPW_MAXLEN 300 
+        wchar_t buf[WPUMPW_MAXLEN];
+        va_list args;
+
+        /* Write formatted output to stream */
+        va_start(args, wfmt);
+        vswprintf(buf, WPUMPW_MAXLEN, wfmt, args);
+        va_end(args);
+
+        wmove(win, y, x);
+        waddwstr(win, buf);
+}
 
 
-        /*new_fmt = wcsdup(wfmt);*/
-        /*fmt_len = wcslen(wfmt);*/
+/**
+ * mvcwpumpw -- call mvwpumpw after changing the window rendition 
+ * @win  : WINDOW pointer (ncurses)
+ * @yof  : y offset 
+ * @xof  : x offset
+ * @wfmt : wide-character format string
+ * @...  : format string arguments
+ */
+void mvcwpumpw(WINDOW *win, short pair, int y, int x, const wchar_t *wfmt, ...)
+{
+        #define WPUMPW_MAXLEN 300 
+        wchar_t buf[WPUMPW_MAXLEN];
+        va_list args;
+        size_t len;
 
-        /*while (tok = wcswcs(wfmt, ATTR_TOKEN), tok) */
-        /*{*/
-                /*len[i] = wcslen(tok);*/
-                /*pos[i] = (fmt_len - len[i]);*/
-                /*i++;*/
-        /*}*/
+        /* Write formatted output to stream */
+        va_start(args, wfmt);
+        len = vswprintf(buf, WPUMPW_MAXLEN, wfmt, args);
+        va_end(args);
 
-        /*[>for (tok = wcstok(wfmt, ATTR_TOKEN, &state);<]*/
-             /*[>tok!= NULL;<]*/
-             /*[>tok = wcstok(NULL, ATTR_TOKEN, &state)) <]*/
-        /*[>{<]*/
-                /*[>wcscat(new_fmt, tok);<]*/
-        /*[>}<]*/
-
-        /*return (new_fmt);*/
-/*}*/
-
-
-/*void wpumpwc(WINDOW *win, const wchar_t *wfmt, ...)*/
-/*{*/
-        /*va_list args;*/
-        /*wchar_t *new_fmt;*/
-        /*int pos[64];*/
-
-        /*new_fmt = pumpc(pos, wfmt);*/
-
-        /*va_start(args, new_fmt);*/
-        /*vswprintf(*/
-                
-
-
+        wmove(win, y, x);
+        waddwstr(win, buf);
+        mvwchgat(win, y, x, len, 0, pair, NULL);
+}
 
 
 /**
