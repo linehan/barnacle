@@ -41,18 +41,6 @@ static const int SM_RESERVED_Update = 9997;
  * SM_Foo is used by the caller to include the option parameters
  ******************************************************************************/
 
-/* Specifies a delay in game ticks before a message is routed */
-#define SM_WAIT_OFFSET     16 
-#define SM_WAIT_MASK       0x00FF0000
-#define SM_WAIT(a)         ((SM_WAIT_MASK & (a)) >> SM_WAIT_OFFSET)
-#define SM_Wait(a)         (((a) << SM_WAIT_OFFSET))
-
-/* Specifies a priority value used by the state machine's priority queue */
-#define SM_PRIORITY_OFFSET 24 
-#define SM_PRIORITY_MASK   0xFF000000
-#define SM_PRI(a)          ((SM_PRIORITY_MASK & (a)) >> SM_PRIORITY_OFFSET)
-#define SM_Pri(a)          (((a) << SM_PRIORITY_OFFSET))
-
 /* Tag is a required param and is right-aligned, so no wrapper is required */
 #define SM_TAG_OFFSET      0
 #define SM_TAG_MASK        0x0000FFFF
@@ -65,6 +53,26 @@ static const int SM_RESERVED_Update = 9997;
 #define SM_KEYBOARD        0x0000FFFF
 #define SM_KEYPRESS(a)     (SM_KEYBOARD | (a))
 #define SM_Key(a)          (SM_KEYBOARD & (a))
+
+/* Specifies a delay in game ticks before a message is routed */
+#define SM_WAIT_OFFSET     16 
+#define SM_WAIT_MASK       0x00FF0000
+#define SM_WAIT(a)         ((SM_WAIT_MASK & (a)) >> SM_WAIT_OFFSET)
+#define SM_Wait(a)         (((a) << SM_WAIT_OFFSET))
+
+/* Specifies a priority value used by the state machine's priority queue */
+#define SM_PRIORITY_OFFSET 24 
+#define SM_PRIORITY_MASK   0x0F000000
+#define SM_PRI(a)          ((SM_PRIORITY_MASK & (a)) >> SM_PRIORITY_OFFSET)
+#define SM_Pri(a)          (((a) << SM_PRIORITY_OFFSET))
+
+/* Miscellaneous option flags are set in the leftmost byte */
+#define SM_OPTIONS_OFFSET  28 
+#define SM_OPTIONS_MASK    0xF0000000
+#define STICKY             0x10000000 
+#define SM_OPT(a)          ((SM_OPTIONS_MASK & (a)))
+#define SM_Opt(a)          (a)
+
 
 
 /* MISC MACROS
@@ -109,6 +117,7 @@ struct msg_t; /* Forward reference for the callback to use */
 struct sm_t {
         uint32_t id;           /* Who owns the sm (the "sender") */
         bool pending;          /* Has the current state been consumed? */
+        bool lock;
         int screen;
         enum sm_tag tag;       /* Current state in the sm */
         struct bh_t *state;
@@ -154,5 +163,23 @@ static inline void sm_screen(struct sm_t *sm, int screen)
         sm->screen = screen;
 }
 
+/* IS LOCKED
+ * sm_is_locked -- return the lock status of the state machine
+ * @sm: pointer to a state machine
+ */
+static inline bool sm_is_locked(struct sm_t *sm)
+{
+        return sm->lock;
+}
+
+/* LOCK
+ * sm_lock -- set the lock status of the state machine
+ * @sm: pointer to a state machine
+ * @yn: desired status of lock
+ */
+static inline void sm_lock(struct sm_t *sm, bool yn)
+{
+        sm->lock = yn;
+}
 
 #endif

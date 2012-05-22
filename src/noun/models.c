@@ -8,6 +8,7 @@
 #include "../item/tools.h"
 #include "../gfx/ui/menu_inventory.h"
 
+
 struct ani_t *mk_ani(const wchar_t *wcs, int mv_frame, int mv_dir)
 {
         struct ani_t *new = calloc(1, sizeof(struct ani_t));
@@ -59,25 +60,29 @@ void noun_animate(struct noun_t *noun)
  * MODEL: Person
  * NOTES: This is the main player character
  ******************************************************************************/
-struct ani_t *run_u_test;
-struct ani_t *run_d_test;
-struct ani_t *run_l_test;
-struct ani_t *run_r_test;
-struct ani_t *punch_r_test;
-struct ani_t *punch_l_test;
-struct ani_t *slashtest;
-struct ani_t *dodgetest;
-struct ani_t *falltest;
-struct ani_t *dodge_l_test;
-struct ani_t *dodge_r_test;
-struct ani_t *kick_r_test;
-struct ani_t *kick_l_test;
-struct ani_t *jump_ul;
-struct ani_t *jump_ur;
-struct ani_t *dig_u;
-struct ani_t *dig_d;
-struct ani_t *dig_l;
-struct ani_t *dig_r;
+struct ani_t *guy_run_u;
+struct ani_t *guy_run_d;
+struct ani_t *guy_run_l;
+struct ani_t *guy_run_r;
+struct ani_t *guy_punch_r;
+struct ani_t *guy_punch_l;
+struct ani_t *guy_poke_u;
+struct ani_t *guy_dodge_d;
+struct ani_t *guy_falltest;
+struct ani_t *guy_dodge_l;
+struct ani_t *guy_dodge_r;
+struct ani_t *guy_kick_r;
+struct ani_t *guy_kick_l;
+struct ani_t *guy_jump_ul;
+struct ani_t *guy_jump_ur;
+struct ani_t *guy_dig_u;
+struct ani_t *guy_dig_d;
+struct ani_t *guy_dig_l;
+struct ani_t *guy_dig_r;
+struct ani_t *guy_walk_u;
+struct ani_t *guy_walk_d;
+struct ani_t *guy_walk_l;
+struct ani_t *guy_walk_r;
 /*----------------------------------------------------------------------------*/
 void build_person_animations(void)
 {
@@ -86,26 +91,34 @@ void build_person_animations(void)
         if (built)
                 return;
 
-        run_u_test   = mk_ani(L"ⲑⲑᎲⰾ"              , MV(0,'u'));
-        run_d_test   = mk_ani(L"ⲑⲑᎲⰾ"              , MV(0,'d'));
-        run_l_test   = mk_ani(L"ⲑⲑᎲⰾ"              , MV(0,'l'));
-        run_r_test   = mk_ani(L"ⲑⲑᎲⰾ"              , MV(0,'r'));
-        punch_r_test = mk_ani(L"ᎲᎲᎲᱽᕤᱽᎲᎲⰾ"         , NO_MV);
-        punch_l_test = mk_ani(L"ᎲᎲᎲ᱙ᕦ᱙ᎲᎲⰾ"         , NO_MV);
-        slashtest    = mk_ani(L"ᎲᎲᎲᒀᒀᒀᒀᎲᎲⰾ"        , NO_MV);
-        dodgetest    = mk_ani(L"ᎲᎲᎲᏡᏡᏡᏡȣȣȣȣᏡᎲᎲⰾ"   , MV(8,'d'));
-        falltest     = mk_ani(L"ᎲᎲᎲޗޗޗⲁⲁⲁᥑ"        , MV(4,'r'));
-        dodge_l_test = mk_ani(L"ᎲᎲᎲᥑᥑⲁཚཚཚᎲᎲᎲⰾ"     , MV(5,'l'));
-        dodge_r_test = mk_ani(L"ᎲᎲᎲᥑᥑⲁཚཚཚᎲᎲᎲⰾ"     , MV(5,'r'));
-        kick_r_test  = mk_ani(L"ᎲᎲᎲ࿂࿂ᱯ࿂࿂༱༱ꝬꝬỿᓀᓀᎲⰾ" , MV(9,'r'));
-        kick_l_test  = mk_ani(L"ᎲᎲᎲ࿂࿂ᱯᱯ࿂࿂༱ꝬꝬꝬᓂᓂᎲⰾ" , MV(9,'l'));
-        jump_ul      = mk_ani(L"ᎲᎲᎲⰾⰾᎹᎹᎹᎹᎹᎹᎲᎲⰾ"    , MV(7,'u'+'l'));
-        jump_ur      = mk_ani(L"ᎲᎲᎲⰾⰾᎹᎹᎹᎹᎹᎹᎲᎲⰾ"    , MV(7,'u'+'r'));
+        guy_walk_u   = mk_ani(L"ⲑⲑᎲⰾ"              , MV(0,'u'));
+        guy_walk_d   = mk_ani(L"ⲑⲑᎲⰾ"              , MV(0,'d'));
+        guy_walk_l   = mk_ani(L"ⲑⲑᎲⰾ"              , MV(0,'l'));
+        guy_walk_r   = mk_ani(L"ⲑⲑᎲⰾ"              , MV(0,'r'));
 
-        dig_u = mk_ani(L"ᎲᎲᎲᱽᕤᱽᎲᎲⰾⲑⲑᎲⰾ", MV(7,'u'));
-        dig_d = mk_ani(L"ᎲᎲᎲᱽᕤᱽᎲᎲⰾⲑⲑᎲⰾ", MV(7,'d'));
-        dig_l = mk_ani(L"ᎲᎲᎲᱽᕤᱽᎲᎲⰾⲑⲑᎲⰾ", MV(7,'l'));
-        dig_r = mk_ani(L"ᎲᎲᎲᱽᕤᱽᎲᎲⰾⲑⲑᎲⰾ", MV(7,'r'));
+        guy_run_u    = mk_ani(L"ⲑⰾᎲⰾ"              , MV(0,'u'));
+        guy_run_d    = mk_ani(L"ⲑⰾᎲⰾ"              , MV(0,'d'));
+        guy_run_l    = mk_ani(L"ⲑⰾᎲⰾ"              , MV(0,'l'));
+        guy_run_r    = mk_ani(L"ⲑⰾᎲⰾ"              , MV(0,'r'));
+
+        guy_punch_r  = mk_ani(L"ᎲᎲᎲᱽᕤᱽᎲᎲⰾ"         , NO_MV);
+        guy_punch_l  = mk_ani(L"ᎲᎲᎲ᱙ᕦ᱙ᎲᎲⰾ"         , NO_MV);
+
+        guy_poke_u   = mk_ani(L"ᎲᎲᎲᒀᒀᒀᒀᎲᎲⰾ"        , NO_MV);
+
+        guy_dodge_d  = mk_ani(L"ᎲᎲᎲᏡᏡᏡᏡȣȣȣȣᏡᎲᎲⰾ"   , MV(8,'d'));
+        guy_falltest = mk_ani(L"ᎲᎲᎲޗޗޗⲁⲁⲁᥑ"        , MV(4,'r'));
+        guy_dodge_l  = mk_ani(L"ᎲᎲᎲᥑᥑⲁཚཚཚᎲᎲᎲⰾ"     , MV(5,'l'));
+        guy_dodge_r  = mk_ani(L"ᎲᎲᎲᥑᥑⲁཚཚཚᎲᎲᎲⰾ"     , MV(5,'r'));
+        guy_kick_r   = mk_ani(L"ᎲᎲᎲ࿂࿂ᱯ࿂࿂༱༱ꝬꝬỿᓀᓀᎲⰾ" , MV(9,'r'));
+        guy_kick_l   = mk_ani(L"ᎲᎲᎲ࿂࿂ᱯᱯ࿂࿂༱ꝬꝬꝬᓂᓂᎲⰾ" , MV(9,'l'));
+        guy_jump_ul  = mk_ani(L"ᎲᎲᎲⰾⰾᎹᎹᎹᎹᎹᎹᎲᎲⰾ"    , MV(7,'u'+'l'));
+        guy_jump_ur  = mk_ani(L"ᎲᎲᎲⰾⰾᎹᎹᎹᎹᎹᎹᎲᎲⰾ"    , MV(7,'u'+'r'));
+
+        guy_dig_u    = mk_ani(L"ᎲᎲᎲᱽᕤᱽᎲᎲⰾⲑⲑᎲⰾ"     , MV(7,'u'));
+        guy_dig_d    = mk_ani(L"ᎲᎲᎲᱽᕤᱽᎲᎲⰾⲑⲑᎲⰾ"     , MV(7,'d'));
+        guy_dig_l    = mk_ani(L"ᎲᎲᎲᱽᕤᱽᎲᎲⰾⲑⲑᎲⰾ"     , MV(7,'l'));
+        guy_dig_r    = mk_ani(L"ᎲᎲᎲᱽᕤᱽᎲᎲⰾⲑⲑᎲⰾ"     , MV(7,'r'));
 
         built = true;
 }
@@ -150,54 +163,89 @@ int modify_human(void *self)
         switch (state) 
         { 
         case SM_DigUp:
-                noun->animate(dig_u);
+                noun->animate(guy_dig_u);
                 break;
         case SM_DigDown:
-                noun->animate(dig_d);
+                noun->animate(guy_dig_d);
                 break;
         case SM_DigLeft:
-                noun->animate(dig_l);
+                noun->animate(guy_dig_l);
                 break;
         case SM_DigRight:
-                noun->animate(dig_r);
+                noun->animate(guy_dig_r);
+                break;
+        case SM_GoUp:
+                noun->animate(guy_walk_u);
+                break;
+        case SM_GoDown:
+                noun->animate(guy_walk_d);
+                break;
+        case SM_GoLeft:
+                noun->animate(guy_walk_l);
+                break;
+        case SM_GoRight:
+                noun->animate(guy_walk_r);
+                break;
+        case SM_RunUp:
+                noun->animate(guy_run_u);
+                break;
+        case SM_RunDown:
+                noun->animate(guy_run_d);
+                break;
+        case SM_RunLeft:
+                noun->animate(guy_run_l);
+                break;
+        case SM_RunRight:
+                noun->animate(guy_run_r);
                 break;
         /* ------------------------------------ keyboard input */
+        /* ------------------------------------ walk (step) */
         case SM_Key('j'):
         case SM_Key('s'):
-                noun->animate(run_d_test);
+                sm_msg(noun->sm, SM_SELF, SM_GoDown);
                 break;
         case SM_Key('k'):
         case SM_Key('w'):
-                noun->animate(run_u_test);
-                break;
-        case SM_Key('H'):
-        case SM_Key('A'):
-                noun->animate(jump_ul);
+                sm_msg(noun->sm, SM_SELF, SM_GoUp);
                 break;
         case SM_Key('h'):
         case SM_Key('a'):
-                noun->animate(run_l_test);
-                break;
-        case SM_Key('L'):
-        case SM_Key('D'):
-                noun->animate(jump_ur);
+                sm_msg(noun->sm, SM_SELF, SM_GoLeft);
                 break;
         case SM_Key('l'):
         case SM_Key('d'):
-                noun->animate(run_r_test);
+                sm_msg(noun->sm, SM_SELF, SM_GoRight);
                 break;
+        /* ------------------------------------------ run  */
+        case SM_Key('J'):
+        case SM_Key('S'):
+                sm_msg(noun->sm, SM_SELF, SM_RunDown | SM_Opt(STICKY));
+                break;
+        case SM_Key('K'):
+        case SM_Key('W'):
+                sm_msg(noun->sm, SM_SELF, SM_RunUp | SM_Opt(STICKY));
+                break;
+        case SM_Key('H'):
+        case SM_Key('A'):
+                sm_msg(noun->sm, SM_SELF, SM_RunLeft | SM_Opt(STICKY));
+                break;
+        case SM_Key('L'):
+        case SM_Key('D'):
+                sm_msg(noun->sm, SM_SELF, SM_RunRight | SM_Opt(STICKY));
+                break;
+        /* ------------------------------------------ misc */
         case SM_Key('g'):
                 top_panel(noun->pan);
                 break;
         case SM_Key('t'):
-                noun->animate(punch_r_test);
+                noun->animate(guy_punch_r);
                 break;
         case SM_Key(' '):
                 if (equipped) 
                         equipped->use(equipped, noun);
                 break;
         case SM_Key('e'):
-                noun->animate(slashtest);
+                noun->animate(guy_poke_u);
                 emit_to_noun(noun, 'u', SM_Punch | SM_Wait(3) | SM_Pri(1));
                 break;
         case SM_Key('r'):

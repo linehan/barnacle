@@ -14,7 +14,6 @@
 #include "../lib/list.h"
 #include "gfx.h"
 
-#define ARRAY_SIZE(a) (sizeof(a) / sizeof(a[0]))
 #define CTRLD 4
 /******************************************************************************/
 

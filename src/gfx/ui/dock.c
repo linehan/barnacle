@@ -42,7 +42,7 @@ struct ui_tab_t {
 #define TEXT_X 20 
 
 
-#define NUMTABS     5 
+#define NUMTABS     4
 #define TAB_H       1
 #define TAB_W       3
 #define TAB_Y       (LINES-(TAB_H))
@@ -53,6 +53,7 @@ struct ui_tab_t {
 
 //{L"⸭"}
 /*struct ui_tab_t ui_tab[] = { {L"༈"},{L"∰∯∮"},{L"◆◈◇"},{L"ℌ"},{L"ℜ"} };*/
+struct ui_tab_t ui_tab[] = { {L"༈"},{L"◆◈◇"},{L"ℌ"},{L"ℜ"} };
                              
 
 /*

@@ -73,16 +73,17 @@ am_arawak_OBJECTS = arawak.$(OBJEXT) eng/init.$(OBJEXT) \
 	lib/stoc/noise.$(OBJEXT) lib/stoc/dice.$(OBJEXT) \
 	lib/stoc/shuffle.$(OBJEXT) lib/stoc/smooth.$(OBJEXT) \
 	lib/stoc/brnoise.$(OBJEXT) eng/bytes.$(OBJEXT) \
-	eng/fsm.$(OBJEXT) eng/loop.$(OBJEXT) gfx/palette.$(OBJEXT) \
-	gfx/sprite.$(OBJEXT) gfx/gfx.$(OBJEXT) gfx/multiwin.$(OBJEXT) \
-	gfx/ui/dock.$(OBJEXT) gfx/ui/stdpan.$(OBJEXT) \
-	gfx/ui/stdmenu.$(OBJEXT) gfx/ui/titlecard.$(OBJEXT) \
-	gfx/ui/menu_inventory.$(OBJEXT) gfx/ui/notify.$(OBJEXT) \
-	map/terrain.$(OBJEXT) map/map.$(OBJEXT) map/cell.$(OBJEXT) \
-	map/door.$(OBJEXT) map/special/arena.$(OBJEXT) \
-	map/special/cave.$(OBJEXT) map/flow.$(OBJEXT) \
-	ai/astar.$(OBJEXT) txt/gloss.$(OBJEXT) txt/effects.$(OBJEXT) \
-	noun/noun.$(OBJEXT) noun/models.$(OBJEXT) noun/stats.$(OBJEXT) \
+	eng/fsm.$(OBJEXT) eng/loop.$(OBJEXT) eng/error.$(OBJEXT) \
+	gfx/palette.$(OBJEXT) gfx/sprite.$(OBJEXT) gfx/gfx.$(OBJEXT) \
+	gfx/multiwin.$(OBJEXT) gfx/ui/dock.$(OBJEXT) \
+	gfx/ui/stdpan.$(OBJEXT) gfx/ui/stdmenu.$(OBJEXT) \
+	gfx/ui/titlecard.$(OBJEXT) gfx/ui/menu_inventory.$(OBJEXT) \
+	gfx/ui/notify.$(OBJEXT) map/terrain.$(OBJEXT) \
+	map/map.$(OBJEXT) map/cell.$(OBJEXT) map/door.$(OBJEXT) \
+	map/special/arena.$(OBJEXT) map/special/cave.$(OBJEXT) \
+	map/flow.$(OBJEXT) ai/astar.$(OBJEXT) txt/gloss.$(OBJEXT) \
+	txt/effects.$(OBJEXT) noun/noun.$(OBJEXT) \
+	noun/models.$(OBJEXT) noun/stats.$(OBJEXT) \
 	noun/types/boat/boat.$(OBJEXT) \
 	noun/types/boat/compass.$(OBJEXT) camp/builder.$(OBJEXT) \
 	item/item.$(OBJEXT) item/tools.$(OBJEXT) item/edible.$(OBJEXT) \
@@ -223,6 +224,7 @@ arawak_SOURCES = arawak.c                       \
                    eng/bytes.c                  \
                    eng/fsm.c                    \
                    eng/loop.c                   \
+                   eng/error.c                  \
                    gfx/palette.c                \
                    gfx/sprite.c                 \
                    gfx/gfx.c                    \
@@ -407,6 +409,7 @@ lib/stoc/brnoise.$(OBJEXT): lib/stoc/$(am__dirstamp) \
 eng/bytes.$(OBJEXT): eng/$(am__dirstamp) eng/$(DEPDIR)/$(am__dirstamp)
 eng/fsm.$(OBJEXT): eng/$(am__dirstamp) eng/$(DEPDIR)/$(am__dirstamp)
 eng/loop.$(OBJEXT): eng/$(am__dirstamp) eng/$(DEPDIR)/$(am__dirstamp)
+eng/error.$(OBJEXT): eng/$(am__dirstamp) eng/$(DEPDIR)/$(am__dirstamp)
 gfx/$(am__dirstamp):
 	@$(MKDIR_P) gfx
 	@: > gfx/$(am__dirstamp)
@@ -535,6 +538,7 @@ mostlyclean-compile:
 	-rm -f ai/astar.$(OBJEXT)
 	-rm -f camp/builder.$(OBJEXT)
 	-rm -f eng/bytes.$(OBJEXT)
+	-rm -f eng/error.$(OBJEXT)
 	-rm -f eng/fsm.$(OBJEXT)
 	-rm -f eng/init.$(OBJEXT)
 	-rm -f eng/loop.$(OBJEXT)
@@ -592,6 +596,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@ai/$(DEPDIR)/astar.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@camp/$(DEPDIR)/builder.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@eng/$(DEPDIR)/bytes.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@eng/$(DEPDIR)/error.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@eng/$(DEPDIR)/fsm.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@eng/$(DEPDIR)/init.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@eng/$(DEPDIR)/loop.Po@am__quote@
