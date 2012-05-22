@@ -1,298 +1,203 @@
 #include "../../com/arawak.h"
-#include "../gfx.h"
+#include "../../lib/textutils.h"
 #include "../../noun/noun.h"
-#include "../../noun/nounmenu.h"
 #include "../../txt/gloss.h"
 #include "dock.h"
 
 
-/* Tab icons, notices, and selectors
+/* DOCK CONSTANTS AND STATIC VARIABLES 
 ``````````````````````````````````````````````````````````````````````````````*/
-struct ui_tab_t {
-        wchar_t *wch;
-        int n;          /* Which character in the string is being displayed */
-        int len;        /* Total number of characters in the string */
-        bool sigtrue;   /* TRUE if tab is being signalled */
-        bool togtrue;
-        WINDOW *win;    /* Parent window */
-        WINDOW *ico;
-        PANEL  *pan;
-};
+/* Widths for the subdivisions of the dock buffer */
+#define item_field_w (20)
+#define stat_field_w (16)
+#define text_field_w (COLS - stat_field_w - item_field_w - 3)
+
+/* Dock buffer dimensions */
+#define dock_h (1)
+#define dock_w (COLS)
+#define dock_y (LINES-dock_h)
+#define dock_x (0)
+
+/* Gloss buffer dimensions */
+#define gloss_h (dock_h)
+#define gloss_w (text_field_w/2)
+#define gloss_y (dock_y)
+#define gloss_x (item_field_w)
+
+
+/* Windows and panels */
+WINDOW *dock_win;
+PANEL  *dock_pan;
+WINDOW *gloss_win;
+PANEL  *gloss_pan;
+
+/* Values used to print the dock and gloss buffer */
+char    *EQUIPNAME;  /* Name of the currently equipped item */
+wchar_t *EQUIPICON;  /* Icon of the currently equipped item */
+wchar_t *SPEAKER;    /* Icon of the current speaker */
+char    *MESSAGE;    /* Text of the current speaker's message */
+GLOSS   *GLOSSMSG;   /* Gloss object if notification active */
+STATS   STAT_WORD;   /* Character stat word of the player character */
 
 
 
-#define DOCK_HEIGHT 1
-#define DOCK_WIDTH COLS
-#define DOCK_Y LINES-DOCK_HEIGHT
-#define DOCK_X 0
-
-#define NAME_HEIGHT 1
-#define NAME_WIDTH 20
-#define NAME_Y LINES - NAME_HEIGHT
-#define NAME_X 5
-
-#define STAT_HEIGHT 1
-#define STAT_WIDTH  12 
-#define STAT_Y LINES - STAT_HEIGHT 
-#define STAT_X (COLS - STAT_WIDTH)
-
-#define TEXT_HEIGHT 1 
-#define TEXT_WIDTH 40
-#define TEXT_Y LINES - TEXT_HEIGHT 
-#define TEXT_X 20 
-
-
-#define NUMTABS     4
-#define TAB_H       1
-#define TAB_W       3
-#define TAB_Y       (LINES-(TAB_H))
-#define TAB_X(i)    (STAT_X-(NUMTABS*TAB_W)+(TAB_W*i))
-#define TAB_YOFS    0
-#define TAB_XOFS    1
-#define TAB_W_TOTAL (COLS-(NUMTABS*TAB_W))
-
-//{L"⸭"}
-/*struct ui_tab_t ui_tab[] = { {L"༈"},{L"∰∯∮"},{L"◆◈◇"},{L"ℌ"},{L"ℜ"} };*/
-struct ui_tab_t ui_tab[] = { {L"༈"},{L"◆◈◇"},{L"ℌ"},{L"ℜ"} };
-                             
-
-/*
- * Initialize and draw the tabs in ui_tab[]
+/* DOCK VARIABLES 
+``````````````````````````````````````````````````````````````````````````````*/
+/* EQUIPMENT
+ * say_equip -- specify an icon and name for the currently equipped item
+ * @icon: wide-character icon
+ * @name: character string
  */
-void init_tabs(void)
+void say_equip(wchar_t *icon, char *name)
 {
-        cchar_t cch;
-        int i;
-
-        for (i=0; i<NUMTABS; i++) {
-
-                ui_tab[i].len = wcslen(ui_tab[i].wch);
-                ui_tab[i].n = 0;
-
-                /* Create the window and subwindow */
-                ui_tab[i].win = newwin(TAB_H, TAB_W, TAB_Y, TAB_X(i));
-                ui_tab[i].ico = derwin(ui_tab[i].win, 1, 1, 0, 1);
-
-                /* Paint the icon character */
-                setcchar(&cch, ui_tab[i].wch, 0, PUR_PURPLE, NULL);
-                wadd_wch(ui_tab[i].ico, &cch);
-
-                /* Draw the background color */
-                wbkgrnd(ui_tab[i].win, &PURPLE[2]);
-                wbkgrnd(ui_tab[i].ico, &PURPLE[2]);
-
-                /* Create the panel */ 
-                ui_tab[i].pan = new_panel(ui_tab[i].win);
-        }
+        release((void **)&EQUIPNAME);
+        release((void **)&EQUIPICON);
+        EQUIPNAME = mydup(name); 
+        EQUIPICON = wcsdup(icon); 
 }
 
 
-/* tab_sig -- toggle the signal status of a tab */
-void tab_sig(int tab)
-{
-        ui_tab[tab].sigtrue ^= true;
-}
-
-
-void tab_cycle(int tab)
-{
-        cchar_t cch;
-        int n;
-
-        n = (ui_tab[tab].n) = ((ui_tab[tab].n+1) % ui_tab[tab].len);
-
-        setcchar(&cch, &ui_tab[tab].wch[n], 0, PUR_PURPLE, NULL);
-        wadd_wch(ui_tab[tab].ico, &cch);
-}
-
-void tab_tog(int tab)
-{
-        #define SIGNAL_COLOR PUR_GREY
-        #define NORMAL_COLOR PUR_PURPLE
-
-        ui_tab[tab].togtrue ^= true;
-
-        if (ui_tab[tab].togtrue)
-                wchgat(ui_tab[tab].ico, 1, 0, SIGNAL_COLOR, NULL);
-        else
-                wchgat(ui_tab[tab].ico, 1, 0, NORMAL_COLOR, NULL);
-}
-
-/*
- * tab_update -- update the rendering of every tab
- * 
- * Notes
- * This is a hook for the event loop to call in order to keep the tabs
- * updated. Its primary use at the moment is to make the signal highlight
- * "blink" on and off during alternating calls.
+/* SPEAK 
+ * say -- specify an icon for a speaker and the message they should say 
+ * @icon: wide-character icon depicting a speaker's portrait
+ * @msg : message text (what they say)
  */
-void tab_update(void)
+void say_speak(wchar_t *speaker, char *message)
 {
-        static uint8_t cycle; 
-        static short color;
-        int i;
+        release((void **)&SPEAKER);
+        release((void **)&MESSAGE);
+        SPEAKER = wcsdup(speaker); 
+        MESSAGE = mydup(message); 
+}
 
-        color = (cycle^=1, cycle) ? PUR_GREY : PUR_PURPLE;
 
-        for (i=0; i<NUMTABS; i++) {
-                if (ui_tab[i].sigtrue) {
-                        wchgat(ui_tab[i].ico, 1, 0, color, NULL);
-                }
-        }
+/* STATS
+ * say_stats -- specify character statistics to decompose and print
+ * @stat: STATS word
+ */
+void say_stats(STATS stats)
+{
+        STAT_WORD = stats;
+}
+
+
+/* GLOSS 
+ * say_gloss -- create a gloss object that will be printed in the buffer 
+ * @msg: textual content to be glossed
+ * @hi : highlight color of the gloss
+ * @lo : standard  color of the gloss
+ */
+void say_alert(wchar_t *msg, short hi, short lo)
+{
+        release((void **)&GLOSSMSG);
+        GLOSSMSG = new_gloss(gloss_win, msg, hi, lo);        
 }
 
 
 
-/* The dock container 
-````````````````````````````````````````````````````````````````````````````````
-  +-------------------------------------------------------------------------+
-  |                                                                         |
-  | [][][][][][][][][][]                                    +---------------+
-  | Beefalo Jonathan                                        | % | $ | @ | & |
-  +---------------------------------------------------------+---------------+ */
-
-struct ui_dock_t {
-        WINDOW *dock_win;       /* The mother of all windows */
-        WINDOW *name_win;       /* "Beefalo Jonathan" */
-        WINDOW *stat_win;       /* All the [][][]'s */
-        WINDOW *text_win;       /* Not yet implemented */
-        PANEL  *dock_pan;
-        PANEL  *name_pan;
-        PANEL  *stat_pan;
-        PANEL  *text_pan;
-        bool is_visible;        /* Used by dock_toggle */
-};
-
-
-struct ui_dock_t ui_dock; /* The one and only dock */
-
-
-/*
- * Create the dock
+/* DOCK INITIALIZATION
+``````````````````````````````````````````````````````````````````````````````*/
+/**
+ * init_dock -- create the dock and gloss structures for the first time
  */
 void init_dock(void)
 {
+        if (dock_pan) 
+                return; 
 
+        say_equip(L"","");
+        say_speak(L"","");
+        say_stats(0x00000008UL);
 
-        init_tabs();
+        dock_win = newwin(dock_h, dock_w, dock_y, dock_x);
+        dock_pan = new_panel(dock_win);
 
-        ui_dock.dock_win = newwin(DOCK_HEIGHT, DOCK_WIDTH, DOCK_Y, DOCK_X);
-        ui_dock.name_win = newwin(NAME_HEIGHT, NAME_WIDTH, NAME_Y, NAME_X);
-        ui_dock.stat_win = newwin(STAT_HEIGHT, STAT_WIDTH, STAT_Y, STAT_X);
-        ui_dock.text_win = newwin(TEXT_HEIGHT, TEXT_WIDTH, TEXT_Y, TEXT_X);
+        gloss_win = newwin(gloss_h, gloss_w, gloss_y, gloss_x);
+        gloss_pan = new_panel(gloss_win);
 
-        wbkgrnd(ui_dock.dock_win, &PURPLE[2]);
-        wbkgrnd(ui_dock.name_win, &PURPLE[2]);
-        wbkgrnd(ui_dock.stat_win, &PURPLE[2]);
-        wbkgrnd(ui_dock.text_win, &PURPLE[2]);
-
-        ui_dock.dock_pan = new_panel(ui_dock.dock_win);
-        ui_dock.name_pan = new_panel(ui_dock.name_win);
-        ui_dock.stat_pan = new_panel(ui_dock.stat_win);
-        ui_dock.text_pan = new_panel(ui_dock.text_win);
+        wbkgrnd(gloss_win, &PURPLE[2]);
+        wbkgrnd(dock_win,  &PURPLE[2]);
 }
 
 
-/*
- * Return a particular window of the dock structure (used by the noun
- * and verb view routines)
- */
-WINDOW *dock_win(int id)
-{
-        WINDOW *win;
 
-        switch (id) {
-        case DOCK_WIN:
-                win = ui_dock.dock_win;
-                break;
-        case NAME_WIN:
-                win = ui_dock.name_win;
-                break;
-        case STAT_WIN:
-                win = ui_dock.stat_win;
-                break;
-        case TEXT_WIN:
-                win = ui_dock.text_win;
-                break;
-        }
-
-        return (win);
-}
-
-
-/*
- * Quick check to make sure that the panels to be shown or hidden
- * actually exist.
- */
-inline void check_for_init(void)
-{
-        if (!ui_dock.dock_pan) 
-                init_dock();
-}
-
-
-/*
- * Implementation note
- *
- * UI elements like this dock are interfaced through 4 primary functions.
- *
- *      1. view_*: Makes the UI element visible on-screen 
- *      2. hide_*: Hides the UI element so it is not rendered on-screen 
- *      3. *_toggle: Calls either view_* or hide_*, depending on a boolean
- *      4. *_update: For the event loop to call; keeps elements updated
- *
- * The first two are for internal use within this module. The second pair
- * are admissible interfaces: *_toggle is used by the FSM (user input), 
- * and *_update is used by the event loop.
- *
- */
-
-/*
+/* DOCK VISIBILITY 
+``````````````````````````````````````````````````````````````````````````````*/
+/**
  * view_dock -- make the dock panels visible at the bottom of the screen
  */
 void view_dock(void)
 {
-        int i;
-
-        check_for_init();
-        ui_dock.is_visible = true;
-
-        show_panel(ui_dock.dock_pan);
-        show_panel(ui_dock.name_pan);
-        show_panel(ui_dock.stat_pan);
-        show_panel(ui_dock.text_pan);
-
-        for (i=0; i<NUMTABS; i++) 
-                show_panel(ui_tab[i].pan);
+        show_panel(dock_pan);
+        scr_refresh();
 }
 
-/*
+/**
  * hide_dock -- hide the dock panels so they are no longer visible
  */
 void hide_dock(void)
 {
-        int i;
-
-        check_for_init();
-        ui_dock.is_visible = false;
-
-        hide_panel(ui_dock.dock_pan);
-        hide_panel(ui_dock.name_pan);
-        hide_panel(ui_dock.stat_pan);
-        hide_panel(ui_dock.text_pan);
-
-        for (i=0; i<NUMTABS; i++)
-                hide_panel(ui_tab[i].pan);
-
+        hide_panel(dock_pan);
         scr_refresh();
 }
 
-/*
+/**
  * dock_toggle -- toggle the dock view between hidden and visible
  */
 void dock_toggle(void) 
 {
-        (ui_dock.is_visible) ? hide_dock() : view_dock();
+        (panel_hidden(dock_pan)) ? view_dock() : hide_dock();
 }
 
+
+
+/* DOCK PRINTING AND OPERATIONS 
+``````````````````````````````````````````````````````````````````````````````*/
+/**
+ * do_gloss -- step the gloss rendering forward by one tick
+ */
+inline void do_gloss(void)
+{
+        static bool running = false;
+
+        if (GLOSSMSG) {
+                show_panel(gloss_pan);
+                running = gloss(GLOSSMSG);
+                if (!running) {
+                        del_gloss(GLOSSMSG);
+                        release((void **)&GLOSSMSG);
+                        hide_panel(gloss_pan);
+                }
+        }
+}
+
+/**
+ * print_dock -- print the dock buffer
+ */
+void print_dock(void)
+{
+        #define STAT_SPLIT(s) HP(s), SP(s), AP(s)
+        #define SZ 300
+        // ༈∰∯∮◆◈◇ℌℜ
+
+        wchar_t item_field[SZ];
+        wchar_t text_field[SZ];
+        wchar_t stat_field[SZ];
+
+        swpumpf(item_field, SZ, L"  %ls %s", EQUIPICON, EQUIPNAME);
+        swpumpf(text_field, SZ, L"%ls %s",   SPEAKER, MESSAGE);
+        swpumpf(stat_field, SZ, L"༈ ⦗%02u⦘⦗%02u⦘⦗%02u⦘", STAT_SPLIT(STAT_WORD));
+
+        if (!dock_pan)
+                init_dock();
+
+        do_gloss(); /* Draw the gloss message if it exists */
+        werase(dock_win);
+
+        wpumpw(dock_win, L"%-*ls %-*ls %*ls", item_field_w, item_field,
+                                              text_field_w, text_field,
+                                              stat_field_w, stat_field);
+
+        /*mvwchgat(dock_win, 0, 0, item_field_w, 0, item_pair, NULL);*/
+}
 

@@ -8,9 +8,9 @@
 
 void print_stats(STATS stat)
 {
-        WINDOW *win = dock_win(STAT_WIN);
+        /*WINDOW *win = dock_win(STAT_WIN);*/
 
-        werase(win);
+        /*werase(win);*/
 
-        wpumpw(win, L"⦗%02u⦘⦗%02u⦘⦗%02u⦘", HP(stat), SP(stat), AP(stat));
+        /*wpumpw(win, L"⦗%02u⦘⦗%02u⦘⦗%02u⦘", HP(stat), SP(stat), AP(stat));*/
 }

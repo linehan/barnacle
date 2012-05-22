@@ -117,7 +117,7 @@ inline void wcs_pushr(WINDOW *win, wchar_t *wcs, int len, short color, int L)
         for (i=0; i<(len-L); i++) {
                 setcchar(&cch, &wcs[i], 0, color, NULL);
                 wadd_wch(win, &cch);
-                /*wrefresh(win);*/
+                wrefresh(win);
         }
 }
 
@@ -132,7 +132,7 @@ inline void wcs_pushl(WINDOW *win, wchar_t *wcs, int len, short color, int L)
         for (i=0; i<len; i++) {
                 setcchar(&cch, &wcs[i], 0, color, NULL);
                 wadd_wch(win, &cch);
-                /*wrefresh(win);*/
+                wrefresh(win);
         }
 }
 
@@ -145,11 +145,11 @@ void method_pushr(void *self, int L)
         struct gloss_t *msg = (struct gloss_t *)self;
 
         werase(msg->win);
-        /*wrefresh(msg->win);*/
+        wrefresh(msg->win);
 
         wcs_pushr(msg->win, msg->wcs, msg->len, cuco(msg->win), L);
 
-        /*doupdate();*/
+        doupdate();
 }
 
 /*

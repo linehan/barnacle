@@ -27,7 +27,6 @@ static inline void tickloop(int y, int x, const char *str)
         mvwprintw(CONSOLE_WIN, y, x, "%s %u\n", str, get_tick());
 }
 
-STATS st = 0x0009030F;
 
 /* -------------------------------------------------------------------------- */
 /*
@@ -48,10 +47,8 @@ void render_cb(EV_P_ ev_timer *w, int revents)
         }
         tick();
         free_nouns();
-
         update_inventory_menu();
         send_delayed_msgs();
-        do_gloss();
 
         nn("Guy")->fall();
         nn("Guy")->update();
@@ -59,8 +56,7 @@ void render_cb(EV_P_ ev_timer *w, int revents)
         if (oops)
                 nn("Dummy")->update();
 
-
-        print_stats(st);
+        print_dock();
         update_panels();  /* Were slowing down performance, unnecessary */
         doupdate();
         MAPBOOK->restack(ACTIVE);
@@ -129,7 +125,7 @@ void animate_cb(EV_P_ ev_timer *w, int revents)
                 spinloop(5, 0, "animate_cb", sp++);
         }
         NEXT(ACTIVE->L[RIM]);
-        tab_update();
+        /*tab_update();*/
 
         ev_timer_again(EV_DEFAULT, w);
 }

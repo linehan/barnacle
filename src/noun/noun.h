@@ -7,6 +7,7 @@
 #include "../lib/fsm/fsm.h"
 #include "../ai/astar.h"
 #include "models.h"
+#include "stats.h"
 
 enum noun_model { NOUN_CREATURE, NOUN_DUMMY };
 

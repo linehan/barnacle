@@ -252,7 +252,7 @@ int modify_human(void *self)
                 noun->take(pos_y(noun->pos), pos_x(noun->pos));
                 break;
         case SM_Key('}'):
-                tab_cycle(2);
+                /*tab_cycle(2);*/
                 break;
         case SM_Key('@'):
                 if (equipped)
@@ -333,7 +333,7 @@ int modify_dummy(void *obj)
         {
         case SM_Punch:
                 noun->animate(dummy_die);
-                say(L"嶴", "FUCK!");
+                say_speak(L"嶴", "FUCK!");
                 sm_msg(noun->sm, SM_SELF, SM_Destroy|SM_Wait(13)|SM_Pri(9));
                 sm_screen(noun->sm, 9);
                 break;
@@ -342,13 +342,13 @@ int modify_dummy(void *obj)
                 break;
         case SM_GoDown:
                 if (flip_biased(0.4))
-                        say(L"䥚", "I'm gonna hop all over you!");
+                        say_speak(L"䥚", "I'm gonna hop all over you!");
                 noun->animate(dummy_mv_d);
                 break;
         case SM_GoLeft:
                 noun->animate(dummy_mv_l);
                 if (flip_biased(0.4))
-                        say(L"䥚", "Get fucked!");
+                        say_speak(L"䥚", "Get fucked!");
                 break;
         case SM_GoRight:
                 noun->animate(dummy_mv_r);
@@ -357,7 +357,7 @@ int modify_dummy(void *obj)
                 alert(I_KILL, noun->name);
                 noun->doom();
                 oops = false;
-                say(L"\n","\n");
+                say_speak(L"", "");
                 break;
         case SM_Seek:
                 noun->_seek(noun, get_noun("Guy"));

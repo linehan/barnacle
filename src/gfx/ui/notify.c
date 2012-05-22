@@ -6,7 +6,6 @@
 #include "notify.h"
 #include "../../test/test.h"
 
-#define DOCK dock_win(TEXT_WIN)
 
 /*
  * say -- print a message to the dock messager
@@ -15,32 +14,8 @@
  */
 void say(const wchar_t *who, const char *msg)
 {
-        werase(DOCK);
-
-        mvwadd_wch(DOCK, 0, 0, mkcch(who, 0, PUR_YELLOW));
-        wcolor_set(DOCK, PUR_YELLOW, NULL);
-        mvwprintw(DOCK, 0, 3, "%s\n", msg);
-
-        wrefresh(DOCK);
+        say_speak(who, msg);
 }
-
-
-struct gloss_t *speak;
-
-
-void do_gloss(void)
-{
-        static bool running = false;
-
-        if (speak) {
-                running = gloss(speak);
-                if (!running) {
-                        del_gloss(speak);
-                        release(&speak);
-                }
-        }
-}
-
 
 
 /*
@@ -49,23 +24,21 @@ void do_gloss(void)
  */
 void alert(enum alerts tag, char *msg)
 {
-        char *string;
+        wchar_t *wcs;
         int scheme;
-
-        werase(DOCK);
 
         switch (tag) {
         case I_FIND:
-                pumpf(&string, "Found %s", msg);
-                speak = str_gloss(DOCK, string, __GOLD);
+                wpumpf(&wcs, L"Found %s", msg);
+                say_alert(wcs, __GOLD);
                 break;
         case I_KILL:
-                pumpf(&string, "Killed %s", msg);
-                speak = str_gloss(DOCK, string, __KILL);
+                wpumpf(&wcs, L"Killed %s", msg);
+                say_alert(wcs, __KILL);
                 break;
         }
 
-        free(string);
+        free(wcs);
 }
 
 

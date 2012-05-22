@@ -160,11 +160,10 @@ void wpumpf(wchar_t **wcsp, const wchar_t *wfmt, ...)
  * @win  : WINDOW pointer (ncurses)
  * @wfmt : wide-character format string
  * @...  : format string arguments
- * @ret  : length of the formatted wide-character string at *wcsp
  */
 void wpumpw(WINDOW *win, const wchar_t *wfmt, ...)
 {
-        #define WPUMPW_MAXLEN 100
+        #define WPUMPW_MAXLEN 300 
         wchar_t buf[WPUMPW_MAXLEN];
         va_list args;
         size_t len;
@@ -176,6 +175,81 @@ void wpumpw(WINDOW *win, const wchar_t *wfmt, ...)
 
         waddwstr(win, buf);
 }
+
+
+/**
+ * pumpc -- scan for custom window attribute tokens
+ * @wfmt: wide-character format string
+ * @args: format string argument list
+ */
+/*wchar_t *pumpc(int *pos, int *len, const wchar_t *wfmt, ...)*/
+/*{*/
+        /*#define ATTR_TOKEN L"%@"*/
+        /*va_list args_cpy;*/
+        /*wchar_t *new_fmt, *tok, *state;*/
+        /*int pos[64], len[64];*/
+        /*int fmtlen;*/
+        /*int i=0;*/
+
+
+        /*new_fmt = wcsdup(wfmt);*/
+        /*fmt_len = wcslen(wfmt);*/
+
+        /*while (tok = wcswcs(wfmt, ATTR_TOKEN), tok) */
+        /*{*/
+                /*len[i] = wcslen(tok);*/
+                /*pos[i] = (fmt_len - len[i]);*/
+                /*i++;*/
+        /*}*/
+
+        /*[>for (tok = wcstok(wfmt, ATTR_TOKEN, &state);<]*/
+             /*[>tok!= NULL;<]*/
+             /*[>tok = wcstok(NULL, ATTR_TOKEN, &state)) <]*/
+        /*[>{<]*/
+                /*[>wcscat(new_fmt, tok);<]*/
+        /*[>}<]*/
+
+        /*return (new_fmt);*/
+/*}*/
+
+
+/*void wpumpwc(WINDOW *win, const wchar_t *wfmt, ...)*/
+/*{*/
+        /*va_list args;*/
+        /*wchar_t *new_fmt;*/
+        /*int pos[64];*/
+
+        /*new_fmt = pumpc(pos, wfmt);*/
+
+        /*va_start(args, new_fmt);*/
+        /*vswprintf(*/
+                
+
+
+
+
+/**
+ * swpumpf -- write a formatted wchar_t string into a pre-allocated buffer
+ * @buf  : wchar_t buffer (must be allocated already)
+ * @wfmt : wide-character format string
+ * @...  : format string arguments
+ * @ret  : length of the formatted wide-character string
+ */
+size_t swpumpf(wchar_t *buf, size_t maxlen, const wchar_t *wfmt, ...)
+{
+        va_list args;
+        size_t len;
+
+        assert(buf || !"swpumpf buffer must be previously allocated");
+
+        /* Write formatted output to stream */
+        va_start(args, wfmt);
+        len = vswprintf(buf, maxlen, wfmt, args);
+        va_end(args);
+
+        return len;
+}
+
 
 
 

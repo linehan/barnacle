@@ -2,19 +2,12 @@
 #ifndef __UI_DOCK_H
 #define __UI_DOCK_H
 
-
-enum dockw_enum {DOCK_WIN, NAME_WIN, STAT_WIN, TEXT_WIN};
-
-
-WINDOW *dock_win(int windowid);
+void print_dock(void);
 void dock_toggle(void);
-void dock_update(void);
 
-
-void tab_cur(int tab);
-void tab_sig(int tab);
-void tab_tog(int tab);
-void tab_update(void);
-
+void say_speak(wchar_t *icon, char *text);
+void say_equip(wchar_t *icon, char *name);
+void say_alert(wchar_t *text, short hicolor, short locolor);
+void say_stats(uint32_t stat);
 
 #endif
