@@ -36,6 +36,7 @@ struct msg_t {
         uint32_t time;         /* Send at this time */
         int pri;               /* Message priority */
         enum sm_tag tag;       /* Message identifier */
+        bool sticky;           /* Is message sticky? */
         SM_CB_ROUTE route;
 };
 
@@ -67,14 +68,13 @@ new_msg(uint32_t from, uint32_t to, enum sm_tag tag, uint32_t time, int pri, SM_
 {
         struct msg_t *new = malloc(sizeof(struct msg_t));
 
-        new->tag   = tag;
-        new->to    = to;
-        new->from  = from;
-        new->time  = time;
-        new->pri   = pri;
-        new->route = route;
-
-
+        new->tag    = tag;
+        new->to     = to;
+        new->from   = from;
+        new->time   = time;
+        new->pri    = pri;
+        new->route  = route;
+        new->sticky = false;
 
         return (new);
 }
@@ -133,6 +133,16 @@ uint32_t msg_to(struct msg_t *msg)
         return (msg->to);
 }
 
+/**
+ * MSG SET STICKY
+ * msg_set_sticky -- sets as "sticky" i.e. state will persist until new state
+ * @msg: pointer to a message */
+void msg_set_sticky(struct msg_t *msg)
+{
+        msg->sticky = true;
+}
+
+
 
 /* FSM INSTANTIATION 
 ``````````````````````````````````````````````````````````````````````````````*/
@@ -177,7 +187,8 @@ void del_sm(struct sm_t *sm)
 bool sm_set(struct sm_t *sm, enum sm_tag tag)
 {
         sm->tag     = tag;
-        sm->pending = true; /* A new state is pending */
+        sm->pending = true;  /* A new state is pending */
+        sm->lock    = false; /* A new state breaks any "sticky" lock */
 
         return true;
 }
@@ -217,6 +228,9 @@ void sm_msg(struct sm_t *sm, uint32_t to, uint32_t state)
 
         msg = new_msg(sm->id, recipient, SM_TAG(state), time, SM_PRI(state), sm->route);
 
+        if (SM_OPT(state) == STICKY)
+                msg_set_sticky(msg);
+
         do_route(msg);
 }
 
@@ -249,10 +263,11 @@ void sm_consume(struct sm_t *sm)
 
         if (msg) {
                 sm_set(sm, msg->tag);
+                if (msg->sticky)
+                        sm_lock(sm, true);
                 free(msg);
         }
 }
-
 
 /* RESET
  * sm_reset -- set the state and state magnitude of a state machine to 0
@@ -267,7 +282,7 @@ void sm_reset(struct sm_t *sm)
  * @sm: pointer to a state machine */
 void sm_refresh(struct sm_t *sm)
 {
-        if (!sm_is_pending(sm))
+        if (!sm_is_locked(sm) && !sm_is_pending(sm))
                 sm_reset(sm);
 }
 

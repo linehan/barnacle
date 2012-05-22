@@ -1,20 +1,17 @@
+#include "../com/arawak.h"
+
 #include <stdlib.h>
-#include <stdint.h>
-#include <stddef.h>
 #include <stdio.h>
-#include <stdarg.h>
+#include <stddef.h>
 #include <errno.h>
+#include <stdarg.h>
+#include <stdint.h>
 #include <wchar.h>
 #include <string.h>
 #include <assert.h>
+
 #include "textutils.h"
-#include "../test/test.h"
-#include "../com/arawak.h"
 #include "../gfx/gfx.h"
-
-
-
-
 
 
 

@@ -23,6 +23,7 @@
 #include "gfx/ui/titlecard.h"
 #include "gfx/ui/menu_inventory.h"
 #include "item/item.h"
+#include "eng/error.h"
 
 
 /* Rolling start */
@@ -57,8 +58,6 @@ int main(int argc, char *argv[])
         item1->put(item1, LINES/3, COLS/3);
         item2->put(item2, (LINES/3)+5, (COLS/3)+3);
         item3->put(item3, (LINES/3)+8, (COLS/3)+10);
-
-
 
         new_noun("Guy", PERSON, 0);
         new_noun("Dummy", DUMMY, 0);
