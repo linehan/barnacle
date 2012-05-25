@@ -25,6 +25,7 @@ enum sm_tag {
         SM_DigRight,
         SM_Seek,
         SM_Reset,
+        SM_Hit,
 };
 
 #endif

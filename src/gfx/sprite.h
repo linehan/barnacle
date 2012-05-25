@@ -13,7 +13,7 @@ extern cchar_t DIRT[2];
 
 extern cchar_t UNDERSEA;
 extern cchar_t DAYSKY;
-extern cchar_t PURPLE[5];
+extern cchar_t PURPLE[7];
 
 extern cchar_t SAND;
 extern cchar_t L_LAGOON[4];

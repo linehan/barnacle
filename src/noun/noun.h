@@ -8,6 +8,7 @@
 #include "../ai/astar.h"
 #include "models.h"
 #include "stats.h"
+#include "combat.h"
 
 enum noun_model { NOUN_CREATURE, NOUN_DUMMY };
 
@@ -119,10 +120,10 @@ uint32_t request_id(int option); /* Request the current subj/obj */
 
 /* Support modules 
 ``````````````````````````````````````````````````````````````````````````````*/
-#include "deps/attributes.h"
-#include "deps/jobs.h"
-#include "deps/names.h"
-#include "deps/vitals.h"
+//#include "deps/attributes.h"
+//#include "deps/jobs.h"
+//#include "deps/names.h"
+//#include "deps/vitals.h"
 
 
 

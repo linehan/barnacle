@@ -353,12 +353,7 @@ void method_noun_delete(void *self)
 void method_noun_mobile(void *self, bool opt)
 {
         struct noun_t *noun = NOUN(self);
-
         noun->is_mobile = opt;
-                
-        if (noun->is_mobile)
-                show_panel(noun->pan);
-        else    hide_panel(noun->pan);
 }
 
 
@@ -487,13 +482,17 @@ void method_noun_seek(void *self, void *target)
         tmp = cellpath_next(&s->astar->path);
 
         if (tmp->x > s->astar->start->x)
-                sm_set(s->sm, SM_GoRight);
+                sm_set(s->sm, SM_GoRight, 0);
+                /*sm_msg(s->sm, SM_SELF, SM_GoRight);*/
         if (tmp->x < s->astar->start->x)
-                sm_set(s->sm, SM_GoLeft);
+                /*sm_msg(s->sm, SM_SELF, SM_GoLeft);*/
+                sm_set(s->sm, SM_GoLeft, 0);
         if (tmp->y > s->astar->start->y)
-                sm_set(s->sm, SM_GoDown);
+                /*sm_msg(s->sm, SM_SELF, SM_GoDown);*/
+                sm_set(s->sm, SM_GoDown, 0);
         if (tmp->y < s->astar->start->y)
-                sm_set(s->sm, SM_GoUp);
+                /*sm_msg(s->sm, SM_SELF, SM_GoUp);*/
+                sm_set(s->sm, SM_GoUp, 0);
 }
 
 

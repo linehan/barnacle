@@ -1,1 +1,9 @@
 
+ Player controls:
+
+ hjkl movement 
+ wasd movement (partially supported)
+ e    attack
+ r    pick up item
+ t    light torch (partially supported)
+ :q

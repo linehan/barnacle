@@ -11,6 +11,7 @@
 /* Abstract data types
 ``````````````````````````````````````````````````````````````````````````````*/
 struct seed_t {
+        uint32_t *nbr[8];
         uint32_t *cur;
         uint32_t *n;
         uint32_t *s;
@@ -187,7 +188,8 @@ void mx_del(struct matrix_t *matrix)
 #define safe_address_se(mx,y,x) safe_address_s(mx, y) && safe_address_e(mx, x)
 
 
-enum neighbors {CUR,_N_,_S_,_E_,_W_,N_W,N_E,S_W,S_E};
+//enum neighbors {_N_,_S_,_E_,_W_,N_W,N_E,S_W,S_E};
+
 
 /*
  * mx_w -- returns ptr to the value stored to the west of address adr
@@ -319,14 +321,14 @@ static inline
 void mx_seed(struct matrix_t *matrix, int y, int x, struct seed_t *seed)
 {
         seed->cur = mx_get(matrix, y, x);
-        seed->n   = mx_n(matrix, y, x);
-        seed->s   = mx_s(matrix, y, x);
-        seed->e   = mx_e(matrix, y, x);
-        seed->w   = mx_w(matrix, y, x);
-        seed->nw  = mx_nw(matrix, y, x);
-        seed->ne  = mx_ne(matrix, y, x);
-        seed->sw  = mx_sw(matrix, y, x);
-        seed->se  = mx_se(matrix, y, x);
+        seed->nbr[0] = seed->n  = mx_n(matrix, y, x);
+        seed->nbr[1] = seed->s  = mx_s(matrix, y, x);
+        seed->nbr[2] = seed->e  = mx_e(matrix, y, x);
+        seed->nbr[3] = seed->w  = mx_w(matrix, y, x);
+        seed->nbr[4] = seed->nw = mx_nw(matrix, y, x);
+        seed->nbr[5] = seed->ne = mx_ne(matrix, y, x);
+        seed->nbr[6] = seed->sw = mx_sw(matrix, y, x);
+        seed->nbr[7] = seed->se = mx_se(matrix, y, x);
 }
 
 

@@ -3,14 +3,7 @@
 #define __POS_AND_REC_HEADER
 
 #include "../com/arawak.h"
-
-
-struct rec_t {
-        int h;
-        int w;
-        int y;
-        int x;
-};
+#include "rec.h"
 
 
 /*
@@ -124,8 +117,5 @@ void set_pos(struct pos_t *pos,
              int ufo_h, int ufo_w, int ufo_y, int ufo_x, 
              int box_h, int box_w, int box_y, int box_x); 
 
-
-struct rec_t *new_rec(int h, int w, int y, int x);
-void set_rec(struct rec_t *rec, int h, int w, int y, int x);
 
 #endif

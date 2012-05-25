@@ -53,7 +53,6 @@ inline void darken(struct rgb_t *color, int step)
 void darken_colors(int step)
 {
         int i;
-        int j=0;
         for (i=0; i<strips; i++) {
                 darken(&wallbg[i], (i+step));
                 darken(&wallfg[i], (i+step));
@@ -74,7 +73,6 @@ inline void lighten(struct rgb_t *color, int step)
 void lighten_colors(int step)
 {
         int i;
-        int j=0;
         for (i=0; i<strips; i++) {
                 lighten(&wallbg[i], (i+step));
                 lighten(&wallfg[i], (i+step));
@@ -84,20 +82,81 @@ void lighten_colors(int step)
 }
 
 
+
+#define COLOR_BLOCK_SIZE (12)
+#define PAIR_BLOCK_SIZE  (6)
+#define FGBG_OFFSET      (6)
+
+void make_glow_colors(short basecolor, short color_block, short pair_block)
+{
+        #define FG_BLEND         (__DGREY)
+        #define BG_BASE          (__DGREY)
+        #define BG_BLEND         (BLACK)
+        float fgmix[]={1.0, 0.8, 0.6, 0.4, 0.2, 0.1};
+        float bgmix[]={1.0, 0.8, 0.6, 0.4, 0.2, 0.1};
+        short fg;
+        short bg;
+        short pa;
+        float mix;
+        short i;
+
+        for (i=0; i<PAIR_BLOCK_SIZE; i++) {
+
+                fg = color_block + i;
+                bg = color_block + i + FGBG_OFFSET;
+                pa = pair_block  + i;
+
+                blend(basecolor, fgmix[i], FG_BLEND, 1.0, fg);
+                blend(BG_BASE,   bgmix[i], BG_BLEND, 1.0, bg);
+
+                init_pair(pa, fg, bg); 
+        }
+}
+
+
+void assign_glow_colors(short base, short *fg, short *bg, short *pa)
+{
+        short co_start;
+        short pa_start;
+        short i;
+
+        switch (base) {
+        case TORCH_BASE:
+                pa_start = TORCHP0;
+                co_start = TORCHF0;
+                break;
+        case SUN_BASE:
+                pa_start = SUNP0;
+                co_start = SUNF0;
+                break;
+        case RLIGHT1_BASE:
+                pa_start = RL1P0;
+                co_start = RLIGHT1F0;
+                break;
+        case RLIGHT2_BASE:
+                pa_start = RL2P0;
+                co_start = RLIGHT2F0;
+                break;
+        }
+
+        for (i=0; i<6; i++) {
+                fg[i] = co_start + i;
+                bg[i] = co_start + i + FGBG_OFFSET;
+                pa[i] = pa_start + i;
+        }
+}
+
+
 void torch_colors(void)
 {
-        blend(LIGHT1, 0.2, __DGREY, 1.0, LIGHT3);
-        blend(LIGHT1, 0.5, __DGREY, 1.0, LIGHT2);
-        blend(LIGHT1, 1.0, __DGREY, 1.0, LIGHT1);
-        blend(__DGREY, 0.3, BLACK, 1.0, LIGHTB3);
-        blend(__DGREY, 0.5, BLACK, 1.0, LIGHTB2);
-        blend(__DGREY, 1.0, BLACK, 1.0, LIGHTB1);
+        /* Light sources */
+        init_color(TORCH_COLOR, 851, 490, 235);
 
-        init_pair(LIGHTP1, LIGHT1, LIGHTB1);
-        init_pair(LIGHTP2, LIGHT2, LIGHTB2);
-        init_pair(LIGHTP3, LIGHT3, LIGHTB3);
-        init_pair(LIGHTP4, LIGHT4, LIGHTB4);
+        make_glow_colors(TORCH_COLOR, TORCHF0, TORCHP0);
+        make_glow_colors(      BEIGE,   SUNF0,   SUNP0);
 }
+
+
 
 /******************************************************************************/
 /* Initialize the color palette with R,G,B values from 0-1000 and the color
@@ -231,20 +290,14 @@ void init_palette(int set)
         init_color(D_SAND_LAGOON, 188, 267, 235);
         init_color(WATER_HINT, 223, 310, 274);
 
-        init_color(LIGHT1, 851, 490, 235);
-        init_color(LIGHT2, 0, 0, 0);
-        init_color(LIGHT3, 0, 0, 0);
-        init_color(LIGHT4, 0, 0, 0);
 
-        init_color(LIGHTB1, 0, 0, 0);
-        init_color(LIGHTB2, 0, 0, 0);
-        init_color(LIGHTB3, 0, 0, 0);
-        init_color(LIGHTB4, 0, 0, 0);
 
         init_color(FLEXBG, 0, 0, 0);
         init_color(FLEXFG, 0, 0, 0);
         init_color(FLEXBG_DEFAULT, 0, 0, 0);
         init_color(FLEXFG_DEFAULT, 0, 0, 0);
+        init_color(___DGREY, 90, 87, 90);
+        init_color(____DGREY, 60, 58, 60);
 
         /* UI COLOR PAIRS */
         init_pair(CMP_BEIGE, BEIGE, ORANGE);
@@ -377,6 +430,10 @@ void init_palette(int set)
         init_pair(SEA__MED, WATER_HINT, DSEA);
         init_pair(SEA___MED, __LSEA, DSEA);
         init_pair(PUR_SOLID, __DGREY, __DGREY);
+        init_pair(___PUR_PURPLE, _DGREY, ___DGREY);
+        init_pair(____PUR_PURPLE, _DGREY, ____DGREY);
+        init_pair(___PUR_GREY,  GREY, ___DGREY);
+        init_pair(____PUR_GREY, GREY, ____DGREY);
 
         init_color(DARK_SANDZ, 741,  643,  502);
         init_color(DARK_SAND0, 670,  580,  455);

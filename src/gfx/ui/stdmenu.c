@@ -4,7 +4,7 @@
 #include "../../lib/textutils.h"
 
 #define STDMENU(x) (struct stdmenu_t *)x
-#define STD_BACKGROUND &PURPLE[2]
+#define STD_BACKGROUND &PURPLE[5]
 
 /* Method forward references
 ``````````````````````````````````````````````````````````````````````````````*/
@@ -377,7 +377,7 @@ void stdmenu_print_icons(void *self, int yofs, int xofs)
 
         for (i=smenu->cur_top; i<smenu->n; i++) {
 
-                pair = (i == smenu->cur_row) ? PUR_GREY : PUR_PURPLE;
+                pair = (i == smenu->cur_row) ? ____PUR_GREY : ____PUR_PURPLE;
                 setcchar(&cch, smenu->icon[i], 0, pair, NULL);
                 
                 mvwadd_wch(smenu->win, yofs+(i-smenu->cur_top), xofs, &cch);

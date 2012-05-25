@@ -118,8 +118,9 @@ struct sm_t {
         uint32_t id;           /* Who owns the sm (the "sender") */
         bool pending;          /* Has the current state been consumed? */
         bool lock;
-        int screen;
+        int screen;            /* Messages with priority < screen ignored */
         enum sm_tag tag;       /* Current state in the sm */
+        int mag;               /* Optional magnitude value */
         struct bh_t *state;
         SM_CB_ROUTE route;     /* 'route' callback */
 };
@@ -135,7 +136,9 @@ void         del_sm(struct sm_t *sm);
 void sm_msg(struct sm_t *sm, uint32_t to, uint32_t state);
 void sm_consume(struct sm_t *sm);
 int  sm_state(struct sm_t *sm);
+int  sm_mag(struct sm_t *sm);;
 void sm_refresh(struct sm_t *sm);
+void sm_msgmag(struct sm_t *sm, uint32_t to, uint32_t state, int magnitude);
 
 uint32_t msg_to(struct msg_t *msg);
 

@@ -9,6 +9,7 @@
 #include <assert.h>
 #include <stdint.h>
 #include <stdarg.h>
+#include "../com/arawak.h"
 
 static const int NBYTES=4;
 static const int NNIBBLES=8;
@@ -215,19 +216,43 @@ static inline void unpack_nibbles(uint32_t word, int *dest, size_t n)
 
 
 
+static inline void add_byte(uint32_t *word, int b, int n)
+{
+        int byte = get_byte(*word, b);
+
+        if (byte < (MAX(255,n) - MIN(255,n)))
+                byte += n;
+        else
+                byte = 255;
+
+        set_byte(word, b, byte);
+}
+static inline void sub_byte(uint32_t *word, int b, int n)
+{
+        int byte = get_byte(*word, b);
+
+        if (byte > n)
+                byte -= n;
+        else
+                byte = 0;
+
+        set_byte(word, b, byte);
+}
 
 static inline void inc_byte(uint32_t *word, int b)
 {
-        assert(word != NULL);
-        set_byte(word, b, (get_byte(*word, b))+1);
+        int byte = get_byte(*word, b);
+
+        if (byte < 255)
+                byte += 1;
+
+        set_byte(word, b, byte);
 }
 static inline void dec_byte(uint32_t *word, int b)
 {
-        assert(word != NULL);
         int byte = get_byte(*word, b);
 
         if (byte > 0) byte--;
-        else return;
 
         set_byte(word, b, byte);
 }

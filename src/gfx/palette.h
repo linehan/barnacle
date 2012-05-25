@@ -115,28 +115,94 @@ enum arne_shadow2 {
         DARK_SAND3 = 120,
         DARK_SAND4 = 121,
         DARK_SANDZ = 122,
-        /* FJORD PALETTE 123-135*/
 };
-enum light {
-        LIGHT1 = 123,
-        LIGHT2 = 124,
-        LIGHT3 = 125,
-        LIGHT4 = 126,
-        LIGHTB1 = 127,
-        LIGHTB2 = 128,
-        LIGHTB3 = 129,
-        LIGHTB4 = 130,
+
+enum torch_light {
+        TORCH_BASE = 123,
+        TORCHF0 = 123,
+        TORCHF1 = 124,
+        TORCHF2 = 125,
+        TORCHF3 = 126,
+        TORCHF4 = 127,
+        TORCHF5 = 128,
+        TORCHB0 = 129,
+        TORCHB1 = 130,
+        TORCHB2 = 131,
+        TORCHB3 = 132,
+        TORCHB4 = 133,
+        TORCHB5 = 134,
 };
+
+enum sun_light {
+        SUN_BASE = 135,
+        SUNF0 = 135,
+        SUNF1 = 136,
+        SUNF2 = 137,
+        SUNF3 = 138,
+        SUNF4 = 139,
+        SUNF5 = 140,
+        SUNB0 = 141,
+        SUNB1 = 142,
+        SUNB2 = 143,
+        SUNB3 = 144,
+        SUNB4 = 145,
+        SUNB5 = 146,
+};
+
+
+enum reserved_light1 {
+        RLIGHT1_BASE = 147,
+        RLIGHT1F0 = 147,
+        RLIGHT1F1 = 148,
+        RLIGHT1F2 = 149,
+        RLIGHT1F3 = 150,
+        RLIGHT1F4 = 151,
+        RLIGHT1F5 = 152,
+        RLIGHT1B0 = 153,
+        RLIGHT1B1 = 154,
+        RLIGHT1B2 = 155,
+        RLIGHT1B3 = 156,
+        RLIGHT1B4 = 157,
+        RLIGHT1B5 = 158,
+};
+
+
+enum reserved_light2 {
+        RLIGHT2_BASE = 159,
+        RLIGHT2F0 = 159,
+        RLIGHT2F1 = 160,
+        RLIGHT2F2 = 161,
+        RLIGHT2F3 = 162,
+        RLIGHT2F4 = 163,
+        RLIGHT2F5 = 164,
+        RLIGHT2B0 = 165,
+        RLIGHT2B1 = 166,
+        RLIGHT2B2 = 167,
+        RLIGHT2B3 = 168,
+        RLIGHT2B4 = 169,
+        RLIGHT2B5 = 170,
+};
+
+#define GLOW_COLOR_START TORCHF0
+#define GLOW_COLOR_END   RLIGHT2B5
+
 
 enum flex {
-        FLEXBG = 131,
-        FLEXFG = 132,
-        FLEXBG_DEFAULT = 133,
-        FLEXFG_DEFAULT = 134 
+        FLEXBG = 171,
+        FLEXFG = 172,
+        FLEXBG_DEFAULT = 173,
+        FLEXFG_DEFAULT = 174 
 };
 
 
+enum uistuff {
+        ___DGREY = 175,
+        ____DGREY = 176
+};
 
+enum lightsandcolors {
+        TORCH_COLOR = 177
+};
 
 
 
@@ -217,6 +283,8 @@ enum stuff {
         ESAND = 79,
         FSAND = 80,
 };
+
+
 
 
 
@@ -324,26 +392,55 @@ enum purpairs {
         PUR_SOLID       = 155,
 };
 
-enum light_pair {
-        LIGHTP1 = 156,
-        LIGHTP2 = 157,
-        LIGHTP3 = 158,
-        LIGHTP4 = 159
+enum light_pairs {
+        TORCHP0 = 156,
+        TORCHP1 = 157,
+        TORCHP2 = 158,
+        TORCHP3 = 159,
+        TORCHP4 = 160,
+        TORCHP5 = 161,
+
+        SUNP0   = 162,
+        SUNP1   = 163,
+        SUNP2   = 164,
+        SUNP3   = 165,
+        SUNP4   = 166,
+        SUNP5   = 167,
+
+        RL1P0   = 168,
+        RL1P1   = 169,
+        RL1P2   = 170,
+        RL1P3   = 171,
+        RL1P4   = 172,
+        RL1P5   = 173,
+
+        RL2P0   = 174,
+        RL2P1   = 175,
+        RL2P2   = 176,
+        RL2P3   = 177,
+        RL2P4   = 178,
+        RL2P5   = 179,
 };
 
 enum black_pair {
-        BLACK_BEIGE = 160,
+        BLACK_BEIGE = 180,
 };
 
 enum edible_pairs {
-        FLEX_APPLE = 161,
-        FLEX_GRAPEFRUIT = 162,
-        FLEX_LG_POTION = 163,
-        FLEX_SM_POTION = 164,
-        FLEX_ELIXIR = 165,
-        FLEX_PALM = 166,
+        FLEX_APPLE = 181,
+        FLEX_GRAPEFRUIT = 182,
+        FLEX_LG_POTION = 183,
+        FLEX_SM_POTION = 184,
+        FLEX_ELIXIR = 185,
+        FLEX_PALM = 186,
 };
 
+enum uicolors {
+        ___PUR_PURPLE  = 187,
+        ____PUR_PURPLE = 188,
+        ___PUR_GREY    = 189,
+        ____PUR_GREY   = 190,
+};
 
 void darken_colors(int step);
 
@@ -394,6 +491,8 @@ static struct rgb_t backfg[3] = { {255, 169, 137, 94},{255, 169, 137, 94},{255, 
 
 static short FG[3]={255,254,253};
 static short BG[3]={252,251,250};
+
+void assign_glow_colors(short base, short *fg, short *bg, short *pa);
 
 #define TITLE_COLOR PUR_BLACK
 

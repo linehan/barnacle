@@ -9,7 +9,8 @@
  */
 void del_gloss(struct gloss_t *g)
 {
-       free(g->wcs);
+        if (g->wcs)
+                free(g->wcs);
 }
 
 

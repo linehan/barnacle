@@ -36,6 +36,7 @@ struct msg_t {
         uint32_t time;         /* Send at this time */
         int pri;               /* Message priority */
         enum sm_tag tag;       /* Message identifier */
+        int mag;               /* Magnitude value (optional) */
         bool sticky;           /* Is message sticky? */
         SM_CB_ROUTE route;
 };
@@ -75,6 +76,7 @@ new_msg(uint32_t from, uint32_t to, enum sm_tag tag, uint32_t time, int pri, SM_
         new->pri    = pri;
         new->route  = route;
         new->sticky = false;
+        new->mag    = 0;
 
         return (new);
 }
@@ -142,6 +144,38 @@ void msg_set_sticky(struct msg_t *msg)
         msg->sticky = true;
 }
 
+/** 
+ * MAKE MESSAGE 
+ * sm_mkmsg -- create a new message (does not send)
+ * @self:  pointer to the state machine object 
+ * @to:    noun id of intended recipient
+ * @state: msg identifier | delay | priority */
+void sm_mkmsg(struct msg_t **msg, struct sm_t *sm, uint32_t to, uint32_t state)
+{
+        uint32_t recipient; 
+        uint32_t time;
+
+        if (to == SM_SELF)
+                recipient = sm->id;
+        else    recipient = to;
+
+        time = get_tick() + SM_WAIT(state);
+
+        *msg = new_msg(sm->id, recipient, SM_TAG(state), time, SM_PRI(state), sm->route);
+
+        if (SM_OPT(state) == STICKY)
+                msg_set_sticky(*msg);
+}
+
+/**
+ * MESSAGE MAGNITUDE
+ * sm_mkmag -- set the magnitude of an unsent message
+ * @msg: pointer to an unsent message
+ * @mag: desired magnitude value */
+void sm_mkmag(struct msg_t *msg, int magnitude)
+{
+        msg->mag = magnitude;
+}
 
 
 /* FSM INSTANTIATION 
@@ -158,7 +192,7 @@ struct sm_t *new_sm(uint32_t id, bool (*route)(void *self))
 
         new->id     = id;
         new->state  = new_bh(NUM_PENDING);
-
+        new->mag    = 0;
         new->route  = route;
 
         return (new);
@@ -184,9 +218,10 @@ void del_sm(struct sm_t *sm)
  * @sm: pointer to a state machine
  * @msg: the state msg
  * @mag: the state magnitude */
-bool sm_set(struct sm_t *sm, enum sm_tag tag)
+bool sm_set(struct sm_t *sm, enum sm_tag tag, int magnitude)
 {
         sm->tag     = tag;
+        sm->mag     = magnitude;
         sm->pending = true;  /* A new state is pending */
         sm->lock    = false; /* A new state breaks any "sticky" lock */
 
@@ -204,33 +239,40 @@ int sm_state(struct sm_t *sm)
         return (int)(sm->tag);
 }
 
+/**
+ * MAGNITUDE
+ * sm_mag -- return the magnitude of the current state msg of a state machine
+ * @sm: pointer to a state machine */
+int sm_mag(struct sm_t *sm)
+{
+        return sm->mag;
+}
 
 /** 
- * MSG 
+ * SEND MESSAGE 
  * sm_msg -- send a new message (draft + pass to the emitter)
  * @self:  pointer to the state machine object 
  * @to:    noun id of intended recipient
- * @msg:   msg identifier
- * @delay: ticks of delay
- * @pri:   priority of message */ 
-/*void sm_msg(struct sm_t *sm, uint32_t to, enum sm_tag tag, int delay, int pri)*/
+ * @msg:   msg identifier | delay | priority */
 void sm_msg(struct sm_t *sm, uint32_t to, uint32_t state)
 {
-        uint32_t recipient; 
-        uint32_t time;
         struct msg_t *msg;
+        sm_mkmsg(&msg, sm, to, state);
+        do_route(msg);
+}
 
-        if (to == SM_SELF)
-                recipient = sm->id;
-        else    recipient = to;
-
-        time = get_tick() + SM_WAIT(state);
-
-        msg = new_msg(sm->id, recipient, SM_TAG(state), time, SM_PRI(state), sm->route);
-
-        if (SM_OPT(state) == STICKY)
-                msg_set_sticky(msg);
-
+/** 
+ * MSG WITH MAGNITUDE
+ * sm_msg -- send a new message (draft + pass to the emitter)
+ * @self:  pointer to the state machine object 
+ * @to:    noun id of intended recipient
+ * @msg:   msg identifier | delay | priority 
+ * @mag:   magnitude to be attached to the message */
+void sm_msgmag(struct sm_t *sm, uint32_t to, uint32_t state, int magnitude)
+{
+        struct msg_t *msg;
+        sm_mkmsg(&msg, sm, to, state);
+        sm_mkmag(msg, magnitude);
         do_route(msg);
 }
 
@@ -262,7 +304,7 @@ void sm_consume(struct sm_t *sm)
         msg = (struct msg_t *)bh_pop(sm->state);
 
         if (msg) {
-                sm_set(sm, msg->tag);
+                sm_set(sm, msg->tag, msg->mag);
                 if (msg->sticky)
                         sm_lock(sm, true);
                 free(msg);
@@ -274,7 +316,7 @@ void sm_consume(struct sm_t *sm)
  * @sm: pointer to a state machine */
 void sm_reset(struct sm_t *sm)
 {
-        sm_set(sm, 0);
+        sm_set(sm, 0, 0);
 }
 
 /* REFRESH 

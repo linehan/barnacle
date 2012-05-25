@@ -21,7 +21,7 @@ void (*item_novum[])(void *self) = {
         &new_lg_potion,
         &new_sm_potion,
         &new_elixir,
-        &new_palm
+        &new_palm,
 };
 
 
@@ -62,7 +62,7 @@ struct item_t *yx_item(struct map_t *map, int y, int x)
 /* FORWARD DECLARED METHODS */
 void method_item_put(void *self, int y, int x);
 void method_item_equip(void *self, bool yn);
-void DUMMY_METHOD(void *self);
+void DUMMY_METHOD(void *self, struct noun_t *noun);
 
 
 /**
@@ -135,7 +135,7 @@ inline void add_to_noun(struct noun_t *noun, struct item_t *item)
  * DUMMY METHOD
  * method_item_dummy -- for inheritance
  */
-void DUMMY_METHOD(void *self) 
+void DUMMY_METHOD(void *self, struct noun_t *noun) 
 {
         return;
 }
@@ -187,4 +187,35 @@ void method_noun_take(void *self, int y, int x)
  * METHOD DROP
  * method_item_drop -- move an item from a noun's inventory to the map
  */
+void noun_item_drop(struct noun_t *noun)
+{
+        struct seed_t seed;
+        int n;
+        int x;
+        int y;
+        int i;
 
+        x = pos_x(noun->pos);
+        y = pos_y(noun->pos);
+        n = roll1d(4);
+
+        /*mx_fill(ACTIVE->item, pos_y(noun->pos), pos_x(noun->pos), &seed);*/
+
+        for (i=0; i<n; i++) {
+                struct item_t *item = make_item(4+roll1d(4));
+
+                switch (i) { 
+                case 0:
+                        item->put(item, y+1, x-1);
+                        break;
+                case 1:
+                        item->put(item, y-1, x+1);
+                        break;
+                case 2:
+                        item->put(item, y, x+1);
+                        break;
+                }
+        }
+}
+
+        
