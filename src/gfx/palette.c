@@ -92,8 +92,8 @@ void make_glow_colors(short basecolor, short color_block, short pair_block)
         #define FG_BLEND         (__DGREY)
         #define BG_BASE          (__DGREY)
         #define BG_BLEND         (BLACK)
-        float fgmix[]={1.0, 0.8, 0.6, 0.4, 0.2, 0.1};
-        float bgmix[]={1.0, 0.8, 0.6, 0.4, 0.2, 0.1};
+        float fgmix[]={1.0, 0.8, 0.5, 0.3, 0.2, 0.00};
+        float bgmix[]={1.0, 0.8, 0.5, 0.3, 0.2, 0.2};
         short fg;
         short bg;
         short pa;
@@ -449,6 +449,7 @@ void init_palette(int set)
         init_pair(FSAND, DARK_SAND4, DARK_SAND3);
 
         init_pair(BLACK_BEIGE, __BROWN, BLACK);
+        init_pair(BLACK_BLACK, BLACK, BLACK);
 
         torch_colors();
         mix_colors();

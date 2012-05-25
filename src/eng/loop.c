@@ -46,15 +46,22 @@ void render_cb(EV_P_ ev_timer *w, int revents)
                 mvwprintw(CONSOLE_WIN, 9, 0, "Maxi tick: %u", UINT32_MAX);
         }
         tick();
+
+        update_nouns();
+        send_delayed_msgs();
         free_nouns();
+
+
         dock_update();
         update_inventory_menu();
-        send_delayed_msgs();
 
-        nn("Guy")->update();
 
-        if (oops)
-                nn("Dummy")->update();
+
+
+        /*nn("Guy")->update();*/
+
+        /*if (oops)*/
+                /*nn("Dummy")->update();*/
 
         print_dock();
         update_panels();  /* Were slowing down performance, unnecessary */

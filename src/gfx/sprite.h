@@ -21,6 +21,7 @@ extern cchar_t R_LAGOON[4];
 extern cchar_t T_LAGOON[4];
 extern cchar_t B_LAGOON[4];
 extern cchar_t __LAGOON[8];
+extern cchar_t DARKEST;
 
 enum tiletype { 
         __non__ = 0,

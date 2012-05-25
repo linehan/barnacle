@@ -61,7 +61,7 @@ void put_door(int tag, struct map_t *src, struct map_t *dst,
         new->src = src;
         new->dst = dst;
         new->id  = mt_random();
-        doorlight = new_light(5, 7, dst_y+1, dst_x+1, SUN_BASE);
+        doorlight = new_light(5, 7, dst_y, dst_x, SUN_BASE);
 
         new->srcrec = new_rec(src_h, src_w, src_y, src_x);
         new->dstrec = new_rec(dst_h, dst_w, dst_y, dst_x);

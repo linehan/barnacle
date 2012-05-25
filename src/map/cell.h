@@ -24,7 +24,7 @@ struct cellpath_t {
 
 
 bool same_cell(struct cell_t *a, struct cell_t *b);
-struct cell_t *new_cell(uint32_t y, uint32_t x);
+struct cell_t *new_cell(int y, int x);
 struct cell_t *cellpath_goal(struct list_head *path);
 struct cell_t *cellpath_start(struct list_head *path);
 struct cell_t *cell_parent(struct cell_t *cell);

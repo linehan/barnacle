@@ -121,6 +121,7 @@ struct sm_t {
         int screen;            /* Messages with priority < screen ignored */
         enum sm_tag tag;       /* Current state in the sm */
         int mag;               /* Optional magnitude value */
+        int key;
         struct bh_t *state;
         SM_CB_ROUTE route;     /* 'route' callback */
 };
@@ -144,6 +145,8 @@ uint32_t msg_to(struct msg_t *msg);
 
 void send_delayed_msgs(void);
 
+void sm_keypress(struct sm_t *sm, int key);
+int sm_key(struct sm_t *sm);
 
 
 
