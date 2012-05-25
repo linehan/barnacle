@@ -131,7 +131,7 @@ void pumpf(char **strp, const char *fmt, ...)
 void wpumpf(wchar_t **wcsp, const wchar_t *wfmt, ...)
 {
         va_list args;
-        size_t len;
+        size_t len = 0;
         FILE *stream;
 
         /* Open a new FILE stream. *wcsp will be dynamically allocated to
@@ -164,7 +164,6 @@ void wpumpw(WINDOW *win, const wchar_t *wfmt, ...)
         #define WPUMPW_MAXLEN 300 
         wchar_t buf[WPUMPW_MAXLEN];
         va_list args;
-        size_t len;
 
         /* Write formatted output to stream */
         va_start(args, wfmt);

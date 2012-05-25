@@ -40,15 +40,15 @@ void noun_animate(struct noun_t *noun)
         struct ani_t *ani = noun->animation;
 
         /* Draw the current frame */
-        wadd_wch(noun->win, mkcch(&ani->frame[ani->i], 0, FLEX));
+        wadd_wch(noun->win, mkcch(&ani->frame[noun->frame], 0, FLEX));
 
         /* Move the panel if this is the mv_frame */
-        if (ani->i == ani->mv_frame)
+        if (noun->frame == ani->mv_frame)
                 noun->_step(noun, ani->mv_dir);
 
         /* Increment the current frame and/or terminate the animation */
-        if (++noun->animation->i == noun->animation->len) {
-                noun->animation->i = 0;
+        if (++noun->frame == noun->animation->len) {
+                noun->frame = 0;
                 noun->animation = NULL;
                 return;
         }
@@ -170,46 +170,49 @@ int modify_human(void *self)
         struct noun_t *noun = (struct noun_t *)self;
         struct item_t *item;
         int state;
+        int key;
        
-        state = sm_state(noun->sm);
+        state = sm_key(noun->sm);
+        if (!state)
+                state = sm_state(noun->sm);
 
         switch (state) 
         { 
         case SM_DigUp:
-                noun->animate(guy_dig_u);
+                noun->_animate(noun, guy_dig_u);
                 break;
         case SM_DigDown:
-                noun->animate(guy_dig_d);
+                noun->_animate(noun, guy_dig_d);
                 break;
         case SM_DigLeft:
-                noun->animate(guy_dig_l);
+                noun->_animate(noun, guy_dig_l);
                 break;
         case SM_DigRight:
-                noun->animate(guy_dig_r);
+                noun->_animate(noun, guy_dig_r);
                 break;
         case SM_GoUp:
-                noun->animate(guy_walk_u);
+                noun->_animate(noun, guy_walk_u);
                 break;
         case SM_GoDown:
-                noun->animate(guy_walk_d);
+                noun->_animate(noun, guy_walk_d);
                 break;
         case SM_GoLeft:
-                noun->animate(guy_walk_l);
+                noun->_animate(noun, guy_walk_l);
                 break;
         case SM_GoRight:
-                noun->animate(guy_walk_r);
+                noun->_animate(noun, guy_walk_r);
                 break;
         case SM_RunUp:
-                noun->animate(guy_run_u);
+                noun->_animate(noun, guy_run_u);
                 break;
         case SM_RunDown:
-                noun->animate(guy_run_d);
+                noun->_animate(noun, guy_run_d);
                 break;
         case SM_RunLeft:
-                noun->animate(guy_run_l);
+                noun->_animate(noun, guy_run_l);
                 break;
         case SM_RunRight:
-                noun->animate(guy_run_r);
+                noun->_animate(noun, guy_run_r);
                 break;
         /* ------------------------------------ Combat */
         case SM_Hit:
@@ -237,21 +240,21 @@ int modify_human(void *self)
         /* ------------------------------------------ run  */
         case SM_Key('J'):
         case SM_Key('S'):
-                /*sm_msg(noun->sm, SM_SELF, SM_RunDown | SM_Opt(STICKY));*/
+                sm_msg(noun->sm, SM_SELF, SM_RunDown | SM_Opt(STICKY));
                 break;
         case SM_Key('K'):
         case SM_Key('W'):
-                /*sm_msg(noun->sm, SM_SELF, SM_RunUp | SM_Opt(STICKY));*/
+                sm_msg(noun->sm, SM_SELF, SM_RunUp | SM_Opt(STICKY));
                 break;
         case SM_Key('H'):
         case SM_Key('A'):
-                /*sm_msg(noun->sm, SM_SELF, SM_RunLeft | SM_Opt(STICKY));*/
-                noun->animate(guy_jump_ul);
+                sm_msg(noun->sm, SM_SELF, SM_RunLeft | SM_Opt(STICKY));
+                /*noun->animate(guy_jump_ul);*/
                 break;
         case SM_Key('L'):
         case SM_Key('D'):
-                noun->animate(guy_jump_ur);
-                /*sm_msg(noun->sm, SM_SELF, SM_RunRight | SM_Opt(STICKY));*/
+                /*noun->animate(guy_jump_ur);*/
+                sm_msg(noun->sm, SM_SELF, SM_RunRight | SM_Opt(STICKY));
                 break;
         /* ------------------------------------------ misc */
         case SM_Key('t'):
@@ -265,12 +268,12 @@ int modify_human(void *self)
                         equipped->use(equipped, noun);
                 break;
         case SM_Key('e'):
-                noun->animate(guy_poke_u);
+                noun->_animate(noun, guy_poke_u);
                 emit_to_noun(noun, 'u', SM_Punch | SM_Wait(3) | SM_Pri(1));
                 break;
         case SM_Key('r'):
-                noun->animate(guy_pickup);
-                noun->take(pos_y(noun->pos), pos_x(noun->pos));
+                noun->_animate(noun, guy_pickup);
+                noun->_take(noun, pos_y(noun->pos), pos_x(noun->pos));
                 break;
         case SM_Key('@'):
                 if (equipped)
@@ -325,12 +328,12 @@ static void build_dummy_animations(void)
 void render_dummy(void *self)
 {
         struct noun_t *noun = (struct noun_t *)self;
-        static bool done;
+        /*static bool done;*/
 
-        if (!done) {
-                wbkgrnd(noun->win, mkcch(L"Ⰹ", 0, FLEX));
-                done = true;
-        }
+        /*if (!done) {*/
+                /*wbkgrnd(noun->win, mkcch(L"Ⰹ", 0, FLEX));*/
+                /*done = true;*/
+        /*}*/
         noun_animate(noun);
         sm_consume(noun->sm);
 }
@@ -342,7 +345,6 @@ void render_dummy(void *self)
 int modify_dummy(void *obj)
 {
         struct noun_t *noun = (struct noun_t *)obj;
-        static int wait = 0;
         uint32_t nbr;
         int state;
 
@@ -356,42 +358,41 @@ int modify_dummy(void *obj)
         switch (state)
         {
         case SM_Punch:
-                noun->animate(dummy_die);
-                say_speak(L"嶴", "FUCK!");
+                noun->_animate(noun, dummy_die);
+                /*say_speak(L"嶴", "FUCK!");*/
                 sm_msg(noun->sm, SM_SELF, SM_Destroy|SM_Wait(13)|SM_Pri(9));
                 sm_screen(noun->sm, 9);
                 break;
         case SM_GoUp:
-                noun->animate(dummy_mv_u);
+                noun->_animate(noun, dummy_mv_u);
                 break;
         case SM_GoDown:
-                if (flip_biased(0.4))
-                        say_speak(L"䥚", "I'm gonna hop all over you!");
-                noun->animate(dummy_mv_d);
+                /*if (flip_biased(0.4))*/
+                        /*say_speak(L"䥚", "I'm gonna hop all over you!");*/
+                noun->_animate(noun, dummy_mv_d);
                 break;
         case SM_GoLeft:
-                noun->animate(dummy_mv_l);
-                if (flip_biased(0.4))
-                        say_speak(L"䥚", "Get fucked!");
+                noun->_animate(noun, dummy_mv_l);
+                /*if (flip_biased(0.4))*/
+                        /*say_speak(L"䥚", "Get fucked!");*/
                 break;
         case SM_GoRight:
-                noun->animate(dummy_mv_r);
+                noun->_animate(noun, dummy_mv_r);
                 break;
         case SM_Destroy:
                 alert(I_KILL, noun->name);
-                noun->doom();
+                noun->_doom(noun);
                 noun_item_drop(noun);
-                oops = false;
-                say_speak(L"", "");
+                /*say_speak(L"", "");*/
                 break;
         case SM_Seek:
                 if (nbr) {
-                        noun->animate(bonk_test);
+                        noun->_animate(noun, bonk_test);
                         sm_msgmag(noun->sm, nbr, SM_Hit, 3);
-                } else
+                } else {
                         noun->_seek(noun, get_noun("Guy"));
-
-                sm_msg(noun->sm, noun->sm->id, SM_Seek | SM_Wait(20));
+                }
+                sm_msg(noun->sm, SM_SELF, SM_Seek | SM_Wait(20));
                 break;
         case SM_Default:
                 break;
@@ -423,7 +424,6 @@ void apply_noun_model(struct noun_t *noun)
                 noun->pos     = new_pos(1, 1, CENTERED, LINES, COLS, 0, 0);
                 noun->win     = newwin(1, 1, CENTERED);
                 noun->pan     = new_panel(noun->win);
-                noun->model   = NOUN_CREATURE;
                 noun->_modify = &modify_human;
                 noun->_render = &render_human;
                 break;
@@ -431,11 +431,9 @@ void apply_noun_model(struct noun_t *noun)
                 noun->pos     = new_pos(1, 1, CENTERED, LINES, COLS, 0, 0);
                 noun->win     = newwin(1, 1, CENTERED);
                 noun->pan     = new_panel(noun->win);
-                noun->model   = NOUN_CREATURE;
                 noun->_modify = &modify_dummy;
                 noun->_render = &render_dummy;
                 sm_set(noun->sm, SM_Seek, 0);
-                oops = true;
                 break;
         }
 

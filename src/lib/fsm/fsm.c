@@ -194,6 +194,7 @@ struct sm_t *new_sm(uint32_t id, bool (*route)(void *self))
         new->state  = new_bh(NUM_PENDING);
         new->mag    = 0;
         new->route  = route;
+        new->screen = 0;
 
         return (new);
 }
@@ -277,6 +278,26 @@ void sm_msgmag(struct sm_t *sm, uint32_t to, uint32_t state, int magnitude)
 }
 
 
+/**
+ * MSG URGENT
+ * sm_key -- send a disposable message that is consumed immediately,
+ * without consuming state
+ */
+void sm_keypress(struct sm_t *sm, int key)
+{
+        sm->key = key;
+}
+        
+int sm_key(struct sm_t *sm)
+{
+        int savekey;
+        savekey = sm->key;
+        sm->key = 0;
+
+        return savekey;
+}
+
+
 
 /* FSM TRANSITIONING 
 ``````````````````````````````````````````````````````````````````````````````*/
@@ -305,8 +326,9 @@ void sm_consume(struct sm_t *sm)
 
         if (msg) {
                 sm_set(sm, msg->tag, msg->mag);
-                if (msg->sticky)
+                if (msg->sticky) {
                         sm_lock(sm, true);
+                }
                 free(msg);
         }
 }

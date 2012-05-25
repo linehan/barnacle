@@ -220,22 +220,7 @@ void new_torch(void *self)
 
         new = calloc(1, sizeof(struct torch_t));
 
-        /*new->h  = TORCH_H;*/
-        /*new->w  = TORCH_W;*/
-        /*new->hr = TORCH_Hr;*/
-        /*new->wr = TORCH_Wr;*/
-
-        /*for (i=0; i<3; i++) {*/
-                /*new->pair[i] = WOOD_pair[i];*/
-                /*new->fg[i]   = WOOD_fg[i];*/
-                /*new->bg[i]   = WOOD_bg[i];*/
-        /*}*/
-
-        /*new->win = newwin(new->h, new->w, 0, 0);*/
-        /*new->pan = new_panel(new->win);*/
-        /*hide_panel(new->pan);*/
-
-        new->light = new_light(TORCH_H, TORCH_W, LINES/2, COLS/2, TORCH_BASE);
+        new->light = new_light(TORCH_H, TORCH_W, LINES/2, COLS/2, SUN_BASE);
 
         item->data  = new;
         item->tag   = ITEM_TORCH;

@@ -12,7 +12,7 @@
 struct gloss_t {
         WINDOW *win;
         wchar_t *wcs;
-        int len;
+        size_t len;
         short co;
         short hi;
         short hue[2];

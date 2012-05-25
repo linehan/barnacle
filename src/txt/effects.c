@@ -8,7 +8,7 @@
 /* 
  * wcs_reveal -- "unmask" a string from right to left
  */
-inline void wcs_reveal(WINDOW *win, wchar_t *wcs, short color, int L)
+void wcs_reveal(WINDOW *win, wchar_t *wcs, short color, int L)
 {
         cchar_t cch;
         int i;
@@ -25,7 +25,7 @@ inline void wcs_reveal(WINDOW *win, wchar_t *wcs, short color, int L)
 /* 
  * wcs_unreveal -- "unmask" a string from right to left
  */
-inline void wcs_unreveal(WINDOW *win, wchar_t *wcs, int len, short color, int L)
+void wcs_unreveal(WINDOW *win, wchar_t *wcs, int len, short color, int L)
 {
         cchar_t cch;
         int i;
@@ -107,7 +107,7 @@ void method_shine(void *self, int L)
 /*
  * wcs_pushr -- "push" a string to the right until it disappears
  */
-inline void wcs_pushr(WINDOW *win, wchar_t *wcs, int len, short color, int L)
+void wcs_pushr(WINDOW *win, wchar_t *wcs, size_t len, short color, int L)
 {
         cchar_t cch;
         int i;
@@ -117,14 +117,14 @@ inline void wcs_pushr(WINDOW *win, wchar_t *wcs, int len, short color, int L)
         for (i=0; i<(len-L); i++) {
                 setcchar(&cch, &wcs[i], 0, color, NULL);
                 wadd_wch(win, &cch);
-                wrefresh(win);
+                /*wrefresh(win);*/
         }
 }
 
 /*
  * wcs_pushl -- "push" a string to the left until it disappears
  */
-inline void wcs_pushl(WINDOW *win, wchar_t *wcs, int len, short color, int L)
+void wcs_pushl(WINDOW *win, wchar_t *wcs, size_t len, short color, int L)
 {
         cchar_t cch;
         int i;
@@ -132,7 +132,7 @@ inline void wcs_pushl(WINDOW *win, wchar_t *wcs, int len, short color, int L)
         for (i=0; i<len; i++) {
                 setcchar(&cch, &wcs[i], 0, color, NULL);
                 wadd_wch(win, &cch);
-                wrefresh(win);
+                /*wrefresh(win);*/
         }
 }
 
@@ -142,12 +142,11 @@ inline void wcs_pushl(WINDOW *win, wchar_t *wcs, int len, short color, int L)
  */
 void method_pushr(void *self, int L)
 {
-        struct gloss_t *msg = (struct gloss_t *)self;
+        struct gloss_t *gloss = (struct gloss_t *)self;
 
-        werase(msg->win);
-        wrefresh(msg->win);
+        werase(gloss->win);
 
-        wcs_pushr(msg->win, msg->wcs, msg->len, cuco(msg->win), L);
+        wcs_pushr(gloss->win, gloss->wcs, gloss->len, cuco(gloss->win), L);
 
         doupdate();
 }

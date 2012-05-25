@@ -183,12 +183,12 @@ void take_bkgrnd(WINDOW *dst, WINDOW *src, short pair)
         cchar_t dst_cch;
         wchar_t src_wch;
         wchar_t dst_wch;
-        short src_pair;
-        short dst_pair;
-        short src_bg;
-        short src_fg;
-        short dst_bg;
-        short dst_fg;
+        short src_pair = 0;
+        short dst_pair = 0;
+        short src_bg   = 0;
+        short src_fg   = 0;
+        short dst_bg   = 0;
+        short dst_fg   = 0;
         attr_t src_attr;
         attr_t dst_attr;
         int y;
@@ -213,3 +213,17 @@ void take_bkgrnd(WINDOW *dst, WINDOW *src, short pair)
 }
 
 
+
+bool is_blank(WINDOW *win, int y, int x)
+{
+        cchar_t cch;
+        wchar_t wch;
+        attr_t attr;
+        short color;
+
+        mvwin_wch(win, y, x, &cch);
+
+        getcchar(&cch, &wch, &attr, &color, NULL);
+
+        return (wch == L' ') ? true : false;
+}

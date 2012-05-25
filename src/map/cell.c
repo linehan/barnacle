@@ -20,13 +20,13 @@ void del_cell(struct cell_t *cell)
  * hash called a Morton code, or Z-order code, which can be quickly computed 
  * by interleaving a pair of y and x coordinates. See "morton.h"
  */
-struct cell_t *new_cell(uint32_t y, uint32_t x)
+struct cell_t *new_cell(int y, int x)
 {
-        struct cell_t *new = malloc(sizeof(struct cell_t));
+        struct cell_t *new = calloc(1, sizeof(struct cell_t));
 
-        new->y   = y;
-        new->x   = x;
-        new->key = mort(y,x); 
+        new->y   = (uint32_t)y;
+        new->x   = (uint32_t)x;
+        new->key = mort(new->y,new->x); 
 
         return (new);
 }

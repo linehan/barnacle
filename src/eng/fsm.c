@@ -3,7 +3,8 @@
 #include <pthread.h>
 #include <semaphore.h>
 #include <ev.h>
-
+#include "../lib/fsm/fsm.h"
+#include "../noun/noun.h"
 #include "../noun/noun.h"
 #include "../gfx/gfx.h"
 #include "../map/map.h"
@@ -88,7 +89,8 @@ void operate_on(int input)
                 /*noun_set_state(get_noun("Afarensis"), VERB_Keyboard, input);*/
                 break;
         case UI_MOB:
-                sm_set(nn("Guy")->sm, SM_Key(input));
+                if (PLAYER)
+                        sm_set(PLAYER->sm, SM_Key(input), 0); 
                 break;
         case UI_BUILD:
                 build_control(input);

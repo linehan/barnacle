@@ -109,12 +109,14 @@ void say_alert(wchar_t *msg, short hi, short lo)
         if (GLOSSMSG) {
                 while (gloss(GLOSSMSG))  /* Unwind the gloss */
                 ;
-                del_gloss(&GLOSSMSG);
+                /*del_gloss(GLOSSMSG);*/
                 werase(gloss_win);
         }
         release((void **)&GLOSSMSG);
+        /*free(GLOSSMSG);*/
 
-        GLOSSMSG = new_gloss(gloss_win, msg, hi, lo); 
+        struct gloss_t *new = new_gloss(gloss_win, msg, hi, lo); 
+        GLOSSMSG = new;
 }
 
 

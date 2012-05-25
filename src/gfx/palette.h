@@ -442,6 +442,10 @@ enum uicolors {
         ____PUR_GREY   = 190,
 };
 
+enum superblack {
+        BLACK_BLACK = 191
+}; 
+
 void darken_colors(int step);
 
 static inline short BGCOLOR(short pair)
@@ -469,9 +473,9 @@ void blend(short color1, float i1, short color2, float i2, short dest)
         color_content(color1, &r1, &g1, &b1); 
         color_content(color2, &r2, &g2, &b2); 
 
-        r1 = (((i1*r1) + (i2*r2)) / 2);
-        g1 = (((i1*g1) + (i2*g2)) / 2);
-        b1 = (((i1*b1) + (i2*b2)) / 2);
+        r1 = (i1 == 0.0) ? r2 : (((i1*r1) + (i2*r2)) / 2);
+        g1 = (i1 == 0.0) ? g2 : (((i1*g1) + (i2*g2)) / 2);
+        b1 = (i1 == 0.0) ? b2 : (((i1*b1) + (i2*b2)) / 2);
 
         init_color(dest, r1, g1, b1);
 }

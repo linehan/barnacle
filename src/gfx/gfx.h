@@ -67,6 +67,8 @@ void mvwnpaint(WINDOW *win, int y, int x, wchar_t *wcs, short pair, int n);
 void take_bkgrnd(WINDOW *dst, WINDOW *src, short pair);
 short bgcolor_yx(WINDOW *win, int y, int x);
 
+bool is_blank(WINDOW *win, int y, int x);
+
 
 #endif
 

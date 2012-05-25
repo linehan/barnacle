@@ -11,6 +11,8 @@ void del_gloss(struct gloss_t *g)
 {
         if (g->wcs)
                 free(g->wcs);
+                g->wcs = NULL;
+                /*release((void **)&g->wcs);*/
 }
 
 
@@ -83,11 +85,17 @@ bool gloss(struct gloss_t *test)
 
         #define LOOPVAR(v) v = (LOOP)
 
-        static unsigned int LOOP;
-        static unsigned int STAGE;
-        static unsigned int SKIP;
+        static int LOOP;
+        static int STAGE;
+        static int SKIP;
         static bool STATUS;
         int L;
+
+        if (test == NULL) {
+                UNLOOP;
+                STATUS = false;
+                return false;
+        }
 
         LOOPVAR(L);
 
