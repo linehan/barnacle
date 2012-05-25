@@ -26,6 +26,7 @@ arawak_SOURCES = arawak.c                       \
                    lib/fifo.c                   \
                    lib/textutils.c              \
                    lib/pos.c                    \
+                   lib/rec.c                    \
                    lib/stoc/mersenne.c          \
                    lib/stoc/stoc.c              \
                    lib/stoc/noise.c             \
@@ -54,12 +55,14 @@ arawak_SOURCES = arawak.c                       \
                    map/special/arena.c          \
                    map/special/cave.c           \
                    map/flow.c                   \
+                   map/light.c                  \
                    ai/astar.c                   \
                    txt/gloss.c                  \
                    txt/effects.c                \
                    noun/noun.c                  \
                    noun/models.c                \
                    noun/stats.c                 \
+                   noun/combat.c                \
                    noun/types/boat/boat.c       \
                    noun/types/boat/compass.c    \
                    camp/builder.c               \

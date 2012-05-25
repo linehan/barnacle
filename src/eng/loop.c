@@ -47,10 +47,10 @@ void render_cb(EV_P_ ev_timer *w, int revents)
         }
         tick();
         free_nouns();
+        dock_update();
         update_inventory_menu();
         send_delayed_msgs();
 
-        nn("Guy")->fall();
         nn("Guy")->update();
 
         if (oops)
@@ -125,7 +125,6 @@ void animate_cb(EV_P_ ev_timer *w, int revents)
                 spinloop(5, 0, "animate_cb", sp++);
         }
         NEXT(ACTIVE->L[RIM]);
-        /*tab_update();*/
 
         ev_timer_again(EV_DEFAULT, w);
 }

@@ -69,22 +69,22 @@ am_arawak_OBJECTS = arawak.$(OBJEXT) eng/init.$(OBJEXT) \
 	lib/sort/quicksort.$(OBJEXT) lib/morton.$(OBJEXT) \
 	lib/magic.$(OBJEXT) lib/ncolor/src/ncolor.$(OBJEXT) \
 	lib/fifo.$(OBJEXT) lib/textutils.$(OBJEXT) lib/pos.$(OBJEXT) \
-	lib/stoc/mersenne.$(OBJEXT) lib/stoc/stoc.$(OBJEXT) \
-	lib/stoc/noise.$(OBJEXT) lib/stoc/dice.$(OBJEXT) \
-	lib/stoc/shuffle.$(OBJEXT) lib/stoc/smooth.$(OBJEXT) \
-	lib/stoc/brnoise.$(OBJEXT) eng/bytes.$(OBJEXT) \
-	eng/fsm.$(OBJEXT) eng/loop.$(OBJEXT) eng/error.$(OBJEXT) \
-	gfx/palette.$(OBJEXT) gfx/sprite.$(OBJEXT) gfx/gfx.$(OBJEXT) \
-	gfx/multiwin.$(OBJEXT) gfx/ui/dock.$(OBJEXT) \
+	lib/rec.$(OBJEXT) lib/stoc/mersenne.$(OBJEXT) \
+	lib/stoc/stoc.$(OBJEXT) lib/stoc/noise.$(OBJEXT) \
+	lib/stoc/dice.$(OBJEXT) lib/stoc/shuffle.$(OBJEXT) \
+	lib/stoc/smooth.$(OBJEXT) lib/stoc/brnoise.$(OBJEXT) \
+	eng/bytes.$(OBJEXT) eng/fsm.$(OBJEXT) eng/loop.$(OBJEXT) \
+	eng/error.$(OBJEXT) gfx/palette.$(OBJEXT) gfx/sprite.$(OBJEXT) \
+	gfx/gfx.$(OBJEXT) gfx/multiwin.$(OBJEXT) gfx/ui/dock.$(OBJEXT) \
 	gfx/ui/stdpan.$(OBJEXT) gfx/ui/stdmenu.$(OBJEXT) \
 	gfx/ui/titlecard.$(OBJEXT) gfx/ui/menu_inventory.$(OBJEXT) \
 	gfx/ui/notify.$(OBJEXT) map/terrain.$(OBJEXT) \
 	map/map.$(OBJEXT) map/cell.$(OBJEXT) map/door.$(OBJEXT) \
 	map/special/arena.$(OBJEXT) map/special/cave.$(OBJEXT) \
-	map/flow.$(OBJEXT) ai/astar.$(OBJEXT) txt/gloss.$(OBJEXT) \
-	txt/effects.$(OBJEXT) noun/noun.$(OBJEXT) \
+	map/flow.$(OBJEXT) map/light.$(OBJEXT) ai/astar.$(OBJEXT) \
+	txt/gloss.$(OBJEXT) txt/effects.$(OBJEXT) noun/noun.$(OBJEXT) \
 	noun/models.$(OBJEXT) noun/stats.$(OBJEXT) \
-	noun/types/boat/boat.$(OBJEXT) \
+	noun/combat.$(OBJEXT) noun/types/boat/boat.$(OBJEXT) \
 	noun/types/boat/compass.$(OBJEXT) camp/builder.$(OBJEXT) \
 	item/item.$(OBJEXT) item/tools.$(OBJEXT) item/edible.$(OBJEXT) \
 	test/test.$(OBJEXT)
@@ -214,6 +214,7 @@ arawak_SOURCES = arawak.c                       \
                    lib/fifo.c                   \
                    lib/textutils.c              \
                    lib/pos.c                    \
+                   lib/rec.c                    \
                    lib/stoc/mersenne.c          \
                    lib/stoc/stoc.c              \
                    lib/stoc/noise.c             \
@@ -242,12 +243,14 @@ arawak_SOURCES = arawak.c                       \
                    map/special/arena.c          \
                    map/special/cave.c           \
                    map/flow.c                   \
+                   map/light.c                  \
                    ai/astar.c                   \
                    txt/gloss.c                  \
                    txt/effects.c                \
                    noun/noun.c                  \
                    noun/models.c                \
                    noun/stats.c                 \
+                   noun/combat.c                \
                    noun/types/boat/boat.c       \
                    noun/types/boat/compass.c    \
                    camp/builder.c               \
@@ -386,6 +389,7 @@ lib/fifo.$(OBJEXT): lib/$(am__dirstamp) lib/$(DEPDIR)/$(am__dirstamp)
 lib/textutils.$(OBJEXT): lib/$(am__dirstamp) \
 	lib/$(DEPDIR)/$(am__dirstamp)
 lib/pos.$(OBJEXT): lib/$(am__dirstamp) lib/$(DEPDIR)/$(am__dirstamp)
+lib/rec.$(OBJEXT): lib/$(am__dirstamp) lib/$(DEPDIR)/$(am__dirstamp)
 lib/stoc/$(am__dirstamp):
 	@$(MKDIR_P) lib/stoc
 	@: > lib/stoc/$(am__dirstamp)
@@ -463,6 +467,7 @@ map/special/arena.$(OBJEXT): map/special/$(am__dirstamp) \
 map/special/cave.$(OBJEXT): map/special/$(am__dirstamp) \
 	map/special/$(DEPDIR)/$(am__dirstamp)
 map/flow.$(OBJEXT): map/$(am__dirstamp) map/$(DEPDIR)/$(am__dirstamp)
+map/light.$(OBJEXT): map/$(am__dirstamp) map/$(DEPDIR)/$(am__dirstamp)
 ai/$(am__dirstamp):
 	@$(MKDIR_P) ai
 	@: > ai/$(am__dirstamp)
@@ -490,6 +495,8 @@ noun/noun.$(OBJEXT): noun/$(am__dirstamp) \
 noun/models.$(OBJEXT): noun/$(am__dirstamp) \
 	noun/$(DEPDIR)/$(am__dirstamp)
 noun/stats.$(OBJEXT): noun/$(am__dirstamp) \
+	noun/$(DEPDIR)/$(am__dirstamp)
+noun/combat.$(OBJEXT): noun/$(am__dirstamp) \
 	noun/$(DEPDIR)/$(am__dirstamp)
 noun/types/boat/$(am__dirstamp):
 	@$(MKDIR_P) noun/types/boat
@@ -562,6 +569,7 @@ mostlyclean-compile:
 	-rm -f lib/morton.$(OBJEXT)
 	-rm -f lib/ncolor/src/ncolor.$(OBJEXT)
 	-rm -f lib/pos.$(OBJEXT)
+	-rm -f lib/rec.$(OBJEXT)
 	-rm -f lib/redblack/rb.$(OBJEXT)
 	-rm -f lib/sort/mergesort.$(OBJEXT)
 	-rm -f lib/sort/quicksort.$(OBJEXT)
@@ -576,10 +584,12 @@ mostlyclean-compile:
 	-rm -f map/cell.$(OBJEXT)
 	-rm -f map/door.$(OBJEXT)
 	-rm -f map/flow.$(OBJEXT)
+	-rm -f map/light.$(OBJEXT)
 	-rm -f map/map.$(OBJEXT)
 	-rm -f map/special/arena.$(OBJEXT)
 	-rm -f map/special/cave.$(OBJEXT)
 	-rm -f map/terrain.$(OBJEXT)
+	-rm -f noun/combat.$(OBJEXT)
 	-rm -f noun/models.$(OBJEXT)
 	-rm -f noun/noun.$(OBJEXT)
 	-rm -f noun/stats.$(OBJEXT)
@@ -618,6 +628,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@lib/$(DEPDIR)/matrix.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@lib/$(DEPDIR)/morton.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@lib/$(DEPDIR)/pos.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@lib/$(DEPDIR)/rec.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@lib/$(DEPDIR)/textutils.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@lib/fsm/$(DEPDIR)/fsm.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@lib/ncolor/src/$(DEPDIR)/ncolor.Po@am__quote@
@@ -634,10 +645,12 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@map/$(DEPDIR)/cell.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@map/$(DEPDIR)/door.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@map/$(DEPDIR)/flow.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@map/$(DEPDIR)/light.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@map/$(DEPDIR)/map.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@map/$(DEPDIR)/terrain.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@map/special/$(DEPDIR)/arena.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@map/special/$(DEPDIR)/cave.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@noun/$(DEPDIR)/combat.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@noun/$(DEPDIR)/models.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@noun/$(DEPDIR)/noun.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@noun/$(DEPDIR)/stats.Po@am__quote@

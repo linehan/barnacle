@@ -6,6 +6,7 @@
 #include "../noun/models.h"
 #include "item.h"
 #include "tools.h"
+#include "../map/light.h"
 
 /* Ropes
 ``````````````````````````````````````````````````````````````````````````````*/
@@ -36,7 +37,7 @@ void new_rope(void *self)
         item->data = new;
         item->tag  = ITEM_ROPE;
         item->name = "Rope";
-        item->desc = "for roping dopes";
+        item->desc = "Splice the line and let it dangle";
         item->icon = ROPE_L_ICON;
         item->use  = &use_rope;
 }
@@ -113,6 +114,7 @@ void new_pickaxe(void *self)
         item->data = NULL;
         item->tag  = ITEM_PICKAXE;
         item->name = "Pickaxe";
+        item->desc = "For prospectin'";
         item->icon = PICKAXE_WCH;
         item->use  = &use_pickaxe;
 }
@@ -164,6 +166,7 @@ void new_shovel(void *self)
         item->data = NULL;
         item->tag  = ITEM_SHOVEL;
         item->name = "Shovel";
+        item->desc = "Gilded shitscoop";
         item->icon = SHOVEL_WCH;
         item->use  = &use_shovel;
 }
@@ -191,17 +194,8 @@ void use_shovel(void *self, struct noun_t *noun)
 ``````````````````````````````````````````````````````````````````````````````*/
 
 struct torch_t {
-        WINDOW *win;
-        PANEL *pan;
         bool lit;
-        bool blend;
-        int h;
-        int w;
-        int hr;
-        int wr;
-        short pair[3];
-        short bg[3];
-        short fg[3];
+        struct light_t *light;
 };
 
 
@@ -216,9 +210,9 @@ void new_torch(void *self)
         #define TORCH_Hr 2
         #define TORCH_Wr 3
         #define TORCH_WCH L"༈"
-        static const short WOOD_pair[3] = {LIGHTP1, LIGHTP2, LIGHTP3};
-        static const short WOOD_bg[3]   = {LIGHTB1, LIGHTB2, LIGHTB3};
-        static const short WOOD_fg[3]   = {LIGHT1, LIGHT2, LIGHT3};
+        /*static const short WOOD_pair[3] = {LIGHTP1, LIGHTP2, LIGHTP3};*/
+        /*static const short WOOD_bg[3]   = {LIGHTB1, LIGHTB2, LIGHTB3};*/
+        /*static const short WOOD_fg[3]   = {LIGHT1, LIGHT2, LIGHT3};*/
 
         ITEM_OBJECT(item, self);
         struct torch_t *new;
@@ -226,27 +220,28 @@ void new_torch(void *self)
 
         new = calloc(1, sizeof(struct torch_t));
 
-        new->h  = TORCH_H;
-        new->w  = TORCH_W;
-        new->hr = TORCH_Hr;
-        new->wr = TORCH_Wr;
+        /*new->h  = TORCH_H;*/
+        /*new->w  = TORCH_W;*/
+        /*new->hr = TORCH_Hr;*/
+        /*new->wr = TORCH_Wr;*/
 
-        for (i=0; i<3; i++) {
-                new->pair[i] = WOOD_pair[i];
-                new->fg[i]   = WOOD_fg[i];
-                new->bg[i]   = WOOD_bg[i];
-        }
+        /*for (i=0; i<3; i++) {*/
+                /*new->pair[i] = WOOD_pair[i];*/
+                /*new->fg[i]   = WOOD_fg[i];*/
+                /*new->bg[i]   = WOOD_bg[i];*/
+        /*}*/
 
-        new->win = newwin(new->h, new->w, 0, 0);
-        new->pan = new_panel(new->win);
-        hide_panel(new->pan);
+        /*new->win = newwin(new->h, new->w, 0, 0);*/
+        /*new->pan = new_panel(new->win);*/
+        /*hide_panel(new->pan);*/
 
-        new->lit = false;
+        new->light = new_light(TORCH_H, TORCH_W, LINES/2, COLS/2, TORCH_BASE);
 
         item->data  = new;
         item->tag   = ITEM_TORCH;
         item->icon  = TORCH_WCH;
         item->name  = "Torch";
+        item->desc  = "The oily smoke makes your eyes sting";
         item->burn  = &burn_torch;
         item->equip = &equip_torch;
 }
@@ -259,87 +254,22 @@ void equip_torch(void *self, bool yn)
 
         item->equipped = yn;
 
-        if (item->equipped)
-                show_panel(torch->pan);
-        else 
-                hide_panel(torch->pan);
+        if (item->equipped) {
+                show_panel(torch->light->pan);
+                torch->light->lit = true;
+        } else {
+                hide_panel(torch->light->pan);
+                torch->light->lit = false;
+        }
 }
 
 
 void burn_torch(void *self, struct noun_t *noun)
 {
-        int y;
-        int x;
-        int i;
-        int j;
-        int x0;
-        int y0;
-        int torch_h;
-        int torch_w;
-
         ITEM_OBJECT(item, self);
         struct torch_t *torch = item->data;
 
-        y = pos_y(noun->pos); 
-        x = pos_x(noun->pos);
-
-        /* -------------------------------------- y-adjustments */
-        if (y < torch->hr+1) {
-                torch_h = (torch->hr + y);
-                y0 = torch->hr - y;
-        }
-        else if (y > LINES-(torch->hr+1)) {
-                torch_h = torch->hr + (LINES-y);
-                y0 = y - torch->hr;
-        }
-        else {
-                torch_h = torch->h;
-                y0 = y - torch->hr;
-        }
-        /* -------------------------------------- x-adjustments */
-        if (x < torch->wr) 
-        {
-                torch_w = (torch->wr + x);
-                x0 = torch->wr - x;
-        }
-        else if (x > COLS-torch->wr) {
-                torch_w = torch->wr+ (COLS-x);
-                x0 = x - torch->wr;
-        }
-        else {
-                torch_w = torch->w;
-                x0 = x - torch->wr;
-        }
-
-        if (wresize(torch->win, torch_h, torch_w));
-                replace_panel(torch->pan, torch->win);
-
-        move_panel(torch->pan, y0, x0);
-
-        /* -------------------------------------- copy bg to torch buffer */
-        copywin(PLATE(ACTIVE, BGR), torch->win, y0, x0, 0, 0, torch_h-1, torch_w-1, 0);
-        overwrite(noun->win, torch->win);
-
-        /* -------------------------------------- re-color the copied wchars */
-        for (i=0; i<torch_h; i++) {
-        for (j=0; j<torch_w; j++) {
-                if ((i==0 && j==0)
-                ||  (i==0 && j==1)
-                ||  (i==0 && j==torch_w-1)
-                ||  (i==0 && j==torch_w-2)
-                ||  (i==torch_h-1 && j==0)
-                ||  (i==torch_h-1 && j==1)
-                ||  (i==torch_h-1 && j==torch_w-1)
-                ||  (i==torch_h-1 && j==torch_w-2))
-                {
-                        mvwchgat(torch->win, i, j, 1, 0, torch->pair[2], NULL);
-                }
-                else if (i==0 || i==torch_h-1 || j==0 || j==1 || j==torch_w-1 || j==torch_w-2)
-                        mvwchgat(torch->win, i, j, 1, 0, torch->pair[1], NULL);
-                else 
-                        mvwchgat(torch->win, i, j, 1, 0, torch->pair[0], NULL);
-        }
-        }
+        glow_light(torch->light, noun, true);
 }
 
 

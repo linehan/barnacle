@@ -101,6 +101,42 @@ void gen_cavern(struct map_t *map)
         }
 }
 
+void special_cave(struct map_t *map)
+{
+        #define CAVERN -0.05f
+        #define OCTAVES 6      /* Number of octaves to smooth */
+        #define PERSIST 0.99f  /* Persistence factor */
+        int h;
+        int w;
+        int x_start;
+        int x_final;
+        int y_start;
+        int y_final;
+        int platform_w;
+        int platform_h;
+        int i;
+        int j;
+
+        platform_w = 30;
+        platform_h = 4;
+
+        x_start = ((COLS/2) - (platform_w/2));
+        x_final = (x_start + platform_w);
+        y_start = ((LINES/2) - 9);
+        y_final = ((y_start + platform_h));
+
+        h = LINES;
+        w = COLS;
+
+        for (i=0; i<h; i++) {
+        for (j=0; j<w; j++) {
+                if (i > y_start && i < y_final && j > x_start && j < x_final)
+                        place_cavesolid_label(mx_get(map->tile, i, j));
+                else
+                        place_cavefloor_label(mx_get(map->tile, i, j));
+        }
+        }
+}
 
 
 struct map_t *new_cave(void)
@@ -110,8 +146,8 @@ struct map_t *new_cave(void)
         cave = new_map(FULLSCREEN);
         cave->pmap = simplex_matrix(FULLSCREEN);        
         
-        /*gen_cave(cave);*/
-        gen_cavern(cave);
+        special_cave(cave);
+        /*gen_cavern(cave);*/
 
         return (cave);
 }

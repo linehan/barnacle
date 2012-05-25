@@ -110,7 +110,7 @@ inline void inventory_setup(void)
  */ 
 void inventory_mkmenu(struct list_head *inv)
 {
-        #define ORIGINAL PUR_GRE
+        #define ORIGINAL ____PUR_GREY
         #define STANDOUT WARNING
         #define OTANDOUT PUR_RED
 
@@ -119,8 +119,8 @@ void inventory_mkmenu(struct list_head *inv)
         inventory_to_menu(inv);
 
         stdmenu_win(invmenu, MENU_H, MENU_W, MENU_Y, MENU_X, 1, 0, 3, 0);
-        stdmenu_color_item(invmenu, STANDOUT, ORIGINAL, __PUR_GREY);
-        stdmenu_color_name(invmenu, PUR_YEL, ORIGINAL, __PUR_GREY);
+        stdmenu_color_item(invmenu, STANDOUT, ORIGINAL, ____PUR_PURPLE);
+        stdmenu_color_name(invmenu, PUR_YEL, ORIGINAL, ____PUR_PURPLE);
         stdmenu_cfg(invmenu, DESC, false, NULL);
         stdmenu_cfg(invmenu, MARK, false, NULL);
 
@@ -132,6 +132,7 @@ void inventory_mkmenu(struct list_head *inv)
 
 
 enum mobmode { INVENTORY_START, INVENTORY_EXIT, INVENTORY_DEFAULT };
+bool print_description;
 
 
 
@@ -146,10 +147,14 @@ static inline int operate_on(void *current, int mode)
         case INVENTORY_DEFAULT:
                 print_item(item, PUR_GREY);
                 return_value = MODE_PERSIST;
+                if (print_description)
+                        say_speak(L"", item->desc);
                 break;
 
         case INVENTORY_EXIT:
                 print_item(item, PUR_PURPLE);
+                print_description = false;
+                say_speak(L"", "");
                 invmenu->close(invmenu);
                 return_value = MODE_RESTORE;
                 break;
@@ -188,6 +193,15 @@ int inventory_menu_control(int input)
         case 'i':
                 invmenu->tog(invmenu);
                 break;
+        case 'l':
+                print_description = true;
+                break;
+        case 'h':
+                if (print_description) {
+                        print_description = false;
+                        say_speak(L"", "");
+                }
+                break;
         case KEY_ESC:
         case 'm':
         case ' ':
@@ -200,7 +214,7 @@ int inventory_menu_control(int input)
 
 void update_inventory_menu(void)
 {
-        /*if (equipped_pan)*/
-                /*top_panel(equipped_pan);*/
+        if (equipped_pan)
+                top_panel(equipped_pan);
 }
 

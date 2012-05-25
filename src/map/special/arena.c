@@ -73,7 +73,7 @@ struct map_t *map_preset_arena(void)
         cave = new_cave();
         put_door(CAVE_DOOR, arena, cave, 
                  1, 1, ARENA_H/2-1, COLS/2,
-                 1, 1, 5, 10);
+                 1, 1, LINES/2-10, COLS/2);
 
         cave_connect_door(cave);
         map_render(arena);

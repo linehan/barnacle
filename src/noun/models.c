@@ -7,6 +7,7 @@
 #include "../item/item.h"
 #include "../item/tools.h"
 #include "../gfx/ui/menu_inventory.h"
+#include "../map/light.h"
 
 
 struct ani_t *mk_ani(const wchar_t *wcs, int mv_frame, int mv_dir)
@@ -67,6 +68,9 @@ struct ani_t *guy_run_r;
 struct ani_t *guy_punch_r;
 struct ani_t *guy_punch_l;
 struct ani_t *guy_poke_u;
+struct ani_t *guy_poke_d;
+struct ani_t *guy_poke_l;
+struct ani_t *guy_poke_r;
 struct ani_t *guy_dodge_d;
 struct ani_t *guy_falltest;
 struct ani_t *guy_dodge_l;
@@ -83,6 +87,7 @@ struct ani_t *guy_walk_u;
 struct ani_t *guy_walk_d;
 struct ani_t *guy_walk_l;
 struct ani_t *guy_walk_r;
+struct ani_t *guy_pickup;
 /*----------------------------------------------------------------------------*/
 void build_person_animations(void)
 {
@@ -105,6 +110,9 @@ void build_person_animations(void)
         guy_punch_l  = mk_ani(L"ᎲᎲᎲ᱙ᕦ᱙ᎲᎲⰾ"         , NO_MV);
 
         guy_poke_u   = mk_ani(L"ᎲᎲᎲᒀᒀᒀᒀᎲᎲⰾ"        , NO_MV);
+        guy_poke_l   = mk_ani(L"ᎲᎲⰾᕗᕗᑕᑡᎲᎲⰾ"        , MV(4,'l'));
+        guy_poke_r   = mk_ani(L"ᎲᎲⰾᕙᕙᑐᑞᎲᎲⰾ"        , MV(4,'r'));
+        guy_poke_d   = mk_ani(L"ᎲᎲᎲᒀᒀᒀᒀᎲᎲⰾ"        , NO_MV);
 
         guy_dodge_d  = mk_ani(L"ᎲᎲᎲᏡᏡᏡᏡȣȣȣȣᏡᎲᎲⰾ"   , MV(8,'d'));
         guy_falltest = mk_ani(L"ᎲᎲᎲޗޗޗⲁⲁⲁᥑ"        , MV(4,'r'));
@@ -119,6 +127,8 @@ void build_person_animations(void)
         guy_dig_d    = mk_ani(L"ᎲᎲᎲᱽᕤᱽᎲᎲⰾⲑⲑᎲⰾ"     , MV(7,'d'));
         guy_dig_l    = mk_ani(L"ᎲᎲᎲᱽᕤᱽᎲᎲⰾⲑⲑᎲⰾ"     , MV(7,'l'));
         guy_dig_r    = mk_ani(L"ᎲᎲᎲᱽᕤᱽᎲᎲⰾⲑⲑᎲⰾ"     , MV(7,'r'));
+
+        guy_pickup   = mk_ani(L"ᎲᎲᎲⰾ"               , NO_MV);
 
         built = true;
 }
@@ -141,6 +151,8 @@ void render_human(void *self)
         struct item_t *item;
 
         noun_animate(noun);
+        noun->_fall(noun);
+        glow_light(doorlight, noun, false);
 
         list_for_each(&noun->inv, item, node) {
                 if (item->equipped && item->burn)
@@ -156,6 +168,7 @@ void render_human(void *self)
 int modify_human(void *self)
 {
         struct noun_t *noun = (struct noun_t *)self;
+        struct item_t *item;
         int state;
        
         state = sm_state(noun->sm);
@@ -198,6 +211,11 @@ int modify_human(void *self)
         case SM_RunRight:
                 noun->animate(guy_run_r);
                 break;
+        /* ------------------------------------ Combat */
+        case SM_Hit:
+                HP_SUB(&noun->vitals, sm_mag(noun->sm));
+                say_stats(noun->vitals);
+                break;
         /* ------------------------------------ keyboard input */
         /* ------------------------------------ walk (step) */
         case SM_Key('j'):
@@ -219,26 +237,28 @@ int modify_human(void *self)
         /* ------------------------------------------ run  */
         case SM_Key('J'):
         case SM_Key('S'):
-                sm_msg(noun->sm, SM_SELF, SM_RunDown | SM_Opt(STICKY));
+                /*sm_msg(noun->sm, SM_SELF, SM_RunDown | SM_Opt(STICKY));*/
                 break;
         case SM_Key('K'):
         case SM_Key('W'):
-                sm_msg(noun->sm, SM_SELF, SM_RunUp | SM_Opt(STICKY));
+                /*sm_msg(noun->sm, SM_SELF, SM_RunUp | SM_Opt(STICKY));*/
                 break;
         case SM_Key('H'):
         case SM_Key('A'):
-                sm_msg(noun->sm, SM_SELF, SM_RunLeft | SM_Opt(STICKY));
+                /*sm_msg(noun->sm, SM_SELF, SM_RunLeft | SM_Opt(STICKY));*/
+                noun->animate(guy_jump_ul);
                 break;
         case SM_Key('L'):
         case SM_Key('D'):
-                sm_msg(noun->sm, SM_SELF, SM_RunRight | SM_Opt(STICKY));
+                noun->animate(guy_jump_ur);
+                /*sm_msg(noun->sm, SM_SELF, SM_RunRight | SM_Opt(STICKY));*/
                 break;
         /* ------------------------------------------ misc */
-        case SM_Key('g'):
-                top_panel(noun->pan);
-                break;
         case SM_Key('t'):
-                noun->animate(guy_punch_r);
+                list_for_each(&noun->inv, item, node) {
+                        if (item->tag == ITEM_TORCH)
+                                item->equip(item, item->equipped^1);
+                }
                 break;
         case SM_Key(' '):
                 if (equipped) 
@@ -249,10 +269,8 @@ int modify_human(void *self)
                 emit_to_noun(noun, 'u', SM_Punch | SM_Wait(3) | SM_Pri(1));
                 break;
         case SM_Key('r'):
+                noun->animate(guy_pickup);
                 noun->take(pos_y(noun->pos), pos_x(noun->pos));
-                break;
-        case SM_Key('}'):
-                /*tab_cycle(2);*/
                 break;
         case SM_Key('@'):
                 if (equipped)
@@ -325,7 +343,13 @@ int modify_dummy(void *obj)
 {
         struct noun_t *noun = (struct noun_t *)obj;
         static int wait = 0;
+        uint32_t nbr;
         int state;
+
+        nbr = noun_nbr(noun, pos_hdg(noun->pos));
+
+        if (!noun->is_mobile)
+                return 0;
 
         state = sm_state(noun->sm);
 
@@ -356,11 +380,17 @@ int modify_dummy(void *obj)
         case SM_Destroy:
                 alert(I_KILL, noun->name);
                 noun->doom();
+                noun_item_drop(noun);
                 oops = false;
                 say_speak(L"", "");
                 break;
         case SM_Seek:
-                noun->_seek(noun, get_noun("Guy"));
+                if (nbr) {
+                        noun->animate(bonk_test);
+                        sm_msgmag(noun->sm, nbr, SM_Hit, 3);
+                } else
+                        noun->_seek(noun, get_noun("Guy"));
+
                 sm_msg(noun->sm, noun->sm->id, SM_Seek | SM_Wait(20));
                 break;
         case SM_Default:
@@ -373,8 +403,6 @@ int modify_dummy(void *obj)
 }
 
 
-
-
 /* The all-important late-binding dynamic linker
 ``````````````````````````````````````````````````````````````````````````````*/
 /*
@@ -383,31 +411,29 @@ int modify_dummy(void *obj)
  */
 void apply_noun_model(struct noun_t *noun)
 {
-        /* Class method table */
-        modify[PERSON] = (modify[PERSON]) ? modify[PERSON] : &modify_human;
-        render[PERSON] = (render[PERSON]) ? render[PERSON] : &render_human;
-        modify[DUMMY]  = (modify[DUMMY])  ? modify[DUMMY]  : &modify_dummy;
-        render[DUMMY]  = (render[DUMMY])  ? render[DUMMY]  : &render_dummy;
-
-        noun->_modify = modify[noun->model];
-        noun->_render = render[noun->model];
-
         build_dummy_animations();
         build_person_animations();
 
         switch (noun->model) 
         {
         case PERSON:
-                noun->pos = new_pos(1, 1, CENTERED, LINES, COLS, 0, 0);
-                noun->win = newwin(1, 1, CENTERED);
-                noun->pan = new_panel(noun->win);
-                noun->model = NOUN_CREATURE;
+                HP_SET(&noun->vitals, 25);
+                SP_SET(&noun->vitals, 13);
+                AP_SET(&noun->vitals, 2);
+                noun->pos     = new_pos(1, 1, CENTERED, LINES, COLS, 0, 0);
+                noun->win     = newwin(1, 1, CENTERED);
+                noun->pan     = new_panel(noun->win);
+                noun->model   = NOUN_CREATURE;
+                noun->_modify = &modify_human;
+                noun->_render = &render_human;
                 break;
         case DUMMY:
-                noun->pos = new_pos(1, 1, CENTERED, LINES, COLS, 0, 0);
-                noun->win = newwin(1, 1, CENTERED);
-                noun->pan = new_panel(noun->win);
-                noun->model = NOUN_CREATURE;
+                noun->pos     = new_pos(1, 1, CENTERED, LINES, COLS, 0, 0);
+                noun->win     = newwin(1, 1, CENTERED);
+                noun->pan     = new_panel(noun->win);
+                noun->model   = NOUN_CREATURE;
+                noun->_modify = &modify_dummy;
+                noun->_render = &render_dummy;
                 sm_set(noun->sm, SM_Seek, 0);
                 oops = true;
                 break;

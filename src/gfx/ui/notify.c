@@ -22,7 +22,7 @@ void alert(enum alerts tag, char *msg)
                 say_alert(wcs, __GOLD);
                 break;
         case I_KILL:
-                wpumpf(&wcs, L"Killed %s", msg);
+                wpumpf(&wcs, L"Killed %s!", msg);
                 say_alert(wcs, __KILL);
                 break;
         }

@@ -36,7 +36,11 @@ void method_use_edible(void *self, struct noun_t *noun)
 
         edible = (struct edible_t *)item->data;
 
-        noun->vitals |= edible->attr;
+        HP_ADD(&noun->vitals, HP(edible->attr));
+        SP_ADD(&noun->vitals, SP(edible->attr));
+        AP_ADD(&noun->vitals, AP(edible->attr));
+
+        say_stats(noun->vitals);
 }
         
 
@@ -50,13 +54,16 @@ void new_apple(void *self)
 {
         ITEM_OBJECT(item, self);
 
+        uint32_t apple = 0UL;
+        HP_SET(&apple, 2);
+
         item->name = "Apple";
         item->desc = "Repels physicians";
         item->icon = L"ⴰ";
         item->transparent = true;
         item->pair = FLEX_APPLE;
         item->fg   = PINK;
-        item->data = new_edible(0x00000001);
+        item->data = new_edible(apple);
         item->use  = &method_use_edible;
 }
 
@@ -111,7 +118,7 @@ void new_elixir(void *self)
         ITEM_OBJECT(item, self);
 
         item->name = "Elixir";
-        item->desc = "Lick them";
+        item->desc = "Elixir schön sauber, she says";
         item->icon = L"⚷";
         item->transparent = true;
         item->pair = FLEX_ELIXIR;
@@ -126,7 +133,7 @@ void new_palm(void *self)
         ITEM_OBJECT(item, self);
 
         item->name = "Palm";
-        item->desc = "Fishy bonez";
+        item->desc = "For fanning royalty";
         item->icon = L"⸙";
         item->transparent = true;
         item->pair = FLEX_PALM;
@@ -134,5 +141,6 @@ void new_palm(void *self)
         item->data = new_edible(0x00000002);
         item->use  = &method_use_edible;
 }
+
 
 

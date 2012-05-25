@@ -25,6 +25,7 @@ enum items {
 };
 
 
+
 struct item_t {
         /*--------------------- Identity */
         uint32_t id;
@@ -60,6 +61,8 @@ struct item_t {
 struct item_t *make_item(enum items tag);
 struct item_t *key_item(uint32_t key);
 struct item_t *yx_item(struct map_t *map, int y, int x);
+
+void noun_item_drop(struct noun_t *noun);
 
 void method_noun_take(void *self, int y, int x);
 

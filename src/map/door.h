@@ -28,7 +28,8 @@ struct door_t *get_door(uint32_t key);
 void door_trigger(struct noun_t *noun, uint32_t key);
 
 
-
+bool lightok;
+struct light_t *doorlight;
 
 struct asset_t *new_asset(int a);
 void put_asset(void *mymap, int idx, int y, int x);

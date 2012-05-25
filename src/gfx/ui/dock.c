@@ -1,4 +1,5 @@
 #include "../../com/arawak.h"
+#include "../../eng/tick.h"
 #include "../../lib/textutils.h"
 #include "../../noun/noun.h"
 #include "../../txt/gloss.h"
@@ -8,7 +9,7 @@
 /* DOCK CONSTANTS AND STATIC VARIABLES 
 ``````````````````````````````````````````````````````````````````````````````*/
 /* Widths for the subdivisions of the dock buffer */
-#define item_field_w (20)
+#define item_field_w (16)
 #define stat_field_w (16)
 #define text_field_w (COLS - stat_field_w - item_field_w - 2)
 
@@ -44,6 +45,9 @@ wchar_t *SPEAKER;    /* Icon of the current speaker */
 char    *MESSAGE;    /* Text of the current speaker's message */
 GLOSS   *GLOSSMSG;   /* Gloss object if notification active */
 STATS   STAT_WORD;   /* Character stat word of the player character */
+int      HP_DELTA;
+uint32_t STAT_TICK;
+
 
 
 /* DOCK ELEMENT ACCESSORS 
@@ -82,7 +86,15 @@ void say_speak(wchar_t *speaker, char *message)
  */
 void say_stats(STATS stats)
 {
+        if (HP(stats) < HP(STAT_WORD))
+                HP_DELTA = -1;
+        else if (HP(stats) > HP(STAT_WORD))
+                HP_DELTA = 1;
+        else
+                HP_DELTA = 0;
+
         STAT_WORD = stats;
+        STAT_TICK = get_tick(); 
 }
 
 
@@ -94,8 +106,15 @@ void say_stats(STATS stats)
  */
 void say_alert(wchar_t *msg, short hi, short lo)
 {
+        if (GLOSSMSG) {
+                while (gloss(GLOSSMSG))  /* Unwind the gloss */
+                ;
+                del_gloss(&GLOSSMSG);
+                werase(gloss_win);
+        }
         release((void **)&GLOSSMSG);
-        GLOSSMSG = new_gloss(gloss_win, msg, hi, lo);        
+
+        GLOSSMSG = new_gloss(gloss_win, msg, hi, lo); 
 }
 
 
@@ -113,6 +132,9 @@ void init_dock(void)
         say_equip(L"","");
         say_speak(L"","");
         say_stats(0x00000008UL);
+        AP_SET(&STAT_WORD, 13);
+        SP_SET(&STAT_WORD, 3);
+        HP_SET(&STAT_WORD, 25);
 
         gloss_win = newwin(gloss_h, gloss_w, gloss_y, gloss_x);
         gloss_pan = new_panel(gloss_win);
@@ -154,6 +176,15 @@ void dock_toggle(void)
         (panel_hidden(dock_pan)) ? view_dock() : hide_dock();
 }
 
+/**
+ * dock_update -- make sure that the dock stays on top if it is enabled
+ */
+void dock_update(void)
+{
+        if (!panel_hidden(dock_pan)) 
+                top_panel(dock_pan);
+}
+
 
 
 /* DOCK PRINTING AND OPERATIONS 
@@ -183,7 +214,7 @@ void print_dock(void)
 {
         #define STAT_SPLIT(s) HP(s), SP(s), AP(s)
         #define SZ 300
-        // ༈∰∯∮◆◈◇ℌℜ
+        // ༈∰∯∮◆◈◇ℌℜ⸠⸡⫿∣
 
         wchar_t item_field[SZ];
         wchar_t text_field[SZ];
@@ -197,14 +228,26 @@ void print_dock(void)
                 init_dock();
 
         do_gloss(); /* Draw the gloss message if it exists */
+
         werase(dock_win);
 
         mvwpumpw(dock_win, 0, item_field_ofs, L"%ls", item_field);
         mvwpumpw(dock_win, 0, text_field_ofs, L"%ls", text_field);
         mvwpumpw(dock_win, 0, stat_field_ofs, L"%ls", stat_field);
 
-        mvwchgat(dock_win, 0, stat_ofs(0), 2, 0, PUR_DRED,   NULL);
-        mvwchgat(dock_win, 0, stat_ofs(1), 2, 0, PUR_PURPLE, NULL);
-        mvwchgat(dock_win, 0, stat_ofs(2), 2, 0, PUR_DGREEN, NULL);
+        switch (HP_DELTA) {
+        case -1:
+                mvwchgat(dock_win, 0, stat_ofs(0), 2, 0, __PUR_LRED, NULL);
+                break;
+        case 0:
+                mvwchgat(dock_win, 0, stat_ofs(0), 2, 0, PUR_PURPLE, NULL);
+                break;
+        case 1:
+                mvwchgat(dock_win, 0, stat_ofs(0), 2, 0, __PUR_LGREEN, NULL);
+                break;
+        }
+        if (get_tick() == STAT_TICK+2) HP_DELTA = 0;
+        /*mvwchgat(dock_win, 0, stat_ofs(1), 2, 0, PUR_PURPLE, NULL);*/
+        /*mvwchgat(dock_win, 0, stat_ofs(2), 2, 0, PUR_DGREEN, NULL);*/
 }
 
