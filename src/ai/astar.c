@@ -178,7 +178,7 @@ struct cell_t **gen_neighbors(struct astar_t *astar, struct cell_t *cell)
         parent_x = (cell->parent) ? cell->parent->x : -1;
 
         /* Allocate memory for 4 neighbor pointers */
-        neighbor = malloc(4 * sizeof(struct cell_t *));
+        neighbor = calloc(4, sizeof(struct cell_t *));
 
         /*
          * No graceful way to do this next bit...
@@ -199,14 +199,14 @@ struct cell_t **gen_neighbors(struct astar_t *astar, struct cell_t *cell)
                 neighbor[1] = new_cell(cell->y-1, cell->x);
         }
         /* Neighbor to the east of cell */
-        if (((cell->x < astar->map->itr.cols-1)                      // In-bounds
+        if (((cell->x < astar->map->itr.cols-1)                  // In-bounds
         && (mapval(astar, cell->y, cell->x+1) < WALL_VALUE))     // Not wall
         && !((parent_x == cell->x+1) && (parent_y == cell->y)))  // Not parent
         {
                 neighbor[2] = new_cell(cell->y, cell->x+1);
         }
         /* Neighbor to the south of cell */
-        if (((cell->y < astar->map->itr.rows-1)                      // In-bounds
+        if (((cell->y < astar->map->itr.rows-1)                  // In-bounds
         && (mapval(astar, cell->y+1, cell->x) < WALL_VALUE))     // Not wall
         && !((parent_x == cell->x) && (parent_y == cell->y+1)))  // Not parent
         {

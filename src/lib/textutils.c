@@ -14,63 +14,64 @@
 #include "../gfx/gfx.h"
 
 
-
-/*
- * Allocates memory appropriate to duplicate the char * string pointed
- * to by 'str'. 
+/* ALLOCATED COPY AND CONVERSION
+``````````````````````````````````````````````````````````````````````````````*/
+/**
+ * cdup -- copy *str to a newly-alloc'd buffer, and return a pointer to it 
  *
- * SUCCESS: Pointer to new copy
- * FAILURE: NULL
+ * @str: pointer to a '\0'-terminated char string
+ *  RET: pointer to a copy of *str, else NULL.
  */
-char *mydup(const char *str)
+char *cdup(const char *str)
 {
-        char *p;
+        char *copy;
         size_t len;
 
-        len = strlen(str) + 1;
-        p   = malloc(len);
+        len  = strlen(str) + 1;
+        copy = malloc(len);
 
-        return p ? memcpy(p, str, len) : NULL;
+        return copy ? memcpy(copy, str, len) : NULL;
 }
 
 
-/*	$OpenBSD: wcsdup.c,v 1.1 2011/07/04 04:37:34 nicm Exp $	*/
-/*	$NetBSD: wcsdup.c,v 1.3 2008/05/26 13:17:48 haad Exp $	*/
 
-/*
- * Copyright (C) 2006 Aleksey Cheusov
+
+/**
+ * wdup -- copy *wcsto a newly-alloc'd buffer, and return a pointer to it 
  *
- * This material is provided "as is", with absolutely no warranty expressed
- * or implied. Any use is at your own risk.
- *
- * Permission to use or copy this software for any purpose is hereby granted
- * without fee. Permission to modify the code and to distribute modified
- * code is also granted without any restrictions.
+ * @wcs: pointer to a L'\0'-terminated wchar_t string
+ *  RET: pointer to a copy of *wcs, else NULL.
  */
-wchar_t *wcsdup(const wchar_t *str)
+wchar_t *wdup(const wchar_t *wcs)
 {
 	wchar_t *copy;
 	size_t len;
 
-	len = wcslen(str) + 1;
+	len  = wcslen(wcs) + 1;
 	copy = malloc(len * sizeof(wchar_t));
 
-	if (!copy)
-		return (NULL);
-
-	return (wmemcpy(copy, str, len));
+	return copy ? wmemcpy(copy, wcs, len) : NULL;
 }
 
 
+
+
+/**
+ * mbdup -- like wdup, but converts str to a multi-byte character string 
+ * 
+ * @str: pointer to a '\0'-terminated character string
+ *  RET: pointer to a copy of *str, converted to muti-byte characters
+ */
 wchar_t *mbdup(const char *str)
 {
-        assert(str!=NULL);
-
-        wchar_t *p;
+        wchar_t *copy;
         size_t len;
+        size_t mblen;
 
-        len = strlen(str) + 1;
-        assert(len >= mbstowcs(NULL, str, 0)+1);
+        len   = strlen(str) + 1;
+        mblen = mbstowcs(NULL, str, 0) + 1;
+
+        assert(len >= mblen || !"Not a pure character string");
         /*
          * If the assert is not met, it means that non-L'\0'  
          * wide characters have been stored at dest.  
@@ -78,16 +79,41 @@ wchar_t *mbdup(const char *str)
          * to dest is returned, but the shift state at this 
          * point is lost. (see mbstowcs(3), item #2)
          */
-        p = malloc(len * sizeof (wchar_t));
+        copy = malloc(len * sizeof(wchar_t));
 
-        if (p!=NULL) mbstowcs(p, str, len);
+        if (copy) 
+                mbstowcs(copy, str, len);
         
-        return p ? p : NULL;
+        return copy ? copy : NULL;
+}
+
+/* HELPERS
+``````````````````````````````````````````````````````````````````````````````*/
+/**
+ * wclean -- given a wide-character buffer, set the contents to L'\0'
+ * @wcs : pointer to a wide-character buffer
+ * @len : size of the wide-character buffer
+ */
+void wclean(wchar_t *wcs, size_t len)
+{
+        wmemset(wcs, L'\0', len);
+}
+
+
+/**
+ * cclean -- given a character buffer, set the contents to '\0'
+ * @str : pointer to a character buffer
+ * @len : size of the character buffer
+ */
+void cclean(char *str, size_t len)
+{
+        memset(str, '\0', len);
 }
 
 
 
-
+/* FORMATTED PRINTING 
+``````````````````````````````````````````````````````````````````````````````*/
 /**
  * pumpf -- write a formatted character string into an auto-allocated buffer
  * @strp : pointer to a character buffer (will be allocated)
@@ -131,7 +157,7 @@ void pumpf(char **strp, const char *fmt, ...)
 void wpumpf(wchar_t **wcsp, const wchar_t *wfmt, ...)
 {
         va_list args;
-        size_t len = 0;
+        size_t len;
         FILE *stream;
 
         /* Open a new FILE stream. *wcsp will be dynamically allocated to
@@ -153,6 +179,7 @@ void wpumpf(wchar_t **wcsp, const wchar_t *wfmt, ...)
 }
 
 
+
 /**
  * wpumpf -- write a formatted wchar_t string into an auto-allocated buffer
  * @win  : WINDOW pointer (ncurses)
@@ -161,17 +188,22 @@ void wpumpf(wchar_t **wcsp, const wchar_t *wfmt, ...)
  */
 void wpumpw(WINDOW *win, const wchar_t *wfmt, ...)
 {
-        #define WPUMPW_MAXLEN 300 
-        wchar_t buf[WPUMPW_MAXLEN];
+        static const size_t maxlen = 300;
+        wchar_t *buf;
         va_list args;
+
+        buf = calloc(maxlen, sizeof(wchar_t));
 
         /* Write formatted output to stream */
         va_start(args, wfmt);
-        vswprintf(buf, WPUMPW_MAXLEN, wfmt, args);
+        vswprintf(buf, maxlen, wfmt, args);
         va_end(args);
 
         waddwstr(win, buf);
+
+        free(buf);
 }
+
 
 
 /**
@@ -184,18 +216,23 @@ void wpumpw(WINDOW *win, const wchar_t *wfmt, ...)
  */
 void mvwpumpw(WINDOW *win, int y, int x, const wchar_t *wfmt, ...)
 {
-        #define WPUMPW_MAXLEN 300 
-        wchar_t buf[WPUMPW_MAXLEN];
+        static const size_t maxlen = 300;
+        wchar_t *buf;
         va_list args;
+
+        buf = calloc(maxlen, sizeof(wchar_t));
 
         /* Write formatted output to stream */
         va_start(args, wfmt);
-        vswprintf(buf, WPUMPW_MAXLEN, wfmt, args);
+        vswprintf(buf, maxlen, wfmt, args);
         va_end(args);
 
         wmove(win, y, x);
         waddwstr(win, buf);
+
+        free(buf);
 }
+
 
 
 /**
@@ -208,20 +245,25 @@ void mvwpumpw(WINDOW *win, int y, int x, const wchar_t *wfmt, ...)
  */
 void mvcwpumpw(WINDOW *win, short pair, int y, int x, const wchar_t *wfmt, ...)
 {
-        #define WPUMPW_MAXLEN 300 
-        wchar_t buf[WPUMPW_MAXLEN];
+        static const size_t maxlen = 300;
+        wchar_t *buf;
         va_list args;
         size_t len;
 
+        buf = calloc(maxlen, sizeof(wchar_t));
+
         /* Write formatted output to stream */
         va_start(args, wfmt);
-        len = vswprintf(buf, WPUMPW_MAXLEN, wfmt, args);
+        len = vswprintf(buf, maxlen, wfmt, args);
         va_end(args);
 
         wmove(win, y, x);
         waddwstr(win, buf);
         mvwchgat(win, y, x, len, 0, pair, NULL);
+
+        free(buf);
 }
+
 
 
 /**

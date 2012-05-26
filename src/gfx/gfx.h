@@ -42,8 +42,8 @@ void wwrapstr(WINDOW *win, const char *string);
 short cuco(WINDOW *win);
 
 cchar_t *mkcch(wchar_t *wch, attr_t attr, short co);
-void wcch(WINDOW *win, wchar_t *wch, attr_t attr, short co);
-void mvwcch(WINDOW *win, int y, int x, wchar_t *wch, attr_t attr, short co);
+void wcch(WINDOW *win, const wchar_t *wch, attr_t attr, short co);
+void mvwcch(WINDOW *win, int y, int x, const wchar_t *wch, attr_t attr, short co);
 
 
 

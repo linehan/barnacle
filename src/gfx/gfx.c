@@ -48,22 +48,24 @@ void mvwsnpaint(WINDOW *win, int y, int x, wchar_t *wcs, short pair, int n)
 }
 
 
-void wcch(WINDOW *win, wchar_t *wch, attr_t attr, short co)
+void wcch(WINDOW *win, const wchar_t *wch, attr_t attr, short pair)
 {
-        cchar_t cch;
-        if (wch != L'\0') {
-                setcchar(&cch, wch, attr, co, NULL);
-                wadd_wch(win, &cch);
+        SAVEWIN(win);
+        wcolor_set(win, pair, NULL);
+        if (wch && (*wch != L'\0')) {
+                waddnwstr(win, wch, 1);
         }
+        RESTORE(win);
 }
 
-void mvwcch(WINDOW *win, int y, int x, wchar_t *wch, attr_t attr, short co)
+void mvwcch(WINDOW *win, int y, int x, const wchar_t *wch, attr_t attr, short pair)
 {
-        cchar_t cch;
-        if (wch != L'\0') {
-                setcchar(&cch, wch, attr, co, NULL);
-                mvwadd_wch(win, y, x, &cch);
+        SAVEWIN(win);
+        wcolor_set(win, pair, NULL);
+        if (wch && (*wch != L'\0')) {
+                mvwaddnwstr(win, y, x, wch, 1);
         }
+        RESTORE(win);
 }
 
 

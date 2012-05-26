@@ -200,7 +200,7 @@ struct noun_t *new_noun(const char *name, uint32_t model, void *obj)
         struct noun_t *new = calloc(1, sizeof(struct noun_t));
 
         /* Identity state */
-        new->name  = mydup(name);
+        new->name  = cdup(name);
         new->id    = hash(name);
         new->model = model;
         new->obj   = obj;

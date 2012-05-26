@@ -61,8 +61,8 @@ void say_equip(wchar_t *icon, char *name)
 {
         release((void **)&EQUIPNAME);
         release((void **)&EQUIPICON);
-        EQUIPNAME = mydup(name); 
-        EQUIPICON = wcsdup(icon); 
+        EQUIPNAME = cdup(name); 
+        EQUIPICON = wdup(icon); 
 }
 
 
@@ -75,8 +75,8 @@ void say_speak(wchar_t *speaker, char *message)
 {
         release((void **)&SPEAKER);
         release((void **)&MESSAGE);
-        SPEAKER = wcsdup(speaker); 
-        MESSAGE = mydup(message); 
+        SPEAKER = wdup(speaker); 
+        MESSAGE = cdup(message); 
 }
 
 
@@ -221,6 +221,10 @@ void print_dock(void)
         wchar_t item_field[SZ];
         wchar_t text_field[SZ];
         wchar_t stat_field[SZ];
+
+        wclean(item_field, SZ);
+        wclean(text_field, SZ);
+        wclean(stat_field, SZ);
 
         swpumpf(item_field, SZ, L"%ls %s", EQUIPICON, EQUIPNAME);
         swpumpf(text_field, SZ, L"%ls %s",   SPEAKER, MESSAGE);

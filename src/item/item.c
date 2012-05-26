@@ -71,7 +71,7 @@ void DUMMY_METHOD(void *self, struct noun_t *noun);
  */
 struct item_t *make_item(enum items tag)
 {
-        struct item_t *new = malloc(sizeof(struct item_t));
+        struct item_t *new = calloc(1, sizeof(struct item_t));
 
         if (!itemtable)
                 itemtable = new_htab(0);

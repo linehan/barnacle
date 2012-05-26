@@ -43,7 +43,7 @@ void stdmenu_delmenu(void *self)
 void del_items(struct stdmenu_t *smenu)
 {
         int i;
-        for (i=0; i<smenu->n; i++)
+        for (i=0; i<(smenu->n); i++)
                 free_item(smenu->item[i]);
 }
 
@@ -136,9 +136,8 @@ void stdmenu_build(void *self, char **name, char **desc, wchar_t **icon, void **
         smenu->icon = build_icons(icon, n);
         smenu->n    = n;
 
-        if (smenu->menu) {
+        if (smenu->menu)
                 set_menu_items(smenu->menu, (ITEM **)smenu->item);
-        }
         else 
                 smenu->menu = new_menu((ITEM **)smenu->item);
 }
@@ -150,7 +149,7 @@ struct stdmenu_t *new_stdmenu(char **name, char **desc, wchar_t **icon, void **u
 {
         struct stdmenu_t *new;
 
-        new = malloc(sizeof(struct stdmenu_t));
+        new = calloc(1, sizeof(struct stdmenu_t));
 
         new->del     = &stdmenu_destroy;
         new->build   = &stdmenu_build;

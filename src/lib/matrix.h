@@ -180,14 +180,17 @@ void mx_del(struct matrix_t *matrix)
  * assume that the caller has already determined that the point y,x lies
  * within the bounds of the matrix.
  ******************************************************************************/
+/* Range-check y coordinates */
 static inline bool safe_y(struct matrix_t *matrix, int y)
 {
         return ((y >= 0) && (y < matrix->itr.rows)) ? true : false;
 }
+/* Range-check x coordinates */
 static inline bool safe_x(struct matrix_t *matrix, int x)
 {
         return ((x >= 0) && (x < matrix->itr.cols)) ? true : false;
 }
+/* Range-check to the west */
 static inline bool safe_w(struct matrix_t *mx, int y, int x)
 {
         if ((safe_y(mx, y)) && (safe_x(mx, x)) && (safe_x(mx, (x-1))))
@@ -195,6 +198,7 @@ static inline bool safe_w(struct matrix_t *mx, int y, int x)
         else
                 return false;
 }
+/* Range-check to the east */
 static inline bool safe_e(struct matrix_t *mx, int y, int x)
 {
         if ((safe_y(mx, y)) && (safe_x(mx, x)) && (safe_x(mx, (x+1))))
@@ -202,6 +206,7 @@ static inline bool safe_e(struct matrix_t *mx, int y, int x)
         else
                 return false;
 }
+/* Range-check to the north */
 static inline bool safe_n(struct matrix_t *mx, int y, int x)
 {
         if ((safe_y(mx, y)) && (safe_x(mx, x)) && (safe_y(mx, (y-1))))
@@ -209,6 +214,7 @@ static inline bool safe_n(struct matrix_t *mx, int y, int x)
         else
                 return false;
 }
+/* Range-check to the south */
 static inline bool safe_s(struct matrix_t *mx, int y, int x)
 {
         if ((safe_y(mx, y)) && (safe_x(mx, x)) && (safe_y(mx, (y+1))))
@@ -216,7 +222,7 @@ static inline bool safe_s(struct matrix_t *mx, int y, int x)
         else
                 return false;
 }
-
+/* Range-check to the north-west */
 static inline bool safe_nw(struct matrix_t *mx, int y, int x)
 {
         if ((safe_n(mx, y, x)) && (safe_w(mx, y, x)))
@@ -224,6 +230,7 @@ static inline bool safe_nw(struct matrix_t *mx, int y, int x)
         else
                 return false;
 }
+/* Range-check to the north-east */
 static inline bool safe_ne(struct matrix_t *mx, int y, int x)
 {
         if ((safe_n(mx, y, x)) && (safe_e(mx, y, x)))
@@ -231,6 +238,7 @@ static inline bool safe_ne(struct matrix_t *mx, int y, int x)
         else
                 return false;
 }
+/* Range-check to the south-west */
 static inline bool safe_sw(struct matrix_t *mx, int y, int x)
 {
         if ((safe_s(mx, y, x)) && (safe_w(mx, y, x)))
@@ -238,6 +246,7 @@ static inline bool safe_sw(struct matrix_t *mx, int y, int x)
         else
                 return false;
 }
+/* Range-check to the south-east */
 static inline bool safe_se(struct matrix_t *mx, int y, int x)
 {
         if ((safe_s(mx, y, x)) && (safe_e(mx, y, x)))
@@ -247,7 +256,6 @@ static inline bool safe_se(struct matrix_t *mx, int y, int x)
 }
 
 
-//enum neighbors {_N_,_S_,_E_,_W_,N_W,N_E,S_W,S_E};
 
 
 /*
@@ -536,18 +544,5 @@ void mx_itr_seed(struct seed_t *seed, struct matrix_t *matrix)
         for (mx_itr_start(mx);                                              \
              mx_itr_until(mx);                                              \
              mx_itr_next(mx), cell=mx_cell(mx), y=mx_row(mx), x=mx_col(mx))
-
-/**
- * mx_foreach_seed_yx -- traverses a matrix; provides row and column indices
- * @cell: pointer to a uint32_t
- * @y: row index
- * @x: column index
- * @mx: pointer to a struct matrix_t
- */
-//#define mx_foreach_seed_yx(seed, y, x, mx)                                     \
-        //for (mx_itr_start(mx), mx_itr_seed(seed,mx), (y)=mx_row(mx),(x)=mx_col(mx);\
-             //mx_itr_until(mx);                                                 \
-             //mx_itr_next(mx), mx_itr_seed(seed,mx), (y)=mx_row(mx),(x)=mx_col(mx))
-
 
 #endif
