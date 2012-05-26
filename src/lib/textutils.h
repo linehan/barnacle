@@ -5,9 +5,12 @@
 #include <stdarg.h>
 #include "../com/arawak.h"
 
-char    *mydup(const char *str);
+char    *cdup(const char *str);
+wchar_t *wdup(const wchar_t *wcs);
 wchar_t *mbdup(const char *str);
-wchar_t *wcsdup(const wchar_t *wcs);
+
+void wclean(wchar_t *wcs, size_t len);
+void cclean(   char *str, size_t len);
 
 void pumpf(char **strp, const char *fmt, ...);
 void wpumpf(wchar_t **wcsp, const wchar_t *wfmt, ...);

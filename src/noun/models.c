@@ -9,18 +9,21 @@
 #include "../gfx/ui/menu_inventory.h"
 #include "../map/light.h"
 
+#define MV(frame,dir) (frame), (dir)
+#define NO_MV MV(0,0) 
 
 struct ani_t *mk_ani(const wchar_t *wcs, int mv_frame, int mv_dir)
 {
-        struct ani_t *new = calloc(1, sizeof(struct ani_t));
+        struct ani_t *new = malloc(sizeof(struct ani_t));
 
-        new->frame     = wcsdup(wcs);
+        new->frame     = wdup(wcs);
         new->len       = wcslen(wcs);
         new->mv_frame  = mv_frame;
         new->mv_dir    = mv_dir;
 
         return (new);
 }
+
 
 int wait_for(struct noun_t *noun)
 {
@@ -39,9 +42,7 @@ int wait_for(struct noun_t *noun)
 }
 
 
-#define MV(frame,dir) frame, dir
-#define MSG(frame,verb,dir) frame, verb, dir
-#define NO_MV MV(0,0) 
+
 
 
 /*
@@ -56,8 +57,8 @@ void noun_animate(struct noun_t *noun)
         struct ani_t *ani = noun->animation;
 
         /* Draw the current frame */
-        /*wadd_wch(noun->win, mkcch(&ani->frame[noun->frame], 0, FLEX));*/
-        wcch(noun->win, &noun->animation->frame[noun->frame], 0, FLEX);
+        if (noun->frame < noun->animation->len-1)
+                wcch(noun->win, &noun->animation->frame[noun->frame], 0, FLEX);
 
         /* Move the panel if this is the mv_frame */
         if (noun->frame == ani->mv_frame)
@@ -113,39 +114,39 @@ void build_person_animations(void)
         if (built)
                 return;
 
-        guy_walk_u   = mk_ani(L"ⲑⲑᎲⰾ"              , MV(0,'u'));
-        guy_walk_d   = mk_ani(L"ⲑⲑᎲⰾ"              , MV(0,'d'));
-        guy_walk_l   = mk_ani(L"ⲑⲑᎲⰾ"              , MV(0,'l'));
-        guy_walk_r   = mk_ani(L"ⲑⲑᎲⰾ"              , MV(0,'r'));
+        guy_walk_u   = mk_ani(L"ⲑⲑᎲⰾ", 0, 'u');
+        guy_walk_d   = mk_ani(L"ⲑⲑᎲⰾ", 0, 'd');
+        guy_walk_l   = mk_ani(L"ⲑⲑᎲⰾ", 0, 'l');
+        guy_walk_r   = mk_ani(L"ⲑⲑᎲⰾ", 0, 'r');
 
-        guy_run_u    = mk_ani(L"ⲑⰾᎲⰾ"              , MV(0,'u'));
-        guy_run_d    = mk_ani(L"ⲑⰾᎲⰾ"              , MV(0,'d'));
-        guy_run_l    = mk_ani(L"ⲑⰾᎲⰾ"              , MV(0,'l'));
-        guy_run_r    = mk_ani(L"ⲑⰾᎲⰾ"              , MV(0,'r'));
+        guy_run_u    = mk_ani(L"ⲑⰾᎲⰾ", 0, 'u');
+        guy_run_d    = mk_ani(L"ⲑⰾᎲⰾ", 0, 'd');
+        guy_run_l    = mk_ani(L"ⲑⰾᎲⰾ", 0, 'l');
+        guy_run_r    = mk_ani(L"ⲑⰾᎲⰾ", 0, 'r');
 
-        guy_punch_r  = mk_ani(L"ᎲᎲᎲᱽᕤᱽᎲᎲⰾ"         , NO_MV);
-        guy_punch_l  = mk_ani(L"ᎲᎲᎲ᱙ᕦ᱙ᎲᎲⰾ"         , NO_MV);
+        guy_punch_r  = mk_ani(L"ᎲᎲᎲᱽᕤᱽᎲᎲⰾ", 0, 0);
+        guy_punch_l  = mk_ani(L"ᎲᎲᎲ᱙ᕦ᱙ᎲᎲⰾ", 0, 0);
 
-        guy_poke_u   = mk_ani(L"ᎲᎲᎲᒀᒀᒀᒀᎲᎲⰾ"        , NO_MV);
-        guy_poke_l   = mk_ani(L"ᎲᎲⰾᕗᕗᑕᑡᎲᎲⰾ"        , MV(4,'l'));
-        guy_poke_r   = mk_ani(L"ᎲᎲⰾᕙᕙᑐᑞᎲᎲⰾ"        , MV(4,'r'));
-        guy_poke_d   = mk_ani(L"ᎲᎲᎲᒀᒀᒀᒀᎲᎲⰾ"        , NO_MV);
+        guy_poke_u   = mk_ani(L"ᎲᎲᎲᒀᒀᒀᒀᎲᎲⰾ", 0, 0);
+        guy_poke_l   = mk_ani(L"ᎲᎲⰾᕗᕗᑕᑡᎲᎲⰾ", 4, 'l');
+        guy_poke_r   = mk_ani(L"ᎲᎲⰾᕙᕙᑐᑞᎲᎲⰾ", 4, 'r');
+        guy_poke_d   = mk_ani(L"ᎲᎲᎲᒀᒀᒀᒀᎲᎲⰾ", 0, 0);
 
-        guy_dodge_d  = mk_ani(L"ᎲᎲᎲᏡᏡᏡᏡȣȣȣȣᏡᎲᎲⰾ"   , MV(8,'d'));
-        guy_falltest = mk_ani(L"ᎲᎲᎲޗޗޗⲁⲁⲁᥑ"        , MV(4,'r'));
-        guy_dodge_l  = mk_ani(L"ᎲᎲᎲᥑᥑⲁཚཚཚᎲᎲᎲⰾ"     , MV(5,'l'));
-        guy_dodge_r  = mk_ani(L"ᎲᎲᎲᥑᥑⲁཚཚཚᎲᎲᎲⰾ"     , MV(5,'r'));
-        guy_kick_r   = mk_ani(L"ᎲᎲᎲ࿂࿂ᱯ࿂࿂༱༱ꝬꝬỿᓀᓀᎲⰾ" , MV(9,'r'));
-        guy_kick_l   = mk_ani(L"ᎲᎲᎲ࿂࿂ᱯᱯ࿂࿂༱ꝬꝬꝬᓂᓂᎲⰾ" , MV(9,'l'));
-        guy_jump_ul  = mk_ani(L"ᎲᎲᎲⰾⰾᎹᎹᎹᎹᎹᎹᎲᎲⰾ"    , MV(7,'u'+'l'));
-        guy_jump_ur  = mk_ani(L"ᎲᎲᎲⰾⰾᎹᎹᎹᎹᎹᎹᎲᎲⰾ"    , MV(7,'u'+'r'));
+        guy_dodge_d  = mk_ani(L"ᎲᎲᎲᏡᏡᏡᏡȣȣȣȣᏡᎲᎲⰾ", 8, 'd');
+        guy_falltest = mk_ani(L"ᎲᎲᎲޗޗޗⲁⲁⲁᥑ", 4, 'r');
+        guy_dodge_l  = mk_ani(L"ᎲᎲᎲᥑᥑⲁཚཚཚᎲᎲᎲⰾ", 5, 'l');
+        guy_dodge_r  = mk_ani(L"ᎲᎲᎲᥑᥑⲁཚཚཚᎲᎲᎲⰾ", 5, 'r');
+        guy_kick_r   = mk_ani(L"ᎲᎲᎲ࿂࿂ᱯ࿂࿂༱༱ꝬꝬỿᓀᓀᎲⰾ", 9, 'r');
+        guy_kick_l   = mk_ani(L"ᎲᎲᎲ࿂࿂ᱯᱯ࿂࿂༱ꝬꝬꝬᓂᓂᎲⰾ", 9, 'l');
+        guy_jump_ul  = mk_ani(L"ᎲᎲᎲⰾⰾᎹᎹᎹᎹᎹᎹᎲᎲⰾ", 7, 'u'+'l');
+        guy_jump_ur  = mk_ani(L"ᎲᎲᎲⰾⰾᎹᎹᎹᎹᎹᎹᎲᎲⰾ", 7, 'u'+'r');
 
-        guy_dig_u    = mk_ani(L"ᎲᎲᎲᱽᕤᱽᎲᎲⰾⲑⲑᎲⰾ"     , MV(7,'u'));
-        guy_dig_d    = mk_ani(L"ᎲᎲᎲᱽᕤᱽᎲᎲⰾⲑⲑᎲⰾ"     , MV(7,'d'));
-        guy_dig_l    = mk_ani(L"ᎲᎲᎲᱽᕤᱽᎲᎲⰾⲑⲑᎲⰾ"     , MV(7,'l'));
-        guy_dig_r    = mk_ani(L"ᎲᎲᎲᱽᕤᱽᎲᎲⰾⲑⲑᎲⰾ"     , MV(7,'r'));
+        guy_dig_u    = mk_ani(L"ᎲᎲᎲᱽᕤᱽᎲᎲⰾⲑⲑᎲⰾ", 7, 'u');
+        guy_dig_d    = mk_ani(L"ᎲᎲᎲᱽᕤᱽᎲᎲⰾⲑⲑᎲⰾ", 7, 'd');
+        guy_dig_l    = mk_ani(L"ᎲᎲᎲᱽᕤᱽᎲᎲⰾⲑⲑᎲⰾ", 7, 'l');
+        guy_dig_r    = mk_ani(L"ᎲᎲᎲᱽᕤᱽᎲᎲⰾⲑⲑᎲⰾ", 7, 'r');
 
-        guy_pickup   = mk_ani(L"ᎲᎲᎲⰾ"               , NO_MV);
+        guy_pickup   = mk_ani(L"ᎲᎲᎲⰾ", 0, 0);
 
         built = true;
 }
@@ -158,12 +159,12 @@ void build_person_animations(void)
 void render_human(void *self)
 {
         struct noun_t *noun = (struct noun_t *)self;
-        static bool done;
+        /*static bool done;*/
 
-        if (!done) {
-                wbkgrnd(noun->win, mkcch(L"ⰾ", 0, FLEX));
-                done = true;
-        }
+        /*if (!done) {*/
+                /*wbkgrnd(noun->win, mkcch(L"ⰾ", 0, FLEX));*/
+                /*done = true;*/
+        /*}*/
 
         struct item_t *item;
 
@@ -330,12 +331,12 @@ static void build_dummy_animations(void)
         if (built)
                 return;
 
-        bonk_test  = mk_ani(L"ⰊⰊⰊⰊⰉ",         NO_MV);
-        dummy_mv_u = mk_ani(L"ⰹⰹⰺⰺⰹⰹⰹⰉ",      MV(4,'u'));
-        dummy_mv_d = mk_ani(L"ⰹⰹⰺⰺⰹⰹⰹⰉ",      MV(4,'d'));
-        dummy_mv_l = mk_ani(L"ⰹⰹⰺⰺⰹⰹⰹⰉ",      MV(4,'l'));
-        dummy_mv_r = mk_ani(L"ⰹⰹⰺⰺⰹⰹⰹⰉ",      MV(4,'r'));
-        dummy_die  = mk_ani(L"ⰊⰊⰊⰊⰉ✶✶✺✺✺❁❁✴", NO_MV);
+        bonk_test  = mk_ani(L"ⰊⰊⰊⰊⰉ", 0, 0);
+        dummy_mv_u = mk_ani(L"ⰹⰹⰺⰺⰹⰹⰹⰉ", 4, 'u');
+        dummy_mv_d = mk_ani(L"ⰹⰹⰺⰺⰹⰹⰹⰉ", 4, 'd');
+        dummy_mv_l = mk_ani(L"ⰹⰹⰺⰺⰹⰹⰹⰉ", 4, 'l');
+        dummy_mv_r = mk_ani(L"ⰹⰹⰺⰺⰹⰹⰹⰉ", 4, 'r');
+        dummy_die  = mk_ani(L"ⰊⰊⰊⰊⰉ✶✶✺✺✺❁❁✴", 0, 0);
 
         built = true;
 }
