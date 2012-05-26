@@ -48,7 +48,6 @@ void render_cb(EV_P_ ev_timer *w, int revents)
         tick();
 
         free_nouns();
-
         update_nouns();
 
         dock_update();

@@ -24,10 +24,10 @@
 
 
 #define LABEL(val,...) \
-        or_byte((*(val)), LAB, VA_NUM_ARGS(__VA_ARGS__), __VA_ARGS__)
+        (or_byte(*(val), (LAB), VA_NUM_ARGS(__VA_ARGS__), __VA_ARGS__))
 
 
-#define LAYER(val,n,...) or_byte(val, LAB, n, __VA_ARGS__)
+#define LAYER(val,n,...) or_byte(val, (LAB), n, __VA_ARGS__)
 //#define  ELEV(val,n,...) or_byte(val, ALT, n, __VA_ARGS__)
 
 static const int   OCTAVES =  6;      /* Number of octaves to smooth */

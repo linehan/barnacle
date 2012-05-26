@@ -48,7 +48,7 @@ struct multiwin_t *new_multiwin(int h, int w, int y0, int x0, int n)
         struct multiwin_t *new = malloc(sizeof(struct multiwin_t));
 
         new->win  = malloc(n * sizeof(WINDOW *));
-        new->n    = (unsigned int)n;
+        new->n    = n;
         new->i    = 0;
         new->next = &next_window;
         new->prev = &prev_window;

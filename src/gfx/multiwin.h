@@ -5,8 +5,8 @@
 #include "gfx.h"
 
 struct multiwin_t {
-        unsigned int n;
-        unsigned int i;
+        int n;
+        int i;
         WINDOW **win;
         WINDOW *peek;
         void (*next)(void *self);

@@ -12,6 +12,7 @@
 #include "../lib/matrix.h"
 #include "../lib/stoc/stoc.h"
 #include "../eng/bytes.h"
+#include "../eng/error.h"
 #include "../gfx/ui/titlecard.h"
 #include "../test/test.h"
 #include "terrain.h"
@@ -52,16 +53,21 @@ void smooth_layers(struct map_t *map)
  */
 void label_regions(struct map_t *map)
 {
-        struct seed_t seed = {0};
-        int y;
-        int x;
+        struct seed_t seed = {{0},0};
+        int i;
+        int j;
 
-        mx_foreach_seed_yx(&seed, y, x, map->tile) {
+        /*mx_foreach_seed(&seed, map->tile) {*/
+        for (i=0; i<pos_h(map->pos); i++) {
+        for (j=0; j<pos_w(map->pos); j++) {
 
-                if (map->pmap[y][x] < SHOAL) place_ocean_label(seed.cur); else
-                if (map->pmap[y][x] < BEACH) place_shoal_label(seed.cur); else
-                if (map->pmap[y][x] < TERRA) place_beach_label(seed.cur); else
+                mx_seed(map->tile, i, j, &seed);
+
+                if (map->pmap[i][j] < SHOAL) place_ocean_label(seed.cur); else
+                if (map->pmap[i][j] < BEACH) place_shoal_label(seed.cur); else
+                if (map->pmap[i][j] < TERRA) place_beach_label(seed.cur); else
                                              place_terra_label(seed.cur);
+        }
         }
 }
 
@@ -73,12 +79,19 @@ void label_regions(struct map_t *map)
  */
 void label_cliffs(struct map_t *map)
 {
-        struct seed_t seed = {0};
+        struct seed_t seed;
+        int i;
+        int j;
 
-        mx_foreach_seed(&seed, map->tile) {
+        /*mx_foreach_seed(&seed, map->tile) {*/
+        for (i=0; i<pos_h(map->pos); i++) {
+        for (j=0; j<pos_w(map->pos); j++) {
+
+                mx_seed(map->tile, i, j, &seed);
 
                 if (LABEL(seed.cur, TOP) && !LABEL(seed.s, TOP))
                         place_cliff_label(seed.cur);
+        }
         }
 }
 
@@ -89,9 +102,15 @@ void label_cliffs(struct map_t *map)
  */
 void label_treetops(struct map_t *map)
 {
-        struct seed_t seed = {0};
+        struct seed_t seed;
+        int i;
+        int j;
 
-        mx_foreach_seed(&seed, map->tile) {
+        /*mx_foreach_seed(&seed, map->tile) {*/
+        for (i=0; i<pos_h(map->pos); i++) {
+        for (j=0; j<pos_w(map->pos); j++) {
+
+                mx_seed(map->tile, i, j, &seed);
 
                 if (!LABEL(seed.cur, TOP)
                 ||  !LABEL(seed.n,   TOP)
@@ -115,6 +134,7 @@ void label_treetops(struct map_t *map)
                         place_treetop_label(seed.se);
                 }
         }
+        }
 }
 
 
@@ -124,9 +144,15 @@ void label_treetops(struct map_t *map)
  */
 void label_treetops_trim(struct map_t *map)
 {
-        struct seed_t seed = {0};
+        struct seed_t seed;
+        int i;
+        int j;
 
-        mx_foreach_seed(&seed, map->tile) {
+        /*mx_foreach_seed(&seed, map->tile) {*/
+        for (i=0; i<pos_h(map->pos); i++) {
+        for (j=0; j<pos_w(map->pos); j++) {
+
+                mx_seed(map->tile, i, j, &seed);
 
                 if (LABEL(seed.cur, TTO) 
                 && (!LABEL(seed.w,  TTO, TOP) 
@@ -142,6 +168,7 @@ void label_treetops_trim(struct map_t *map)
                         place_terra_label(seed.cur);
                 }
         }
+        }
 }
 
 
@@ -153,9 +180,15 @@ void label_treetops_trim(struct map_t *map)
  */
 void label_treetrunks(struct map_t *map)
 {
-        struct seed_t seed = {0};
+        struct seed_t seed;
+        int i;
+        int j;
 
-        mx_foreach_seed(&seed, map->tile) {
+        /*mx_foreach_seed(&seed, map->tile) {*/
+        for (i=0; i<pos_h(map->pos); i++) {
+        for (j=0; j<pos_w(map->pos); j++) {
+
+                mx_seed(map->tile, i, j, &seed);
 
                 if (LABEL(seed.cur, TTO) 
                 &&  LABEL(seed.s,   TOP) 
@@ -169,6 +202,7 @@ void label_treetrunks(struct map_t *map)
                                 wipe_label(seed.cur);
                                 place_terra_label(seed.cur);
                 }
+        }
         }
 }
 
@@ -184,53 +218,73 @@ void label_shorelines(struct map_t *map)
 {
         #define SURF_FRAMES 4
 
-        struct seed_t seed = {0};
-        wchar_t *wch;
+        struct seed_t seed;
+        wchar_t *wch = NULL;
         short color;
-        int y;
-        int x;
+        attr_t attr;
+        int i;
+        int j;
         int k; 
-        static wchar_t shore[6][24]={L"⠁⠈⠉⠑⠃⠘⠁⠈⠉⠑⠃⠘⠁⠈⠉⠑⠃⠘⠁⠈⠉⠑⠃⠘", 
-                                     L"⡀⢀⣀⢄⡄⢠⡀⢀⣀⢄⡄⢠⡀⢀⣀⢄⡄⢠⡀⢀⣀⢄⡄⢠", 
-                                     L"⠁⠁⠂⠂⠁⠁⠂⠂⠄⡀⠃⠅⠆⠄⡀⠃⡂⠄⡀⠃⠅⠆⡁⡂",
-                                     L"⠈⠐⠠⢀⠘⠈⠐⠠⢀⠘⠨⠰⠰⢈⢈⢐⢠⢠⠨⠰⠰⢈⢐⢠",
-                                     L"⠁⠁⠂⠂⠁⠁⠂⠂⠁⠁⠂⠂⠁⠁⠂⠂⠁⠁⠂⠂⠁⠁⠂⠂", /* 4 NE */
-                                     L"⠈⠐⠐⠘⠈⠘⠈⠑⠐⠐⠘⠈⠐⠑⠑⠈⠐⠘⠈⠐⠑⠑⠈⠐"  /* 5 NW */
+        int which;
+        static wchar_t *shore[6]={L"⠁⠈⠉⠑⠃⠘⠁⠈⠉⠑⠃⠘⠁⠈⠉⠑⠃⠘⠁⠈⠉⠑⠃⠘⠉⠑⠃⠘⠘", 
+                                  L"⡀⢀⣀⢄⡄⢠⡀⢀⣀⢄⡄⢠⡀⢀⣀⢄⡄⢠⡀⢀⢀⣀⢄⡄⢠⣀⢄⡄⢠", 
+                                  L"⠁⠁⠂⠂⠁⠁⠂⠂⠄⡀⠃⠅⠆⠄⡀⠃⡂⠄⠃⠅⠆⡁⡂⡀⠃⠅⠆⡁⡂",
+                                  L"⠈⠐⠠⢀⠘⠈⠐⠠⢀⠘⠨⠰⠰⢈⢈⢐⢠⢠⠨⠨⠰⠰⢈⢐⢠⠰⠰⢐⢠",
+                                  L"⠁⠁⠂⠂⠁⠁⠂⠂⠁⠁⠂⠂⠁⠁⠂⠂⠁⠁⠂⠂⠂⠁⠁⠂⠂⠁⠁⠂⠂", 
+                                  L"⠈⠐⠐⠘⠈⠘⠈⠑⠐⠐⠘⠈⠐⠑⠑⠈⠐⠘⠈⠐⠐⠑⠑⠈⠐⠑⠑⠈⠐" 
         };
+
+        attr = 0;
         
-        mx_foreach_seed_yx(&seed, y, x, map->tile) {
+        /*mx_foreach_seed(&seed, map->tile) {*/
+        for (i=0; i<pos_h(map->pos); i++) {
+        for (j=0; j<pos_w(map->pos); j++) {
+
+                mx_seed(map->tile, i, j, &seed);
 
                 /* Draw nothing if the cursor is on land */
-                if ((LABEL(seed.cur, TOP, DRP, BEA, SHO, TTO, TTR)) 
-                ||  (LABEL(seed.nw, OCN) && LABEL(seed.w, TOP))
-                ||  (LABEL(seed.ne, OCN) && LABEL(seed.e, TOP)))
-                {
+                if ((LAYER(*seed.cur, 1, TOP))
+                ||  (LAYER(*seed.cur, 1, DRP))
+                ||  (LAYER(*seed.cur, 1, BEA))
+                ||  (LAYER(*seed.cur, 1, SHO))
+                ||  (LAYER(*seed.cur, 1, TTO))
+                ||  (LAYER(*seed.cur, 1, TTR)))
                         continue;
-                }
+
+                if ((LAYER(*seed.nw, 1, OCN))
+                &&  (LAYER(*seed.w, 1, TOP)))
+                        continue;
+
+                if ((LAYER(*seed.ne, 1, OCN))
+                &&  (LAYER(*seed.e, 1, TOP)))
+                        continue;
 
                 /* Draw an edge if the following conditions apply... */
 
-                else if (LABEL(seed.n, DRP)) 
-                {
+                if (LAYER(*seed.n, 1, DRP)) {
                         wch = shore[0];
                         color = _SEA_SHALLOW;
                 }
-                else if (LABEL(seed.e, TOP, DRP))
+                else if ((LAYER(*seed.e, 1, TOP))
+                     ||  (LAYER(*seed.e, 1, DRP)))
                 {
                         wch = shore[3];
                         color = SEA_MED;
                 }
-                else if (LABEL(seed.w, TOP, DRP))
+                else if ((LAYER(*seed.w, 1, TOP))
+                     ||  (LAYER(*seed.w, 1, DRP)))
                 {
                         wch = shore[2];
                         color = SEA_MED;
                 }
-                else if (LABEL(seed.nw, TOP, DRP))
+                else if ((LAYER(*seed.nw, 1, TOP))
+                     ||  (LAYER(*seed.nw, 1, DRP)))
                 {
                         wch = shore[4];
                         color = SEA_MED;
                 }
-                else if (LABEL(seed.ne, TOP, DRP))
+                else if ((LAYER(*seed.ne, 1, TOP))
+                     ||  (LAYER(*seed.ne, 1, DRP)))
                 {
                         wch = shore[5];
                         color = SEA_MED;
@@ -240,10 +294,18 @@ void label_shorelines(struct map_t *map)
                 }
 
                 for (k=0; k<SURF_FRAMES; k++) {
-                        mvwp(PEEK(map->L[RIM]), y, x, &wch[roll1d(10)], color, 0);
+                        /*TRY {*/
+                                /*which = roll1d(10);*/
+                                /*if (which > 10)*/
+                                        /*THROW(8);*/
+                        /*} CATCH("Jeez, rolled a %d...", which);*/
+                        which = roll1d(10);
+
+                        mvwcch(PEEK(map->L[RIM]), i, j, &wch[which], attr, color);
                         NEXT(map->L[RIM]);
                 }
                 set_byte(seed.cur, LAB, RIM);
+        }
         }
 }
 

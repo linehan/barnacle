@@ -448,19 +448,9 @@ enum superblack {
 
 void darken_colors(int step);
 
-static inline short BGCOLOR(short pair)
-{
-        short fg, bg;
-        pair_content(pair, &fg, &bg);
-        return bg;
-}
+short bgcolor(short pair);
+short fgcolor(short pair);
 
-static inline short FGCOLOR(short pair)
-{
-        short fg, bg;
-        pair_content(pair, &fg, &bg);
-        return fg;
-}
 
 
 static inline 
