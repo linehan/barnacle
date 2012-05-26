@@ -47,21 +47,12 @@ void render_cb(EV_P_ ev_timer *w, int revents)
         }
         tick();
 
-        update_nouns();
-        send_delayed_msgs();
         free_nouns();
 
+        update_nouns();
 
         dock_update();
         update_inventory_menu();
-
-
-
-
-        /*nn("Guy")->update();*/
-
-        /*if (oops)*/
-                /*nn("Dummy")->update();*/
 
         print_dock();
         update_panels();  /* Were slowing down performance, unnecessary */

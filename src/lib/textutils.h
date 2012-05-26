@@ -5,7 +5,7 @@
 #include <stdarg.h>
 #include "../com/arawak.h"
 
-char *mydup(const char *str);
+char    *mydup(const char *str);
 wchar_t *mbdup(const char *str);
 wchar_t *wcsdup(const wchar_t *wcs);
 

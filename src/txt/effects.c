@@ -1,4 +1,5 @@
 #include "../lib/stoc/stoc.h"
+#include "../gfx/gfx.h"
 #include "gloss.h"
 #include "effects.h"
 

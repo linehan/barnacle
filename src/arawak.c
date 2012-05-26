@@ -55,22 +55,22 @@ int main(int argc, char *argv[])
 
         new_noun("Guy", PERSON, 0);
         new_noun("Dummy", DUMMY, 0);
-        new_noun("Forga", DUMMY, 0);
+        new_noun("Dorky", DUMMY, 0);
 
         nn("Guy")->mobile(true);
         nn("Guy")->player(true);
 
         nn("Dummy")->mobile(true);
-        nn("Forga")->mobile(true);
+        nn("Dorky")->mobile(true);
 
         nn("Guy")->step('d');
         nn("Guy")->step('d');
         nn("Guy")->step('d');
 
         nn("Dummy")->step('u');
-        nn("Forga")->step('r');
-        nn("Forga")->step('r');
-        nn("Forga")->step('r');
+        nn("Dorky")->step('r');
+        nn("Dorky")->step('r');
+        nn("Dorky")->step('r');
 
         inventory_mkmenu(&nn("Guy")->inv);
 

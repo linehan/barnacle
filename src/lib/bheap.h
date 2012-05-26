@@ -98,7 +98,7 @@ static inline struct bh_t *new_bh(uint32_t maxsize)
         new->node = malloc(new->max * sizeof(struct bh_node *));
 
         for (i=0; i<new->max; i++) 
-                new->node[i] = malloc(sizeof(struct bh_node));
+                new->node[i] = calloc(1, sizeof(struct bh_node));
 
         return (new);
 }
