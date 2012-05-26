@@ -85,8 +85,8 @@ static const uint32_t ngouge[]={0xF0000000,0x0F000000,0x00F00000,0x000F0000,
                                 0x0000F000,0x00000F00,0x000000F0,0x0000000F};
 
 // Bit offsets (little-endian)
-static const uint32_t boffset[]={24, 16, 8, 0};
-static const uint32_t noffset[]={28, 24, 20, 16, 12, 8, 4, 0};
+static const int boffset[]={24, 16, 8, 0};
+static const int noffset[]={28, 24, 20, 16, 12, 8, 4, 0};
 
 
 

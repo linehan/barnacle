@@ -22,6 +22,22 @@ struct ani_t *mk_ani(const wchar_t *wcs, int mv_frame, int mv_dir)
         return (new);
 }
 
+int wait_for(struct noun_t *noun)
+{
+        int remaining;
+        int total;
+
+        if (noun->animation)
+                total = noun->animation->len;
+        else
+                total = 0;
+
+        assert(noun->frame <= total || !"Animation frame overflow"); 
+        remaining = total - noun->frame;
+
+        return (remaining);
+}
+
 
 #define MV(frame,dir) frame, dir
 #define MSG(frame,verb,dir) frame, verb, dir
@@ -40,7 +56,8 @@ void noun_animate(struct noun_t *noun)
         struct ani_t *ani = noun->animation;
 
         /* Draw the current frame */
-        wadd_wch(noun->win, mkcch(&ani->frame[noun->frame], 0, FLEX));
+        /*wadd_wch(noun->win, mkcch(&ani->frame[noun->frame], 0, FLEX));*/
+        wcch(noun->win, &noun->animation->frame[noun->frame], 0, FLEX);
 
         /* Move the panel if this is the mv_frame */
         if (noun->frame == ani->mv_frame)
@@ -169,7 +186,7 @@ int modify_human(void *self)
         struct noun_t *noun = (struct noun_t *)self;
         struct item_t *item;
         int state;
-       
+
         sm_consume(noun->sm);
         state = sm_state(noun->sm);
 
@@ -211,47 +228,55 @@ int modify_human(void *self)
         case SM_RunRight:
                 noun->_animate(noun, guy_run_r);
                 break;
+        case SM_PickUp:
+                noun->_animate(noun, guy_pickup);
+                noun->_take(noun, pos_y(noun->pos), pos_x(noun->pos));
+                break;
         /* ------------------------------------ Combat */
         case SM_Hit:
                 HP_SUB(&noun->vitals, sm_mag(noun->sm));
                 say_stats(noun->vitals);
                 break;
+        case SM_PokeUp:
+                noun->_animate(noun, guy_poke_u);
+                emit_to_noun(noun, 'u', SM_Punch | SM_Wait(3) | SM_Pri(1));
+                break;
         /* ------------------------------------ keyboard input */
         /* ------------------------------------ walk (step) */
         case SM_Key('j'):
         case SM_Key('s'):
-                sm_msg(noun->sm, SM_SELF, SM_GoDown);
+                sm_msg(noun->sm, SM_SELF, SM_GoDown | SM_Wait(wait_for(noun)));
                 break;
         case SM_Key('k'):
         case SM_Key('w'):
-                sm_msg(noun->sm, SM_SELF, SM_GoUp);
+                sm_msg(noun->sm, SM_SELF, SM_GoUp | SM_Wait(wait_for(noun)));
                 break;
         case SM_Key('h'):
         case SM_Key('a'):
-                sm_msg(noun->sm, SM_SELF, SM_GoLeft);
+                sm_msg(noun->sm, SM_SELF, SM_GoLeft | SM_Wait(wait_for(noun)));
                 break;
         case SM_Key('l'):
         case SM_Key('d'):
-                sm_msg(noun->sm, SM_SELF, SM_GoRight);
+                sm_msg(noun->sm, SM_SELF, SM_GoRight | SM_Wait(wait_for(noun)));
                 break;
         /* ------------------------------------------ run  */
         case SM_Key('J'):
         case SM_Key('S'):
-                sm_msg(noun->sm, SM_SELF, SM_RunDown | SM_Opt(STICKY));
+                sm_msg(noun->sm, SM_SELF, SM_RunDown | SM_Wait(wait_for(noun)) | SM_Opt(STICKY));
                 break;
         case SM_Key('K'):
         case SM_Key('W'):
-                sm_msg(noun->sm, SM_SELF, SM_RunUp | SM_Opt(STICKY));
+                sm_msg(noun->sm, SM_SELF, SM_RunUp | SM_Wait(wait_for(noun)) | SM_Opt(STICKY));
                 break;
         case SM_Key('H'):
         case SM_Key('A'):
-                sm_msg(noun->sm, SM_SELF, SM_RunLeft | SM_Opt(STICKY));
+                sm_msg(noun->sm, SM_SELF, SM_RunLeft | SM_Wait(wait_for(noun)) | SM_Opt(STICKY));
                 /*noun->animate(guy_jump_ul);*/
                 break;
         case SM_Key('L'):
         case SM_Key('D'):
                 /*noun->animate(guy_jump_ur);*/
-                sm_msg(noun->sm, SM_SELF, SM_RunRight | SM_Opt(STICKY));
+                sm_msg(noun->sm, SM_SELF, SM_RunRight | SM_Wait(wait_for(noun)) | SM_Opt(STICKY));
                 break;
         /* ------------------------------------------ misc */
         case SM_Key('t'):
@@ -265,12 +290,10 @@ int modify_human(void *self)
                         equipped->use(equipped, noun);
                 break;
         case SM_Key('e'):
-                noun->_animate(noun, guy_poke_u);
-                emit_to_noun(noun, 'u', SM_Punch | SM_Wait(3) | SM_Pri(1));
+                sm_msg(noun->sm, SM_SELF, SM_PokeUp | SM_Wait(wait_for(noun)));
                 break;
         case SM_Key('r'):
-                noun->_animate(noun, guy_pickup);
-                noun->_take(noun, pos_y(noun->pos), pos_x(noun->pos));
+                sm_msg(noun->sm, SM_SELF, SM_PickUp | SM_Wait(wait_for(noun)));
                 break;
         case SM_Key('@'):
                 if (equipped)
@@ -357,7 +380,7 @@ int modify_dummy(void *obj)
         case SM_Punch:
                 noun->_animate(noun, dummy_die);
                 /*say_speak(L"嶴", "FUCK!");*/
-                sm_msg(noun->sm, SM_SELF, SM_Destroy|SM_Wait(13)|SM_Pri(9));
+                sm_msg(noun->sm, SM_SELF, SM_Destroy|SM_Wait(wait_for(noun))|SM_Pri(9));
                 sm_screen(noun->sm, 9);
                 break;
         case SM_GoUp:
@@ -377,9 +400,9 @@ int modify_dummy(void *obj)
                 noun->_animate(noun, dummy_mv_r);
                 break;
         case SM_Destroy:
-                alert(I_KILL, noun->name);
+                /*alert(I_KILL, noun->name);*/
+                /*noun_item_drop(noun);*/
                 noun->_doom(noun);
-                noun_item_drop(noun);
                 /*say_speak(L"", "");*/
                 break;
         case SM_Seek:
@@ -389,7 +412,7 @@ int modify_dummy(void *obj)
                 /*} else {*/
                         noun->_seek(noun, get_noun("Guy"));
                 /*}*/
-                sm_msg(noun->sm, SM_SELF, SM_Seek | SM_Wait(20));
+                sm_msg(noun->sm, SM_SELF, SM_Seek | SM_Wait(20) | SM_Pri(1));
                 break;
         case SM_Default:
                 break;

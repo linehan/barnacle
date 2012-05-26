@@ -99,7 +99,7 @@ struct msg_t *sm_mkmsg(struct sm_t *sm, uint32_t to, uint32_t state)
                 recipient = to;
 
         time = get_tick() + SM_WAIT(state);
-        new = new_msg(sm->id, recipient, SM_TAG(state), time, SM_PRI(state));
+        new  = new_msg(sm->id, recipient, SM_TAG(state), time, SM_PRI(state));
 
         if (SM_OPT(state) == STICKY)
                 new->sticky = true;
@@ -167,8 +167,13 @@ struct sm_t *new_sm(uint32_t id, bool (*route)(void *msg))
  * @sm: pointer to state machine object */
 void del_sm(struct sm_t *sm)
 {
+        struct msg_t *tmp, *nxt;
+
+        list_for_each_safe(&sm->delayed, tmp, nxt, node) {
+                list_del_from(&sm->delayed, &tmp->node);
+                free(tmp);
+        }
         del_bh(sm->state);
-        free(sm);
 }
 
 
@@ -177,14 +182,16 @@ void del_sm(struct sm_t *sm)
  * @sm : pointer to state machine object
  * @msg: pointer to the msg being routed
  */
-void do_route(struct sm_t *sm, struct msg_t *msg)
+bool do_route(struct sm_t *sm, struct msg_t *msg)
 {
-        assert(sm && msg || !"Exception in do_route()");
+        assert((sm && msg) || !"Exception in do_route()");
 
-        if (msg->time > get_tick())
+        if (msg->time > get_tick()) {
                 list_add(&sm->delayed, &msg->node);
-        else
-                sm->route(msg);
+                return true;
+        } else {
+                return sm->route(msg);
+        }
 }
 
 
@@ -204,7 +211,11 @@ void send_delayed_msgs(struct sm_t *sm)
 
         list_for_each_safe(&sm->delayed, tmp, nxt, node) {
                 if (tmp->time == current_time) {
-                        list_del(&tmp->node); 
+                        /* We must delete from the ring BEFORE routing,
+                         * because the message may be free'd en route,
+                         * and then we'd have a big hole in the list 
+                         * we couldn't do anything about. */
+                        list_del_from(&sm->delayed, &tmp->node); 
                         do_route(sm, tmp);
                 }
         }
@@ -223,7 +234,8 @@ void sm_msg(struct sm_t *sm, uint32_t to, uint32_t state)
 {
         struct msg_t *msg;
         msg = sm_mkmsg(sm, to, state);
-        do_route(sm, msg);
+        if (do_route(sm, msg) == SM_NO_ROUTE)
+                free(msg);
 }
 
 
@@ -239,7 +251,8 @@ void sm_msgmag(struct sm_t *sm, uint32_t to, uint32_t state, int magnitude)
         struct msg_t *msg;
         msg      = sm_mkmsg(sm, to, state);
         msg->mag = magnitude;
-        do_route(sm, msg);
+        if (do_route(sm, msg) == SM_NO_ROUTE)
+                free(msg);
 }
 
 
@@ -270,10 +283,12 @@ bool sm_set(struct sm_t *sm, enum sm_tag tag, int magnitude)
  */
 bool sm_accept(struct sm_t *sm, struct msg_t *msg)
 {
-        if (msg->pri < sm->screen)
-                free(msg);
-        else
+        if (msg->pri < sm->screen) {
+                return false;
+        } else {
                 bh_add(sm->state, (float)msg->pri, msg->from, (void *)msg);
+                return true;
+        }
 }
 
 
@@ -293,7 +308,7 @@ void sm_consume(struct sm_t *sm)
                 if (msg->sticky) {
                         sm_lock(sm, true);
                 }
-                free(msg);
+                /*free(msg);*/
         }
 }
 

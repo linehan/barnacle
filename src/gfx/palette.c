@@ -23,6 +23,21 @@ inline void set_color(struct rgb_t *color)
 }
 
 
+short bgcolor(short pair)
+{
+        short fg, bg;
+        pair_content(pair, &fg, &bg);
+        return bg;
+}
+
+short fgcolor(short pair)
+{
+        short fg, bg;
+        pair_content(pair, &fg, &bg);
+        return fg;
+}
+
+
 #define strips 3
 
 

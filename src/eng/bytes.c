@@ -110,16 +110,14 @@
 /*}*/
 
 
-/*// Returns 1 if byte 'b' of 'word' is equal to states 's0, s1...', else returns 0.*/
-/*int or_byte(uint32_t word, int b, int n, int s0,...)*/
+// Returns 1 if byte 'b' of 'word' is equal to states 's0, s1...', else returns 0.
+/*int or_byte(uint32_t word, int b, int n,...)*/
 /*{*/
         /*va_list states;*/
         /*int s;*/
      
-        /*va_start(states, s0);         [> Initialize the argument list. <]*/
+        /*va_start(states, n);         [> Initialize the argument list. <]*/
         
-        /*s = s0;*/
-
         /*while (n-->0 && ((word & ~(nscrub[b])) >> noffset[b]) != state[s])*/
                 /*s = va_arg(states, int);*/
 
@@ -197,4 +195,188 @@
         /*int i;*/
         /*for (i=0; i<NNIBBLES; i++)*/
                 /*dest[i]=get_nibble(word, i); */
+/*}*/
+
+
+/* Set byte 'b' of 'word' equal to state 's' */
+/*void set_byte(uint32_t *word, int b, int s)*/
+/*{*/
+        /*uint32_t c = *word; // copy*/
+
+        /*c &= bscrub[b];*/
+        /*c |= (state[s]<<boffset[b]);*/
+
+        /**word = c;*/
+/*}*/
+
+
+/*// Return the state value of byte 'b' of 'word'.*/
+/*int get_byte(uint32_t word, int b)*/
+/*{*/
+        /*word &= ~(bscrub[b]);*/
+        /*word >>= boffset[b];*/
+        /*return (int)(word);*/
+/*}*/
+
+
+
+/*// Returns 1 if byte 'b' of 'word' is equal to state 's', else returns 0.*/
+/*int is_byte(uint32_t word, int b, int s)*/
+/*{*/
+        /*word  &= ~(bscrub[b]);*/
+        /*word >>=  boffset[b];   */
+
+        /*return (word == state[s]) ? 1 : 0;*/
+/*}*/
+
+
+/*// Returns 1 if byte 'b' of 'word' is equal to states 's0, s1...', else returns 0.*/
+/*int or_byte(uint32_t word, int b, int n, int s0,...)*/
+/*{*/
+        /*va_list states;*/
+        /*int s;*/
+     
+        /*va_start(states, s0);         [> Initialize the argument list. <]*/
+        
+        /*s = s0;*/
+
+        
+        /*//while (n-->0 && ((word & ~(bscrub[b])) >> boffset[b]) != state[s])*/
+                /*//s = va_arg(states, int);*/
+
+        /*//va_end (states); */
+        /*//return (n>=0) ? 1 : 0;*/
+/*}*/
+
+
+/*// Attempts to copy each of the 4 byte values of 'word' to the memory*/
+/*// at 'dest'. Expects 'dest' to be at least 4 ints.*/
+/*void unpack_bytes(uint32_t word, int *dest, size_t n)*/
+/*{*/
+        /*if (dest==NULL || n<NBYTES) return;*/
+        /*int i;*/
+        /*for (i=0; i<NBYTES; i++)*/
+                /*dest[i]=get_byte(word, i); */
+/*}*/
+
+
+
+
+/*// Set nibble 'n' of 'word' equal to state 's'.*/
+/*void set_nibble(uint32_t *word, int n, int s)*/
+/*{*/
+        /*uint32_t c = *word; // copy*/
+
+        /*c &= nscrub[n];*/
+        /*c |= (state[s]<<noffset[n]);*/
+
+        /**word = c;*/
+/*}*/
+
+
+/*[> Return the value of nibble 'n' of 'word'. <]*/
+/*int get_nibble(uint32_t word, int n)*/
+/*{*/
+        /*word  &= ~(nscrub[n]); */
+        /*word >>=  noffset[n];          */
+
+        /*return (int)(word);*/
+/*}*/
+
+/*// Returns 1 if nibble 'n' of 'word' is equal to state 's', else returns 0.*/
+/*int is_nibble(uint32_t word, int n, int s)*/
+/*{*/
+        /*word  &= ~(nscrub[n]);*/
+        /*word >>=  noffset[n];   */
+
+        /*return (word == state[s]) ? 1 : 0;*/
+/*}*/
+
+/*// Returns 1 if byte 'b' of 'word' is equal to states 's0, s1...', else returns 0.*/
+/*int or_nibble(uint32_t word, int b, int n, int s0,...)*/
+/*{*/
+        /*va_list states;*/
+        /*int s;*/
+     
+        /*va_start(states, s0);         [> Initialize the argument list. <]*/
+        
+        /*s = s0;*/
+
+        /*while (n-->0 && ((word & ~(nscrub[b])) >> noffset[b]) != state[s])*/
+                /*s = va_arg(states, int);*/
+
+        /*va_end (states); */
+        /*return (n>=0) ? 1 : 0;*/
+/*}*/
+
+
+/*// Attempts to copy each of the 8 nibble values of 'word' to the memory*/
+/*// at 'dest'. Expects 'dest' to be able to hold at least 8 ints.*/
+/*void unpack_nibbles(uint32_t word, int *dest, size_t n)*/
+/*{*/
+        /*if (dest==NULL || n<NNIBBLES) return;*/
+        /*int i;*/
+        /*for (i=0; i<NNIBBLES; i++)*/
+                /*dest[i]=get_nibble(word, i); */
+/*}*/
+
+
+
+
+/*static inline void add_byte(uint32_t *word, int b, int n)*/
+/*{*/
+        /*int byte = get_byte(*word, b);*/
+
+        /*if (byte < (MAX(255,n) - MIN(255,n)))*/
+                /*byte += n;*/
+        /*else*/
+                /*byte = 255;*/
+
+        /*set_byte(word, b, byte);*/
+/*}*/
+/*static inline void sub_byte(uint32_t *word, int b, int n)*/
+/*{*/
+        /*int byte = get_byte(*word, b);*/
+
+        /*if (byte > n)*/
+                /*byte -= n;*/
+        /*else*/
+                /*byte = 0;*/
+
+        /*set_byte(word, b, byte);*/
+/*}*/
+
+/*static inline void inc_byte(uint32_t *word, int b)*/
+/*{*/
+        /*int byte = get_byte(*word, b);*/
+
+        /*if (byte < 255)*/
+                /*byte += 1;*/
+
+        /*set_byte(word, b, byte);*/
+/*}*/
+/*static inline void dec_byte(uint32_t *word, int b)*/
+/*{*/
+        /*int byte = get_byte(*word, b);*/
+
+        /*if (byte > 0) byte--;*/
+
+        /*set_byte(word, b, byte);*/
+/*}*/
+
+
+/*static inline void inc_nibble(uint32_t *word, int n)*/
+/*{*/
+        /*assert(word != NULL);*/
+        /*set_nibble(word, n, (get_nibble(*word, n))+1);*/
+/*}*/
+/*static inline void dec_nibble(uint32_t *word, int n)*/
+/*{*/
+        /*assert(word != NULL);*/
+        /*int nib = get_nibble(*word, n);*/
+
+        /*if (nib > 0) nib--;*/
+        /*else return;*/
+
+        /*set_nibble(word, n, nib);*/
 /*}*/

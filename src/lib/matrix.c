@@ -25,9 +25,9 @@ struct matrix_t *new_matrix(int nrows, int ncols)
         struct matrix_t *new;
         int k;
 
-        new     = calloc(1, sizeof(struct matrix_t));
+        new = calloc(1, sizeof(struct matrix_t));
 
-        new->mx = calloc(nrows, sizeof(uint32_t *));
+        new->mx = malloc(nrows * sizeof(uint32_t *));
 
         for (k=0; k<nrows; k++)
                 new->mx[k] = calloc(ncols, sizeof(uint32_t));

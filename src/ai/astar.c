@@ -14,7 +14,7 @@ struct astar_t *new_astar(void)
 {
         struct astar_t *new;
        
-        new = malloc(sizeof(struct astar_t));
+        new = calloc(1, sizeof(struct astar_t));
 
         return (new);
 }
@@ -42,12 +42,20 @@ void del_astar(struct astar_t *astar)
 {
         /*astar->map is owned by the world map */
 
-        struct cell_t *tmp, *nxt;
-        /* Takes care of start, goal, and current */
-        list_for_each_safe(&astar->path, tmp, nxt, node) {
-                list_del(&tmp->node);
-                del_cell(tmp);
-        }
+        /*struct cell_t *tmp, *nxt;*/
+        /*[> Takes care of start, goal, and current <]*/
+        /*[>list_for_each_safe(&astar->path, tmp, nxt, node) {<]*/
+                /*[>list_del_from(&astar->path, &tmp->node);<]*/
+                /*[>free(tmp);<]*/
+        /*[>}<]*/
+
+        /*tmp = astar->current;*/
+        /*while (tmp && tmp->parent) {*/
+                /*nxt = tmp->parent;*/
+                /*free(tmp);*/
+                /*tmp = nxt;*/
+        /*}*/
+
 
         del_bh(astar->OPEN);
         del_bh(astar->CLOSED);
@@ -323,7 +331,7 @@ bool a_star(struct astar_t *astar, struct cell_t *goal)
                 bh_add(astar->CLOSED, current->f, current->key, current);
                 groom_neighbors(astar, current);
 
-                test_rig(astar, current); // displays test output
+                /*test_rig(astar, current); // displays test output*/
         }
         astar->current = NULL;
         return false;

@@ -20,10 +20,8 @@
 
 attr_t saved_attr;
 short saved_pair;
-#define SAVED_ATTR saved_attr
-#define SAVED_PAIR saved_pair
-#define SAVEWIN(win) wattr_get((win), &SAVED_ATTR, &SAVED_PAIR, NULL)
-#define RESTORE(win) wattr_set((win), SAVED_ATTR, SAVED_PAIR, NULL)
+#define SAVEWIN(win) wattr_get((win), &saved_attr, &saved_pair, NULL)
+#define RESTORE(win) wattr_set((win), saved_attr, saved_pair, NULL)
 
 
 /*
@@ -47,6 +45,25 @@ void mvwsnpaint(WINDOW *win, int y, int x, wchar_t *wcs, short pair, int n)
         wcolor_set(win, pair, NULL);
         mvwaddnwstr(win, y, x, wcs, n);
         RESTORE(win);
+}
+
+
+void wcch(WINDOW *win, wchar_t *wch, attr_t attr, short co)
+{
+        cchar_t cch;
+        if (wch != L'\0') {
+                setcchar(&cch, wch, attr, co, NULL);
+                wadd_wch(win, &cch);
+        }
+}
+
+void mvwcch(WINDOW *win, int y, int x, wchar_t *wch, attr_t attr, short co)
+{
+        cchar_t cch;
+        if (wch != L'\0') {
+                setcchar(&cch, wch, attr, co, NULL);
+                mvwadd_wch(win, y, x, &cch);
+        }
 }
 
 
@@ -160,9 +177,9 @@ short bgcolor_yx(WINDOW *win, int y, int x)
 {
         cchar_t cch;
         wchar_t wch;
-        short pair;
-        short bg;
-        short fg;
+        short pair = 0;
+        short bg   = 0;
+        short fg   = 0;
         attr_t attr;
 
         mvwin_wch(win, y, x, &cch);    /* Get the cch at position in src */
@@ -179,37 +196,23 @@ short bgcolor_yx(WINDOW *win, int y, int x)
 
 void take_bkgrnd(WINDOW *dst, WINDOW *src, short pair)
 {
-        cchar_t src_cch;
-        cchar_t dst_cch;
-        wchar_t src_wch;
-        wchar_t dst_wch;
-        short src_pair = 0;
-        short dst_pair = 0;
-        short src_bg   = 0;
-        short src_fg   = 0;
-        short dst_bg   = 0;
-        short dst_fg   = 0;
+        short src_pair, src_bg, src_fg;
+        short dst_fg;
         attr_t src_attr;
-        attr_t dst_attr;
-        int y;
-        int x; 
+        cchar_t cch;
+        wchar_t wch;
+        int y, x;
 
-        getbegyx(dst, y, x);               /* Get the position of src */
-        mvwin_wch(src, y, x, &src_cch);    /* Get the cch at position in src */
-        mvwin_wch(dst, y, x, &dst_cch);    /* Get the cch at position in dst */
+        getbegyx(dst, y, x);         /* Get the position of dst */
+        mvwin_wch(src, y, x, &cch);  /* Get the cch at position in src */
 
-        /* Extract character renditions */
-        getcchar(&src_cch, &src_wch, &src_attr, &src_pair, NULL); /* src */ 
-        getcchar(&dst_cch, &dst_wch, &dst_attr, &dst_pair, NULL); /* dst */ 
+        if (getcchar(&cch, &wch, &src_attr, &src_pair, NULL) == ERR)
+                return;
 
-        /* Extract the fg and bg color components of the pairs */
         pair_content(src_pair, &src_fg, &src_bg);
-        pair_content(dst_pair, &dst_fg, &dst_bg);
 
-        /* Re-init the FLEX pair's existing fg with the bg of src */
-        init_pair(pair, FGCOLOR(pair), src_bg);
-
-        /* ? when a pair changes, characters rendered with it are re-drawn */
+        dst_fg = fgcolor(pair);          /* Use foreground of provided pair */
+        init_pair(pair, dst_fg, src_bg); /* Re-init pair with src background */
 }
 
 

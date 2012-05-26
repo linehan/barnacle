@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <assert.h>
 #include "../com/arawak.h"
+#include "../eng/error.h"
 
 #define NUM_MOORE_NEIGHBORS 8
 #define NUM_VONEU_NEIGHBORS 4
@@ -21,15 +22,17 @@ struct seed_t {
         uint32_t *ne;
         uint32_t *sw;
         uint32_t *se;
+        int y;
+        int x;
 };
 
 struct mx_index {
-        long rows;
-        long cols;
-        long len;
-        long row;
-        long col;
-        long adr;
+        int rows;
+        int cols;
+        int len;
+        int row;
+        int col;
+        int adr;
 };
 
 struct matrix_t {
@@ -41,7 +44,7 @@ struct matrix_t {
 
 
 
-static uint32_t DOPE = 0x00000000;
+static uint32_t DOPE = 0x00000000UL;
 
 
 /* Public function prototypes 
@@ -177,15 +180,71 @@ void mx_del(struct matrix_t *matrix)
  * assume that the caller has already determined that the point y,x lies
  * within the bounds of the matrix.
  ******************************************************************************/
-#define safe_address_w(mx,x) (x > 0) ? 1 : 0
-#define safe_address_e(mx,x) (x < (mx)->itr.cols - 1) ? 1 : 0
-#define safe_address_n(mx,y) (y > 0) ? 1 : 0 
-#define safe_address_s(mx,y) (y < (mx)->itr.rows - 1) ? 1 : 0
+static inline bool safe_y(struct matrix_t *matrix, int y)
+{
+        return ((y >= 0) && (y < matrix->itr.rows)) ? true : false;
+}
+static inline bool safe_x(struct matrix_t *matrix, int x)
+{
+        return ((x >= 0) && (x < matrix->itr.cols)) ? true : false;
+}
+static inline bool safe_w(struct matrix_t *mx, int y, int x)
+{
+        if ((safe_y(mx, y)) && (safe_x(mx, x)) && (safe_x(mx, (x-1))))
+                return true;
+        else
+                return false;
+}
+static inline bool safe_e(struct matrix_t *mx, int y, int x)
+{
+        if ((safe_y(mx, y)) && (safe_x(mx, x)) && (safe_x(mx, (x+1))))
+                return true;
+        else
+                return false;
+}
+static inline bool safe_n(struct matrix_t *mx, int y, int x)
+{
+        if ((safe_y(mx, y)) && (safe_x(mx, x)) && (safe_y(mx, (y-1))))
+                return true;
+        else
+                return false;
+}
+static inline bool safe_s(struct matrix_t *mx, int y, int x)
+{
+        if ((safe_y(mx, y)) && (safe_x(mx, x)) && (safe_y(mx, (y+1))))
+                return true;
+        else
+                return false;
+}
 
-#define safe_address_nw(mx,y,x) safe_address_n(mx, y) && safe_address_w(mx, x)
-#define safe_address_ne(mx,y,x) safe_address_n(mx, y) && safe_address_e(mx, x)
-#define safe_address_sw(mx,y,x) safe_address_s(mx, y) && safe_address_w(mx, x)
-#define safe_address_se(mx,y,x) safe_address_s(mx, y) && safe_address_e(mx, x)
+static inline bool safe_nw(struct matrix_t *mx, int y, int x)
+{
+        if ((safe_n(mx, y, x)) && (safe_w(mx, y, x)))
+                return true;
+        else
+                return false;
+}
+static inline bool safe_ne(struct matrix_t *mx, int y, int x)
+{
+        if ((safe_n(mx, y, x)) && (safe_e(mx, y, x)))
+                return true;
+        else
+                return false;
+}
+static inline bool safe_sw(struct matrix_t *mx, int y, int x)
+{
+        if ((safe_s(mx, y, x)) && (safe_w(mx, y, x)))
+                return true;
+        else
+                return false;
+}
+static inline bool safe_se(struct matrix_t *mx, int y, int x)
+{
+        if ((safe_s(mx, y, x)) && (safe_e(mx, y, x)))
+                return true;
+        else
+                return false;
+}
 
 
 //enum neighbors {_N_,_S_,_E_,_W_,N_W,N_E,S_W,S_E};
@@ -199,8 +258,8 @@ void mx_del(struct matrix_t *matrix)
 static inline
 uint32_t *mx_w(struct matrix_t *matrix, int y, int x)
 {
-        if (likely(safe_address_w(matrix, x))) 
-                return &matrix->mx[y][x-1];
+        if (safe_w(matrix, y, x)) 
+                return &matrix->mx[y][(x-1)];
         else
                 return &DOPE;
 }
@@ -214,8 +273,8 @@ uint32_t *mx_w(struct matrix_t *matrix, int y, int x)
 static inline
 uint32_t *mx_e(struct matrix_t *matrix, int y, int x)
 {
-        if (likely(safe_address_e(matrix, x))) 
-                return &matrix->mx[y][x+1]; 
+        if (safe_e(matrix, y, x)) 
+                return &matrix->mx[y][(x+1)]; 
         else
                 return &DOPE;
 }
@@ -229,8 +288,8 @@ uint32_t *mx_e(struct matrix_t *matrix, int y, int x)
 static inline
 uint32_t *mx_n(struct matrix_t *matrix, int y, int x)
 {
-        if (likely(safe_address_n(matrix, y))) 
-                return &matrix->mx[y-1][x];
+        if (safe_n(matrix, y, x))
+                return &matrix->mx[(y-1)][x];
         else 
                 return &DOPE;
 }
@@ -244,8 +303,8 @@ uint32_t *mx_n(struct matrix_t *matrix, int y, int x)
 static inline
 uint32_t *mx_s(struct matrix_t *matrix, int y, int x)
 {
-        if (likely(safe_address_s(matrix, y)))
-                return &matrix->mx[y+1][x];
+        if (safe_s(matrix, y, x))
+                return &matrix->mx[(y+1)][x];
         else 
                 return &DOPE;
 }
@@ -259,8 +318,8 @@ uint32_t *mx_s(struct matrix_t *matrix, int y, int x)
 static inline
 uint32_t *mx_nw(struct matrix_t *matrix, int y, int x)
 {
-        if (likely(safe_address_nw(matrix, y, x)))
-                return &matrix->mx[y-1][x-1];
+        if (safe_nw(matrix, y, x))
+                return &matrix->mx[(y-1)][(x-1)];
         else
                 return &DOPE;
 }
@@ -274,8 +333,8 @@ uint32_t *mx_nw(struct matrix_t *matrix, int y, int x)
 static inline
 uint32_t *mx_ne(struct matrix_t *matrix, int y, int x)
 {
-        if (likely(safe_address_ne(matrix, y, x))) 
-                return &matrix->mx[y-1][x+1]; 
+        if (safe_ne(matrix, y, x))
+                return &matrix->mx[(y-1)][(x+1)]; 
         else
                 return &DOPE;
 }
@@ -289,8 +348,8 @@ uint32_t *mx_ne(struct matrix_t *matrix, int y, int x)
 static inline
 uint32_t *mx_sw(struct matrix_t *matrix, int y, int x)
 {
-        if (likely(safe_address_sw(matrix, y, x))) 
-                return &matrix->mx[y+1][x-1];
+        if (safe_sw(matrix, y, x))
+                return &matrix->mx[(y+1)][(x-1)];
         else 
                 return &DOPE;
 }
@@ -304,8 +363,8 @@ uint32_t *mx_sw(struct matrix_t *matrix, int y, int x)
 static inline
 uint32_t *mx_se(struct matrix_t *matrix, int y, int x)
 {
-        if (likely(safe_address_se(matrix, y, x))) 
-                return &matrix->mx[y+1][x+1];
+        if (safe_se(matrix, y, x))
+                return &matrix->mx[(y+1)][(x+1)];
         else 
                 return &DOPE;
 }
@@ -320,6 +379,10 @@ uint32_t *mx_se(struct matrix_t *matrix, int y, int x)
 static inline
 void mx_seed(struct matrix_t *matrix, int y, int x, struct seed_t *seed)
 {
+        if (!(safe_y(matrix, y) && safe_x(matrix, x)))
+                abort_report("Bad indices %d,%d in %d rows and %d cols",
+                             y, x, matrix->itr.rows, matrix->itr.cols);
+
         seed->cur = mx_get(matrix, y, x);
         seed->nbr[0] = seed->n  = mx_n(matrix, y, x);
         seed->nbr[1] = seed->s  = mx_s(matrix, y, x);
@@ -329,6 +392,8 @@ void mx_seed(struct matrix_t *matrix, int y, int x, struct seed_t *seed)
         seed->nbr[5] = seed->ne = mx_ne(matrix, y, x);
         seed->nbr[6] = seed->sw = mx_sw(matrix, y, x);
         seed->nbr[7] = seed->se = mx_se(matrix, y, x);
+        seed->y = y;
+        seed->x = x;
 }
 
 
@@ -409,8 +474,8 @@ static inline void mx_itr_start(struct matrix_t *matrix)
  */
 static inline bool mx_itr_until(struct matrix_t *mx)
 {
-        if (mx_row(mx) == (mx->itr.rows - 1)
-        && (mx_col(mx) == (mx->itr.cols - 1)))
+        if (mx_row(mx) >= (mx->itr.rows - 1)
+        && (mx_col(mx) >= (mx->itr.cols - 1)))
                 return false;
         else
                 return true;
@@ -479,10 +544,10 @@ void mx_itr_seed(struct seed_t *seed, struct matrix_t *matrix)
  * @x: column index
  * @mx: pointer to a struct matrix_t
  */
-#define mx_foreach_seed_yx(seed, y, x, mx)                                     \
-        for (mx_itr_start(mx), mx_itr_seed(seed,mx), (y)=mx_row(mx),(x)=mx_col(mx);\
-             mx_itr_until(mx);                                                 \
-             mx_itr_next(mx), mx_itr_seed(seed,mx), (y)=mx_row(mx),(x)=mx_col(mx))
+//#define mx_foreach_seed_yx(seed, y, x, mx)                                     \
+        //for (mx_itr_start(mx), mx_itr_seed(seed,mx), (y)=mx_row(mx),(x)=mx_col(mx);\
+             //mx_itr_until(mx);                                                 \
+             //mx_itr_next(mx), mx_itr_seed(seed,mx), (y)=mx_row(mx),(x)=mx_col(mx))
 
 
 #endif

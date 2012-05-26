@@ -67,7 +67,7 @@ static inline uint32_t hash(const char *name)
 /**
  * STORE
  * add_to_nountable -- insert a noun into the noun hash table and refcount */
-inline void add_to_nountable(struct noun_t *noun)
+void add_to_nountable(struct noun_t *noun)
 {
         struct noun_key *new = calloc(1, sizeof(struct noun_key));
 
@@ -80,20 +80,20 @@ inline void add_to_nountable(struct noun_t *noun)
 /**
  * DELETE 
  * del_from_nountable -- remove a noun from the noun hash table and refcount */
-inline void del_from_nountable(struct noun_t *noun)
+void del_from_nountable(struct noun_t *noun)
 {
         struct noun_key *tmp, *nxt;
 
         if (list_empty(&keyring))
                 return;
 
-        htab_pop(nountable, noun->id); 
-
         list_for_each_safe(&keyring, tmp, nxt, node) {
                 if (tmp->key == noun->id) {
                         list_del_from(&keyring, &tmp->node);
                 }
         }
+
+        htab_pop(nountable, noun->id); 
 }
 
 /**
@@ -109,10 +109,9 @@ void free_nouns(void)
                 return;
 
         list_for_each_safe(&doomring, tmp, nxt, node) {
+                list_del_from(&doomring, &tmp->node);
                 noun = key_noun(tmp->key);
                 noun->_del(noun);
-
-                list_del_from(&doomring, &tmp->node);
         }
 }
 
@@ -130,8 +129,10 @@ void update_nouns(void)
 
         list_for_each(&keyring, tmp, node) {
                 noun = key_noun(tmp->key);
-                if (noun != NULL)
-                        noun->_update(noun);
+                if (noun != NULL) {
+                        noun->_modify(noun);
+                        noun->_render(noun);
+                }
         }
 }
 
@@ -328,7 +329,7 @@ static inline void noun_mark_position(struct noun_t *noun)
 /**
  * PRIVATE METHOD HELPER
  * hit_detected -- test whether a terrain collision is occuring */
-static inline bool hit_detected(struct noun_t *noun)
+bool hit_detected(struct noun_t *noun)
 {
         return (map_hit(ACTIVE, noun) || mob_hit(ACTIVE, noun)) ? true : false;
 }
@@ -336,14 +337,14 @@ static inline bool hit_detected(struct noun_t *noun)
 /**
  * PRIVATE METHOD HELPER
  * noun_on_move -- called every time a noun's position is changed */
-static inline void noun_on_move(struct noun_t *noun)
+void noun_on_move(struct noun_t *noun)
 {
         noun->_hit(noun);
         noun_mark_position(noun);
 
         move_panel(noun->pan, pos_y(noun->pos), pos_x(noun->pos));
         astar_set_start(noun->astar, pos_y(noun->pos), pos_x(noun->pos));
-        take_bkgrnd(panel_window(noun->pan), PEEK(ACTIVE->W), FLEX);
+        take_bkgrnd(noun->win, PEEK(ACTIVE->W), FLEX);
 
         update_panels();
 
@@ -366,16 +367,19 @@ void method_noun_delete(void *self)
         delwin(noun->win);
 
         del_sm(noun->sm);
-        del_astar(noun->astar);
+        free(noun->sm);
 
-        mx_set(ACTIVE->mobs, pos_y(noun->pos), pos_x(noun->pos), 0);
+        del_astar(noun->astar);
+        free(noun->astar);
+
+        mx_set(ACTIVE->mobs, pos_y(noun->pos), pos_x(noun->pos), 0UL);
         noun->pos->del(noun->pos);
 
         /* Remove from the nountable */
         del_from_nountable(noun);
 
         /* Goodbye */
-        free(noun);
+        /*free(noun);*/
 }
 
 /**
@@ -560,6 +564,7 @@ void method_noun_animate(void *self, void *animation)
 {
         struct noun_t *noun = NOUN(self);
         noun->animation = (struct ani_t *)animation;
+        /*noun->frame = 0; [> Reset the frame counter to the first frame <]*/
 }
 
 
@@ -589,13 +594,14 @@ bool route_to_noun(void *self)
 {
         struct msg_t *msg = (struct msg_t *)self;
         struct noun_t *noun;
+        bool status;
 
         noun = key_noun(msg_to(msg));
 
         if (noun != NULL) {
                 assert((noun && msg) || !"Message router is boned!");
-                sm_accept(noun->sm, msg);
-                return SM_ROUTE_OK; 
+                status = sm_accept(noun->sm, msg);
+                return (status) ? SM_ROUTE_OK : SM_NO_ROUTE; 
         }
         return SM_NO_ROUTE;
 }
