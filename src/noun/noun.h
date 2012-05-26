@@ -10,9 +10,6 @@
 #include "stats.h"
 #include "combat.h"
 
-enum noun_model { NOUN_CREATURE, NOUN_DUMMY };
-
-bool oops;
 
 /* The noun type
 ``````````````````````````````````````````````````````````````````````````````*/

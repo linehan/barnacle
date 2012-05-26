@@ -53,7 +53,7 @@ wchar_t *wcsdup(const wchar_t *str)
 	size_t len;
 
 	len = wcslen(str) + 1;
-	copy = malloc(len * sizeof (wchar_t));
+	copy = malloc(len * sizeof(wchar_t));
 
 	if (!copy)
 		return (NULL);

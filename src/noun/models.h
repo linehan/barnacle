@@ -5,7 +5,7 @@
 struct ani_t  *__animation_fref; /* For mob.h */
 struct noun_t *__noun_fref;
 
-enum noun_models {
+enum noun_model {
         SYSTEM,
         SAILBOAT, 
         PERSON, 

@@ -13,7 +13,6 @@
  */
 void alert(enum alerts tag, char *msg)
 {
-        /*wchar_t *wcs = calloc(200, sizeof(wchar_t));*/
         wchar_t wcs[200];
         int scheme;
 
@@ -27,9 +26,6 @@ void alert(enum alerts tag, char *msg)
                 say_alert(wcs, __KILL);
                 break;
         }
-
-        /*free(wcs);*/
-        /*memset(wcs, L'\0', wcslen(wcs));*/
 }
 
 

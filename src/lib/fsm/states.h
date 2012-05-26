@@ -4,6 +4,7 @@
 
 enum sm_tag {
         SM_Default,
+        SM_Ready,
         SM_GoUp,
         SM_GoDown,
         SM_GoLeft,

@@ -10,6 +10,7 @@
 #include "../lib/fsm/fsm.h"
 #include "noun.h"
 
+
 struct noun_t *PLAYER;
 
 
@@ -129,7 +130,8 @@ void update_nouns(void)
 
         list_for_each(&keyring, tmp, node) {
                 noun = key_noun(tmp->key);
-                noun->_update(noun);
+                if (noun != NULL)
+                        noun->_update(noun);
         }
 }
 
@@ -534,17 +536,17 @@ void method_noun_seek(void *self, void *target)
         tmp = cellpath_next(&s->astar->path);
 
         if (tmp->x > s->astar->start->x)
-                sm_set(s->sm, SM_GoRight, 0);
-                /*sm_msg(s->sm, SM_SELF, SM_GoRight);*/
+                /*sm_set(s->sm, SM_GoRight, 0);*/
+                sm_msg(s->sm, SM_SELF, SM_GoRight);
         if (tmp->x < s->astar->start->x)
-                /*sm_msg(s->sm, SM_SELF, SM_GoLeft);*/
-                sm_set(s->sm, SM_GoLeft, 0);
+                sm_msg(s->sm, SM_SELF, SM_GoLeft);
+                /*sm_set(s->sm, SM_GoLeft, 0);*/
         if (tmp->y > s->astar->start->y)
-                /*sm_msg(s->sm, SM_SELF, SM_GoDown);*/
-                sm_set(s->sm, SM_GoDown, 0);
+                sm_msg(s->sm, SM_SELF, SM_GoDown);
+                /*sm_set(s->sm, SM_GoDown, 0);*/
         if (tmp->y < s->astar->start->y)
-                /*sm_msg(s->sm, SM_SELF, SM_GoUp);*/
-                sm_set(s->sm, SM_GoUp, 0);
+                sm_msg(s->sm, SM_SELF, SM_GoUp);
+                /*sm_set(s->sm, SM_GoUp, 0);*/
 }
 
 
@@ -593,7 +595,7 @@ bool route_to_noun(void *self)
         if (noun != NULL) {
                 assert((noun && msg) || !"Message router is boned!");
                 sm_accept(noun->sm, msg);
-                return SM_ROUTE_OK;
+                return SM_ROUTE_OK; 
         }
         return SM_NO_ROUTE;
 }

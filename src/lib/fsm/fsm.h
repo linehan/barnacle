@@ -84,11 +84,12 @@ static const int SM_RESERVED_Update = 9997;
 #define SM_SELF UINT32_MAX 
 
 /* Size of the priority queue used by each state machine to hold messages */
-#define NUM_PENDING 20 
+#define NUM_PENDING 20UL
 
 /* Error values for the routing functions */
 #define SM_ROUTE_OK true
 #define SM_NO_ROUTE false
+
 
 
 
@@ -100,92 +101,42 @@ static const int SM_RESERVED_Update = 9997;
  * passed to the message constructor and will eventually be called by the 
  * message router. 
  */
-typedef bool (*SM_CB_ROUTE)(void *self);
-
 
 struct msg_t; /* Forward reference for the callback to use */
-
-/* 
- * STATE MACHINE 
- * The state machine class is the "mailbox" in the postal analogy. An object
- * containing a state machine may check its current state and the magnitude 
- * of that state, much like you would check for mail in your mailbox. A state 
- * machine can also emit a state and magnitude to another state machine, just
- * as you may place an addressed letter in the mailbox and set the flag so 
- * the postman will know you have mail to send.
- */
-struct sm_t {
-        uint32_t id;           /* Who owns the sm (the "sender") */
-        bool pending;          /* Has the current state been consumed? */
-        bool lock;
-        int screen;            /* Messages with priority < screen ignored */
-        enum sm_tag tag;       /* Current state in the sm */
-        int mag;               /* Optional magnitude value */
-        int key;
-        struct bh_t *state;
-        SM_CB_ROUTE route;     /* 'route' callback */
-};
+struct sm_t;  /* Forward reference for the state machine */
 
 
 
-
-/* PUBLIC FUNCTIONS
+/* CONSTRUCTORS / DESTRUCTORS
 ``````````````````````````````````````````````````````````````````````````````*/
-struct sm_t *new_sm(uint32_t id, SM_CB_ROUTE);
+struct sm_t *new_sm(uint32_t id, bool (*route)(void *msg));
 void         del_sm(struct sm_t *sm);
 
+
+/* SEND MESSAGES 
+``````````````````````````````````````````````````````````````````````````````*/
 void sm_msg(struct sm_t *sm, uint32_t to, uint32_t state);
-void sm_consume(struct sm_t *sm);
-int  sm_state(struct sm_t *sm);
-int  sm_mag(struct sm_t *sm);;
-void sm_refresh(struct sm_t *sm);
 void sm_msgmag(struct sm_t *sm, uint32_t to, uint32_t state, int magnitude);
 
-uint32_t msg_to(struct msg_t *msg);
 
-void send_delayed_msgs(void);
-
-void sm_keypress(struct sm_t *sm, int key);
-int sm_key(struct sm_t *sm);
-
+/* TRANSITION STATE 
+``````````````````````````````````````````````````````````````````````````````*/
+bool sm_accept(struct sm_t *sm, struct msg_t *msg);
+void sm_consume(struct sm_t *sm);
+void sm_refresh(struct sm_t *sm);
 
 
 /* ACCESSORS 
 ``````````````````````````````````````````````````````````````````````````````*/
-/* IS PENDING
- * sm_is_pending -- check if there is a new state pending
- * @sm: pointer to a state machine */
-static inline bool sm_is_pending(struct sm_t *sm)
-{
-        return (sm->pending);
-}
+uint32_t msg_to(struct msg_t *msg);
 
-/* SCREEN
- * sm_screen -- set the minimum priority to 'screen'
- * @sm: pointer to a state machine
- * @screen: minimum priority of state transition */
-static inline void sm_screen(struct sm_t *sm, int screen)
-{
-        sm->screen = screen;
-}
+int  sm_state(struct sm_t *sm);
+int  sm_mag(struct sm_t *sm);;
+bool sm_is_pending(struct sm_t *sm);
+void sm_screen(struct sm_t *sm, int screen);
+bool sm_is_locked(struct sm_t *sm);
+void sm_lock(struct sm_t *sm, bool yn);
 
-/* IS LOCKED
- * sm_is_locked -- return the lock status of the state machine
- * @sm: pointer to a state machine
- */
-static inline bool sm_is_locked(struct sm_t *sm)
-{
-        return sm->lock;
-}
 
-/* LOCK
- * sm_lock -- set the lock status of the state machine
- * @sm: pointer to a state machine
- * @yn: desired status of lock
- */
-static inline void sm_lock(struct sm_t *sm, bool yn)
-{
-        sm->lock = yn;
-}
 
 #endif

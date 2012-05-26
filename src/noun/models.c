@@ -158,7 +158,6 @@ void render_human(void *self)
                 if (item->equipped && item->burn)
                         item->burn(item, noun);
         }
-        sm_consume(noun->sm);
 }
 
 /*
@@ -170,11 +169,9 @@ int modify_human(void *self)
         struct noun_t *noun = (struct noun_t *)self;
         struct item_t *item;
         int state;
-        int key;
        
-        state = sm_key(noun->sm);
-        if (!state)
-                state = sm_state(noun->sm);
+        sm_consume(noun->sm);
+        state = sm_state(noun->sm);
 
         switch (state) 
         { 
@@ -335,7 +332,6 @@ void render_dummy(void *self)
                 /*done = true;*/
         /*}*/
         noun_animate(noun);
-        sm_consume(noun->sm);
 }
 
 /*
@@ -348,11 +344,12 @@ int modify_dummy(void *obj)
         uint32_t nbr;
         int state;
 
-        nbr = noun_nbr(noun, pos_hdg(noun->pos));
+        /*nbr = noun_nbr(noun, pos_hdg(noun->pos));*/
 
         if (!noun->is_mobile)
                 return 0;
 
+        sm_consume(noun->sm);
         state = sm_state(noun->sm);
 
         switch (state)
@@ -386,12 +383,12 @@ int modify_dummy(void *obj)
                 /*say_speak(L"", "");*/
                 break;
         case SM_Seek:
-                if (nbr) {
-                        noun->_animate(noun, bonk_test);
-                        sm_msgmag(noun->sm, nbr, SM_Hit, 3);
-                } else {
+                /*if (nbr) {*/
+                        /*noun->_animate(noun, bonk_test);*/
+                        /*sm_msgmag(noun->sm, nbr, SM_Hit, 3);*/
+                /*} else {*/
                         noun->_seek(noun, get_noun("Guy"));
-                }
+                /*}*/
                 sm_msg(noun->sm, SM_SELF, SM_Seek | SM_Wait(20));
                 break;
         case SM_Default:
@@ -433,7 +430,7 @@ void apply_noun_model(struct noun_t *noun)
                 noun->pan     = new_panel(noun->win);
                 noun->_modify = &modify_dummy;
                 noun->_render = &render_dummy;
-                sm_set(noun->sm, SM_Seek, 0);
+                sm_msg(noun->sm, SM_SELF, SM_Seek | SM_Wait(20));
                 break;
         }
 
