@@ -35,6 +35,8 @@ struct noun_t {
         struct ani_t *animation;  // Animation sequence 
         PANEL  *pan;
         WINDOW *win;
+        const wchar_t *sprite;
+        short   color;
 
         /* Dynamic methods --------------------------------*/
         enum noun_model model;           // The noun "subclass"

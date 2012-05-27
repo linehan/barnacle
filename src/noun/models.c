@@ -233,7 +233,7 @@ int modify_human(void *self)
                 break;
         case SM_PokeUp:
                 noun->_animate(noun, guy_poke_u);
-                emit_to_noun(noun, 'u', SM_Punch | SM_Wait(3) | SM_Pri(1));
+                emit_to_noun(noun, 'u', SM_Punch | SM_Wait(3));
                 break;
         /* ------------------------------------ keyboard input */
         /* ------------------------------------ walk (step) */
@@ -256,21 +256,19 @@ int modify_human(void *self)
         /* ------------------------------------------ run  */
         case SM_Key('J'):
         case SM_Key('S'):
-                sm_msg(noun->sm, SM_SELF, SM_RunDown | SM_Wait(wait_for(noun)) | SM_Opt(STICKY));
+                sm_msg(noun->sm, SM_SELF, SM_RunDown | SM_Opt(STICKY));
                 break;
         case SM_Key('K'):
         case SM_Key('W'):
-                sm_msg(noun->sm, SM_SELF, SM_RunUp | SM_Wait(wait_for(noun)) | SM_Opt(STICKY));
+                sm_msg(noun->sm, SM_SELF, SM_RunUp | SM_Opt(STICKY));
                 break;
         case SM_Key('H'):
         case SM_Key('A'):
-                sm_msg(noun->sm, SM_SELF, SM_RunLeft | SM_Wait(wait_for(noun)) | SM_Opt(STICKY));
-                /*noun->animate(guy_jump_ul);*/
+                sm_msg(noun->sm, SM_SELF, SM_RunLeft | SM_Opt(STICKY));
                 break;
         case SM_Key('L'):
         case SM_Key('D'):
-                /*noun->animate(guy_jump_ur);*/
-                sm_msg(noun->sm, SM_SELF, SM_RunRight | SM_Wait(wait_for(noun)) | SM_Opt(STICKY));
+                sm_msg(noun->sm, SM_SELF, SM_RunRight | SM_Opt(STICKY));
                 break;
         /* ------------------------------------------ misc */
         case SM_Key('t'):
@@ -284,7 +282,7 @@ int modify_human(void *self)
                         equipped->use(equipped, noun);
                 break;
         case SM_Key('e'):
-                sm_msg(noun->sm, SM_SELF, SM_PokeUp | SM_Wait(wait_for(noun)));
+                sm_msg(noun->sm, SM_SELF, SM_PokeUp);
                 break;
         case SM_Key('r'):
                 sm_msg(noun->sm, SM_SELF, SM_PickUp | SM_Wait(wait_for(noun)));
@@ -434,7 +432,8 @@ void apply_noun_model(struct noun_t *noun)
                 noun->pan     = new_panel(noun->win);
                 noun->_modify = &modify_human;
                 noun->_render = &render_human;
-                wbkgrnd(noun->win, mkcch(L"ⰾ", 0, FLEX));
+                noun->sprite = wdup(L"ⰾ");
+                noun->color  = FLEX;
                 break;
         case DUMMY:
                 noun->pos     = new_pos(1, 1, CENTERED, LINES, COLS, 0, 0);
@@ -443,10 +442,12 @@ void apply_noun_model(struct noun_t *noun)
                 noun->_modify = &modify_dummy;
                 noun->_render = &render_dummy;
                 sm_msg(noun->sm, SM_SELF, SM_Seek | SM_Wait(20));
-                wbkgrnd(noun->win, mkcch(L"Ⰹ", 0, FLEX));
+                noun->sprite = wdup(L"Ⰹ");
+                noun->color  = FLEX;
                 break;
         }
 
+        wbkgrnd(noun->win, mkcch(noun->sprite, 0, noun->color));
         astar_init(noun->astar, ACTIVE->tile, pos_y(noun->pos), pos_x(noun->pos));
         noun->map_id = ACTIVE->id;
 }
