@@ -113,7 +113,7 @@ inline void place_item_tile(struct item_t *eq)
         if (eq->transparent)
                 init_pair(eq->pair, eq->fg, bgcolor_yx(PLATE(ACTIVE, BGR), eq->y, eq->x));
 
-        mvwp(PLATE(ACTIVE, BGR), eq->y, eq->x, eq->icon, eq->pair, 0);
+        mvwcch(PLATE(ACTIVE, BGR), eq->y, eq->x, eq->icon, 0, eq->pair);
 }
 
 /* ADD TO NOUN */

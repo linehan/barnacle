@@ -16,6 +16,7 @@
 #include "ui/stdpan.h"
 #include "ui/titlecard.h"
 
+
 struct gpkg {
         int n;
         int ofs[16];
@@ -25,26 +26,32 @@ struct gpkg {
         cchar_t *cch[16];
 };
 
-struct gpack {
-        wchar_t *wcs;
-        short pair;
-        cchar_t cch;
-};
+
+void      wcch(WINDOW *win, const wchar_t *wch, attr_t attr, short co);
+void    mvwcch(WINDOW *win, int y, int x, const wchar_t *wch, attr_t attr, short co);
+cchar_t *mkcch(const wchar_t *wch, attr_t attr, short co);
+
+bool is_blank(WINDOW *win, int y, int x);
+
+short winpair_yx(WINDOW *win, int y, int x);
+short bgcolor_yx(WINDOW *win, int y, int x);
+short fgcolor_yx(WINDOW *win, int y, int x);
+void take_bkgrnd(WINDOW *dst, WINDOW *src, short pair);
 
 
-void geojug_start(void);
+/**
+ * wrapper for mvwaddnwstr with n == 1 */
+static inline void mvsayw(WINDOW *win, int y, int x, const wchar_t *wch)
+{
+        mvwaddnwstr(win, y, x, wch, 1);
+}
 
-void build_gpack(struct gpack *g);
-void build_gpkg(struct gpkg *g);
-
-void center_text(WINDOW *win, int y0, int x0, int w, char *string);
-void wwrapstr(WINDOW *win, const char *string);
-short cuco(WINDOW *win);
-
-cchar_t *mkcch(wchar_t *wch, attr_t attr, short co);
-void wcch(WINDOW *win, const wchar_t *wch, attr_t attr, short co);
-void mvwcch(WINDOW *win, int y, int x, const wchar_t *wch, attr_t attr, short co);
-
+/**
+ * wrapper for waddnwstr with n == 1 */
+static inline void sayw(WINDOW *win, const wchar_t *wch)
+{
+        waddnwstr(win, wch, 1);
+}
 
 
 #define vrt_refresh()    \
@@ -62,25 +69,8 @@ void mvwcch(WINDOW *win, int y, int x, const wchar_t *wch, attr_t attr, short co
         doupdate();\
 
 
-static inline void mvsayw(WINDOW *win, int y, int x, const wchar_t *wch)
-{
-        mvwaddnwstr(win, y, x, wch, 1);
-}
-
-static inline void sayw(WINDOW *win, const wchar_t *wch)
-{
-        waddnwstr(win, wch, 1);
-}
-
-
-void mvwp(WINDOW *win, int y, int x, wchar_t *wch, short pair, attr_t attr);
-void mvwnpaint(WINDOW *win, int y, int x, wchar_t *wcs, short pair, int n);
-
-void take_bkgrnd(WINDOW *dst, WINDOW *src, short pair);
-short bgcolor_yx(WINDOW *win, int y, int x);
-
-bool is_blank(WINDOW *win, int y, int x);
-
+void geojug_start(void);
+void build_gpkg(struct gpkg *g);
 
 #endif
 

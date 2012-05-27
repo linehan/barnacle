@@ -101,21 +101,21 @@ static inline void place_rope_label(uint32_t *val)
  */
 static inline void wipe_tile(struct map_t *map, int y, int x, int layer)
 {
-        mvwp(PLATE(map, layer), y, x, L" ", 0, 0);
+        mvwcch(PLATE(map, layer), y, x, L" ", 0, 0);
 }
 /*
  * Place a tile of static ocean
  */
 static inline void place_ocean_tile(struct map_t *map, int y, int x)
 {
-        mvwadd_wch(PLATE(map, layer), y, x, &lobase);
+        mvwcch(PLATE(map, layer), y, x, L"⠀", 0, SEA_MED);
 }
 /*
  * Place a tile of dynamic ocean
  */
 static inline void place_swell_tile(struct map_t *map, int y, int x)
 {
-        mvwadd_wch(PLATE(map, layer), y, x, &hibase);
+        mvwcch(PLATE(map, layer), y, x, L"⠀", 0, SEA__MED);
 }
 /*
  * Place a tile of partially-submerged sand 
@@ -126,7 +126,7 @@ static inline void place_shoal_tile(struct map_t *map, int y, int x)
         #define attr  0
 
         if (flip_biased(0.7))
-                mvwp(PLATE(map, layer), y, x, br_atl(2), color, attr);
+                mvwcch(PLATE(map, layer), y, x, br_atl(2), attr, color);
 
         #undef color
         #undef attr
@@ -141,9 +141,9 @@ static inline void place_beach_tile(struct map_t *map, int y, int x)
         #define attr2 A_REVERSE
 
         if (flip_biased(0.3))
-                mvwp(PLATE(map, layer), y, x, br_dis(1), color, attr1);
+                mvwcch(PLATE(map, layer), y, x, br_dis(1), attr1, color);
         else    
-                mvwp(PLATE(map, layer), y, x, L"█", color, attr2);
+                mvwcch(PLATE(map, layer), y, x, L"█", attr2, color);
 
         #undef color
         #undef attr1
@@ -157,7 +157,7 @@ static inline void place_terra_tile(struct map_t *map, int y, int x)
         #define color GRASSY
         #define attr 0
 
-        mvwp(PLATE(map, layer), y, x, L"▒", color, attr);
+        mvwcch(PLATE(map, layer), y, x, L"▒", attr, color);
 
         #undef color
         #undef attr
@@ -171,7 +171,7 @@ static inline void place_cliff_tile(struct map_t *map, int y, int x)
         #define attr 0 
 
         wipe_tile(map, y, x, TOP);
-        mvwp(PLATE(map, layer), y, x, L"▓", color, attr);
+        mvwcch(PLATE(map, layer), y, x, L"▓", attr, color);
 
         #undef color
         #undef attr
@@ -185,7 +185,7 @@ static inline void place_treetop_tile(struct map_t *map, int y, int x)
         #define attr 0
 
         wipe_tile(map, y, x, TOP);
-        mvwp(PLATE(map, layer), y, x, L"⬢", color, attr);
+        mvwcch(PLATE(map, layer), y, x, L"⬢", attr, color);
 
         #undef color
         #undef attr
@@ -200,7 +200,7 @@ static inline void place_treetrunk_tile(struct map_t *map, int y, int x)
         #define attr 0
 
         wipe_tile(map, y, x, TOP);
-        mvwp(PLATE(map, layer), y, x, L"╹", color, attr);
+        mvwcch(PLATE(map, layer), y, x, L"╹", attr, color);
 
         #undef color
         #undef attr
@@ -213,7 +213,7 @@ static inline void place_cavesolid_tile(struct map_t *map, int y, int x)
         #define color PUR_BLACK 
         #define attr A_REVERSE 
 
-        mvwp(PLATE(map, layer), y, x, L"ᚡ", color, attr);
+        mvwcch(PLATE(map, layer), y, x, L"ᚡ", attr, color);
 
         #undef color
         #undef attr
@@ -226,7 +226,7 @@ static inline void place_cavewall_tile(struct map_t *map, int y, int x)
         #define color PUR_GREY 
         #define attr 0
 
-        mvwp(PLATE(map, layer), y, x, L"ᚡ", color, attr);
+        mvwcch(PLATE(map, layer), y, x, L"ᚡ", attr, color);
 
         #undef color
         #undef attr
@@ -236,7 +236,7 @@ static inline void place_cavefloor_tile(struct map_t *map, int y, int x)
         #define color PUR_SOLID
         #define attr A_REVERSE 
 
-        mvwp(PLATE(map, layer), y, x, L" ", color, attr);
+        mvwcch(PLATE(map, layer), y, x, L" ", attr, color);
 
         #undef color
         #undef attr
@@ -248,7 +248,7 @@ static inline void place_caverubble_tile(struct map_t *map, int y, int x)
 
         //L"᙮", L"ι", L"⸒"
 
-        mvwp(PLATE(map, layer), y, x, L"⸒", color, attr);
+        mvwcch(PLATE(map, layer), y, x, L"⸒", attr, color);
 
         #undef color
         #undef attr
@@ -258,7 +258,7 @@ static inline void place_cavedoor_outside_tile(struct map_t *map, int y, int x)
         #define color PUR_BROWN 
         #define attr  A_REVERSE
 
-        mvwp(PLATE(map, layer), y, x, L"⬣", color, attr);
+        mvwcch(PLATE(map, layer), y, x, L"⬣", attr, color);
 
         #undef color
         #undef attr
@@ -268,7 +268,7 @@ static inline void place_cavedoor_inside_tile(struct map_t *map, int y, int x)
         #define color PUR_BEIGE
         #define attr  0 
 
-        mvwp(PLATE(map, layer), y, x, L"⬣", color, attr);
+        mvwcch(PLATE(map, layer), y, x, L"⬣", attr, color);
 
         #undef color
         #undef attr
@@ -278,7 +278,7 @@ static inline void place_l_rope_anchor_tile(struct map_t *map, int y, int x)
         #define color BLACK_BEIGE 
         #define attr  0 
 
-        mvwp(PLATE(map, layer), y, x, L"⸜", color, attr);
+        mvwcch(PLATE(map, layer), y, x, L"⸜", attr, color);
 
         #undef color
         #undef attr
@@ -288,7 +288,7 @@ static inline void place_r_rope_anchor_tile(struct map_t *map, int y, int x)
         #define color BLACK_BEIGE 
         #define attr  0 
 
-        mvwp(PLATE(map, layer), y, x, L"⸝", color, attr);
+        mvwcch(PLATE(map, layer), y, x, L"⸝", attr, color);
 
         #undef color
         #undef attr
@@ -298,7 +298,7 @@ static inline void place_rope_tile(struct map_t *map, int y, int x)
         #define color BLACK_BEIGE 
         #define attr  0 
 
-        mvwp(PLATE(map, layer), y, x, L"┆", color, attr);
+        mvwcch(PLATE(map, layer), y, x, L"┆", attr, color);
 
         #undef color
         #undef attr
