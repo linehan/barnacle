@@ -564,7 +564,8 @@ void method_noun_animate(void *self, void *animation)
 {
         struct noun_t *noun = NOUN(self);
         noun->animation = (struct ani_t *)animation;
-        /*noun->frame = 0; [> Reset the frame counter to the first frame <]*/
+        //noun->frame = 0; /* Reset the frame counter to the first frame */
+        wbkgrnd(noun->win, mkcch(noun->sprite, 0, noun->color));
 }
 
 
