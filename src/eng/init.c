@@ -92,6 +92,7 @@ int arawak_init(void)
 {
         setlocale(LC_ALL,""); /* Must be set for UTF-8 support */
 
+        init_signal_handlers();
         prep_terminal();      /* Set modes and perform checks... */
 
         /* Print welcome */
