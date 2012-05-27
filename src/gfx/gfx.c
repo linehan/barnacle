@@ -1,5 +1,3 @@
-/* gfx.c */
-
 #define _XOPEN_SOURCE_EXTENDED = 1  /* extended character sets */
 #include <stdlib.h>
 #include <stdio.h>
@@ -13,52 +11,51 @@
 #include "../map/terrain.h"
 
 
+/*
+ * NOTE
+ * wcch and mvwcch change the window's attributes; to ensure that
+ * each character may have a different rendition and thus behave
+ * as though we were building cchar_t's every time, the current
+ * window attributes are saved and then restored before the functions
+ * return.
+ */
 attr_t saved_attr;
 short saved_pair;
 #define SAVEWIN(win) wattr_get((win), &saved_attr, &saved_pair, NULL)
 #define RESTORE(win) wattr_set((win), saved_attr, saved_pair, NULL)
 
 
-/*
- * Paint a wide character string and its rendition on the screen
+/**
+ * wcch -- write a complex character and rendition to a window
+ * @win : pointer to a WINDOW
+ * @wch : pointer to the wchar_t to be written
+ * @attr: the desired window attributes
+ * @pair: the desired color pair
  */
-void mvwp(WINDOW *win, int y, int x, wchar_t *wch, short pair, attr_t attr)
-{
-        cchar_t cch; 
-
-        setcchar(&cch, wch, attr, pair, NULL);
-        mvwadd_wch(win, y, x, &cch);
-}
-
-
-/*
- * Paint a wide character string and its rendition on the screen
- */
-void mvwsnpaint(WINDOW *win, int y, int x, wchar_t *wcs, short pair, int n)
-{
-        SAVEWIN(win);
-        wcolor_set(win, pair, NULL);
-        mvwaddnwstr(win, y, x, wcs, n);
-        RESTORE(win);
-}
-
-
-
-
 void wcch(WINDOW *win, const wchar_t *wch, attr_t attr, short pair)
 {
         SAVEWIN(win);
-        wcolor_set(win, pair, NULL);
+        wattr_set(win, attr, pair, NULL);
         if (wch && (*wch != L'\0')) {
                 waddnwstr(win, wch, 1);
         }
         RESTORE(win);
 }
 
+
+/**
+ * mvwcch -- move the cursor and write a complex character and rendition
+ * @win : pointer to a WINDOW
+ * @y   : y-coordinate to write at
+ * @x   : x-coordinate to write at
+ * @wch : pointer to the wchar_t to be written
+ * @attr: the desired window attributes
+ * @pair: the desired color pair
+ */
 void mvwcch(WINDOW *win, int y, int x, const wchar_t *wch, attr_t attr, short pair)
 {
         SAVEWIN(win);
-        wcolor_set(win, pair, NULL);
+        wattr_set(win, attr, pair, NULL);
         if (wch && (*wch != L'\0')) {
                 mvwaddnwstr(win, y, x, wch, 1);
         }
@@ -66,58 +63,130 @@ void mvwcch(WINDOW *win, int y, int x, const wchar_t *wch, attr_t attr, short pa
 }
 
 
+/**
+ * mkcch -- return pointer to a "shared" cchar_t after applying rendition to it
+ * @wch : pointer to the wchar_t to contain in the cchar 
+ * @attr: the desired window attributes of the cchar
+ * @pair: the desired color pair of the cchar
+ */
+cchar_t SHARED_CCH;
+cchar_t *mkcch(const wchar_t *wch, attr_t attr, short pair)
+{
+        setcchar(&SHARED_CCH, wch, attr, pair, NULL);
+        return (&SHARED_CCH);
+}
 
 
+/* HELPERS AND USEFUL UTILITIES
+``````````````````````````````````````````````````````````````````````````````*/
+/**
+ * is_blank -- return TRUE if wide-character at (y,x) is blank, else FALSE
+ * @win: pointer to a window
+ * @y  : y-coordinate to extract wide-character at
+ * @x  : x-coordiante to extract wide-character at
+ */
+bool is_blank(WINDOW *win, int y, int x)
+{
+        cchar_t cch;
+        wchar_t wch;
+        attr_t attr;
+        short color;
+
+        mvwin_wch(win, y, x, &cch);
+        getcchar(&cch, &wch, &attr, &color, NULL);
+
+        return (wch == L' ') ? true : false;
+}
+
+
+
+
+/* COLORING
+``````````````````````````````````````````````````````````````````````````````*/
+/**
+ * bgcolor -- return the background color of a color pair */
+inline short bgcolor(short pair)
+{
+        short fg, bg;
+        pair_content(pair, &fg, &bg);
+        return bg;
+}
+
+/**
+ * fgcolor -- return the foreground color of a color pair */
+inline short fgcolor(short pair)
+{
+        short fg, bg;
+        pair_content(pair, &fg, &bg);
+        return fg;
+}
+
+/**
+ * winpair_yx -- return the color pair of a window at (y,x) */
+short winpair_yx(WINDOW *win, int y, int x)
+{
+        cchar_t cch;
+        wchar_t wch;
+        short color;
+        attr_t attr;
+
+        mvwin_wch(win, y, x, &cch); /* Get the cch at (y,x) */
+        getcchar(&cch, &wch, &attr, &color, NULL);
+
+        return (color);
+}
+
+/**
+ * bgcolor_yx -- return the background color of a window at (y,x) */
+short bgcolor_yx(WINDOW *win, int y, int x)
+{
+        return (bgcolor(winpair_yx(win, y, x)));
+}
+
+/**
+ * fgcolor_yx -- return the foreground color of a window at (y,x) */
+short fgcolor_yx(WINDOW *win, int y, int x)
+{
+        return (fgcolor(winpair_yx(win, y, x)));
+}
+
+
+/**
+ * take_bkgrnd -- modify a color pair so that it has the same bg as src 
+ * @dst: the window which will be rendered with the new color pair
+ * @src: the window whose background is to be taken
+ * @pair: the color pair to be re-initialized with the new combination
+ */
+void take_bkgrnd(WINDOW *dst, WINDOW *src, short pair)
+{
+        short src_bg;
+        short dst_fg;
+        int y, x;
+
+        getbegyx(dst, y, x);
+
+        dst_fg = fgcolor(pair); 
+        src_bg = bgcolor_yx(src, y, x);
+
+        /* Re-init pair with src background */
+        init_pair(pair, dst_fg, src_bg);
+}
+
+
+
+
+
+
+/**************************** CRAP THAT I HATE ********************************/
 void geojug_start(void)
 {
         /*GLOBE = malloc(sizeof(struct map_t)); // initialize the global map*/
 }
 
 
-void build_gpkg(struct gpkg *g)
-{
-        int n, i;
-        n = g->n;
-
-        while (n-->0) {
-               g->len[n] = (sizeof(wchar_t))*(wcslen(g->wch[n])+1);
-               g->cch[n] = malloc(g->len[n] * sizeof(cchar_t));
-               for (i=0; i<(g->len[n]); i++) {
-                       setcchar(&g->cch[n][i], &g->wch[n][i], 0, g->pair, NULL);
-               }
-        }
-}
 
 
-void build_gpack(struct gpack *g)
-{
-        setcchar(&g->cch, g->wcs, 0, g->pair, NULL);
-}
 
-cchar_t shared_cch;
-
-cchar_t *mkcch(wchar_t *wch, attr_t attr, short co)
-{
-        setcchar(&shared_cch, wch, attr, co, NULL);
-        return (&shared_cch);
-}
-
-
-void center_text(WINDOW *win, int y0, int x0, int w, char *string)
-{
-	int len, x, y;
-	float temp;
-
-	getyx(win, y, x);
-	if (x0 != 0) x = x0;
-	if (y0 != 0) y = y0;
-	if (w  == 0) w = 80;
-
-	len = strlen(string);
-	temp = (w - len)/2;
-	x = x0 + (int)temp;
-	mvwprintw(win, y, x, "%s", string);
-}
 
 
 void wwrapstr(WINDOW *win, const char *string)
@@ -144,89 +213,16 @@ void wwrapstr(WINDOW *win, const char *string)
                 waddstr(win, &string[wrap]);
         }
 }
-
-short cuco(WINDOW *win)
+void build_gpkg(struct gpkg *g)
 {
-        attr_t attrs;
-        short color_pair;
+        int n, i;
+        n = g->n;
 
-        wattr_get(win, &attrs, &color_pair, NULL);
-
-        return (color_pair);
+        while (n-->0) {
+               g->len[n] = (sizeof(wchar_t))*(wcslen(g->wch[n])+1);
+               g->cch[n] = malloc(g->len[n] * sizeof(cchar_t));
+               for (i=0; i<(g->len[n]); i++) {
+                       setcchar(&g->cch[n][i], &g->wch[n][i], 0, g->pair, NULL);
+               }
+        }
 }
-
-inline short WINPAIR(WINDOW *win, int y, int x)
-{
-        cchar_t cch;
-        wchar_t wch;
-        short color;
-        attr_t attr;
-
-        getbegyx(win, y, x);           /* Get the position of src */
-        mvwin_wch(win, y, x, &cch);    /* Get the cch at position in dst */
-
-        /* Extract character renditions */
-        getcchar(&cch, &wch, &attr, &color, NULL);
-
-        return (color);
-}
-
-
-short bgcolor_yx(WINDOW *win, int y, int x)
-{
-        cchar_t cch;
-        wchar_t wch;
-        short pair = 0;
-        short bg   = 0;
-        short fg   = 0;
-        attr_t attr;
-
-        mvwin_wch(win, y, x, &cch);    /* Get the cch at position in src */
-
-        /* Extract character renditions */
-        getcchar(&cch, &wch, &attr, &pair, NULL);
-
-        /* Extract the fg and bg color components of the pairs */
-        pair_content(pair, &fg, &bg);
-
-        return (bg);
-}
-
-
-void take_bkgrnd(WINDOW *dst, WINDOW *src, short pair)
-{
-        short src_pair, src_bg, src_fg;
-        short dst_fg;
-        attr_t src_attr;
-        cchar_t cch;
-        wchar_t wch;
-        int y, x;
-
-        getbegyx(dst, y, x);         /* Get the position of dst */
-        mvwin_wch(src, y, x, &cch);  /* Get the cch at position in src */
-
-        if (getcchar(&cch, &wch, &src_attr, &src_pair, NULL) == ERR)
-                return;
-
-        pair_content(src_pair, &src_fg, &src_bg);
-
-        dst_fg = fgcolor(pair);          /* Use foreground of provided pair */
-        init_pair(pair, dst_fg, src_bg); /* Re-init pair with src background */
-}
-
-
-
-bool is_blank(WINDOW *win, int y, int x)
-{
-        cchar_t cch;
-        wchar_t wch;
-        attr_t attr;
-        short color;
-
-        mvwin_wch(win, y, x, &cch);
-
-        getcchar(&cch, &wch, &attr, &color, NULL);
-
-        return (wch == L' ') ? true : false;
-}
-

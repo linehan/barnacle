@@ -228,15 +228,15 @@ void map_label(struct map_t *map, int opt)
         label_treetops(map);
         print_status(SUCCESS);
 
-        print_status("Trimming trees...");
+        print_status("Trimming canopy...");
         label_treetops_trim(map);
         print_status(SUCCESS);
 
-        print_status("Eating breakfast...");
+        print_status("Labeling lumber...");
         label_treetrunks(map);
         print_status(SUCCESS);
 
-        print_status("Going swimming...");
+        print_status("Combing beaches...");
         label_shorelines(map);
         print_status(SUCCESS);
 
