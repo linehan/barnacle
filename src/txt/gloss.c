@@ -16,6 +16,29 @@ struct gloss_t {
 
 
 
+/* ACCESSORS 
+``````````````````````````````````````````````````````````````````````````````*/
+/**
+ * gloss_co -- return the color pair number of a gloss object
+ * @gloss: pointer to a gloss object
+ */
+short gloss_co(struct gloss_t *gloss)
+{
+        return (gloss->co);
+}
+/**
+ * gloss_hi -- return the highlight color pair number of a gloss object
+ * @gloss: pointer to a gloss object
+ */
+short gloss_hi(struct gloss_t *gloss)
+{
+        return (gloss->hi);
+}
+
+
+
+
+
 /* CORE FUNCTIONS 
 ``````````````````````````````````````````````````````````````````````````````*/
 /* CONSTRUCTOR
