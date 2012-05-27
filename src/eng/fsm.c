@@ -11,6 +11,9 @@
 #include "../test/test.h"
 #include "../gfx/ui/menu_inventory.h"
 #include "fsm.h"
+#include "loop.h"
+#include "tick.h"
+#include "../test/looptest.h"
 
 enum uimodes { 
         UI_COMPASS,
@@ -112,6 +115,9 @@ void director(int input)
         else {
                 switch (input) 
                 { 
+                case 'p':
+                        game_is_paused = (game_is_paused) ? false : true;
+                        break;
                 case 'z':
                         dock_toggle();
                         break;
@@ -153,16 +159,13 @@ void director(int input)
                 case '_':
                         MAPBOOK->render(ACTIVE);
                         break;
-                case 'L':
-                        loop_test();
+                case '@':
+                        loop_test(true);
                         break;
                 case 'T':
                         switch (getchar()) {
                         case 'd':
                                 print_matrix(DIAGNOSTIC_WIN, ACTIVE->door);
-                                break;
-                        case '@':
-                                loop_test();
                                 break;
                         }
                         break;

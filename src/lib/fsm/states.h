@@ -29,6 +29,7 @@ enum sm_tag {
         SM_Hit,
         SM_PickUp,
         SM_PokeUp,
+        SM_DodgeBack,
 };
 
 #endif

@@ -87,7 +87,7 @@ am_arawak_OBJECTS = arawak.$(OBJEXT) eng/init.$(OBJEXT) \
 	noun/combat.$(OBJEXT) noun/types/boat/boat.$(OBJEXT) \
 	noun/types/boat/compass.$(OBJEXT) camp/builder.$(OBJEXT) \
 	item/item.$(OBJEXT) item/tools.$(OBJEXT) item/edible.$(OBJEXT) \
-	test/test.$(OBJEXT)
+	test/test.$(OBJEXT) test/looptest.$(OBJEXT)
 arawak_OBJECTS = $(am_arawak_OBJECTS)
 arawak_LDADD = $(LDADD)
 DEFAULT_INCLUDES = -I.@am__isrc@
@@ -257,7 +257,8 @@ arawak_SOURCES = arawak.c                       \
                    item/item.c                  \
                    item/tools.c                 \
                    item/edible.c                \
-                   test/test.c                  
+                   test/test.c                  \
+                   test/looptest.c              
 
 all: all-am
 
@@ -536,6 +537,8 @@ test/$(DEPDIR)/$(am__dirstamp):
 	@: > test/$(DEPDIR)/$(am__dirstamp)
 test/test.$(OBJEXT): test/$(am__dirstamp) \
 	test/$(DEPDIR)/$(am__dirstamp)
+test/looptest.$(OBJEXT): test/$(am__dirstamp) \
+	test/$(DEPDIR)/$(am__dirstamp)
 arawak$(EXEEXT): $(arawak_OBJECTS) $(arawak_DEPENDENCIES) $(EXTRA_arawak_DEPENDENCIES) 
 	@rm -f arawak$(EXEEXT)
 	$(LINK) $(arawak_OBJECTS) $(arawak_LDADD) $(LIBS)
@@ -595,6 +598,7 @@ mostlyclean-compile:
 	-rm -f noun/stats.$(OBJEXT)
 	-rm -f noun/types/boat/boat.$(OBJEXT)
 	-rm -f noun/types/boat/compass.$(OBJEXT)
+	-rm -f test/looptest.$(OBJEXT)
 	-rm -f test/test.$(OBJEXT)
 	-rm -f txt/effects.$(OBJEXT)
 	-rm -f txt/gloss.$(OBJEXT)
@@ -656,6 +660,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@noun/$(DEPDIR)/stats.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@noun/types/boat/$(DEPDIR)/boat.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@noun/types/boat/$(DEPDIR)/compass.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@test/$(DEPDIR)/looptest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@test/$(DEPDIR)/test.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@txt/$(DEPDIR)/effects.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@txt/$(DEPDIR)/gloss.Po@am__quote@

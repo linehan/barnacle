@@ -95,6 +95,15 @@
 static const char SPINNER_CHAR[NUM_SPINNER_CHARS]="|/-\\";
 #define SPINNER(indexer) SPINNER_CHAR[((int)(indexer)%NUM_SPINNER_CHARS)]
 
+#define num_wspin 4
+static const wchar_t wspin_wch[]=L"◒◐◓◑●";
+#define wspin(indexer) wspin_wch[((int)(indexer)%num_wspin)]
+#define wspin_solid    wspin_wch[4]
+
+#define num_wdice 6
+static const wchar_t wdice_wch[num_wdice]=L"⚀⚁⚂⚃⚄⚅";
+#define wdice(indexer) wdice_wch[((int)(indexer)%num_wdice)]
+
 
 
 /*

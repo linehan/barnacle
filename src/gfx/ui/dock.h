@@ -10,4 +10,6 @@ void say_equip(wchar_t *icon, char *name);
 void say_alert(wchar_t *text, short hicolor, short locolor);
 void say_stats(uint32_t stat);
 
+void print_paused(void);
+
 #endif

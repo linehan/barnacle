@@ -69,5 +69,6 @@ arawak_SOURCES = arawak.c                       \
                    item/item.c                  \
                    item/tools.c                 \
                    item/edible.c                \
-                   test/test.c                  
+                   test/test.c                  \
+                   test/looptest.c              
 
