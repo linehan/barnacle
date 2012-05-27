@@ -164,6 +164,8 @@ void enter_event_loop(void)
         ev_timer_again(execloop, &animate);
         ev_timer_again(execloop, &flow);
 
+        loop_test(true);
+
         ev_io_start(readloop, &read);
         ev_run(execloop, 0);
 }
