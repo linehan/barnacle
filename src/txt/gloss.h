@@ -21,6 +21,10 @@ void            del_gloss(struct gloss_t *g);
 bool                gloss(struct gloss_t *g);
 
 
+short gloss_co(struct gloss_t *gloss);
+short gloss_hi(struct gloss_t *gloss);
+
+
 #endif
 
 

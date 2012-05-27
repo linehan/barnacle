@@ -52,4 +52,24 @@ enum statbytes { HP, SP, AP };
 #define HP_HI    PUR_RED
 
 
+enum stat_trend { STAT_SAME, STAT_DOWN, STAT_UP };
+
+
+static inline int stat_trend(uint32_t new, uint32_t old)
+{
+        enum stat_trend trend;
+        
+        if (new < old)
+                trend = STAT_DOWN;
+        else if (new > old)
+                trend = STAT_UP;
+        else
+                trend = STAT_SAME;
+
+        return (int)trend;
+}
+
+
+
+
 #endif
