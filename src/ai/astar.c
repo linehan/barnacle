@@ -7,21 +7,32 @@
 #include "../map/map.h"
 
 
+/*
+        "I saw — with shut eyes, but acute mental vision — 
+         I saw the pale student of unhallowed arts kneeling 
+         beside the thing he had put together."
+
+                Frankenstein; or, The Modern Prometheus
+                Author's introduction (1818)
+*/
+
+
+
 
 /* ALLOCATORS, INITIALIZERS, AND DESTRUCTORS
 ````````````````````````````````````````````````````````````````````````````` */
+/**
+ * new_astar -- allocate and return ptr to a new astar object
+ */
 struct astar_t *new_astar(void)
 {
         struct astar_t *new;
-       
         new = calloc(1, sizeof(struct astar_t));
-
         return (new);
 }
 
 
-
-/*
+/**
  * astar_init -- initialize the A* object with the conditions for the run 
  * @astar: pointer to an allocated struct astar_t
  * @map: pointer to an allocated and populated matrix
@@ -37,7 +48,10 @@ void astar_init(struct astar_t *astar, struct matrix_t *map, int y, int x)
         astar->CLOSED = new_bh(astar->map->itr.len);
 }
 
-
+/**
+ * del_astar -- destroy an astar object
+ * @astar: pointer to an astar object
+ */
 void del_astar(struct astar_t *astar)
 {
         /*astar->map is owned by the world map */
@@ -55,19 +69,38 @@ void del_astar(struct astar_t *astar)
                 /*free(tmp);*/
                 /*tmp = nxt;*/
         /*}*/
-
-
         del_bh(astar->OPEN);
         del_bh(astar->CLOSED);
 };
 
 
+/**
+ * astar_set_start -- set the coordinates of the start cell 
+ * @astar: pointer to an astar object
+ * @y    : new y-coordinate
+ * @x    : new x-coordinate
+ */
+void astar_set_start(struct astar_t *astar, int y, int x)
+{
+        set_cell(astar->start, y, x);
+}
+
+/**
+ * astar_set_goal -- set the coordinates of the goal cell 
+ * @astar: pointer to an astar object
+ * @y    : new y-coordinate
+ * @x    : new x-coordinate
+ */
+void astar_set_goal(struct astar_t *astar, int y, int x)
+{
+        set_cell(astar->goal, y, x);
+}
+
+
 
 /* HELPER FUNCTIONS 
 ````````````````````````````````````````````````````````````````````````````` */
-
-
-/*
+/**
  * map_val -- return the value stored at (y,x) in the map matrix
  * @astar: pointer to the A* object
  * @y: y-index of matrix
@@ -79,7 +112,10 @@ uint32_t mapval(struct astar_t *astar, int y, int x)
 }
 
 
-
+/**
+ * make_path -- when the algorithm has a solution, spool it onto the path ring
+ * @astar: pointer to the astar object
+ */
 int make_path(struct astar_t *astar)
 {
         struct cell_t *tmp = astar->current;
@@ -92,35 +128,10 @@ int make_path(struct astar_t *astar)
 
 
 
-/*
- * rev_path -- reverse the path's linked list
- * @astar: pointer to the A* object
- */
-void rev_path(struct cell_t *cell)
-{
-        struct cell_t *tmp;
-        struct cell_t *next;
-        struct cell_t *last;
-
-        next = cell;
-        last = NULL;
-
-        while (next != NULL) {
-                tmp = next->parent;
-                next->parent = last;
-                last = next; 
-                next = tmp;
-        }
-        cell = last;
-} 
-
 
 
 /* COST FUNCTIONS AND HEURISTICS 
 ````````````````````````````````````````````````````````````````````````````` */
-
-
-
 /*
  * mov_cost -- compute the path cost between cell a to cell b 
  * @a: pointer to a cell
@@ -157,10 +168,7 @@ float hn(struct astar_t *astar, struct cell_t *cell)
 
 /* THE A* ALGORITHM 
 ````````````````````````````````````````````````````````````````````````````` */
-
-
-
-/*
+/**
  * gen_neighbors -- generate an array of valid neighbors for the current cell
  * @astar: pointer to the astar object
  * @cell: pointer to the current cell
@@ -168,10 +176,9 @@ float hn(struct astar_t *astar, struct cell_t *cell)
 struct cell_t **gen_neighbors(struct astar_t *astar, struct cell_t *cell)
 {
         #define WALL_VALUE 4
-        struct cell_t **neighbor;  /* array of neighbor cell pointers */
+        struct cell_t **neighbor;
         int parent_y;              /* y-position of current cell's parent */
         int parent_x;              /* x-position of current cell's parent */
-
 
         /* To prevent backtracking, we test against the parent's coordinates */
         parent_y = (cell->parent) ? cell->parent->y : -1;
@@ -217,7 +224,7 @@ struct cell_t **gen_neighbors(struct astar_t *astar, struct cell_t *cell)
 }
 
 
-/*
+/**
  * groom_neighbors -- examine neighbor candidates; add some to the OPEN set 
  * @astar: pointer to the astar object
  * @cell: pointer to the current cell
@@ -271,6 +278,7 @@ void groom_neighbors(struct astar_t *astar, struct cell_t *cell)
                         bh_setpri(astar->OPEN, neighbor[i]->f, neighbor[i]->key);
                 }
         }
+        free(neighbor); /* gen_neighbors allocated these pointers */
 }
 
 

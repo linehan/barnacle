@@ -62,6 +62,16 @@ void mvwcch(WINDOW *win, int y, int x, const wchar_t *wch, attr_t attr, short co
         doupdate();\
 
 
+static inline void mvsayw(WINDOW *win, int y, int x, const wchar_t *wch)
+{
+        mvwaddnwstr(win, y, x, wch, 1);
+}
+
+static inline void sayw(WINDOW *win, const wchar_t *wch)
+{
+        waddnwstr(win, wch, 1);
+}
+
 
 void mvwp(WINDOW *win, int y, int x, wchar_t *wch, short pair, attr_t attr);
 void mvwnpaint(WINDOW *win, int y, int x, wchar_t *wcs, short pair, int n);

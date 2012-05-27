@@ -16,6 +16,8 @@ void alert(enum alerts tag, char *msg)
         wchar_t wcs[200];
         int scheme;
 
+        wclean(wcs, 200);
+
         switch (tag) {
         case I_FIND:
                 swpumpf(wcs, 200, L"Found %s", msg);
