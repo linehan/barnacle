@@ -2,6 +2,41 @@
 #include "../com/arawak.h"
 #include "gloss.h"
 #include "../lib/textutils.h"
+#include "effects.h"
+
+/* DATA STRUCTURE 
+``````````````````````````````````````````````````````````````````````````````*/
+struct gloss_t {
+        WINDOW *win;
+        const wchar_t *wcs;
+        size_t len;
+        short co;
+        short hi;
+};
+
+
+
+/* CORE FUNCTIONS 
+``````````````````````````````````````````````````````````````````````````````*/
+/* CONSTRUCTOR
+ * new_gloss -- create a new gloss object
+ * @win: window to print the to 
+ * @wcs: string to print
+ * @co:  normal color pair
+ * @hi:  highlight color pair
+ */
+struct gloss_t *new_gloss(WINDOW *win, const wchar_t *wcs, short co, short hi)
+{
+        struct gloss_t *new = malloc(sizeof(struct gloss_t));
+
+        new->win = win;
+        new->wcs = wdup(wcs);
+        new->len = wcslen(wcs);
+        new->co  = co;
+        new->hi  = hi;
+
+        return (new);
+}
 
 
 /* DESTRUCTOR
@@ -16,48 +51,15 @@ void del_gloss(struct gloss_t *g)
 }
 
 
-/* CONSTRUCTOR
- * new_gloss -- create a new gloss object
- * @win: window to print the to 
- * @wcs: string to print
- * @co:  normal color pair
- * @hi:  highlight color pair
- */
-struct gloss_t *new_gloss(WINDOW *win, wchar_t *wcs, short co, short hi)
-{
-        struct gloss_t *new = malloc(sizeof(struct gloss_t));
 
-        new->win = win;
-        new->wcs = wcsdup(wcs);
-        new->len = wcslen(wcs);
-
-        new->co = co;
-        new->hi = hi;
-
-        new->put[REVEAL]   = &method_reveal;
-        new->put[UNREVEAL] = &method_unreveal;
-        new->put[SHINE]    = &method_shine;
-        new->put[PUSH_R]   = &method_pushr;
-        new->put[PUSH_L]   = &method_pushl;
-        new->put[DROPOUT]  = &method_dropout;
-
-        return (new);
-}
-
-
-/* CONSTRUCTOR 
- * If you have a 7-bit ASCII char * string, this function will properly
- * convert it into a wide-character sequence suitable for storage in
- * the struct gloss_t.
- */
-struct gloss_t *str_gloss(WINDOW *win, char *str, short co, short hi)
-{
-        wchar_t *wcs = mbdup(str);
-
-        return wcs ? new_gloss(win, wcs, co, hi) : NULL;
-}
-
-
+/* GLOSS METHODS (see below) 
+``````````````````````````````````````````````````````````````````````````````*/
+void method_reveal(struct gloss_t *gloss, int L);
+void method_unreveal(struct gloss_t *gloss, int L);
+void method_shine(struct gloss_t *gloss, int L);
+void method_pushr(struct gloss_t *gloss, int L);
+void method_pushl(struct gloss_t *gloss, int L);
+void method_dropout(struct gloss_t *gloss, int L);
 
 
 /*
@@ -102,18 +104,18 @@ bool gloss(struct gloss_t *test)
         switch (STAGE) {
 
         case 0: ON_LOOP(test->len) YIELD(1);
-                test->put[REVEAL](test, L);
+                method_reveal(test, L);
                 REPORT(true);
 
         case 1: ON_LOOP(test->len) YIELD(2);
-                test->put[SHINE](test, L);
+                method_shine(test, L);
                 REPORT(true);
 
         case 2: ON_LOOP(30) YIELD(3);
                 REPORT(true);
 
         case 3: ON_LOOP(test->len) YIELD(4);
-                test->put[PUSH_R](test, L);
+                method_pushr(test, L);
                 REPORT(true);
 
         case 4: UNLOOP;
@@ -123,4 +125,78 @@ bool gloss(struct gloss_t *test)
 
         return (STATUS);
 } 
+
+
+
+/* GLOSS METHODS THAT CALL TEXT EFFECTS 
+``````````````````````````````````````````````````````````````````````````````*/
+/** 
+ * METHOD REVEAL
+ * method_reveal -- method for wcs_reveal
+ */
+void method_reveal(struct gloss_t *gloss, int L)
+{
+        werase(gloss->win);
+        wrefresh(gloss->win);
+        wcolor_set(gloss->win, gloss->co, NULL);
+        wcs_reveal(gloss->win, gloss->wcs, gloss->len, L);
+        doupdate();
+}
+
+/** 
+ * METHOD UNREVEAL
+ * method_unreveal -- method for wcs_unreveal
+ */
+void method_unreveal(struct gloss_t *gloss, int L)
+{
+        werase(gloss->win);
+        wrefresh(gloss->win);
+        wcs_unreveal(gloss->win, gloss->wcs, gloss->len, L);
+        doupdate();
+}
+
+/**
+ * METHOD SHINE
+ * method_shine -- call wcs_shine on the gloss object
+ */
+void method_shine(struct gloss_t *gloss, int L)
+{
+        wcolor_set(gloss->win, gloss->hi, NULL);
+        wcs_shine(gloss->win, gloss->wcs, gloss->len, L);
+}
+
+/**
+ * METHOD PUSH RIGHT
+ * method_pushr -- call the wcs_pushr method on the gloss object
+ */
+void method_pushr(struct gloss_t *gloss, int L)
+{
+        werase(gloss->win);
+        wcs_pushr(gloss->win, gloss->wcs, gloss->len, L);
+        doupdate();
+}
+
+/**
+ * METHOD PUSH LEFT 
+ * method_pushl -- call the wcs_pushl method on the gloss object
+ */
+void method_pushl(struct gloss_t *gloss, int L)
+{
+        werase(gloss->win);
+        wrefresh(gloss->win);
+        wcs_pushl(gloss->win, gloss->wcs, gloss->len, L);
+        doupdate();
+}
+
+/**
+ * METHOD DROPOUT
+ * method_dropout -- call wcs_dropout on the gloss object
+ */
+void method_dropout(struct gloss_t *gloss, int L)
+{
+        werase(gloss->win);
+        wrefresh(gloss->win);
+        wcs_dropout(gloss->win, gloss->wcs, gloss->len, L);
+        doupdate();
+}
 

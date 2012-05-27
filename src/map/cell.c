@@ -1,15 +1,12 @@
 #include <stdlib.h>
 #include "../com/arawak.h"
-#include "cell.h"
 #include "../lib/morton.h"
-#include "../lib/list.h"
+#include "cell.h"
 
-void del_cell(struct cell_t *cell)
-{
-        free(cell);
-}
 
-/*
+/* CORE FUNCTIONS
+``````````````````````````````````````````````````````````````````````````````*/
+/**
  * new_cell -- allocate and initialize a new struct cell_t
  * @y: y-coordinate of cell
  * @x: x-coordinate of cell
@@ -32,6 +29,22 @@ struct cell_t *new_cell(int y, int x)
 }
 
 
+/**
+ * del_cell -- destroy a cell object
+ * @cell: pointer to a cell object (will be free'd)
+ */
+void del_cell(struct cell_t *cell)
+{
+        free(cell);
+}
+
+
+/**
+ * set_cell -- set the (y,x) coordinates of an existing cell
+ * @cell: pointer to a cell object
+ * @y   : new y-coordinate
+ * @x   : new x-coordinate
+ */
 void set_cell(struct cell_t *cell, int y, int x)
 {
         cell->y = (uint32_t)y;
@@ -40,10 +53,10 @@ void set_cell(struct cell_t *cell, int y, int x)
 }
 
 
-/*
+/**
  * same_cell -- if the keys of both cells match, they are the same 
- * @a: pointer to a cell
- * @b: pointer to a cell
+ * @a: pointer to a cell object
+ * @b: pointer to a cell object
  */
 bool same_cell(struct cell_t *a, struct cell_t *b)
 {
@@ -51,32 +64,11 @@ bool same_cell(struct cell_t *a, struct cell_t *b)
 }
 
 
-
-struct cell_t *cell_parent(struct cell_t *cell)
-{
-        if (cell->parent)
-                cell_parent(cell->parent);
-
-        return cell;
-}
-
-
-struct cell_t *cell_dup(struct cell_t *cell)
-{
-        struct cell_t *new = new_cell(cell->y, cell->x);
-
-        new->g = cell->g;
-        new->h = cell->h;
-        new->f = cell->f;
-        new->parent = NULL;
-
-        return (new);
-}
-
-
+/* CELL PATH FUNCTIONS 
+``````````````````````````````````````````````````````````````````````````````*/
 /**
- * cellpath_start -- if the cell is a node in a path list, return the start node
- * @path: pointer to a path
+ * cellpath_start -- return the start node of a cell path
+ * @path: pointer to a cell path
  */
 struct cell_t *cellpath_start(struct list_head *path)
 {
@@ -85,23 +77,6 @@ struct cell_t *cellpath_start(struct list_head *path)
         else
                 return list_top(path, struct cell_t, node);
 }
-
-
-struct cell_t *cellpath_next(struct list_head *path)
-{
-        struct cell_t *tmp;
-        int i=0;
-
-        if (list_empty(path))
-                return NULL;
-
-        tmp = list_top(path, struct cell_t, node);
-        list_del_from(path, &tmp->node);
-        tmp = list_top(path, struct cell_t, node);
-
-        return tmp;
-}
-
 
 
 /**
@@ -117,6 +92,30 @@ struct cell_t *cellpath_goal(struct list_head *path)
 }
 
 
+/**
+ * cellpath_next -- return the next node of a cell path
+ * @path: pointer to a cell path
+ */
+struct cell_t *cellpath_next(struct list_head *path)
+{
+        struct cell_t *tmp;
+
+        if (list_empty(path))
+                return NULL;
+
+        tmp = list_top(path, struct cell_t, node);
+              list_del(&tmp->node);
+        tmp = list_top(path, struct cell_t, node);
+
+        return tmp;
+}
+
+
+
+
+
+/* GROSS 
+``````````````````````````````````````````````````````````````````````````````*/
 /*
  * mk_neighbors -- generate an array of valid neighbors for the current cell
  * @cell: pointer to the current cell
@@ -136,8 +135,8 @@ struct cell_t **mk_neighbors(struct cell_t *cell, int h, int w, int opt)
         #define CAN_NE(y,x) (CAN_N(y,x) && CAN_E(y,x) && OPT(opt, WLK_MO))
 
         struct cell_t **neighbor;  /* array of neighbor cell pointers */
-        int py;                 /* y-position of current cell's parent */
-        int px;                 /* x-position of current cell's parent */
+        int py;                    /* y-position of current cell's parent */
+        int px;                    /* x-position of current cell's parent */
         int y;
         int x;
 
@@ -152,16 +151,16 @@ struct cell_t **mk_neighbors(struct cell_t *cell, int h, int w, int opt)
         neighbor = calloc(NUM_MOORE, sizeof(struct cell_t *));
 
         /* Fill the von Neumann neighborhood */
-        neighbor[NBR_N] = (CAN_N(y,x)) ? new_cell(y-1, x) : NULL;
-        neighbor[NBR_E] = (CAN_E(y,x)) ? new_cell(y, x+1) : NULL;
-        neighbor[NBR_S] = (CAN_S(y,x)) ? new_cell(y+1, x) : NULL;
-        neighbor[NBR_W] = (CAN_W(y,x)) ? new_cell(y, x-1) : NULL;
+        neighbor[0] = (CAN_N(y,x)) ? new_cell(y-1, x) : NULL;
+        neighbor[1] = (CAN_E(y,x)) ? new_cell(y, x+1) : NULL;
+        neighbor[2] = (CAN_S(y,x)) ? new_cell(y+1, x) : NULL;
+        neighbor[3] = (CAN_W(y,x)) ? new_cell(y, x-1) : NULL;
 
         /* Fill the Moore neighborhood */
-        neighbor[NBR_NE] = (CAN_NE(y,x)) ? new_cell(y-1, x+1) : NULL;
-        neighbor[NBR_SE] = (CAN_SE(y,x)) ? new_cell(y+1, x+1) : NULL;
-        neighbor[NBR_NW] = (CAN_NW(y,x)) ? new_cell(y-1, x-1) : NULL;
-        neighbor[NBR_SW] = (CAN_SW(y,x)) ? new_cell(y+1, x-1) : NULL;
+        neighbor[4] = (CAN_NE(y,x)) ? new_cell(y-1, x+1) : NULL;
+        neighbor[5] = (CAN_SE(y,x)) ? new_cell(y+1, x+1) : NULL;
+        neighbor[6] = (CAN_NW(y,x)) ? new_cell(y-1, x-1) : NULL;
+        neighbor[7] = (CAN_SW(y,x)) ? new_cell(y+1, x-1) : NULL;
 
         return (neighbor);
 }
@@ -189,7 +188,6 @@ void cell_walk(struct cell_t **cell, int h, int w, int opt)
          * the specified edge.
          */
         if (OPT(opt, WLK_DRUNK)) {
-                /*do { select = roll1d(NUM_MOORE); } while (!nbr[select]);*/
                 for (;;) {
                         select = roll_fair(NUM_MOORE);
                         if (!(select < NUM_MOORE))
@@ -209,14 +207,7 @@ void cell_walk(struct cell_t **cell, int h, int w, int opt)
          */
         assert(*cell || !"Cell points to nothing!\n");
         assert(nbr[select] || !"nbr[select] is NULL!\n");
-        /*assert(nbr[select]->parent || !"nbr[select]->parent is NULL!\n");*/
 
         nbr[select]->parent = *cell;
         *cell = nbr[select];
-
-        /* Free the ones that weren't selected */
-        /*for (i=0; i<NUM_MOORE; i++) {*/
-                /*if (nbr[i] && i != select)*/
-                        /*nbr[i]->die(nbr[i]);*/
-        /*}*/
 }

@@ -2,10 +2,8 @@
 #ifndef __A_STAR_H
 #define __A_STAR_H
 #include "../lib/matrix.h"
-#include "../lib/morton.h"
 #include "../lib/bheap.h"
 #include "../map/cell.h"
-
 
 
 struct astar_t { 
@@ -19,21 +17,15 @@ struct astar_t {
 };
 
 
-
 struct astar_t *new_astar(void);
+void            del_astar(struct astar_t *astar);
+void           astar_init(struct astar_t *astar, struct matrix_t *map, int y, int x);
+void      astar_set_start(struct astar_t *astar, int y, int x);
+void       astar_set_goal(struct astar_t *astar, int y, int x);
+
+
+/* Stand back, folks */
 bool a_star(struct astar_t *astar, struct cell_t *goal);
-void astar_init(struct astar_t *astar, struct matrix_t *map, int y, int x);
-void del_astar(struct astar_t *astar);
 
-
-static inline void astar_set_start(struct astar_t *astar, int y, int x)
-{
-        set_cell(astar->start, y, x);
-}
-
-static inline void astar_set_goal(struct astar_t *astar, int y, int x)
-{
-        set_cell(astar->goal, y, x);
-}
 
 #endif

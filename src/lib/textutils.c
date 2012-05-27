@@ -7,6 +7,7 @@
 #include <stdarg.h>
 #include <stdint.h>
 #include <wchar.h>
+#include <wctype.h>
 #include <string.h>
 #include <assert.h>
 

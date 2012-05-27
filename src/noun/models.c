@@ -57,7 +57,7 @@ void noun_animate(struct noun_t *noun)
         struct ani_t *ani = noun->animation;
 
         /* Draw the current frame */
-        if (noun->frame < noun->animation->len-1)
+        if (noun->frame < noun->animation->len)
                 wcch(noun->win, &noun->animation->frame[noun->frame], 0, FLEX);
 
         /* Move the panel if this is the mv_frame */
@@ -159,13 +159,6 @@ void build_person_animations(void)
 void render_human(void *self)
 {
         struct noun_t *noun = (struct noun_t *)self;
-        /*static bool done;*/
-
-        /*if (!done) {*/
-                /*wbkgrnd(noun->win, mkcch(L"ⰾ", 0, FLEX));*/
-                /*done = true;*/
-        /*}*/
-
         struct item_t *item;
 
         noun_animate(noun);
@@ -349,12 +342,7 @@ static void build_dummy_animations(void)
 void render_dummy(void *self)
 {
         struct noun_t *noun = (struct noun_t *)self;
-        /*static bool done;*/
 
-        /*if (!done) {*/
-                /*wbkgrnd(noun->win, mkcch(L"Ⰹ", 0, FLEX));*/
-                /*done = true;*/
-        /*}*/
         noun_animate(noun);
 }
 
@@ -380,7 +368,6 @@ int modify_dummy(void *obj)
         {
         case SM_Punch:
                 noun->_animate(noun, dummy_die);
-                /*say_speak(L"嶴", "FUCK!");*/
                 sm_msg(noun->sm, SM_SELF, SM_Destroy|SM_Wait(wait_for(noun))|SM_Pri(9));
                 sm_screen(noun->sm, 9);
                 break;
@@ -388,23 +375,23 @@ int modify_dummy(void *obj)
                 noun->_animate(noun, dummy_mv_u);
                 break;
         case SM_GoDown:
-                /*if (flip_biased(0.4))*/
-                        /*say_speak(L"䥚", "I'm gonna hop all over you!");*/
+                if (flip_biased(0.4))
+                        say_speak(L"䥚", "I'm gonna hop all over you!");
                 noun->_animate(noun, dummy_mv_d);
                 break;
         case SM_GoLeft:
                 noun->_animate(noun, dummy_mv_l);
-                /*if (flip_biased(0.4))*/
-                        /*say_speak(L"䥚", "Get fucked!");*/
+                if (flip_biased(0.4))
+                        say_speak(L"䥚", "Get fucked!");
                 break;
         case SM_GoRight:
                 noun->_animate(noun, dummy_mv_r);
                 break;
         case SM_Destroy:
-                /*alert(I_KILL, noun->name);*/
-                /*noun_item_drop(noun);*/
+                alert(I_KILL, noun->name);
+                noun_item_drop(noun);
                 noun->_doom(noun);
-                /*say_speak(L"", "");*/
+                say_speak(L"", "");
                 break;
         case SM_Seek:
                 /*if (nbr) {*/
@@ -447,6 +434,7 @@ void apply_noun_model(struct noun_t *noun)
                 noun->pan     = new_panel(noun->win);
                 noun->_modify = &modify_human;
                 noun->_render = &render_human;
+                wbkgrnd(noun->win, mkcch(L"ⰾ", 0, FLEX));
                 break;
         case DUMMY:
                 noun->pos     = new_pos(1, 1, CENTERED, LINES, COLS, 0, 0);
@@ -455,6 +443,7 @@ void apply_noun_model(struct noun_t *noun)
                 noun->_modify = &modify_dummy;
                 noun->_render = &render_dummy;
                 sm_msg(noun->sm, SM_SELF, SM_Seek | SM_Wait(20));
+                wbkgrnd(noun->win, mkcch(L"Ⰹ", 0, FLEX));
                 break;
         }
 

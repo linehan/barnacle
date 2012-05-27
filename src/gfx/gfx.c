@@ -1,5 +1,3 @@
-
-
 /* gfx.c */
 
 #define _XOPEN_SOURCE_EXTENDED = 1  /* extended character sets */
@@ -13,9 +11,6 @@
 #include "../map/map.h"
 #include "../test/test.h"
 #include "../map/terrain.h"
-
-
-
 
 
 attr_t saved_attr;
@@ -46,6 +41,8 @@ void mvwsnpaint(WINDOW *win, int y, int x, wchar_t *wcs, short pair, int n)
         mvwaddnwstr(win, y, x, wcs, n);
         RESTORE(win);
 }
+
+
 
 
 void wcch(WINDOW *win, const wchar_t *wch, attr_t attr, short pair)
@@ -232,3 +229,4 @@ bool is_blank(WINDOW *win, int y, int x)
 
         return (wch == L' ') ? true : false;
 }
+

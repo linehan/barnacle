@@ -5,27 +5,20 @@
 #include "../gfx/palette.h"
 #include "effects.h"
 
-/* 
- * DATA STRUCTURE
- * The gloss object
- */
-struct gloss_t {
-        WINDOW *win;
-        wchar_t *wcs;
-        size_t len;
-        short co;
-        short hi;
-        short hue[2];
-        void (*put[NSTYLES])(void *self, int loop);
-};
-
 typedef struct gloss_t GLOSS;
 
-struct gloss_t *new_gloss(WINDOW *win, wchar_t *wcs, short co, short hi);
-struct gloss_t *str_gloss(WINDOW *win,    char *str, short co, short hi);
-void del_gloss(struct gloss_t *g);
+/* Color schemes */
+#define __GOLD  PUR_METALYELLOW, PUR_YELLOW
+#define __SILV  PUR_WHITE, PUR_SKY
+#define __WARN  PUR_WHITE, PUR_RED
+#define __KILL  PUR_WHITE, PUR_RED
+#define __HULK  PUR_SKY, PUR_LGREEN
+#define __CERU  PUR_SKY, PUR_CERULEAN
 
-bool gloss(struct gloss_t *g);
+
+struct gloss_t *new_gloss(WINDOW *win, const wchar_t *wcs, short co, short hi);
+void            del_gloss(struct gloss_t *g);
+bool                gloss(struct gloss_t *g);
 
 
 #endif
