@@ -37,7 +37,7 @@ void new_rope(void *self)
         item->data = new;
         item->tag  = ITEM_ROPE;
         item->name = "Rope";
-        item->desc = "Splice the line and let it dangle";
+        item->desc = "For hanging things by the neck until dead";
         item->icon = ROPE_L_ICON;
         item->use  = &use_rope;
 }

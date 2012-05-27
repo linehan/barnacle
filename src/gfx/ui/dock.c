@@ -4,13 +4,15 @@
 #include "../../noun/noun.h"
 #include "../../txt/gloss.h"
 #include "dock.h"
+#include "../../eng/loop.h"
+#include "menu_inventory.h"
 
 
 /* DOCK CONSTANTS AND STATIC VARIABLES 
 ``````````````````````````````````````````````````````````````````````````````*/
 /* Widths for the subdivisions of the dock buffer */
 #define item_field_w (16)
-#define stat_field_w (16)
+#define stat_field_w (17)
 #define text_field_w (COLS - stat_field_w - item_field_w - 2)
 
 /* X-offsets of the subdivisions of the dock buffer */
@@ -38,6 +40,7 @@ PANEL  *dock_pan;
 WINDOW *gloss_win;
 PANEL  *gloss_pan;
 
+
 /* Values used to print the dock and gloss buffer */
 char    *EQUIPNAME;  /* Name of the currently equipped item */
 wchar_t *EQUIPICON;  /* Icon of the currently equipped item */
@@ -46,9 +49,13 @@ char    *MESSAGE;    /* Text of the current speaker's message */
 GLOSS   *GLOSSMSG;   /* Gloss object if notification active */
 STATS   STAT_WORD;   /* Character stat word of the player character */
 
+
+/* Times at which player stats or gloss messages were modified */
 uint32_t STAT_TICK;
 uint32_t GLOSS_TICK;
 
+
+/* Whether each stat increased, decreased, or stayed the same */
 enum stat_trend HP_DELTA;
 enum stat_trend SP_DELTA;
 enum stat_trend AP_DELTA;
@@ -56,7 +63,7 @@ enum stat_trend AP_DELTA;
 
 /* DOCK ELEMENT ACCESSORS 
 ``````````````````````````````````````````````````````````````````````````````*/
-/* EQUIPMENT
+/** 
  * say_equip -- specify an icon and name for the currently equipped item
  * @icon: wide-character icon
  * @name: character string
@@ -70,8 +77,8 @@ void say_equip(wchar_t *icon, char *name)
 }
 
 
-/* SPEAK 
- * say -- specify an icon for a speaker and the message they should say 
+/**
+ * say_speak -- specify an icon for a speaker and the message they should say 
  * @icon: wide-character icon depicting a speaker's portrait
  * @msg : message text (what they say)
  */
@@ -84,7 +91,7 @@ void say_speak(wchar_t *speaker, char *message)
 }
 
 
-/* STATS
+/**
  * say_stats -- specify character statistics to decompose and print
  * @stat: STATS word
  */
@@ -99,8 +106,8 @@ void say_stats(STATS stats)
 }
 
 
-/* GLOSS 
- * say_gloss -- create a gloss object that will be printed in the buffer 
+/** 
+ * say_alert -- create a gloss object that will be printed in the buffer 
  * @msg: textual content to be glossed
  * @hi : highlight color of the gloss
  * @lo : standard  color of the gloss
@@ -110,11 +117,10 @@ void say_alert(wchar_t *msg, short hi, short lo)
         if (GLOSSMSG) {
                 while (gloss(GLOSSMSG))  /* Unwind the gloss */
                 ;
-                /*del_gloss(GLOSSMSG);*/
+                del_gloss(GLOSSMSG);
                 werase(gloss_win);
         }
         release((void **)&GLOSSMSG);
-        /*free(GLOSSMSG);*/
 
         struct gloss_t *new = new_gloss(gloss_win, msg, hi, lo); 
         GLOSSMSG = new;
@@ -185,8 +191,9 @@ void dock_toggle(void)
  */
 void dock_update(void)
 {
-        if (!panel_hidden(dock_pan)) 
+        if (!panel_hidden(dock_pan)) {
                 top_panel(dock_pan);
+        }
 }
 
 
@@ -212,10 +219,34 @@ inline void do_gloss(void)
 }
 
 
+/**
+ * stat_trend_timeout -- re-sets the value of a stat_trend if time has past
+ * @trend  : pointer to a enum stat_trend 
+ * @persist: the length of time before the stat is "stale"
+ */
 inline void stat_trend_timeout(enum stat_trend *trend, int persist)
 {
         if (get_tick() == STAT_TICK + persist) 
                 *trend = STAT_SAME;
+}
+
+
+/**
+ * print_paused -- replace the dock buffer with a "Paused" message and ticker
+ */
+void print_paused(void)
+{
+        static int i;
+        static int j;
+        if (i++ == 2) {
+                j++;
+                i=0;
+        }
+        hide_panel(equipped_pan);
+        werase(dock_win);
+        mvwpumpw(dock_win, 0, (COLS/2)-4, L"%lc Paused", wspin(j));
+        update_panels();
+        doupdate();
 }
 
 
@@ -225,18 +256,18 @@ inline void stat_trend_timeout(enum stat_trend *trend, int persist)
 void print_dock(void)
 {
         #define STAT_SPLIT(s) HP(s), SP(s), AP(s)
-        #define SZ 300
-        // ༈∰∯∮◆◈◇ℌℜ⸠⸡⫿∣
         #define STAT_PERSIST 5
+        #define SZ 300
 
-        short hp_color[]={PUR_PURPLE, __PUR_LRED, __PUR_LGREEN};
-        short ap_color[]={PUR_PURPLE, __PUR_LRED, __PUR_LBLUE};
-        short sp_color[]={PUR_PURPLE, __PUR_LRED, PUR_BRZ};
+        // ༈∰∯∮◆◈◇ℌℜ⸠⸡⫿∣
+
+        short hp_color[]={PUR_PURPLE, _PUR_LRED, _PUR_LGREEN};
+        short ap_color[]={PUR_PURPLE, _PUR_LRED, __PUR_LBLUE};
+        short sp_color[]={PUR_PURPLE, _PUR_LRED, PUR_BRZ};
 
         wchar_t item_field[SZ];
         wchar_t text_field[SZ];
         wchar_t stat_field[SZ];
-
         wclean(item_field, SZ);
         wclean(text_field, SZ);
         wclean(stat_field, SZ);
@@ -245,8 +276,9 @@ void print_dock(void)
         swpumpf(text_field, SZ, L"%ls %s",   SPEAKER, MESSAGE);
         swpumpf(stat_field, SZ, L"⦗%02u⦘⦗%02u⦘⦗%02u⦘", STAT_SPLIT(STAT_WORD));
 
-        if (!dock_pan)
+        if (!dock_pan) {
                 init_dock();
+        }
 
         do_gloss(); /* Draw the gloss message if it exists */
 
@@ -267,6 +299,8 @@ void print_dock(void)
         if (GLOSSMSG) {
                 mvwchgat(dock_win, 0, text_field_ofs, 1, 0, gloss_hi(GLOSSMSG), NULL);
         }
+
+        update_panels();
 }
 
 

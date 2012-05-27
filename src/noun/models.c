@@ -132,7 +132,7 @@ void build_person_animations(void)
         guy_poke_r   = mk_ani(L"ᎲᎲⰾᕙᕙᑐᑞᎲᎲⰾ", 4, 'r');
         guy_poke_d   = mk_ani(L"ᎲᎲᎲᒀᒀᒀᒀᎲᎲⰾ", 0, 0);
 
-        guy_dodge_d  = mk_ani(L"ᎲᎲᎲᏡᏡᏡᏡȣȣȣȣᏡᎲᎲⰾ", 8, 'd');
+        guy_dodge_d  = mk_ani(L"ᎲᎲᎲⰾⰾᏈᏈᏡᏡᏡȣȣȣᎲᎲⰾ", 8, 'd');
         guy_falltest = mk_ani(L"ᎲᎲᎲޗޗޗⲁⲁⲁᥑ", 4, 'r');
         guy_dodge_l  = mk_ani(L"ᎲᎲᎲᥑᥑⲁཚཚཚᎲᎲᎲⰾ", 5, 'l');
         guy_dodge_r  = mk_ani(L"ᎲᎲᎲᥑᥑⲁཚཚཚᎲᎲᎲⰾ", 5, 'r');
@@ -226,6 +226,9 @@ int modify_human(void *self)
                 noun->_animate(noun, guy_pickup);
                 noun->_take(noun, pos_y(noun->pos), pos_x(noun->pos));
                 break;
+        case SM_DodgeBack:
+                noun->_animate(noun, guy_dodge_d);
+                break;
         /* ------------------------------------ Combat */
         case SM_Hit:
                 HP_SUB(&noun->vitals, sm_mag(noun->sm));
@@ -237,6 +240,9 @@ int modify_human(void *self)
                 break;
         /* ------------------------------------ keyboard input */
         /* ------------------------------------ walk (step) */
+        case SM_Key('u'):
+                sm_msg(noun->sm, SM_SELF, SM_DodgeBack | SM_Wait(wait_for(noun)));
+                break;
         case SM_Key('j'):
         case SM_Key('s'):
                 sm_msg(noun->sm, SM_SELF, SM_GoDown | SM_Wait(wait_for(noun)));
@@ -368,19 +374,20 @@ int modify_dummy(void *obj)
                 noun->_animate(noun, dummy_die);
                 sm_msg(noun->sm, SM_SELF, SM_Destroy|SM_Wait(wait_for(noun))|SM_Pri(9));
                 sm_screen(noun->sm, 9);
+                say_speak(L"囧", "Nooo!");
                 break;
         case SM_GoUp:
                 noun->_animate(noun, dummy_mv_u);
                 break;
         case SM_GoDown:
                 if (flip_biased(0.4))
-                        say_speak(L"䥚", "I'm gonna hop all over you!");
+                        say_speak(L"蕳", "I'm gonna hop all over you!");
                 noun->_animate(noun, dummy_mv_d);
                 break;
         case SM_GoLeft:
                 noun->_animate(noun, dummy_mv_l);
                 if (flip_biased(0.4))
-                        say_speak(L"䥚", "Get fucked!");
+                        say_speak(L"蔄", "Get fucked!");
                 break;
         case SM_GoRight:
                 noun->_animate(noun, dummy_mv_r);

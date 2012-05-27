@@ -3,28 +3,31 @@
 #include <ev.h>
 
 #include "../gfx/gfx.h"
-#include "../lib/stoc/stoc.h"
-#include "../map/map.h"
 #include "../noun/noun.h"
-#include "../noun/types/boat/boat.h"
-#include "../txt/gloss.h"
-#include "../gfx/ui/notify.h"
-#include "../map/terrain.h"
+#include "../map/map.h"
 #include "../map/sweet_flow.h"
+#include "../test/looptest.h"
 #include "fsm.h"
 #include "tick.h"
-#include "../noun/stats.h"
 
 
-static bool loop_test_active;
-
-static inline void spinloop(int y, int x, const char *str, int sp)
+/* -------------------------------------------------------------------------- */
+/*
+ * pause_loop
+ *
+ * Will run until the pause key ('p') is pressed again, at which time the
+ * loop will be broken and the 'p' sent to the master FSM, where it will
+ * be switched to disable the game_is_paused boolean (see globals.h) 
+ */
+void pause_loop(void)
 {
-        mvwprintw(CONSOLE_WIN, y, x, "(%c) %s\n", SPINNER(sp), str);
-}
-static inline void tickloop(int y, int x, const char *str)
-{
-        mvwprintw(CONSOLE_WIN, y, x, "%s %u\n", str, get_tick());
+        int ch;
+        while (ch=getch(), ch != 'p') {
+                pause();
+                print_paused();
+                napms(25);
+        }
+        director(ch);
 }
 
 
@@ -39,12 +42,11 @@ static inline void tickloop(int y, int x, const char *str)
  */
 void render_cb(EV_P_ ev_timer *w, int revents)
 {
-        static int sp;
-        if (loop_test_active) {
-                spinloop(2, 0, "render_cb", sp++);
-                tickloop(8, 0, "Game tick:");
-                mvwprintw(CONSOLE_WIN, 9, 0, "Maxi tick: %u", UINT32_MAX);
-        }
+        spin_render_loop();
+
+        if (game_is_paused)
+                pause_loop();
+
         tick();
 
         free_nouns();
@@ -73,33 +75,9 @@ void render_cb(EV_P_ ev_timer *w, int revents)
  */
 void flow_cb(EV_P_ ev_timer *w, int revents)
 {
-        static int sp;
-        if (loop_test_active) {
-                spinloop(3, 0, "flow_cb", sp++);
-        }
+        spin_flow_loop();
+
         do_flow(ACTIVE);
-
-        ev_timer_again(EV_DEFAULT, w);
-}
-
-
-/* -------------------------------------------------------------------------- */
-/*
- * move_cb
- *
- * Called by the movement loop, this callback shifts the position of entities
- * on-screen. Its timing is the closest thing to the "heartbeat" of the game, 
- * if only because the player is most aware of its effects.
- * Repeat: .08 seconds
- */
-void move_cb(EV_P_ ev_timer *w, int revents)
-{
-        static int sp;
-        if (loop_test_active) {
-                spinloop(4, 0, "move_cb", sp++);
-        }
-        /*do_pulse();*/
-        /*noun_render(get_noun("Afarensis"));*/
 
         ev_timer_again(EV_DEFAULT, w);
 }
@@ -117,10 +95,7 @@ void move_cb(EV_P_ ev_timer *w, int revents)
  */
 void animate_cb(EV_P_ ev_timer *w, int revents)
 {
-        static int sp;
-        if (loop_test_active) {
-                spinloop(5, 0, "animate_cb", sp++);
-        }
+        spin_animate_loop();
         NEXT(ACTIVE->L[RIM]);
 
         ev_timer_again(EV_DEFAULT, w);
@@ -138,11 +113,9 @@ void animate_cb(EV_P_ ev_timer *w, int revents)
  */
 void *iolisten_cb(EV_P_ ev_io *w, int revents)
 {
-        static int sp;
-        if (loop_test_active) {
-                spinloop(6, 0, "iolisten_cb", sp++);
-        }
         ev_io_stop (EV_A, w);
+
+        spin_io_loop();
 
         int ch = getch();
 
@@ -156,54 +129,48 @@ void *iolisten_cb(EV_P_ ev_io *w, int revents)
 }
 
 
-////////////////////////////////////////////////////////////////////////////////
-int start_event_watchers(void)
+/**
+ * enter_event_loop -- begin execution of the game loop
+ * 
+ * After initialization and set-up, this is where the flow of control will
+ * reside for the vast majority of the process lifetime. It will only be
+ * exited in order to handle a termination signal, or as a response to a
+ * user's "quit" command.
+ */
+void enter_event_loop(void)
 {
+        #define REPEAT_PERIOD  0.025f
+        #define ANIMATE_PERIOD 3.5f
+        #define FLOW_PERIOD    0.08f
+
         struct ev_loop *readloop = EV_DEFAULT;
         struct ev_loop *execloop = EV_DEFAULT;
-        struct ev_loop *drawloop = EV_DEFAULT;
 
-        ev_io read;         // stdin is readable
-        ev_timer render;    // boat state & compass state
-        ev_timer flow;      // The water effects
-        /*ev_timer move;      // weather state shift (particles)*/
-        ev_timer animate;   // map state shift
+        ev_io    read;    // stdin is readable
+        ev_timer render;  // things which must occur once per tick ("atomic") 
+        ev_timer flow;    // water and weather effects, some physics 
+        ev_timer animate; // long-period animations of the map window 
 
         ev_io_init(&read, &iolisten_cb, 0, EV_READ);
         ev_init(&render, &render_cb);
-        /*ev_init(&move, &move_cb);*/
         ev_init(&animate, &animate_cb);
         ev_init(&flow, &flow_cb);
 
-        render.repeat  = .025;
-        /*move.repeat    = .9;*/
-        animate.repeat = 3.5;
-        flow.repeat    = 0.08;
+        render.repeat  = REPEAT_PERIOD;
+        animate.repeat = ANIMATE_PERIOD;
+        flow.repeat    = FLOW_PERIOD;
 
-        ev_io_start(readloop, &read);
         ev_timer_again(execloop, &render);
-        /*ev_timer_again(execloop, &move);*/
         ev_timer_again(execloop, &animate);
         ev_timer_again(execloop, &flow);
 
+        ev_io_start(readloop, &read);
         ev_run(execloop, 0);
-        ev_run(drawloop, 0);
-
-        return 0;
 }
 
 
 
 
 
-void loop_test(void)
-{
-        if (loop_test_active) {
-                loop_test_active = false;
-                werase(CONSOLE_WIN);
-        } else {
-                loop_test_active = true;
-                mvwprintw(CONSOLE_WIN, 0, 0, "Event loop status\n");
-        }
-}
+
 

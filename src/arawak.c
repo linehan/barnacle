@@ -74,7 +74,7 @@ int main(int argc, char *argv[])
 
         inventory_mkmenu(&nn("Guy")->inv);
 
-        start_event_watchers(); /* Enter the event loop */
+        enter_event_loop(); 
 
         endwin(); /* end curses mode */
         return 0;
