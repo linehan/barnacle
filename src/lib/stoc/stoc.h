@@ -2,8 +2,8 @@
 #ifndef __STOC_H
 #define __STOC_H
 
+#include "../../com/barnacle.h"
 #include "brnoise.h"
-#include "matrix.h"
 #include "mersenne.h"
 #include "dice.h"
 #include "noise.h"

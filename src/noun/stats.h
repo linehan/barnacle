@@ -2,7 +2,7 @@
 #ifndef __NOUN_STATS_H
 #define __NOUN_STATS_H
 
-#include "../com/arawak.h"
+#include "../com/barnacle.h"
 #include "../eng/bytes.h"
 
 typedef uint32_t STATS;

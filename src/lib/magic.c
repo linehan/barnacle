@@ -1,12 +1,13 @@
+
 /*
 
 
-      (\.   \      ,/)        Magical algorithms -- magic.c
-       \(   |\     )/
-       //\  | \   /\\         Commonly useful, occasionally priceless
-      (/ /\_#oo#_/\ \)        algorithms for "bit-twiddling"; not as
-       \/\  ####  /\/         indecipherable as they seem at first, and 
-            `##'              downright joyful after close study. 
+      (\.   \      ,/)        
+       \(   |\     )/         Magical algorithms -- magic.c
+       //\  | \   /\\         
+      (/ /\_#oo#_/\ \)        Commonly useful, occasionally priceless
+       \/\  ####  /\/         algorithms for "bit-twiddling".
+            `##'              
  
 
 */

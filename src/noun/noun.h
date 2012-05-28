@@ -2,7 +2,7 @@
 #ifndef __NOUN_MODEL
 #define __NOUN_MODEL
 
-#include "../com/arawak.h"
+#include "../com/barnacle.h"
 #include "../map/map.h"
 #include "../lib/fsm/fsm.h"
 #include "../ai/astar.h"

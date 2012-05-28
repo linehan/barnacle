@@ -1,20 +1,31 @@
-/******************************************************************************
-  FILENAME:  dork.c
-  This is the main program. 
-*******************************************************************************/
-#include "com/arawak.h"
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
+/* 
+ * barnacle.c -- main
+ * Performs checks, preps the engine, and enters the main loop.
+ * For a very long time this file was called "dork.c".
+ * 
+ * Copyright (C) 2012 Jason Linehan 
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software Foundation, 
+ * Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+ */
+#include "com/barnacle.h"
 
 #include "gfx/gfx.h"
 #include "map/map.h"
 #include "test/test.h"
 
 #include "noun/noun.h"
-#include "noun/nounmenu.h"
-#include "noun/nounmenu_control.h"
 
 #include "eng/init.h"
 #include "eng/loop.h"
@@ -32,7 +43,7 @@
 /* Rolling start */
 int main(int argc, char *argv[]) 
 {
-        arawak_init();
+        barnacle_init();
 
         MAPBOOK = new_mapbook();
 

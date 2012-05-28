@@ -49,7 +49,7 @@ POST_INSTALL = :
 NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
-bin_PROGRAMS = arawak$(EXEEXT)
+bin_PROGRAMS = barnacle$(EXEEXT)
 subdir = src
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in \
 	$(top_srcdir)/depcomp
@@ -63,35 +63,33 @@ CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS)
 am__dirstamp = $(am__leading_dot)dirstamp
-am_arawak_OBJECTS = arawak.$(OBJEXT) eng/init.$(OBJEXT) \
+am_barnacle_OBJECTS = barnacle.$(OBJEXT) eng/init.$(OBJEXT) \
 	lib/fsm/fsm.$(OBJEXT) lib/redblack/rb.$(OBJEXT) \
 	lib/matrix.$(OBJEXT) lib/sort/mergesort.$(OBJEXT) \
 	lib/sort/quicksort.$(OBJEXT) lib/morton.$(OBJEXT) \
-	lib/magic.$(OBJEXT) lib/ncolor/src/ncolor.$(OBJEXT) \
-	lib/fifo.$(OBJEXT) lib/textutils.$(OBJEXT) lib/pos.$(OBJEXT) \
-	lib/rec.$(OBJEXT) lib/stoc/mersenne.$(OBJEXT) \
-	lib/stoc/stoc.$(OBJEXT) lib/stoc/noise.$(OBJEXT) \
-	lib/stoc/dice.$(OBJEXT) lib/stoc/shuffle.$(OBJEXT) \
-	lib/stoc/smooth.$(OBJEXT) lib/stoc/brnoise.$(OBJEXT) \
-	eng/bytes.$(OBJEXT) eng/fsm.$(OBJEXT) eng/loop.$(OBJEXT) \
-	eng/error.$(OBJEXT) gfx/palette.$(OBJEXT) gfx/sprite.$(OBJEXT) \
-	gfx/gfx.$(OBJEXT) gfx/multiwin.$(OBJEXT) gfx/ui/dock.$(OBJEXT) \
-	gfx/ui/stdpan.$(OBJEXT) gfx/ui/stdmenu.$(OBJEXT) \
-	gfx/ui/titlecard.$(OBJEXT) gfx/ui/menu_inventory.$(OBJEXT) \
-	gfx/ui/notify.$(OBJEXT) map/terrain.$(OBJEXT) \
-	map/map.$(OBJEXT) map/cell.$(OBJEXT) map/door.$(OBJEXT) \
-	map/special/arena.$(OBJEXT) map/special/cave.$(OBJEXT) \
-	map/flow.$(OBJEXT) map/light.$(OBJEXT) ai/astar.$(OBJEXT) \
-	txt/gloss.$(OBJEXT) txt/effects.$(OBJEXT) noun/noun.$(OBJEXT) \
-	noun/animate.$(OBJEXT) noun/stats.$(OBJEXT) \
-	noun/combat.$(OBJEXT) noun/models.$(OBJEXT) \
-	noun/models/human.$(OBJEXT) noun/models/hopper.$(OBJEXT) \
-	noun/types/boat/boat.$(OBJEXT) \
-	noun/types/boat/compass.$(OBJEXT) camp/builder.$(OBJEXT) \
-	item/item.$(OBJEXT) item/tools.$(OBJEXT) item/edible.$(OBJEXT) \
-	test/test.$(OBJEXT) test/looptest.$(OBJEXT)
-arawak_OBJECTS = $(am_arawak_OBJECTS)
-arawak_LDADD = $(LDADD)
+	lib/magic.$(OBJEXT) lib/fifo.$(OBJEXT) lib/textutils.$(OBJEXT) \
+	lib/pos.$(OBJEXT) lib/rec.$(OBJEXT) \
+	lib/stoc/mersenne.$(OBJEXT) lib/stoc/stoc.$(OBJEXT) \
+	lib/stoc/noise.$(OBJEXT) lib/stoc/dice.$(OBJEXT) \
+	lib/stoc/shuffle.$(OBJEXT) lib/stoc/smooth.$(OBJEXT) \
+	lib/stoc/brnoise.$(OBJEXT) eng/fsm.$(OBJEXT) \
+	eng/loop.$(OBJEXT) eng/error.$(OBJEXT) gfx/palette.$(OBJEXT) \
+	gfx/sprite.$(OBJEXT) gfx/gfx.$(OBJEXT) gfx/multiwin.$(OBJEXT) \
+	gfx/ui/dock.$(OBJEXT) gfx/ui/stdpan.$(OBJEXT) \
+	gfx/ui/stdmenu.$(OBJEXT) gfx/ui/titlecard.$(OBJEXT) \
+	gfx/ui/menu_inventory.$(OBJEXT) gfx/ui/notify.$(OBJEXT) \
+	map/terrain.$(OBJEXT) map/map.$(OBJEXT) map/cell.$(OBJEXT) \
+	map/door.$(OBJEXT) map/special/arena.$(OBJEXT) \
+	map/special/cave.$(OBJEXT) map/flow.$(OBJEXT) \
+	map/light.$(OBJEXT) ai/astar.$(OBJEXT) txt/gloss.$(OBJEXT) \
+	txt/effects.$(OBJEXT) noun/noun.$(OBJEXT) \
+	noun/animate.$(OBJEXT) noun/combat.$(OBJEXT) \
+	noun/models.$(OBJEXT) noun/models/human.$(OBJEXT) \
+	noun/models/hopper.$(OBJEXT) item/item.$(OBJEXT) \
+	item/tools.$(OBJEXT) item/edible.$(OBJEXT) test/test.$(OBJEXT) \
+	test/looptest.$(OBJEXT)
+barnacle_OBJECTS = $(am_barnacle_OBJECTS)
+barnacle_LDADD = $(LDADD)
 DEFAULT_INCLUDES = -I.@am__isrc@
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
@@ -100,8 +98,8 @@ COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 CCLD = $(CC)
 LINK = $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
-SOURCES = $(arawak_SOURCES)
-DIST_SOURCES = $(arawak_SOURCES)
+SOURCES = $(barnacle_SOURCES)
+DIST_SOURCES = $(barnacle_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -202,8 +200,7 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 AUTOMAKE_OPTIONS = foreign subdir-objects
-arawak_SOURCES = arawak.c                       \
-                   (wildcard lib/ccan/*/*.c)    \
+barnacle_SOURCES = barnacle.c                   \
                    eng/init.c                   \
                    lib/fsm/fsm.c                \
                    lib/redblack/rb.c            \
@@ -212,7 +209,6 @@ arawak_SOURCES = arawak.c                       \
                    lib/sort/quicksort.c         \
                    lib/morton.c                 \
                    lib/magic.c                  \
-                   lib/ncolor/src/ncolor.c      \
                    lib/fifo.c                   \
                    lib/textutils.c              \
                    lib/pos.c                    \
@@ -224,7 +220,6 @@ arawak_SOURCES = arawak.c                       \
                    lib/stoc/shuffle.c           \
                    lib/stoc/smooth.c            \
                    lib/stoc/brnoise.c           \
-                   eng/bytes.c                  \
                    eng/fsm.c                    \
                    eng/loop.c                   \
                    eng/error.c                  \
@@ -251,14 +246,10 @@ arawak_SOURCES = arawak.c                       \
                    txt/effects.c                \
                    noun/noun.c                  \
                    noun/animate.c               \
-                   noun/stats.c                 \
                    noun/combat.c                \
                    noun/models.c                \
                    noun/models/human.c          \
                    noun/models/hopper.c         \
-                   noun/types/boat/boat.c       \
-                   noun/types/boat/compass.c    \
-                   camp/builder.c               \
                    item/item.c                  \
                    item/tools.c                 \
                    item/edible.c                \
@@ -383,14 +374,6 @@ lib/sort/quicksort.$(OBJEXT): lib/sort/$(am__dirstamp) \
 lib/morton.$(OBJEXT): lib/$(am__dirstamp) \
 	lib/$(DEPDIR)/$(am__dirstamp)
 lib/magic.$(OBJEXT): lib/$(am__dirstamp) lib/$(DEPDIR)/$(am__dirstamp)
-lib/ncolor/src/$(am__dirstamp):
-	@$(MKDIR_P) lib/ncolor/src
-	@: > lib/ncolor/src/$(am__dirstamp)
-lib/ncolor/src/$(DEPDIR)/$(am__dirstamp):
-	@$(MKDIR_P) lib/ncolor/src/$(DEPDIR)
-	@: > lib/ncolor/src/$(DEPDIR)/$(am__dirstamp)
-lib/ncolor/src/ncolor.$(OBJEXT): lib/ncolor/src/$(am__dirstamp) \
-	lib/ncolor/src/$(DEPDIR)/$(am__dirstamp)
 lib/fifo.$(OBJEXT): lib/$(am__dirstamp) lib/$(DEPDIR)/$(am__dirstamp)
 lib/textutils.$(OBJEXT): lib/$(am__dirstamp) \
 	lib/$(DEPDIR)/$(am__dirstamp)
@@ -416,7 +399,6 @@ lib/stoc/smooth.$(OBJEXT): lib/stoc/$(am__dirstamp) \
 	lib/stoc/$(DEPDIR)/$(am__dirstamp)
 lib/stoc/brnoise.$(OBJEXT): lib/stoc/$(am__dirstamp) \
 	lib/stoc/$(DEPDIR)/$(am__dirstamp)
-eng/bytes.$(OBJEXT): eng/$(am__dirstamp) eng/$(DEPDIR)/$(am__dirstamp)
 eng/fsm.$(OBJEXT): eng/$(am__dirstamp) eng/$(DEPDIR)/$(am__dirstamp)
 eng/loop.$(OBJEXT): eng/$(am__dirstamp) eng/$(DEPDIR)/$(am__dirstamp)
 eng/error.$(OBJEXT): eng/$(am__dirstamp) eng/$(DEPDIR)/$(am__dirstamp)
@@ -500,8 +482,6 @@ noun/noun.$(OBJEXT): noun/$(am__dirstamp) \
 	noun/$(DEPDIR)/$(am__dirstamp)
 noun/animate.$(OBJEXT): noun/$(am__dirstamp) \
 	noun/$(DEPDIR)/$(am__dirstamp)
-noun/stats.$(OBJEXT): noun/$(am__dirstamp) \
-	noun/$(DEPDIR)/$(am__dirstamp)
 noun/combat.$(OBJEXT): noun/$(am__dirstamp) \
 	noun/$(DEPDIR)/$(am__dirstamp)
 noun/models.$(OBJEXT): noun/$(am__dirstamp) \
@@ -516,24 +496,6 @@ noun/models/human.$(OBJEXT): noun/models/$(am__dirstamp) \
 	noun/models/$(DEPDIR)/$(am__dirstamp)
 noun/models/hopper.$(OBJEXT): noun/models/$(am__dirstamp) \
 	noun/models/$(DEPDIR)/$(am__dirstamp)
-noun/types/boat/$(am__dirstamp):
-	@$(MKDIR_P) noun/types/boat
-	@: > noun/types/boat/$(am__dirstamp)
-noun/types/boat/$(DEPDIR)/$(am__dirstamp):
-	@$(MKDIR_P) noun/types/boat/$(DEPDIR)
-	@: > noun/types/boat/$(DEPDIR)/$(am__dirstamp)
-noun/types/boat/boat.$(OBJEXT): noun/types/boat/$(am__dirstamp) \
-	noun/types/boat/$(DEPDIR)/$(am__dirstamp)
-noun/types/boat/compass.$(OBJEXT): noun/types/boat/$(am__dirstamp) \
-	noun/types/boat/$(DEPDIR)/$(am__dirstamp)
-camp/$(am__dirstamp):
-	@$(MKDIR_P) camp
-	@: > camp/$(am__dirstamp)
-camp/$(DEPDIR)/$(am__dirstamp):
-	@$(MKDIR_P) camp/$(DEPDIR)
-	@: > camp/$(DEPDIR)/$(am__dirstamp)
-camp/builder.$(OBJEXT): camp/$(am__dirstamp) \
-	camp/$(DEPDIR)/$(am__dirstamp)
 item/$(am__dirstamp):
 	@$(MKDIR_P) item
 	@: > item/$(am__dirstamp)
@@ -556,15 +518,13 @@ test/test.$(OBJEXT): test/$(am__dirstamp) \
 	test/$(DEPDIR)/$(am__dirstamp)
 test/looptest.$(OBJEXT): test/$(am__dirstamp) \
 	test/$(DEPDIR)/$(am__dirstamp)
-arawak$(EXEEXT): $(arawak_OBJECTS) $(arawak_DEPENDENCIES) $(EXTRA_arawak_DEPENDENCIES) 
-	@rm -f arawak$(EXEEXT)
-	$(LINK) $(arawak_OBJECTS) $(arawak_LDADD) $(LIBS)
+barnacle$(EXEEXT): $(barnacle_OBJECTS) $(barnacle_DEPENDENCIES) $(EXTRA_barnacle_DEPENDENCIES) 
+	@rm -f barnacle$(EXEEXT)
+	$(LINK) $(barnacle_OBJECTS) $(barnacle_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
 	-rm -f ai/astar.$(OBJEXT)
-	-rm -f camp/builder.$(OBJEXT)
-	-rm -f eng/bytes.$(OBJEXT)
 	-rm -f eng/error.$(OBJEXT)
 	-rm -f eng/fsm.$(OBJEXT)
 	-rm -f eng/init.$(OBJEXT)
@@ -587,7 +547,6 @@ mostlyclean-compile:
 	-rm -f lib/magic.$(OBJEXT)
 	-rm -f lib/matrix.$(OBJEXT)
 	-rm -f lib/morton.$(OBJEXT)
-	-rm -f lib/ncolor/src/ncolor.$(OBJEXT)
 	-rm -f lib/pos.$(OBJEXT)
 	-rm -f lib/rec.$(OBJEXT)
 	-rm -f lib/redblack/rb.$(OBJEXT)
@@ -615,9 +574,6 @@ mostlyclean-compile:
 	-rm -f noun/models/hopper.$(OBJEXT)
 	-rm -f noun/models/human.$(OBJEXT)
 	-rm -f noun/noun.$(OBJEXT)
-	-rm -f noun/stats.$(OBJEXT)
-	-rm -f noun/types/boat/boat.$(OBJEXT)
-	-rm -f noun/types/boat/compass.$(OBJEXT)
 	-rm -f test/looptest.$(OBJEXT)
 	-rm -f test/test.$(OBJEXT)
 	-rm -f txt/effects.$(OBJEXT)
@@ -626,10 +582,8 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/arawak.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/barnacle.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ai/$(DEPDIR)/astar.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@camp/$(DEPDIR)/builder.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@eng/$(DEPDIR)/bytes.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@eng/$(DEPDIR)/error.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@eng/$(DEPDIR)/fsm.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@eng/$(DEPDIR)/init.Po@am__quote@
@@ -655,7 +609,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@lib/$(DEPDIR)/rec.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@lib/$(DEPDIR)/textutils.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@lib/fsm/$(DEPDIR)/fsm.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@lib/ncolor/src/$(DEPDIR)/ncolor.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@lib/redblack/$(DEPDIR)/rb.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@lib/sort/$(DEPDIR)/mergesort.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@lib/sort/$(DEPDIR)/quicksort.Po@am__quote@
@@ -678,11 +631,8 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@noun/$(DEPDIR)/combat.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@noun/$(DEPDIR)/models.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@noun/$(DEPDIR)/noun.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@noun/$(DEPDIR)/stats.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@noun/models/$(DEPDIR)/hopper.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@noun/models/$(DEPDIR)/human.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@noun/types/boat/$(DEPDIR)/boat.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@noun/types/boat/$(DEPDIR)/compass.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@test/$(DEPDIR)/looptest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@test/$(DEPDIR)/test.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@txt/$(DEPDIR)/effects.Po@am__quote@
@@ -835,8 +785,6 @@ distclean-generic:
 	-test . = "$(srcdir)" || test -z "$(CONFIG_CLEAN_VPATH_FILES)" || rm -f $(CONFIG_CLEAN_VPATH_FILES)
 	-rm -f ai/$(DEPDIR)/$(am__dirstamp)
 	-rm -f ai/$(am__dirstamp)
-	-rm -f camp/$(DEPDIR)/$(am__dirstamp)
-	-rm -f camp/$(am__dirstamp)
 	-rm -f eng/$(DEPDIR)/$(am__dirstamp)
 	-rm -f eng/$(am__dirstamp)
 	-rm -f gfx/$(DEPDIR)/$(am__dirstamp)
@@ -849,8 +797,6 @@ distclean-generic:
 	-rm -f lib/$(am__dirstamp)
 	-rm -f lib/fsm/$(DEPDIR)/$(am__dirstamp)
 	-rm -f lib/fsm/$(am__dirstamp)
-	-rm -f lib/ncolor/src/$(DEPDIR)/$(am__dirstamp)
-	-rm -f lib/ncolor/src/$(am__dirstamp)
 	-rm -f lib/redblack/$(DEPDIR)/$(am__dirstamp)
 	-rm -f lib/redblack/$(am__dirstamp)
 	-rm -f lib/sort/$(DEPDIR)/$(am__dirstamp)
@@ -865,8 +811,6 @@ distclean-generic:
 	-rm -f noun/$(am__dirstamp)
 	-rm -f noun/models/$(DEPDIR)/$(am__dirstamp)
 	-rm -f noun/models/$(am__dirstamp)
-	-rm -f noun/types/boat/$(DEPDIR)/$(am__dirstamp)
-	-rm -f noun/types/boat/$(am__dirstamp)
 	-rm -f test/$(DEPDIR)/$(am__dirstamp)
 	-rm -f test/$(am__dirstamp)
 	-rm -f txt/$(DEPDIR)/$(am__dirstamp)
@@ -880,7 +824,7 @@ clean: clean-am
 clean-am: clean-binPROGRAMS clean-generic mostlyclean-am
 
 distclean: distclean-am
-	-rm -rf ./$(DEPDIR) ai/$(DEPDIR) camp/$(DEPDIR) eng/$(DEPDIR) gfx/$(DEPDIR) gfx/ui/$(DEPDIR) item/$(DEPDIR) lib/$(DEPDIR) lib/fsm/$(DEPDIR) lib/ncolor/src/$(DEPDIR) lib/redblack/$(DEPDIR) lib/sort/$(DEPDIR) lib/stoc/$(DEPDIR) map/$(DEPDIR) map/special/$(DEPDIR) noun/$(DEPDIR) noun/models/$(DEPDIR) noun/types/boat/$(DEPDIR) test/$(DEPDIR) txt/$(DEPDIR)
+	-rm -rf ./$(DEPDIR) ai/$(DEPDIR) eng/$(DEPDIR) gfx/$(DEPDIR) gfx/ui/$(DEPDIR) item/$(DEPDIR) lib/$(DEPDIR) lib/fsm/$(DEPDIR) lib/redblack/$(DEPDIR) lib/sort/$(DEPDIR) lib/stoc/$(DEPDIR) map/$(DEPDIR) map/special/$(DEPDIR) noun/$(DEPDIR) noun/models/$(DEPDIR) test/$(DEPDIR) txt/$(DEPDIR)
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
 	distclean-tags
@@ -926,7 +870,7 @@ install-ps-am:
 installcheck-am:
 
 maintainer-clean: maintainer-clean-am
-	-rm -rf ./$(DEPDIR) ai/$(DEPDIR) camp/$(DEPDIR) eng/$(DEPDIR) gfx/$(DEPDIR) gfx/ui/$(DEPDIR) item/$(DEPDIR) lib/$(DEPDIR) lib/fsm/$(DEPDIR) lib/ncolor/src/$(DEPDIR) lib/redblack/$(DEPDIR) lib/sort/$(DEPDIR) lib/stoc/$(DEPDIR) map/$(DEPDIR) map/special/$(DEPDIR) noun/$(DEPDIR) noun/models/$(DEPDIR) noun/types/boat/$(DEPDIR) test/$(DEPDIR) txt/$(DEPDIR)
+	-rm -rf ./$(DEPDIR) ai/$(DEPDIR) eng/$(DEPDIR) gfx/$(DEPDIR) gfx/ui/$(DEPDIR) item/$(DEPDIR) lib/$(DEPDIR) lib/fsm/$(DEPDIR) lib/redblack/$(DEPDIR) lib/sort/$(DEPDIR) lib/stoc/$(DEPDIR) map/$(DEPDIR) map/special/$(DEPDIR) noun/$(DEPDIR) noun/models/$(DEPDIR) test/$(DEPDIR) txt/$(DEPDIR)
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 

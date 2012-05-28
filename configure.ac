@@ -2,9 +2,9 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.68])
-AC_INIT([ARAWAK], [0.0.2], [jdl@flexagon.homeunix.org])
-AC_CONFIG_SRCDIR([src/arawak.c])
-AM_INIT_AUTOMAKE([ARAWAK], [0.0.2])
+AC_INIT([BARNACLE], [0.1.0], [jdl@flexagon.homeunix.org])
+AC_CONFIG_SRCDIR([src/barnacle.c])
+AM_INIT_AUTOMAKE([ARAWAK], [0.1.0])
 
 # Checks for programs.
 AC_PROG_CC

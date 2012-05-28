@@ -3,7 +3,7 @@
 #define __TEXTUTILS_H
 
 #include <stdarg.h>
-#include "../com/arawak.h"
+#include "../com/barnacle.h"
 
 char    *cdup(const char *str);
 wchar_t *wdup(const wchar_t *wcs);

@@ -1,6 +1,6 @@
 #ifndef __NOUN_ANIMATE_H
 #define __NOUN_ANIMATE_H
-#include "../com/arawak.h"
+#include "../com/barnacle.h"
 
 struct noun_t;
 

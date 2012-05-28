@@ -4,7 +4,7 @@
 mv HISTORY ChangeLog
 
 # Run the autotools routine
-aclocal \
+aclocal                   \
 && automake --add-missing \
 && autoconf
 
