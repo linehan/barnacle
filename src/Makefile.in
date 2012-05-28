@@ -83,8 +83,10 @@ am_arawak_OBJECTS = arawak.$(OBJEXT) eng/init.$(OBJEXT) \
 	map/special/arena.$(OBJEXT) map/special/cave.$(OBJEXT) \
 	map/flow.$(OBJEXT) map/light.$(OBJEXT) ai/astar.$(OBJEXT) \
 	txt/gloss.$(OBJEXT) txt/effects.$(OBJEXT) noun/noun.$(OBJEXT) \
-	noun/models.$(OBJEXT) noun/stats.$(OBJEXT) \
-	noun/combat.$(OBJEXT) noun/types/boat/boat.$(OBJEXT) \
+	noun/animate.$(OBJEXT) noun/stats.$(OBJEXT) \
+	noun/combat.$(OBJEXT) noun/models.$(OBJEXT) \
+	noun/models/human.$(OBJEXT) noun/models/hopper.$(OBJEXT) \
+	noun/types/boat/boat.$(OBJEXT) \
 	noun/types/boat/compass.$(OBJEXT) camp/builder.$(OBJEXT) \
 	item/item.$(OBJEXT) item/tools.$(OBJEXT) item/edible.$(OBJEXT) \
 	test/test.$(OBJEXT) test/looptest.$(OBJEXT)
@@ -248,9 +250,12 @@ arawak_SOURCES = arawak.c                       \
                    txt/gloss.c                  \
                    txt/effects.c                \
                    noun/noun.c                  \
-                   noun/models.c                \
+                   noun/animate.c               \
                    noun/stats.c                 \
                    noun/combat.c                \
+                   noun/models.c                \
+                   noun/models/human.c          \
+                   noun/models/hopper.c         \
                    noun/types/boat/boat.c       \
                    noun/types/boat/compass.c    \
                    camp/builder.c               \
@@ -493,12 +498,24 @@ noun/$(DEPDIR)/$(am__dirstamp):
 	@: > noun/$(DEPDIR)/$(am__dirstamp)
 noun/noun.$(OBJEXT): noun/$(am__dirstamp) \
 	noun/$(DEPDIR)/$(am__dirstamp)
-noun/models.$(OBJEXT): noun/$(am__dirstamp) \
+noun/animate.$(OBJEXT): noun/$(am__dirstamp) \
 	noun/$(DEPDIR)/$(am__dirstamp)
 noun/stats.$(OBJEXT): noun/$(am__dirstamp) \
 	noun/$(DEPDIR)/$(am__dirstamp)
 noun/combat.$(OBJEXT): noun/$(am__dirstamp) \
 	noun/$(DEPDIR)/$(am__dirstamp)
+noun/models.$(OBJEXT): noun/$(am__dirstamp) \
+	noun/$(DEPDIR)/$(am__dirstamp)
+noun/models/$(am__dirstamp):
+	@$(MKDIR_P) noun/models
+	@: > noun/models/$(am__dirstamp)
+noun/models/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) noun/models/$(DEPDIR)
+	@: > noun/models/$(DEPDIR)/$(am__dirstamp)
+noun/models/human.$(OBJEXT): noun/models/$(am__dirstamp) \
+	noun/models/$(DEPDIR)/$(am__dirstamp)
+noun/models/hopper.$(OBJEXT): noun/models/$(am__dirstamp) \
+	noun/models/$(DEPDIR)/$(am__dirstamp)
 noun/types/boat/$(am__dirstamp):
 	@$(MKDIR_P) noun/types/boat
 	@: > noun/types/boat/$(am__dirstamp)
@@ -592,8 +609,11 @@ mostlyclean-compile:
 	-rm -f map/special/arena.$(OBJEXT)
 	-rm -f map/special/cave.$(OBJEXT)
 	-rm -f map/terrain.$(OBJEXT)
+	-rm -f noun/animate.$(OBJEXT)
 	-rm -f noun/combat.$(OBJEXT)
 	-rm -f noun/models.$(OBJEXT)
+	-rm -f noun/models/hopper.$(OBJEXT)
+	-rm -f noun/models/human.$(OBJEXT)
 	-rm -f noun/noun.$(OBJEXT)
 	-rm -f noun/stats.$(OBJEXT)
 	-rm -f noun/types/boat/boat.$(OBJEXT)
@@ -654,10 +674,13 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@map/$(DEPDIR)/terrain.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@map/special/$(DEPDIR)/arena.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@map/special/$(DEPDIR)/cave.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@noun/$(DEPDIR)/animate.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@noun/$(DEPDIR)/combat.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@noun/$(DEPDIR)/models.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@noun/$(DEPDIR)/noun.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@noun/$(DEPDIR)/stats.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@noun/models/$(DEPDIR)/hopper.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@noun/models/$(DEPDIR)/human.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@noun/types/boat/$(DEPDIR)/boat.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@noun/types/boat/$(DEPDIR)/compass.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@test/$(DEPDIR)/looptest.Po@am__quote@
@@ -840,6 +863,8 @@ distclean-generic:
 	-rm -f map/special/$(am__dirstamp)
 	-rm -f noun/$(DEPDIR)/$(am__dirstamp)
 	-rm -f noun/$(am__dirstamp)
+	-rm -f noun/models/$(DEPDIR)/$(am__dirstamp)
+	-rm -f noun/models/$(am__dirstamp)
 	-rm -f noun/types/boat/$(DEPDIR)/$(am__dirstamp)
 	-rm -f noun/types/boat/$(am__dirstamp)
 	-rm -f test/$(DEPDIR)/$(am__dirstamp)
@@ -855,7 +880,7 @@ clean: clean-am
 clean-am: clean-binPROGRAMS clean-generic mostlyclean-am
 
 distclean: distclean-am
-	-rm -rf ./$(DEPDIR) ai/$(DEPDIR) camp/$(DEPDIR) eng/$(DEPDIR) gfx/$(DEPDIR) gfx/ui/$(DEPDIR) item/$(DEPDIR) lib/$(DEPDIR) lib/fsm/$(DEPDIR) lib/ncolor/src/$(DEPDIR) lib/redblack/$(DEPDIR) lib/sort/$(DEPDIR) lib/stoc/$(DEPDIR) map/$(DEPDIR) map/special/$(DEPDIR) noun/$(DEPDIR) noun/types/boat/$(DEPDIR) test/$(DEPDIR) txt/$(DEPDIR)
+	-rm -rf ./$(DEPDIR) ai/$(DEPDIR) camp/$(DEPDIR) eng/$(DEPDIR) gfx/$(DEPDIR) gfx/ui/$(DEPDIR) item/$(DEPDIR) lib/$(DEPDIR) lib/fsm/$(DEPDIR) lib/ncolor/src/$(DEPDIR) lib/redblack/$(DEPDIR) lib/sort/$(DEPDIR) lib/stoc/$(DEPDIR) map/$(DEPDIR) map/special/$(DEPDIR) noun/$(DEPDIR) noun/models/$(DEPDIR) noun/types/boat/$(DEPDIR) test/$(DEPDIR) txt/$(DEPDIR)
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
 	distclean-tags
@@ -901,7 +926,7 @@ install-ps-am:
 installcheck-am:
 
 maintainer-clean: maintainer-clean-am
-	-rm -rf ./$(DEPDIR) ai/$(DEPDIR) camp/$(DEPDIR) eng/$(DEPDIR) gfx/$(DEPDIR) gfx/ui/$(DEPDIR) item/$(DEPDIR) lib/$(DEPDIR) lib/fsm/$(DEPDIR) lib/ncolor/src/$(DEPDIR) lib/redblack/$(DEPDIR) lib/sort/$(DEPDIR) lib/stoc/$(DEPDIR) map/$(DEPDIR) map/special/$(DEPDIR) noun/$(DEPDIR) noun/types/boat/$(DEPDIR) test/$(DEPDIR) txt/$(DEPDIR)
+	-rm -rf ./$(DEPDIR) ai/$(DEPDIR) camp/$(DEPDIR) eng/$(DEPDIR) gfx/$(DEPDIR) gfx/ui/$(DEPDIR) item/$(DEPDIR) lib/$(DEPDIR) lib/fsm/$(DEPDIR) lib/ncolor/src/$(DEPDIR) lib/redblack/$(DEPDIR) lib/sort/$(DEPDIR) lib/stoc/$(DEPDIR) map/$(DEPDIR) map/special/$(DEPDIR) noun/$(DEPDIR) noun/models/$(DEPDIR) noun/types/boat/$(DEPDIR) test/$(DEPDIR) txt/$(DEPDIR)
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 

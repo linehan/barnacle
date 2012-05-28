@@ -6,6 +6,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
 
 #include "gfx/gfx.h"
 #include "map/map.h"
@@ -53,9 +54,9 @@ int main(int argc, char *argv[])
         init_pair(FLEX, BLACK, WHITE);
         init_pair(FLEX2, BLACK, WHITE);
 
-        new_noun("Guy", PERSON, 0);
-        new_noun("Dummy", DUMMY, 0);
-        new_noun("Dorky", DUMMY, 0);
+        new_noun("Guy", HUMAN, 0);
+        new_noun("Dummy", HOPPER, 0);
+        new_noun("Dorky", HOPPER, 0);
 
         nn("Guy")->mobile(true);
         nn("Guy")->player(true);

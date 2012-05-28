@@ -10,6 +10,7 @@
 #include "../gfx/gfx.h"
 #include "../gfx/ui/titlecard.h"
 #include "../map/tile.h"
+#include "error.h"
 
 
 /*
@@ -18,29 +19,31 @@
  */
 int prep_termcolors(void)
 {
-        if (has_colors()) {
-                start_color();        /* Enable terminal colors */
-        } else {
-                printf("Terminal does not support color");
-                goto fail;
-        }
+        /* Ensure terminal supports color */
+        TRY {
+                if (has_colors())
+                        start_color();
+                else
+                        THROW(1);
+        } CATCH("Terminal does not support color!", 0);
 
-        if (can_change_color()) {
-                init_palette(0);      /* Build our color palette */ 
-                init_gfx_colors();    /* Apply the palette to certain graphics */ 
-        } else {
-                printf("Terminal does not support programmable colors");
-                goto fail;
-        }
+        /* Ensure terminal supports programmable colors */
+        TRY {
+                if (can_change_color()) {
+                        init_palette(0);
+                        init_gfx_colors();
+                } else 
+                        THROW(1);
 
-        if (COLORS < 256) {
-                printf("Terminal does not support 256 colors");
-                goto fail;
-        }
+        } CATCH("Terminal does not support programmable colors", 0);
 
-        return 1;
+        /* Ensure terminal supports 256 colors */
+        TRY {
+                if (COLORS < 256) 
+                        THROW(1);
 
-        fail:
+        } CATCH("Terminal does not support 256 colors", 0);
+        
         return 0;
 }
 

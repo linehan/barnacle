@@ -8,9 +8,9 @@ struct noun_t *__noun_fref;
 enum noun_model {
         SYSTEM,
         SAILBOAT, 
-        PERSON, 
+        HUMAN, 
         MONSTER, 
-        DUMMY
+        HOPPER 
 };
 
 typedef int  (*MODIFY_METHOD)(void *self);
@@ -18,15 +18,5 @@ typedef void (*RENDER_METHOD)(void *self);
 
 void apply_noun_model(struct noun_t *noun);
 
-/* Animation of nouns during rendering 
-``````````````````````````````````````````````````````````````````````````````*/
-struct ani_t {
-        const wchar_t *frame;  /* Frames in the animation reel */
-        int mv_frame;    /* Frame on which to issue a move signal */
-        int mv_dir;      /* Direction in which to move */
-        size_t len;         /* Length of the animation (late binding) */
-};
-
-typedef struct ani_t ANI;
 
 #endif

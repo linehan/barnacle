@@ -50,9 +50,9 @@ static const int SM_RESERVED_Update = 9997;
  * SM_Key(k) is a special tag that accepts a parameter 'k' equal
  * to a 16-bit input value such as those received from a keyboard.
  */
-#define SM_KEYBOARD        0x0000FFFF
-#define SM_KEYPRESS(a)     (SM_KEYBOARD | (a))
-#define SM_Key(a)          (SM_KEYBOARD & (a))
+#define SM_KEYBOARD        0x00008000
+//#define SM_KEYPRESS(a)   (SM_KEYBOARD | (a))
+#define SM_Key(a)          (SM_KEYBOARD | (a))
 
 /* Specifies a delay in game ticks before a message is routed */
 #define SM_WAIT_OFFSET     16 

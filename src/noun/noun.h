@@ -6,9 +6,10 @@
 #include "../map/map.h"
 #include "../lib/fsm/fsm.h"
 #include "../ai/astar.h"
-#include "models.h"
-#include "stats.h"
+#include "animate.h"
 #include "combat.h"
+#include "stats.h"
+#include "models.h"
 
 
 /* The noun type
@@ -80,9 +81,11 @@ struct noun_t {
 ``````````````````````````````````````````````````````````````````````````````*/
 struct noun_t *new_noun(const char *name, uint32_t model, void *obj);
 struct noun_t *key_noun(uint32_t id);
+struct noun_t *find_noun(uint32_t id);
 struct noun_t *get_noun(const char *name);
 struct noun_t *get_noun_at(struct map_t *map, int y, int x);
 struct noun_t *get_player(void);
+int noun_model(uint32_t id);
 
 void free_nouns(void);
 void update_nouns(void);
@@ -117,13 +120,14 @@ void     install_id(uint32_t id, int option); /* Make a noun the subj/obj */
 uint32_t request_id(int option); /* Request the current subj/obj */
 
 
-#define NOUN_CREATURE 0x00000001
-#define NOUN_SAILBOAT 0x00000002
-#define NOUN_RENDERED 0x00000004
-#define NOUN_MOBILE   0x00000008
+#define NOUN_MAN        0x01000000
+#define NOUN_HOPPER     0x02000000
 
 #define NOUN_DOSORT 1
 #define NOUN_NOSORT 0
+
+#define NONOUN   0 
+#define NOMODEL -1
 
 
 /* Support modules 
