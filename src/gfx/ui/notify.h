@@ -1,3 +1,11 @@
+#pragma once
+#ifndef __UI_NOTIFY_H
+#define __UI_NOTIFY_H
+
+struct phrase_t {
+        int n; /* Number of phrases in 'say' */
+        const char *say[];
+};
 
 
 enum alerts {
@@ -5,5 +13,9 @@ enum alerts {
         I_KILL,
 };
 
-void say(const wchar_t *who, const char *msg);
+
 void alert(enum alerts tag, char *msg);
+void picksay(const wchar_t *icon, struct phrase_t *phrase);
+
+
+#endif

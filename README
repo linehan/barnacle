@@ -1,9 +1,69 @@
 
- Player controls:
+                              Arawak 
 
- hjkl movement 
- wasd movement (partially supported)
- e    attack
- r    pick up item
- t    light torch (partially supported)
- :q
+  What is it?
+  -----------
+
+  Arawak is a game for you and your text terminal. 
+
+  There are a number of high quality terminal emulators today that 
+  support rich features like UTF-8 character glyphs and 256-color 
+  output, meaning the command line has never looked better. In fact, 
+  it can look unreasonably good, considering the age of terminal 
+  technology. The goal here is to challenge the limits of 
+  unreasonability, of course!
+
+
+  Documentation
+  -------------
+
+  Additional documentation can be found at
+  http://orinoco.iqyax.org/arawak.html
+
+
+  System Requirements
+  -------------------
+
+  Arawak can be installed on any Linux system, provided certain
+  dependencies are also installed. All are free and open source
+  software. Consult your distribution's package management system, 
+  or install them from source code. More information can be found
+  at the project pages listed below:
+
+        - libev event loop library
+          http://software.schmorp.de/pkg/libev.html
+
+        - ncurses terminal drawing library
+          http://www.gnu.org/software/ncurses/
+
+        - rxvt-unicode terminal emulator
+          http://software.schmorp.de/pkg/rxvt-unicode.html 
+
+        - DejaVu fonts
+          http://dejavu-fonts.org/wiki/Main_Page
+
+        - GNU Unifont Glyphs 
+          http://unifoundry.com/unifont.html 
+
+
+  Installation
+  ------------
+
+  Run the setup script 'setup.sh' or make by hand.
+
+
+  Keyboard Controls
+  -----------------
+
+  h ..... move left
+  j ..... move down 
+  k ..... move up
+  l ..... move right
+
+  e ..... attack
+  r ..... pick up item
+  t ..... light torch
+  u ..... backflip
+  i ..... open inventory
+  <Space> use item
+

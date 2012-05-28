@@ -1,7 +1,6 @@
 #pragma once
-#ifndef __GEOJUG_EXCEPTION_H
-#define __GEOJUG_EXCEPTION_H
-
+#ifndef __ARAWAK_EXCEPTION_H
+#define __ARAWAK_EXCEPTION_H
 #include <stdio.h>
 #include <signal.h>
 #include <setjmp.h>
@@ -18,9 +17,11 @@
 #define CATCH(msg, ...) } else { abort_report(msg, __VA_ARGS__); } } while(0)
 #define THROW(x)   longjmp(exception_env__, (x))
 
+
 /* Public functions */
 void abort_report(const char *fmt, ...);
 void init_signal_handlers(void);
+
 
 #endif
 

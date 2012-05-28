@@ -5,7 +5,7 @@
 void print_dock(void);
 void dock_toggle(void);
 
-void say_speak(wchar_t *icon, char *text);
+void say_speak(const wchar_t *icon, const char *text);
 void say_equip(wchar_t *icon, char *name);
 void say_alert(wchar_t *text, short hicolor, short locolor);
 void say_stats(uint32_t stat);

@@ -2,9 +2,18 @@
 #include "../../com/arawak.h"
 #include "../../txt/gloss.h"
 #include "../../lib/textutils.h"
+#include "../../lib/stoc/stoc.h"
 #include "dock.h"
 #include "notify.h"
 #include "../../test/test.h"
+
+
+void picksay(const wchar_t *icon, struct phrase_t *phrase)
+{
+        int choice;
+        choice = (roll_fair(phrase->n)%phrase->n);
+        say_speak(icon, phrase->say[choice]);
+}
 
 
 /*
@@ -14,7 +23,6 @@
 void alert(enum alerts tag, char *msg)
 {
         wchar_t wcs[200];
-        int scheme;
 
         wclean(wcs, 200);
 

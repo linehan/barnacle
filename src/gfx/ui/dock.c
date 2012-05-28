@@ -82,7 +82,7 @@ void say_equip(wchar_t *icon, char *name)
  * @icon: wide-character icon depicting a speaker's portrait
  * @msg : message text (what they say)
  */
-void say_speak(wchar_t *speaker, char *message)
+void say_speak(const wchar_t *speaker, const char *message)
 {
         release((void **)&SPEAKER);
         release((void **)&MESSAGE);

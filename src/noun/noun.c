@@ -137,6 +137,8 @@ void update_nouns(void)
 }
 
 
+
+
 /* NOUN CONSTRUCTOR 
 ``````````````````````````````````````````````````````````````````````````````*/
 /******************************************************************************
@@ -248,6 +250,8 @@ struct noun_t *new_noun(const char *name, uint32_t model, void *obj)
         /* Store the noun */
         add_to_nountable(new);
 
+
+
         return new;
 }
 
@@ -257,6 +261,16 @@ struct noun_t *new_noun(const char *name, uint32_t model, void *obj)
 
 /* NOUN RETREIVAL AND QUERIES 
 ``````````````````````````````````````````````````````````````````````````````*/
+/**
+ * NO FOCUSED
+ * find_noun -- return a noun without setting 'focused'
+ * @id: unsigned 32-bit unique id
+ */
+struct noun_t *find_noun(uint32_t id)
+{
+        return (struct noun_t *)htab_get(nountable, id);
+}
+
 /**
  * BY ID (KEY)
  * key_noun -- return a noun given its id number 
@@ -291,6 +305,17 @@ struct noun_t *get_noun_at(struct map_t *map, int y, int x)
         return (key_noun(mx_val(map->mobs, y, x)));  
 }
 
+/**
+ * NOUN MODEL 
+ * noun_model -- return the model of the noun given an id number
+ * @id: noun identifier 
+ */
+int noun_model(uint32_t id)
+{
+        struct noun_t *noun;
+        noun = find_noun(id);
+        return noun ? noun->model : NOMODEL;
+}
 
 
 struct noun_t *get_player(void)
@@ -539,18 +564,17 @@ void method_noun_seek(void *self, void *target)
         struct cell_t *tmp;
         tmp = cellpath_next(&s->astar->path);
 
-        if (tmp->x > s->astar->start->x)
-                /*sm_set(s->sm, SM_GoRight, 0);*/
-                sm_msg(s->sm, SM_SELF, SM_GoRight);
-        if (tmp->x < s->astar->start->x)
-                sm_msg(s->sm, SM_SELF, SM_GoLeft);
-                /*sm_set(s->sm, SM_GoLeft, 0);*/
-        if (tmp->y > s->astar->start->y)
-                sm_msg(s->sm, SM_SELF, SM_GoDown);
-                /*sm_set(s->sm, SM_GoDown, 0);*/
-        if (tmp->y < s->astar->start->y)
-                sm_msg(s->sm, SM_SELF, SM_GoUp);
-                /*sm_set(s->sm, SM_GoUp, 0);*/
+        /* Sometimes there -is- no next */
+        if (tmp) {
+                if (tmp->x > s->astar->start->x)
+                        sm_msg(s->sm, SM_SELF, SM_GoRight);
+                if (tmp->x < s->astar->start->x)
+                        sm_msg(s->sm, SM_SELF, SM_GoLeft);
+                if (tmp->y > s->astar->start->y)
+                        sm_msg(s->sm, SM_SELF, SM_GoDown);
+                if (tmp->y < s->astar->start->y)
+                        sm_msg(s->sm, SM_SELF, SM_GoUp);
+        }
 }
 
 
@@ -564,7 +588,13 @@ void method_noun_animate(void *self, void *animation)
 {
         struct noun_t *noun = NOUN(self);
         noun->animation = (struct ani_t *)animation;
-        //noun->frame = 0; /* Reset the frame counter to the first frame */
+        /*
+         * Initialize animation length if it hasn't been set (lets us
+         * declare inline struct ani_t's in model files)
+         */
+        if (noun->animation->len == 0)
+                noun->animation->len = wcslen(noun->animation->wcs);
+
         wbkgrnd(noun->win, mkcch(noun->sprite, 0, noun->color));
 }
 

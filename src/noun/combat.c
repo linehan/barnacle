@@ -41,8 +41,10 @@ uint32_t noun_nbr_any(struct noun_t *noun)
         if (neighbors_exist(&seed))
                 return (random_neighbor(&seed));
         else
-                return 0;
+                return NONOUN;
 }
+
+
 
 uint32_t noun_nbr(struct noun_t *noun, int dir)
 {
@@ -67,5 +69,21 @@ uint32_t noun_nbr(struct noun_t *noun, int dir)
         }
         return (*nbr);
 }
+
+
+uint32_t noun_nbr_model(struct noun_t *noun, int dir, int model)
+{
+        uint32_t neighbor;
+
+        neighbor = noun_nbr(noun, dir);
+
+        if (neighbor != NONOUN && noun_model(neighbor) == model)
+                return neighbor;
+        else
+                return NONOUN;
+}
+
+
+
 
 

@@ -60,9 +60,12 @@ arawak_SOURCES = arawak.c                       \
                    txt/gloss.c                  \
                    txt/effects.c                \
                    noun/noun.c                  \
-                   noun/models.c                \
+                   noun/animate.c               \
                    noun/stats.c                 \
                    noun/combat.c                \
+                   noun/models.c                \
+                   noun/models/human.c          \
+                   noun/models/hopper.c         \
                    noun/types/boat/boat.c       \
                    noun/types/boat/compass.c    \
                    camp/builder.c               \
