@@ -2,7 +2,7 @@
 #ifndef __POS_AND_REC_HEADER 
 #define __POS_AND_REC_HEADER
 
-#include "../com/arawak.h"
+#include "../com/barnacle.h"
 #include "rec.h"
 
 

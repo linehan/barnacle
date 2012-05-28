@@ -1,10 +1,10 @@
 
-                              Arawak 
+                              Barnacle 
 
   What is it?
   -----------
 
-  Arawak is a game for you and your text terminal. 
+  Barnacle is a game for you and your text terminal. 
 
   There are a number of high quality terminal emulators today that 
   support rich features like UTF-8 character glyphs and 256-color 
@@ -17,14 +17,13 @@
   Documentation
   -------------
 
-  Additional documentation can be found at
-  http://orinoco.iqyax.org/arawak.html
+  Additional documentation is coming soon... 
 
 
   System Requirements
   -------------------
 
-  Arawak can be installed on any Linux system, provided certain
+  Barnacle can be installed on any Linux system, provided certain
   dependencies are also installed. All are free and open source
   software. Consult your distribution's package management system, 
   or install them from source code. More information can be found
@@ -45,25 +44,76 @@
         - GNU Unifont Glyphs 
           http://unifoundry.com/unifont.html 
 
+  If you are unsure whether your system meets these dependencies,
+  run the depcheck.sh shell script that should have been included
+  with this software. It's currently a bit crude, but it will do 
+  its best to put you on the right track.
+
 
   Installation
   ------------
 
-  Run the setup script 'setup.sh' or make by hand.
+  At this point, the only way to install Barnacle is to compile 
+  the binary from source. This is something that will be 
+  streamlined in the near future.
 
 
   Keyboard Controls
   -----------------
 
-  h ..... move left
-  j ..... move down 
-  k ..... move up
-  l ..... move right
+  At the moment, the controls call for both hands to operate two
+  familiar control clusters. On the left, the w-a-s-d keys familiar
+  to any first person shooter fan. On the right, the h-j-k-l keys,
+  beloved by users of a certain text editor. At the moment, the right
+  hand controls movement, while the left hand controls attacks in the
+  supplied direction. Additional mappings will soon be supported by a 
+  config file.
 
-  e ..... attack
-  r ..... pick up item
-  t ..... light torch
-  u ..... backflip
-  i ..... open inventory
-  <Space> use item
+
+  Player controls
+  ---------------
+
+  m ......... enter player control mode
+
+  h ......... move left
+  j ......... move down 
+  k ......... move up
+  l ......... move right
+
+  H ......... run left  (sticky)
+  J ......... run down  (sticky)
+  K ......... run up    (sticky)
+  L ......... run right (sticky)
+
+  e ......... pick up item 
+  t ......... light torch
+  u ......... backflip (woo!)
+
+  Space .... Use selected item
+
+
+  Inventory controls
+  ------------------
+
+  The inventory menu can be "quick-selected" by pressing 'i' once.
+  Pressing 'i' a second time will pop up the inventory menu. Pressing
+  it a third time will close the menu.
+
+  i ......... focus / open / close inventory
+  m ......... return focus to player character
+
+  j ......... select next item 
+  k ......... select prev item
+  l ......... display item description 
+  h ......... hide item description
+
+
+  Special controls
+  ----------------
+
+  q ......... quit
+  p ......... pause / unpause game
+  ~ ......... switch to diagnostic view (rarely used)
+  ` ......... open engine console
+
 

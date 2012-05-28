@@ -3,7 +3,7 @@
 #define CCAN_LIST_H
 #include <stdbool.h>
 #include <assert.h>
-#include "../com/arawak.h"
+#include "../com/barnacle.h"
 
 
 /* Allocates memory for and then initializes a new ring head */

@@ -1,3 +1,24 @@
+/* 
+ * init.c -- initialize the engine 
+ * Performs checks on the user's terminal and operating environment.
+ * If something is wrong, execution is terminated and a report printed.
+ * 
+ * Copyright (C) 2012 Jason Linehan 
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software Foundation, 
+ * Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+ */
 #define _XOPEN_SOURCE_EXTENDED = 1  /* extended character sets */
 #include <stdio.h>
 #include <stdlib.h>
@@ -91,7 +112,7 @@ int prep_terminal(void)
 /*
  * The main initialization function for the program
  */
-int arawak_init(void)
+int barnacle_init(void)
 {
         setlocale(LC_ALL,""); /* Must be set for UTF-8 support */
 
@@ -99,7 +120,7 @@ int arawak_init(void)
         prep_terminal();      /* Set modes and perform checks... */
 
         /* Print welcome */
-        print_title("Welcome to Arawak!");
+        print_title("Welcome to Barnacle!");
         print_status("Setting colors...");
         print_status(SUCCESS);
 
@@ -109,7 +130,7 @@ int arawak_init(void)
         print_status(SUCCESS);
         init_tiles();
 
-        print_status("Test-o-plexing...");
+        print_status("Tuning tests...");
         init_test();          /* Start test structures */
 
         print_status(SUCCESS);

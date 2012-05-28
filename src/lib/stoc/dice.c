@@ -1,66 +1,53 @@
-// vim:fdm=marker
-/*******************************************************************************
-FILENAME:  dice.c                                                   
-Subroutines for the generation of pseudorandom numbers, dice rolls, and
-other probabilistic results. 
---------------------------------------------------------------------------------
-   DETAILS                                                               {{{1
-
-    This document and certain functions here use the "dice notation" 
-    first alluded to in the 1974 "Blue Box" edition of Dungeons & Dragons:
-
-       "...In some places the reader will note an abbreviated notation 
-        for the type of die has [sic] been used. The first number is 
-        the number of dice used, the letter "d" appears, and the last 
-        number is the type of dice used. Thus, "2d4" would mean that 
-        two 4-sided dice would be thrown (or one 4-sided die would be 
-        thrown twice); "3d12" would indicate that three 12-sided dice 
-        are used, and so on." 
-
-    The system is very simple and goes a long way toward clarifying any
-    discussion that involves the rolling of dice. The convention is:
-
-          AdX, where A: the number of dice
-                     X: the number of sides ("faces") on each die
-
-    This notation also accomodates various mathematical operators that can
-    be used to shape the outcome of a roll or series of rolls:
-
-          AdX+B, where B: a number added to the sum of AdX
-
-    Other operators that can be used include -, *, %, or anything else you
-    put your mind to. Along with these are the special operands L (lowest)
-    and H (highest), which take the lowest or highest result of the rolls 
-    as their value, e.g.
-
-          AdX-L (Roll AdX and discard the lowest result)
-
-    It can be seen that for this example, the probability curve of the rolls 
-    will be skewed toward the higher numbers. When rolling dice, we want to 
-    ensure that the results are normally distributed. To do this, consider 
-    the central limit theorem:
-
-    Let ⦃X₁,...,Xₙ⦄ be a random sample of size n -- that is, a sequence of 
-    independent and identically distributed random variables with expected 
-    values μ and variances σ². 
-       
-    Suppose we are interested in the behavior of the sample average of 
-    these random variables: Sₙ := (X₁+⋯+Xₙ)/n. 
-       
-    The central limit theorem asserts that as n gets larger and larger, 
-    the distribution of Sₙ approximates normal, with mean μ and variance 
-    (1/n)σ².
-       
-    In fact, Sₙ approaches a normal distribution regardless of the shape 
-    of the distributions of individual X's!
-
-    So, if we roll a fair die, the probability distribution will be linear,
-    i.e., each face will have an equal probability of being rolled. In order
-    to make the results of our dice rolls normally distributed, we simply
-    roll at least three dice, and work on the sum, the aggregate, of these 
-    throws.                                                              }}}1
---------------------------------------------------------------------------------
-*******************************************************************************/
+/* dice.c -- Pseudorandom discrete probability distributions (dice rolls) 
+ ******************************************************************************
+ * This document and certain functions here use the "dice notation" 
+ * first alluded to in the 1974 "Blue Box" edition of Dungeons & Dragons:
+ *
+ *      "...In some places the reader will note an abbreviated notation 
+ *      for the type of die has [sic] been used. The first number is 
+ *      the number of dice used, the letter "d" appears, and the last 
+ *      number is the type of dice used. Thus, "2d4" would mean that 
+ *      two 4-sided dice would be thrown (or one 4-sided die would be 
+ *      thrown twice); "3d12" would indicate that three 12-sided dice 
+ *      are used, and so on." 
+ *
+ * The system is very simple and goes a long way toward clarifying any
+ * discussion that involves the rolling of dice. The convention is:
+ *
+ *      AdX, where A: the number of dice
+ *                 X: the number of sides ("faces") on each die
+ *
+ * This notation also accomodates various mathematical operators that can
+ * be used to shape the outcome of a roll or series of rolls:
+ *
+ *      AdX+B, where B: a number added to the sum of AdX
+ *
+ * Other operators that can be used include -, *, %, or anything else you
+ * put your mind to. Along with these are the special operands L (lowest)
+ * and H (highest), which take the lowest or highest result of the rolls 
+ * as their value, e.g.
+ *
+ *      AdX-L (Roll AdX and discard the lowest result)
+ *
+ * It can be seen that for this example, the probability curve of the rolls 
+ * will be skewed toward the higher numbers. 
+ ******************************************************************************
+ * Copyright (C) 2012 Jason Linehan 
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software Foundation, 
+ * Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+ */
 #include <stdlib.h>
 #include <math.h>
 

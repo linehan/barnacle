@@ -6,7 +6,7 @@
  * map.h -- objects and methods for graphical representation of terrain 
  *
  */
-#include "../com/arawak.h"
+#include "../com/barnacle.h"
 #include "../eng/bytes.h"
 #include "../gfx/gfx.h"
 #include "../lib/matrix.h"

@@ -1,8 +1,22 @@
-// vim:fdm=marker
-/*******************************************************************************
-   FILENAME:  palette.c
-   Colors and color pairs that will be used by ncurses
-*******************************************************************************/
+/* 
+ * palette.c -- Rat's nest of color definitions, often changed.
+ * 
+ * Copyright (C) 2012 Jason Linehan 
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software Foundation, 
+ * Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+ */
 #define _XOPEN_SOURCE_EXTENDED = 1  /* extended character sets */
 #include <stdio.h>
 #include <stdlib.h>
@@ -29,18 +43,18 @@ inline void set_color(struct rgb_t *color)
 #define strips 3
 
 
-void mix_colors(void)
-{
-        int i;
-        for (i=0; i<strips; i++) {
-                set_color(&wallbg[i]);
-                set_color(&wallfg[i]);
-                set_color(&backbg[i]);
-                set_color(&backfg[i]);
-                init_pair(FG[i], wallfg[i].tag, wallbg[i].tag);
-                init_pair(BG[i], backfg[i].tag, backbg[i].tag);
-        }
-}
+/*void mix_colors(void)*/
+/*{*/
+        /*int i;*/
+        /*for (i=0; i<strips; i++) {*/
+                /*set_color(&wallbg[i]);*/
+                /*set_color(&wallfg[i]);*/
+                /*set_color(&backbg[i]);*/
+                /*set_color(&backfg[i]);*/
+                /*init_pair(FG[i], wallfg[i].tag, wallbg[i].tag);*/
+                /*init_pair(BG[i], backfg[i].tag, backbg[i].tag);*/
+        /*}*/
+/*}*/
 
 
 inline void darken(struct rgb_t *color, int step)
@@ -53,36 +67,36 @@ inline void darken(struct rgb_t *color, int step)
 }
 
 
-void darken_colors(int step)
-{
-        int i;
-        for (i=0; i<strips; i++) {
-                darken(&wallbg[i], (i+step));
-                darken(&wallfg[i], (i+step));
-                darken(&backbg[i], (i+step));
-                darken(&backfg[i], (i+step));
-        }
-}
+/*void darken_colors(int step)*/
+/*{*/
+        /*int i;*/
+        /*for (i=0; i<strips; i++) {*/
+                /*darken(&wallbg[i], (i+step));*/
+                /*darken(&wallfg[i], (i+step));*/
+                /*darken(&backbg[i], (i+step));*/
+                /*darken(&backfg[i], (i+step));*/
+        /*}*/
+/*}*/
 
-inline void lighten(struct rgb_t *color, int step)
-{
-        color->r = (color->r + step < 1000) ? (color->r + step) : 1000;
-        color->g = (color->g + step < 1000) ? (color->g + step) : 1000;
-        color->b = (color->b + step < 1000) ? (color->b + step) : 1000;
+/*inline void lighten(struct rgb_t *color, int step)*/
+/*{*/
+        /*color->r = (color->r + step < 1000) ? (color->r + step) : 1000;*/
+        /*color->g = (color->g + step < 1000) ? (color->g + step) : 1000;*/
+        /*color->b = (color->b + step < 1000) ? (color->b + step) : 1000;*/
 
-        set_color(color);
-}
+        /*set_color(color);*/
+/*}*/
 
-void lighten_colors(int step)
-{
-        int i;
-        for (i=0; i<strips; i++) {
-                lighten(&wallbg[i], (i+step));
-                lighten(&wallfg[i], (i+step));
-                lighten(&backbg[i], (i+step));
-                lighten(&backfg[i], (i+step));
-        }
-}
+/*void lighten_colors(int step)*/
+/*{*/
+        /*int i;*/
+        /*for (i=0; i<strips; i++) {*/
+                /*lighten(&wallbg[i], (i+step));*/
+                /*lighten(&wallfg[i], (i+step));*/
+                /*lighten(&backbg[i], (i+step));*/
+                /*lighten(&backfg[i], (i+step));*/
+        /*}*/
+/*}*/
 
 
 
@@ -100,7 +114,6 @@ void make_glow_colors(short basecolor, short color_block, short pair_block)
         short fg;
         short bg;
         short pa;
-        float mix;
         short i;
 
         for (i=0; i<PAIR_BLOCK_SIZE; i++) {
@@ -455,5 +468,4 @@ void init_palette(int set)
         init_pair(BLACK_BLACK, BLACK, BLACK);
 
         torch_colors();
-        mix_colors();
 }

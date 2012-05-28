@@ -1,21 +1,35 @@
+/* 
+ * astar.c -- the A* pathfinding algorithm 
+ *
+ *       "I saw — with shut eyes, but acute mental vision — 
+ *        I saw the pale student of unhallowed arts kneeling 
+ *        beside the thing he had put together."
+ *
+ *               Frankenstein; or, The Modern Prometheus
+ *               Author's introduction (1818)
+ * 
+ * Copyright (C) 2012 Jason Linehan 
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software Foundation, 
+ * Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+ */
 #include <assert.h>
-#include "../com/arawak.h"
+#include "../com/barnacle.h"
 #include "astar.h"
-#include "../test/tests/a_star_test.h"
 #include "../map/cell.h"
 #include "../eng/bytes.h"
 #include "../map/map.h"
-
-
-/*
-        "I saw — with shut eyes, but acute mental vision — 
-         I saw the pale student of unhallowed arts kneeling 
-         beside the thing he had put together."
-
-                Frankenstein; or, The Modern Prometheus
-                Author's introduction (1818)
-*/
-
 
 
 

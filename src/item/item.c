@@ -1,5 +1,31 @@
+/* 
+ * item.c -- Item logic and structures 
+ * Some of the functions here have to use a slightly different naming 
+ * convention to avoid crossing paths with the curses menu library, 
+ * which provides many functions named item_* or *_item, and also defines 
+ * an ITEM typedef. Initially, all of these things were called "equipment",
+ * naturally shortened to "equip" (this file was "equip.c"). Unfortunately,
+ * "equip" is also a verb, one that would naturally be needed in some of 
+ * these routines. Confusion reigned... now it's "item.c".
+ * 
+ * Copyright (C) 2012 Jason Linehan 
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software Foundation, 
+ * Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+ */
 #include <stdlib.h>
-#include "../com/arawak.h"
+#include "../com/barnacle.h"
 #include "../lib/matrix.h"
 #include "../lib/stoc/stoc.h"
 #include "../lib/hash/hash.h"

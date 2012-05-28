@@ -1,3 +1,4 @@
+
 // vim:fdm=marker
 /*
    About Perlin Noise                                                       {{{1

@@ -1,6 +1,6 @@
 #ifndef __GFX_TYPES
 #define __GFX_TYPES
-#include "../com/arawak.h"
+#include "../com/barnacle.h"
 #include <stdlib.h>
 #include <string.h>
 

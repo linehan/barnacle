@@ -9,7 +9,7 @@
 #include <assert.h>
 #include <stdint.h>
 #include <stdarg.h>
-#include "../com/arawak.h"
+#include "../com/barnacle.h"
 
 static const int NBYTES=4;
 static const int NNIBBLES=8;

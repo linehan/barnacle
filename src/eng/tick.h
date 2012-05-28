@@ -1,7 +1,7 @@
 #pragma once
 #ifndef __ENG_TICK_H
 #define __ENG_TICK_H
-#include "../com/arawak.h"
+#include "../com/barnacle.h"
 
 
 /* GAME LOOP TICK

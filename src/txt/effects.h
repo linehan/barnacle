@@ -1,7 +1,7 @@
 #pragma once
 #ifndef __GLOSS_EFFECTS_H
 #define __GLOSS_EFFECTS_H
-#include "../com/arawak.h"
+#include "../com/barnacle.h"
 
 
 void wcs_reveal(WINDOW *win, const wchar_t *wcs, size_t len, int L);

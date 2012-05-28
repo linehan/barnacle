@@ -11,9 +11,8 @@ LDFLAGS=-pg -lm -lrt -lpthread -lmenu -lpanel -lform -lncursesw -lev
 #  gprof        time  POSIX    (curses)  (curses) (curses) ncurses with   libev   
 #                     threads                              wide character  
 #                                                          support
-bin_PROGRAMS = arawak
-arawak_SOURCES = arawak.c                       \
-                   (wildcard lib/ccan/*/*.c)    \
+bin_PROGRAMS = barnacle 
+barnacle_SOURCES = barnacle.c                   \
                    eng/init.c                   \
                    lib/fsm/fsm.c                \
                    lib/redblack/rb.c            \
@@ -22,7 +21,6 @@ arawak_SOURCES = arawak.c                       \
                    lib/sort/quicksort.c         \
                    lib/morton.c                 \
                    lib/magic.c                  \
-                   lib/ncolor/src/ncolor.c      \
                    lib/fifo.c                   \
                    lib/textutils.c              \
                    lib/pos.c                    \
@@ -34,7 +32,6 @@ arawak_SOURCES = arawak.c                       \
                    lib/stoc/shuffle.c           \
                    lib/stoc/smooth.c            \
                    lib/stoc/brnoise.c           \
-                   eng/bytes.c                  \
                    eng/fsm.c                    \
                    eng/loop.c                   \
                    eng/error.c                  \
@@ -61,14 +58,10 @@ arawak_SOURCES = arawak.c                       \
                    txt/effects.c                \
                    noun/noun.c                  \
                    noun/animate.c               \
-                   noun/stats.c                 \
                    noun/combat.c                \
                    noun/models.c                \
                    noun/models/human.c          \
                    noun/models/hopper.c         \
-                   noun/types/boat/boat.c       \
-                   noun/types/boat/compass.c    \
-                   camp/builder.c               \
                    item/item.c                  \
                    item/tools.c                 \
                    item/edible.c                \

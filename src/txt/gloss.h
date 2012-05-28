@@ -1,7 +1,7 @@
 #pragma once
 #ifndef __NOTIFY_GLOSS_H
 #define __NOTIFY_GLOSS_H
-#include "../com/arawak.h"
+#include "../com/barnacle.h"
 #include "../gfx/palette.h"
 #include "effects.h"
 

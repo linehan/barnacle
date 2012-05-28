@@ -3,7 +3,7 @@
 #define __MATRIX_H
 #include <stdlib.h>
 #include <assert.h>
-#include "../com/arawak.h"
+#include "../com/barnacle.h"
 #include "../eng/error.h"
 
 #define NUM_MOORE_NEIGHBORS 8

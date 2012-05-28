@@ -1,7 +1,6 @@
 #pragma once
 #ifndef __PALETTE_H
 #define __PALETTE_H
-#include "../lib/ncolor/src/ncolor.h"
 /* The system's colors go from 0-7 */
 enum arne_colors {
         BLACK      = 17,
@@ -478,13 +477,13 @@ struct rgb_t {
         int b;
 };
 
-static struct rgb_t wallfg[3] = { {252, 431, 372, 290},{252, 431, 372, 290},{252, 431, 372, 290}};
-static struct rgb_t wallbg[3] = { {254, 310, 270, 208},{254, 310, 270, 208},{254, 310, 270, 208}};
-static struct rgb_t backbg[3] = { {254, 310, 270, 208},{254, 310, 270, 208},{254, 310, 270, 208}};
-static struct rgb_t backfg[3] = { {255, 169, 137, 94},{255, 169, 137, 94},{255, 169, 137, 94}};
+//static struct rgb_t wallfg[3] = { {252, 431, 372, 290},{252, 431, 372, 290},{252, 431, 372, 290}};
+//static struct rgb_t wallbg[3] = { {254, 310, 270, 208},{254, 310, 270, 208},{254, 310, 270, 208}};
+//static struct rgb_t backbg[3] = { {254, 310, 270, 208},{254, 310, 270, 208},{254, 310, 270, 208}};
+//static struct rgb_t backfg[3] = { {255, 169, 137, 94},{255, 169, 137, 94},{255, 169, 137, 94}};
 
-static short FG[3]={255,254,253};
-static short BG[3]={252,251,250};
+//static short FG[3]={255,254,253};
+//static short BG[3]={252,251,250};
 
 void assign_glow_colors(short base, short *fg, short *bg, short *pa);
 

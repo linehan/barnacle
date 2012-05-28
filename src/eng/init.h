@@ -11,7 +11,7 @@
         "URxvt.font:    xft:DejaVu Sans Mono:pixelsize=14,"       \
         "               xft:Unifont:pixelsize=16:antialias=false")
 
-int arawak_init(void);
+int barnacle_init(void);
 
 
 #endif
