@@ -1,0 +1,274 @@
+noun/models/human.o: noun/models/human.c noun/models/../noun.h \
+ noun/models/../../com/barnacle.h noun/models/../../com/container_of.h \
+ /usr/lib/gcc/x86_64-unknown-linux-gnu/4.7.0/include/stddef.h \
+ noun/models/../../com/check_type.h noun/models/../../com/build_assert.h \
+ /usr/lib/gcc/x86_64-unknown-linux-gnu/4.7.0/include/stdint.h \
+ /usr/include/stdint.h /usr/include/features.h /usr/include/sys/cdefs.h \
+ /usr/include/bits/wordsize.h /usr/include/gnu/stubs.h \
+ /usr/include/gnu/stubs-64.h /usr/include/bits/wchar.h \
+ /usr/lib/gcc/x86_64-unknown-linux-gnu/4.7.0/include/stdbool.h \
+ /usr/include/ncurses.h /usr/include/ncurses_dll.h /usr/include/stdio.h \
+ /usr/include/bits/types.h /usr/include/bits/typesizes.h \
+ /usr/include/libio.h /usr/include/_G_config.h /usr/include/wchar.h \
+ /usr/lib/gcc/x86_64-unknown-linux-gnu/4.7.0/include/stdarg.h \
+ /usr/include/bits/stdio_lim.h /usr/include/bits/sys_errlist.h \
+ /usr/include/bits/stdio.h /usr/include/xlocale.h /usr/include/unctrl.h \
+ /usr/include/curses.h /usr/include/panel.h /usr/include/menu.h \
+ /usr/include/eti.h /usr/include/form.h /usr/include/locale.h \
+ /usr/include/bits/locale.h /usr/include/stdlib.h \
+ /usr/include/bits/waitflags.h /usr/include/bits/waitstatus.h \
+ /usr/include/endian.h /usr/include/bits/endian.h \
+ /usr/include/bits/byteswap.h /usr/include/sys/types.h \
+ /usr/include/time.h /usr/include/sys/select.h /usr/include/bits/select.h \
+ /usr/include/bits/sigset.h /usr/include/bits/time.h \
+ /usr/include/sys/sysmacros.h /usr/include/bits/pthreadtypes.h \
+ /usr/include/alloca.h noun/models/../../map/map.h \
+ noun/models/../../map/../com/barnacle.h \
+ noun/models/../../map/../eng/bytes.h /usr/include/assert.h \
+ noun/models/../../map/../eng/../com/barnacle.h \
+ noun/models/../../map/../gfx/gfx.h \
+ noun/models/../../map/../gfx/../com/barnacle.h /usr/include/string.h \
+ /usr/include/bits/string.h /usr/include/bits/string2.h \
+ noun/models/../../map/../gfx/sprite.h \
+ noun/models/../../map/../gfx/palette.h \
+ noun/models/../../map/../gfx/multiwin.h \
+ noun/models/../../map/../gfx/gfx.h \
+ noun/models/../../map/../gfx/../test/test.h \
+ noun/models/../../map/../gfx/../lib/pos.h \
+ noun/models/../../map/../gfx/../lib/../com/barnacle.h \
+ noun/models/../../map/../gfx/../lib/rec.h \
+ noun/models/../../map/../gfx/ui/dock.h \
+ noun/models/../../map/../gfx/ui/stdpan.h \
+ noun/models/../../map/../gfx/ui/../gfx.h \
+ noun/models/../../map/../gfx/ui/titlecard.h \
+ noun/models/../../map/../lib/matrix.h \
+ noun/models/../../map/../lib/../com/barnacle.h \
+ noun/models/../../map/../lib/../eng/error.h /usr/include/signal.h \
+ /usr/include/bits/signum.h /usr/include/bits/siginfo.h \
+ /usr/include/bits/sigaction.h /usr/include/bits/sigcontext.h \
+ /usr/include/bits/sigstack.h /usr/include/sys/ucontext.h \
+ /usr/include/bits/sigthread.h /usr/include/setjmp.h \
+ /usr/include/bits/setjmp.h noun/models/../../map/terrain.h \
+ noun/models/../../map/tag.h noun/models/../../map/special/arena.h \
+ noun/models/../../map/door.h noun/models/../../lib/fsm/fsm.h \
+ noun/models/../../lib/fsm/../list.h \
+ noun/models/../../lib/fsm/../../com/barnacle.h \
+ noun/models/../../lib/fsm/../bheap.h noun/models/../../lib/fsm/states.h \
+ noun/models/../../ai/astar.h noun/models/../../ai/../map/cell.h \
+ noun/models/../../ai/../map/../lib/list.h noun/models/../animate.h \
+ noun/models/../combat.h noun/models/../stats.h \
+ noun/models/../../eng/bytes.h noun/models/../models.h \
+ noun/models/../../map/light.h noun/models/../../item/item.h \
+ noun/models/../../gfx/ui/menu_inventory.h
+
+noun/models/../noun.h:
+
+noun/models/../../com/barnacle.h:
+
+noun/models/../../com/container_of.h:
+
+/usr/lib/gcc/x86_64-unknown-linux-gnu/4.7.0/include/stddef.h:
+
+noun/models/../../com/check_type.h:
+
+noun/models/../../com/build_assert.h:
+
+/usr/lib/gcc/x86_64-unknown-linux-gnu/4.7.0/include/stdint.h:
+
+/usr/include/stdint.h:
+
+/usr/include/features.h:
+
+/usr/include/sys/cdefs.h:
+
+/usr/include/bits/wordsize.h:
+
+/usr/include/gnu/stubs.h:
+
+/usr/include/gnu/stubs-64.h:
+
+/usr/include/bits/wchar.h:
+
+/usr/lib/gcc/x86_64-unknown-linux-gnu/4.7.0/include/stdbool.h:
+
+/usr/include/ncurses.h:
+
+/usr/include/ncurses_dll.h:
+
+/usr/include/stdio.h:
+
+/usr/include/bits/types.h:
+
+/usr/include/bits/typesizes.h:
+
+/usr/include/libio.h:
+
+/usr/include/_G_config.h:
+
+/usr/include/wchar.h:
+
+/usr/lib/gcc/x86_64-unknown-linux-gnu/4.7.0/include/stdarg.h:
+
+/usr/include/bits/stdio_lim.h:
+
+/usr/include/bits/sys_errlist.h:
+
+/usr/include/bits/stdio.h:
+
+/usr/include/xlocale.h:
+
+/usr/include/unctrl.h:
+
+/usr/include/curses.h:
+
+/usr/include/panel.h:
+
+/usr/include/menu.h:
+
+/usr/include/eti.h:
+
+/usr/include/form.h:
+
+/usr/include/locale.h:
+
+/usr/include/bits/locale.h:
+
+/usr/include/stdlib.h:
+
+/usr/include/bits/waitflags.h:
+
+/usr/include/bits/waitstatus.h:
+
+/usr/include/endian.h:
+
+/usr/include/bits/endian.h:
+
+/usr/include/bits/byteswap.h:
+
+/usr/include/sys/types.h:
+
+/usr/include/time.h:
+
+/usr/include/sys/select.h:
+
+/usr/include/bits/select.h:
+
+/usr/include/bits/sigset.h:
+
+/usr/include/bits/time.h:
+
+/usr/include/sys/sysmacros.h:
+
+/usr/include/bits/pthreadtypes.h:
+
+/usr/include/alloca.h:
+
+noun/models/../../map/map.h:
+
+noun/models/../../map/../com/barnacle.h:
+
+noun/models/../../map/../eng/bytes.h:
+
+/usr/include/assert.h:
+
+noun/models/../../map/../eng/../com/barnacle.h:
+
+noun/models/../../map/../gfx/gfx.h:
+
+noun/models/../../map/../gfx/../com/barnacle.h:
+
+/usr/include/string.h:
+
+/usr/include/bits/string.h:
+
+/usr/include/bits/string2.h:
+
+noun/models/../../map/../gfx/sprite.h:
+
+noun/models/../../map/../gfx/palette.h:
+
+noun/models/../../map/../gfx/multiwin.h:
+
+noun/models/../../map/../gfx/gfx.h:
+
+noun/models/../../map/../gfx/../test/test.h:
+
+noun/models/../../map/../gfx/../lib/pos.h:
+
+noun/models/../../map/../gfx/../lib/../com/barnacle.h:
+
+noun/models/../../map/../gfx/../lib/rec.h:
+
+noun/models/../../map/../gfx/ui/dock.h:
+
+noun/models/../../map/../gfx/ui/stdpan.h:
+
+noun/models/../../map/../gfx/ui/../gfx.h:
+
+noun/models/../../map/../gfx/ui/titlecard.h:
+
+noun/models/../../map/../lib/matrix.h:
+
+noun/models/../../map/../lib/../com/barnacle.h:
+
+noun/models/../../map/../lib/../eng/error.h:
+
+/usr/include/signal.h:
+
+/usr/include/bits/signum.h:
+
+/usr/include/bits/siginfo.h:
+
+/usr/include/bits/sigaction.h:
+
+/usr/include/bits/sigcontext.h:
+
+/usr/include/bits/sigstack.h:
+
+/usr/include/sys/ucontext.h:
+
+/usr/include/bits/sigthread.h:
+
+/usr/include/setjmp.h:
+
+/usr/include/bits/setjmp.h:
+
+noun/models/../../map/terrain.h:
+
+noun/models/../../map/tag.h:
+
+noun/models/../../map/special/arena.h:
+
+noun/models/../../map/door.h:
+
+noun/models/../../lib/fsm/fsm.h:
+
+noun/models/../../lib/fsm/../list.h:
+
+noun/models/../../lib/fsm/../../com/barnacle.h:
+
+noun/models/../../lib/fsm/../bheap.h:
+
+noun/models/../../lib/fsm/states.h:
+
+noun/models/../../ai/astar.h:
+
+noun/models/../../ai/../map/cell.h:
+
+noun/models/../../ai/../map/../lib/list.h:
+
+noun/models/../animate.h:
+
+noun/models/../combat.h:
+
+noun/models/../stats.h:
+
+noun/models/../../eng/bytes.h:
+
+noun/models/../models.h:
+
+noun/models/../../map/light.h:
+
+noun/models/../../item/item.h:
+
+noun/models/../../gfx/ui/menu_inventory.h:
