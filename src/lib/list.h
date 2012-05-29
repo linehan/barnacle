@@ -1,29 +1,16 @@
-/* Licensed under LGPLv2.1+ - see LICENSE file for details */
+/*
+ * Augmented version of the circular linked list header authored by
+ * Rusty Russell <rusty@rustcorp.com.au>, who implemented this approach
+ * in the Linux kernel. See http://ccodearchive.net/info/list.html.
+ *
+ * The original is licensed under LGPLv2.1+
+ */
 #ifndef CCAN_LIST_H
 #define CCAN_LIST_H
 #include <stdbool.h>
 #include <assert.h>
 #include "../com/barnacle.h"
 
-
-/* Allocates memory for and then initializes a new ring head */
-#define MAKE_RING(head) \
-        head = (struct list_head *)malloc(sizeof(struct list_head)); \
-        list_head_init(head)
-
-/* Cycles the node pointed to by tmp, so that tmp points to the next item
-   in the ring. */
-#define CYCLEF(head, tmp, type)                \
-        tmp = list_top(head, type, node);      \
-              list_del_from(head, &tmp->node); \
-              list_add_tail(head, &tmp->node)
-
-/* Cycles the node pointed to by tmp, so that tmp points to the previous item
-   in the ring. */
-#define CYCLEB(head, tmp, type)                \
-        tmp = list_tail(head, type, node);     \
-              list_del_from(head, &tmp->node); \
-              list_add(head, &tmp->node)
 
 /**
  * struct list_node - an entry in a doubly-linked list
@@ -217,6 +204,10 @@ static inline bool list_empty(const struct list_head *h)
 	return h->n.next == &h->n;
 }
 
+
+
+
+
 /**
  * list_del - delete an entry from an (unknown) linked list.
  * @n: the list_node to delete from the list.
@@ -385,6 +376,24 @@ static inline const void *list_tail_(const struct list_head *h, size_t off)
  */
 #define list_for_each_safe(h, i, nxt, member)				\
 	list_for_each_safe_off(h, i, nxt, list_off_var_(i, member))
+
+
+/** 
+ * list_count -- how many nodes are in a list?
+ * @n: will contain the number of items
+ * @h: the list_head
+ * @i: the structure containing the list_node
+ * @member: the list_node member of the structure
+ * 
+ * Used similar to the list_for_each macro, but modifies an integer value n, 
+ * leaving it equal to the number of nodes in the list. Note that n must be
+ * initialized to 0.
+ * 
+ * Added 05-29-2012
+ */
+#define list_count(n, h, i, member)					\
+	list_for_each_off(h, i, list_off_var_(i, member)) { n++; }
+
 
 /**
  * list_for_each_off - iterate through a list of memory regions.

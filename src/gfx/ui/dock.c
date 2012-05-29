@@ -69,6 +69,7 @@ wchar_t *SPEAKER;    /* Icon of the current speaker */
 char    *MESSAGE;    /* Text of the current speaker's message */
 GLOSS   *GLOSSMSG;   /* Gloss object if notification active */
 STATS   STAT_WORD;   /* Character stat word of the player character */
+STATS   PREV_WORD;   /* The last set of character stats */
 
 
 /* Times at which player stats or gloss messages were modified */
@@ -122,6 +123,7 @@ void say_stats(STATS stats)
         AP_DELTA = stat_trend(AP(stats), AP(STAT_WORD));
         SP_DELTA = stat_trend(SP(stats), SP(STAT_WORD));
 
+        PREV_WORD = STAT_WORD;
         STAT_WORD = stats;
         STAT_TICK = get_tick(); 
 }
@@ -247,13 +249,27 @@ inline void do_gloss(void)
  */
 inline void stat_trend_timeout(enum stat_trend *trend, int persist)
 {
-        if (get_tick() == STAT_TICK + persist) 
+        if (get_tick() >= STAT_TICK + persist) 
                 *trend = STAT_SAME;
+}
+
+/**
+ * interruptor -- returns a periodic boolean value
+ */
+inline bool interruptor(void)
+{
+        const  int stride = 2;
+        static int i;
+
+        if (i++ == stride)
+                i = 0;
+
+        return i ? false : true;
 }
 
 
 /**
- * print_paused -- replace the dock buffer with a "Paused" message and ticker
+ * print_paused -- replace the dock buffer with a "paused" message and ticker
  */
 void print_paused(void)
 {
@@ -295,7 +311,7 @@ void print_dock(void)
 
         swpumpf(item_field, SZ, L"%ls %s", EQUIPICON, EQUIPNAME);
         swpumpf(text_field, SZ, L"%ls %s",   SPEAKER, MESSAGE);
-        swpumpf(stat_field, SZ, L"⦗%02u⦘⦗%02u⦘⦗%02u⦘", STAT_SPLIT(STAT_WORD));
+        swpumpf(stat_field, SZ, L"⦗%02u⦘⦗%02u⦘⦗%02u⦘", STAT_SPLIT(PREV_WORD));
 
         if (!dock_pan) {
                 init_dock();
@@ -310,12 +326,14 @@ void print_dock(void)
         mvwpumpw(dock_win, 0, stat_field_ofs, L"▕  %ls", stat_field);
 
         mvwchgat(dock_win, 0, stat_ofs(0), 2, 0, hp_color[HP_DELTA], NULL);
-        mvwchgat(dock_win, 0, stat_ofs(1), 2, 0, ap_color[AP_DELTA], NULL);
-        mvwchgat(dock_win, 0, stat_ofs(2), 2, 0, sp_color[SP_DELTA], NULL);
+        mvwchgat(dock_win, 0, stat_ofs(1), 2, 0, sp_color[SP_DELTA], NULL);
+        mvwchgat(dock_win, 0, stat_ofs(2), 2, 0, ap_color[AP_DELTA], NULL);
 
-        stat_trend_timeout(&HP_DELTA, STAT_PERSIST);
-        stat_trend_timeout(&AP_DELTA, STAT_PERSIST);
-        stat_trend_timeout(&SP_DELTA, STAT_PERSIST);
+        if (interruptor()) {
+                HP_DELTA = stat_seek(&STAT_WORD, &PREV_WORD, HP);
+                AP_DELTA = stat_seek(&STAT_WORD, &PREV_WORD, AP);
+                SP_DELTA = stat_seek(&STAT_WORD, &PREV_WORD, SP);
+        }
 
         if (GLOSSMSG) {
                 mvwchgat(dock_win, 0, text_field_ofs, 1, 0, gloss_hi(GLOSSMSG), NULL);

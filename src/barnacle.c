@@ -40,7 +40,6 @@
 #include "gfx/ui/dock.h"
 
 
-/* Rolling start */
 int main(int argc, char *argv[]) 
 {
         barnacle_init();
@@ -66,20 +65,18 @@ int main(int argc, char *argv[])
         init_pair(FLEX2, BLACK, WHITE);
 
         new_noun("Guy", HUMAN, 0);
-        new_noun("Dummy", HOPPER, 0);
-        new_noun("Dorky", HOPPER, 0);
-
         nn("Guy")->mobile(true);
         nn("Guy")->player(true);
+        nn("Guy")->step('d');
+        nn("Guy")->step('d');
+        nn("Guy")->step('d');
 
+        new_noun("Dummy", HOPPER, 0);
         nn("Dummy")->mobile(true);
-        nn("Dorky")->mobile(true);
-
-        nn("Guy")->step('d');
-        nn("Guy")->step('d');
-        nn("Guy")->step('d');
-
         nn("Dummy")->step('u');
+
+        new_noun("Dorky", HOPPER, 0);
+        nn("Dorky")->mobile(true);
         nn("Dorky")->step('r');
         nn("Dorky")->step('r');
         nn("Dorky")->step('r');

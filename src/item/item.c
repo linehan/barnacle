@@ -85,15 +85,15 @@ struct item_t *yx_item(struct map_t *map, int y, int x)
 
 /* INSTANTIATION
 ``````````````````````````````````````````````````````````````````````````````*/
-/* FORWARD DECLARED METHODS */
+/* Forward declared methods */
 void method_item_put(void *self, int y, int x);
 void method_item_equip(void *self, bool yn);
 void DUMMY_METHOD(void *self, struct noun_t *noun);
 
 
 /**
- * CONSTRUCTOR
  * new_item -- make a new item object given an identifying tag
+ * @tag: type of item
  */
 struct item_t *make_item(enum items tag)
 {
@@ -120,20 +120,20 @@ struct item_t *make_item(enum items tag)
 
 /* METHOD HELPERS
 ``````````````````````````````````````````````````````````````````````````````*/
-/* ADD LABEL */ 
+/* Add tile label on the map */ 
 inline void place_item_label(struct item_t *eq)
 {
         mx_set(ACTIVE->item, eq->y, eq->x, eq->id); 
 }
 
-/* REMOVE LABEL */
+/* Remove tile label on the map */
 inline void clean_item_label(struct item_t *eq)
 {
         mx_set(ACTIVE->item, eq->y, eq->x, 0); 
         erase_tile(ACTIVE, eq->y, eq->x);
 }
 
-/* ADD TILE */ 
+/* Add the graphical tile to the map */ 
 inline void place_item_tile(struct item_t *eq)
 {
         if (eq->transparent)
@@ -142,7 +142,7 @@ inline void place_item_tile(struct item_t *eq)
         mvwcch(PLATE(ACTIVE, BGR), eq->y, eq->x, eq->icon, 0, eq->pair);
 }
 
-/* ADD TO NOUN */
+/* Add an item to a noun's inventory */
 inline void add_to_noun(struct noun_t *noun, struct item_t *item)
 {
         assert(noun || !"Noun is NULL");
@@ -150,7 +150,6 @@ inline void add_to_noun(struct noun_t *noun, struct item_t *item)
 
         clean_item_label(item);
         list_add(&noun->inv, &item->node);
-        /*inventory_mkmenu(&noun->inv);*/
 }
 
 
@@ -209,13 +208,22 @@ void method_noun_take(void *self, int y, int x)
         alert(I_FIND, item->name);
 }
 
+/**
+ * CONSUME
+ * method_item_consume -- use an item, then destroy it
+ */
+/*void method_item_consume(void *self)*/
+/*{*/
+        /*ITEM_OBJECT(item, self);*/
+
+        
+
 /** 
  * METHOD DROP
  * method_item_drop -- move an item from a noun's inventory to the map
  */
 void noun_item_drop(struct noun_t *noun)
 {
-        struct seed_t seed;
         int n;
         int x;
         int y;
@@ -224,8 +232,6 @@ void noun_item_drop(struct noun_t *noun)
         x = pos_x(noun->pos);
         y = pos_y(noun->pos);
         n = roll1d(4);
-
-        /*mx_fill(ACTIVE->item, pos_y(noun->pos), pos_x(noun->pos), &seed);*/
 
         for (i=0; i<n; i++) {
                 struct item_t *item = make_item(4+roll1d(4));

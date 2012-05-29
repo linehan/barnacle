@@ -7,7 +7,7 @@
 
 typedef uint32_t STATS;
 
-enum statbytes { HP, SP, AP };
+enum statbyte { HP, SP, AP };
 
 #define STAT_SET(stat, byte, x) (set_byte((stat), (byte), (x)))
 #define STAT_ADD(stat, byte, x) (add_byte((stat), (byte), (x)))
@@ -22,7 +22,6 @@ enum statbytes { HP, SP, AP };
 #define HP_INC(stat)   (STAT_INC(stat, HP))
 #define HP_DEC(stat)   (STAT_DEC(stat, HP))
 
-
 #define SP(stat)       (get_byte(stat, SP))
 #define SP_SET(stat,x) (STAT_SET(stat, SP, (x)))
 #define SP_SUB(stat,x) (STAT_SUB(stat, SP, (x)))
@@ -30,14 +29,12 @@ enum statbytes { HP, SP, AP };
 #define SP_INC(stat)   (STAT_INC(stat, SP))
 #define SP_DEC(stat)   (STAT_DEC(stat, SP))
 
-
 #define AP(stat)       (get_byte(stat, AP))
 #define AP_SET(stat,x) (STAT_SET(stat, AP, (x)))
 #define AP_SUB(stat,x) (STAT_SUB(stat, AP, (x)))
 #define AP_ADD(stat,x) (STAT_ADD(stat, AP, (x)))
 #define AP_INC(stat)   (STAT_INC(stat, AP))
 #define AP_DEC(stat)   (STAT_DEC(stat, AP))
-
 
 #define STAT_SET_ALL(stat, x, y, z) \
         HP_SET(stat, x);            \
@@ -69,7 +66,30 @@ static inline int stat_trend(uint32_t new, uint32_t old)
         return (int)trend;
 }
 
+/**
+ * stat_seek -- increment stat values up or down and indicate direction
+ * @new : pointer to the new (i.e. target) stat word 
+ * @old : pointer to the old (i.e. modified) stat word
+ * @byte: the individual byte of the stat word (e.g. HP) to examine
+ * 
+ * Note that this function expects 'old' to be _retained_, such that
+ * the value at *old will be modified through successive calls to this
+ * function, until the trend becomes STAT_SAME. *new is the target that
+ * *old is "chasing".
+ */
+static inline int stat_seek(uint32_t *new, uint32_t *old, enum statbyte byte)
+{
+        enum stat_trend trend;
 
+        trend = stat_trend(get_byte(*new, byte), get_byte(*old, byte));
+
+        if (trend == STAT_UP)
+                inc_byte(old, byte);
+        else if (trend == STAT_DOWN)
+                dec_byte(old, byte);
+
+        return trend;
+}
 
 
 #endif

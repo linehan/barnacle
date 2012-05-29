@@ -93,13 +93,16 @@ void new_grapefruit(void *self)
 {
         ITEM_OBJECT(item, self);
 
+        uint32_t grapefruit = 0UL;
+        AP_SET(&grapefruit, 2);
+
         item->name = "Grapefruit";
         item->desc = "Makes you lose weight";
         item->icon = L"ⵙ";
         item->transparent = true;
         item->pair = FLEX_GRAPEFRUIT;
         item->fg   = _ORANGE;
-        item->data = new_edible(0x00000002);
+        item->data = new_edible(grapefruit);
         item->use  = &method_use_edible;
 }
 
@@ -108,13 +111,16 @@ void new_lg_potion(void *self)
 {
         ITEM_OBJECT(item, self);
 
+        uint32_t lg_potion = 0UL;
+        HP_SET(&lg_potion, 10);
+
         item->name = "Lg. Potion";
         item->desc = "Big gulp";
         item->icon = L"Ⴃ";
         item->transparent = true;
         item->pair = FLEX_LG_POTION;
         item->fg   = BLACK;
-        item->data = new_edible(0x00000002);
+        item->data = new_edible(lg_potion);
         item->use  = &method_use_edible;
 }
 
@@ -122,13 +128,16 @@ void new_sm_potion(void *self)
 {
         ITEM_OBJECT(item, self);
 
+        uint32_t sm_potion = 0UL;
+        HP_SET(&sm_potion, 5);
+
         item->name = "Sm. Potion";
         item->desc = "Leetle gulp";
         item->icon = L"ⴃ";
         item->transparent = true;
         item->pair = FLEX_SM_POTION;
         item->fg   = BLACK;
-        item->data = new_edible(0x00000002);
+        item->data = new_edible(sm_potion);
         item->use  = &method_use_edible;
 }
 
@@ -136,13 +145,16 @@ void new_elixir(void *self)
 {
         ITEM_OBJECT(item, self);
 
+        uint32_t elixir = 0UL;
+        SP_SET(&elixir, 5);
+
         item->name = "Elixir";
         item->desc = "Elixir schön sauber, she says";
         item->icon = L"⚷";
         item->transparent = true;
         item->pair = FLEX_ELIXIR;
         item->fg   = BLACK;
-        item->data = new_edible(0x00000002);
+        item->data = new_edible(elixir);
         item->use  = &method_use_edible;
 }
 
@@ -151,13 +163,18 @@ void new_palm(void *self)
 {
         ITEM_OBJECT(item, self);
 
+        uint32_t palm = 0UL;
+        HP_SET(&palm, 1);
+        AP_SET(&palm, 3);
+        SP_SET(&palm, 3);
+
         item->name = "Palm";
         item->desc = "For fanning royalty";
         item->icon = L"⸙";
         item->transparent = true;
         item->pair = FLEX_PALM;
         item->fg   = BLACK;
-        item->data = new_edible(0x00000002);
+        item->data = new_edible(palm);
         item->use  = &method_use_edible;
 }
 

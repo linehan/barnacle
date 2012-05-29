@@ -21,9 +21,10 @@
 #include "stdmenu.h"
 #include "../../item/item.h"
 
+struct stdmenu_t *invmenu; /* The inventory menu */
+struct item_t *equipped;   /* Currently equipped item */
 
-struct stdmenu_t *invmenu;
-struct item_t *equipped;
+/* Equipped item gets its own panel */
 WINDOW *equipped_win;
 PANEL  *equipped_pan;
 
@@ -34,19 +35,6 @@ typedef struct item_t INVENTORY_ITEM;
 #define MENU_X 1 
 #define MENU_Y (LINES-MENU_H)
 
-/*
- * Count the number if items in the inventory
- */
-inline int inventory_count(struct list_head *inv)
-{
-        INVENTORY_ITEM *tmp;
-        int n=0;
-
-        list_for_each(inv, tmp, node)
-                n++;
-
-        return (n);
-}
 
 static inline void print_item(struct item_t *item, short pair)
 {
@@ -78,12 +66,12 @@ void inventory_to_menu(struct list_head *inv)
         char     **name;
         wchar_t  **icon;
         int i;
-        int n;
+        int n=0;
 
         if (list_empty(inv))
                 return;
 
-        n = inventory_count(inv);
+        list_count(n, inv, tmp, node); 
 
         name = calloc(n, sizeof(char *));      /* Item names */
         icon = calloc(n, sizeof(wchar_t *));
