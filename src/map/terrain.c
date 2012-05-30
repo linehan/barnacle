@@ -54,7 +54,6 @@ void smooth_layers(struct map_t *map)
         /* Now, target specific threshold values for smoothing. */
         smooth_cycle(map->pmap, ymax, xmax, TERRA, SMOOTH_BO, 3);
         smooth_cycle(map->pmap, ymax, xmax, BEACH, SMOOTH_BO, 3);
-        smooth_cycle(map->pmap, ymax, xmax, SHOAL, SMOOTH_BO, 3);
         smooth_cycle(map->pmap, ymax, xmax, BEACH, SMOOTH_BO, 1);
         smooth_cycle(map->pmap, ymax, xmax, TERRA, SMOOTH_BO, 3);
 }

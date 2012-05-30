@@ -204,6 +204,23 @@ enum lightsandcolors {
 };
 
 
+enum grasses {
+        GR0 = 178, 
+        ASPARAGUS = 179,
+        PINE = 180,
+        BOTTLE = 181,
+        SEAGREEN = 182,
+        DASPARAGUS = 183,
+        DDASPARAGUS = 184,
+};
+
+enum moors {
+        MOORBASE = 185,
+        MOORDARK = 186,
+        MOORPALE = 187,
+        MOORRICH = 188,
+        HOOKER   = 189,
+};
 
 /* ----- PAIRS ------ */
 
@@ -282,6 +299,7 @@ enum stuff {
         ESAND = 79,
         FSAND = 80,
 };
+
 
 
 
@@ -444,6 +462,12 @@ enum uicolors {
 enum superblack {
         BLACK_BLACK = 191
 }; 
+
+enum terraines {
+        AGRASS = 192,
+        BGRASS = 193,
+        MOORTREE = 194,
+};
 
 void darken_colors(int step);
 

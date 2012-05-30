@@ -471,5 +471,24 @@ void init_palette(int set)
         init_pair(BLACK_BEIGE, __BROWN, BLACK);
         init_pair(BLACK_BLACK, BLACK, BLACK);
 
+        init_color(GR0, 455, 764, 396);
+        init_color(ASPARAGUS, 529, 662, 419); 
+        init_color(PINE, 4, 474, 435);
+        init_color(BOTTLE, 0, 416, 306);
+        init_color(SEAGREEN, 180, 545, 341);
+        init_color(DASPARAGUS, 500, 640, 390);
+        init_color(DDASPARAGUS, 480, 620, 370);
+
+        init_color(MOORBASE, 419, 541, 302);
+        /*init_color(MOORDARK, 321, 435, 172);*/
+        init_color(MOORDARK, 388, 474, 314);
+        init_color(MOORPALE, 510, 545, 396);
+        init_color(MOORRICH, 251, 318, 172);
+        init_color(HOOKER, 286, 474, 419);
+
+        init_pair(AGRASS, ASPARAGUS, DDASPARAGUS);
+        init_pair(BGRASS, DDASPARAGUS, MOORBASE);
+        init_pair(MOORTREE, DDASPARAGUS, BOTTLE);
+
         torch_colors();
 }

@@ -94,6 +94,12 @@ static inline void place_rope_label(uint32_t *val)
         set_byte(val, LAB, ROPE);
         set_byte(val, ALT, 3);
 }
+static inline void place_grass_label(uint32_t *val)
+{
+        set_byte(val, LAB, MEADOW);
+        set_byte(val, ALT, 2);
+}
+
 
 #define layer BGR
 /*
@@ -162,6 +168,38 @@ static inline void place_terra_tile(struct map_t *map, int y, int x)
         #undef color
         #undef attr
 }
+
+/** GRASS *********************************************************************/
+
+static const wchar_t heath_tuft[]=L"ᕽᖅᕀ";
+static const wchar_t marsh_tuft[]=L"ᔿᖅ";
+static const wchar_t scrub_tuft[]=L"༝༞༟༝༟༝";
+static const wchar_t flower[]=L"⋇";
+
+#define PICK_GRASS(ptr) (ptr[(roll_fair((ARRAY_SIZE(ptr))-1))])
+#define GRASS_FUN .15f
+
+/**
+ * Place grass tile 
+ */
+static inline void place_grass_tile(struct map_t *map, int y, int x)
+{
+        #define color BGRASS 
+        #define attr1 0
+        #define attr2 A_REVERSE
+
+        if (flip_biased(GRASS_FUN))
+                mvwcch(PLATE(map, layer), y, x, &PICK_GRASS(heath_tuft), attr1, color);
+        else
+                mvwcch(PLATE(map, layer), y, x, L"█", attr2, color);
+
+        #undef color
+        #undef attr1
+        #undef attr2
+}
+
+/** CLIFF *********************************************************************/
+
 /*
  * Place a perspective tile to indicate a drop of elevation
  */
@@ -181,7 +219,8 @@ static inline void place_cliff_tile(struct map_t *map, int y, int x)
  */
 static inline void place_treetop_tile(struct map_t *map, int y, int x)
 {
-        #define color TREETOP
+        //#define color MOORTREE 
+        #define color _TREETOP
         #define attr 0
 
         wipe_tile(map, y, x, TOP);
@@ -323,7 +362,7 @@ static inline void place_tile(struct map_t *map, int y, int x, int type)
                 place_cliff_tile(map, y, x);
                 break;
         case TOP:
-                place_terra_tile(map, y, x);
+                place_grass_tile(map, y, x);
                 break;
         case SHO:
                 place_shoal_tile(map, y, x);
@@ -336,9 +375,6 @@ static inline void place_tile(struct map_t *map, int y, int x, int type)
                 break;
         case TTR:
                 place_treetrunk_tile(map, y, x);
-                break;
-        case DOR:
-                //place_door_tile(map, y, x);
                 break;
         case CAVEDOOR_INSIDE:
                 place_cavedoor_inside_tile(map, y, x);
@@ -366,6 +402,9 @@ static inline void place_tile(struct map_t *map, int y, int x, int type)
                 break;
         case R_ROPE_ANCHOR:
                 place_r_rope_anchor_tile(map, y, x);
+                break;
+        case MEADOW:
+                place_grass_tile(map, y, x);
                 break;
         }
 }

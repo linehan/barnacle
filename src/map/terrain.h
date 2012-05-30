@@ -32,7 +32,6 @@
 
 static const int   OCTAVES  =  6;      /* Number of octaves to smooth */
 static const double PERSIST =  0.99;   /* Persistence factor */
-static const double SHOAL   = -0.003;  /* Shoal isoline */
 static const double BEACH   =  0.00;   /* Beach isoline */
 static const double TERRA   =  0.45;   /* Ground isoline */
 
