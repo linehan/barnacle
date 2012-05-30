@@ -105,8 +105,8 @@ void gen_cavern(struct map_t *map)
         h = pos_boxh(map->pos) - 1;
         w = pos_boxw(map->pos) - 1;
 
-        x_start = w/4;
-        x_final = x_start * 3;
+        x_start = 0;
+        x_final = COLS;
 
         perlin_smooth(map->pmap, h, w, PERSIST, OCTAVES);
         smooth_cycle(map->pmap, h, w, CAVERN, SMOOTH_BO, 4);
@@ -137,7 +137,7 @@ void special_cave(struct map_t *map)
         int i;
         int j;
 
-        platform_w = 30;
+        platform_w = LINES;
         platform_h = 4;
 
         x_start = ((COLS/2) - (platform_w/2));
@@ -165,9 +165,11 @@ struct map_t *new_cave(void)
 
         cave = new_map(FULLSCREEN);
         cave->pmap = simplex_matrix(FULLSCREEN);        
+
+        cave->tag = MAP2DP;
         
-        special_cave(cave);
-        /*gen_cavern(cave);*/
+        /*special_cave(cave);*/
+        gen_cavern(cave);
 
         return (cave);
 }

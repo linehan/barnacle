@@ -23,6 +23,7 @@
 #include "models.h"
 #include "models/human.h"
 #include "models/hopper.h"
+#include "models/omega.h"
 
 
 
@@ -50,6 +51,13 @@ void apply_noun_model(struct noun_t *noun)
                 noun->render = &render_hopper;
                 sm_msg(noun->sm, SM_SELF, SM_Seek | SM_Wait(20));
                 noun->sprite = wdup(L"Ⰹ");
+                noun->color  = FLEX;
+                break;
+        case OMEGA:
+                /*noun->modify = &modify_omega;*/
+                /*noun->render = &render_omega;*/
+                sm_msg(noun->sm, SM_SELF, SM_Seek | SM_Wait(20));
+                noun->sprite = wdup(L"ᘯ");
                 noun->color  = FLEX;
                 break;
         }

@@ -189,6 +189,8 @@ struct stdmenu_t *new_stdmenu(char **name, char **desc, wchar_t **icon, void **u
         new->first   = &stdmenu_first;
         new->last    = &stdmenu_last;
 
+        new->build(new, name, desc, icon, usrptr, n);
+
         return new;
 }
 

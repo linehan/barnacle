@@ -29,6 +29,7 @@
 #include "../gfx/ui/notify.h"
 #include "noun.h"
 #include "models/hopper.h"
+#include "models/omega.h"
 
 
 struct noun_t *PLAYER;
@@ -205,8 +206,16 @@ struct noun_t *new_noun(const char *name, uint32_t model)
 
         struct noun_t *new = calloc(1, sizeof(struct noun_t));
 
-        if (name == NULL)
-                spawn_hopper(new);
+        if (name == NULL) {
+                switch (model) {
+                case HOPPER:
+                        spawn_hopper(new);
+                        break;
+                case OMEGA:
+                        /*spawn_omega(new);*/
+                        break;
+                }
+        }
         else
                 new->name  = cdup(name);
 
@@ -536,6 +545,9 @@ void method_noun_fall(void *self)
 
         y = pos_y(noun->pos);
         x = pos_x(noun->pos);
+
+        if (TILE(ACTIVE, y, x) == ROPE)
+                return;
 
         INC(y, pos_ymax(noun->pos));
 

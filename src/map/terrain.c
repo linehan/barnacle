@@ -72,7 +72,6 @@ void label_regions(struct map_t *map)
         int i;
         int j;
 
-        /*mx_foreach_seed(&seed, map->tile) {*/
         for (i=0; i<pos_h(map->pos); i++) {
         for (j=0; j<pos_w(map->pos); j++) {
 
@@ -98,7 +97,6 @@ void label_cliffs(struct map_t *map)
         int i;
         int j;
 
-        /*mx_foreach_seed(&seed, map->tile) {*/
         for (i=0; i<pos_h(map->pos); i++) {
         for (j=0; j<pos_w(map->pos); j++) {
 
@@ -121,7 +119,6 @@ void label_treetops(struct map_t *map)
         int i;
         int j;
 
-        /*mx_foreach_seed(&seed, map->tile) {*/
         for (i=0; i<pos_h(map->pos); i++) {
         for (j=0; j<pos_w(map->pos); j++) {
 
@@ -163,7 +160,6 @@ void label_treetops_trim(struct map_t *map)
         int i;
         int j;
 
-        /*mx_foreach_seed(&seed, map->tile) {*/
         for (i=0; i<pos_h(map->pos); i++) {
         for (j=0; j<pos_w(map->pos); j++) {
 
@@ -199,7 +195,6 @@ void label_treetrunks(struct map_t *map)
         int i;
         int j;
 
-        /*mx_foreach_seed(&seed, map->tile) {*/
         for (i=0; i<pos_h(map->pos); i++) {
         for (j=0; j<pos_w(map->pos); j++) {
 

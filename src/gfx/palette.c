@@ -166,7 +166,11 @@ void assign_glow_colors(short base, short *fg, short *bg, short *pa)
 void torch_colors(void)
 {
         /* Light sources */
-        init_color(TORCH_COLOR, 851, 490, 235);
+        /*init_color(TORCH_COLOR, 851, 490, 235);*/
+        /*init_color(TORCH_COLOR, 956, 729, 286);*/
+        /*init_color(TORCH_COLOR, 992, 600, 227);*/
+        /*init_color(TORCH_COLOR, 988, 592, 94);*/
+        init_color(TORCH_COLOR, 992, 655, 263);
 
         make_glow_colors(TORCH_COLOR, TORCHF0, TORCHP0);
         make_glow_colors(      BEIGE,   SUNF0,   SUNP0);

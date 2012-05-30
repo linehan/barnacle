@@ -204,16 +204,24 @@ int modify_human(void *self)
                 break;
         /* ------------------------------------------ run  */
         case SM_Key('J'):
-                sm_msg(noun->sm, SM_SELF, SM_RunDown | SM_Opt(STICKY));
+                if (ACTIVE->tag == MAP2DF)
+                        sm_msg(noun->sm, SM_SELF, SM_RunDown | SM_Opt(STICKY));
                 break;
         case SM_Key('K'):
-                sm_msg(noun->sm, SM_SELF, SM_RunUp | SM_Opt(STICKY));
+                if (ACTIVE->tag == MAP2DF)
+                        sm_msg(noun->sm, SM_SELF, SM_RunUp | SM_Opt(STICKY));
                 break;
         case SM_Key('H'):
-                sm_msg(noun->sm, SM_SELF, SM_RunLeft | SM_Opt(STICKY));
+                if (ACTIVE->tag == MAP2DF)
+                        sm_msg(noun->sm, SM_SELF, SM_RunLeft | SM_Opt(STICKY));
+                else
+                        sm_msg(noun->sm, SM_SELF, SM_JumpUpLeft);
                 break;
         case SM_Key('L'):
-                sm_msg(noun->sm, SM_SELF, SM_RunRight | SM_Opt(STICKY));
+                if (ACTIVE->tag == MAP2DF)
+                        sm_msg(noun->sm, SM_SELF, SM_RunRight | SM_Opt(STICKY));
+                else
+                        sm_msg(noun->sm, SM_SELF, SM_JumpUpRight);
                 break;
         /* ------------------------------------------ misc */
         case SM_Key('t'):

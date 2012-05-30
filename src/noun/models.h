@@ -10,7 +10,8 @@ enum noun_model {
         SAILBOAT, 
         HUMAN, 
         MONSTER, 
-        HOPPER 
+        HOPPER,
+        OMEGA
 };
 
 typedef int  (*MODIFY_METHOD)(void *self);

@@ -17,6 +17,7 @@
 #include "special/arena.h"
 #include "door.h"
 
+enum map_class { MAP2DF, MAP2DP };
 
 #define WORLD_HEIGHT   (LINES*3)
 #define WORLD_WIDTH    (COLS*3)
@@ -36,6 +37,7 @@ struct mob_t;
  */
 struct map_t {
         uint32_t id;
+        enum map_class tag;
         /*----------------------------- Graphics */
         WINDOW *win;
         PANEL  *pan;
@@ -84,7 +86,6 @@ struct mapbook *MAPBOOK;
 #define FIELD  (MAPBOOK->field)  /* Accesses the field map */
 #define EXTRA  (MAPBOOK->extra)
 #define ACTIVE (MAPBOOK->active) /* Accesses whichever is active */
-
 
 enum map_label_opts { MAP_DOSMOOTH, MAP_NOSMOOTH };
 

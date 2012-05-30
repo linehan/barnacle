@@ -29,14 +29,14 @@
  * NOTES: Test unit for combat and collision
  ******************************************************************************/
 /*----------------------------------------------------------------------------*/
-struct ani_t roll  = {L"ⰹⰹⰺⰺⰊⰊⰋⰋⰝⰝⰝⰋⰋⰹⰹⰺⰺⰉ"};
-struct ani_t hit1  = {L"ⰹⰹⰶⰶⰶⰆⰆⰆⰹⰹⰉ"};
-struct ani_t hit2  = {L"ⰹⰹⰆⰆⰆⰶⰶⰶⰆⰆⰆⰹⰹⰉ"};
-struct ani_t hop_u = {L"ⰹⰹⰺⰺⰹⰹⰹⰉ", 4, 'u'};
-struct ani_t hop_d = {L"ⰹⰹⰺⰺⰹⰹⰹⰉ", 4, 'd'};
-struct ani_t hop_l = {L"ⰹⰹⰺⰺⰹⰹⰹⰉ", 4, 'l'};
-struct ani_t hop_r = {L"ⰹⰹⰺⰺⰹⰹⰹⰉ", 4, 'r'};
-struct ani_t die   = {L"ⰊⰊⰊⰊⰉ✶✶✺✺✺❁❁✴៹៹ᔊᔊⸯⸯ"};
+static struct ani_t roll  = {L"ⰹⰹⰺⰺⰊⰊⰋⰋⰝⰝⰝⰋⰋⰹⰹⰺⰺⰉ"};
+static struct ani_t hit1  = {L"ⰹⰹⰶⰶⰶⰆⰆⰆⰹⰹⰉ"};
+static struct ani_t hit2  = {L"ⰹⰹⰆⰆⰆⰶⰶⰶⰆⰆⰆⰹⰹⰉ"};
+static struct ani_t hop_u = {L"ⰹⰹⰺⰺⰹⰹⰹⰉ", 4, 'u'};
+static struct ani_t hop_d = {L"ⰹⰹⰺⰺⰹⰹⰹⰉ", 4, 'd'};
+static struct ani_t hop_l = {L"ⰹⰹⰺⰺⰹⰹⰹⰉ", 4, 'l'};
+static struct ani_t hop_r = {L"ⰹⰹⰺⰺⰹⰹⰹⰉ", 4, 'r'};
+static struct ani_t die   = {L"ⰊⰊⰊⰊⰉ✶✶✺✺✺❁❁✴៹៹ᔊᔊⸯⸯ"};
 /*----------------------------------------------------------------------------*/
 
 
@@ -44,14 +44,18 @@ static wchar_t *icon[]={L"蕳",L"蔄",L"簡",L"囧"};
 enum {                   CALM, YELL, ORLY, HURT};
 
 
-static struct phrase_t phrase = {3,{
+static const char *phrase[]={
+        "I'm gonna hop all over you!",
+        "It's hoppin' time!",
+        "You're shoppin' for a hoppin'!",
         "Get fucked!",
-         "I'm hoppin' right for ya!",
-         "This hop's for you!"
-}};
+        "I'm hoppin' right for ya!",
+        "This hop's for you!"
+};
+static int num_phrases = ARRAY_SIZE(phrase);
 
 
-const char *names[]={
+static const char *names[]={
         "Hopcroft" , "Chopin"     , "Chopra"    , "Poppo"    , "Popetet"  ,
         "Focco"    , "Fokko"      , "Popo"      , "Poppiko"  , "Puppe"    ,
         "Vocco"    , "Rabbod"     , "Ratbod"    , "Rathbod"  , "Redbod"   ,
@@ -62,8 +66,9 @@ const char *names[]={
         "Toppe"    , "Toppi"      , "Toppu"     , "Hope"     , "Hopkins"  ,
         "Cropper"  , "Copernicus" , "Hopkinson" , "Hopkin"   , "Hopson"   ,
         "Hobbes"   , "Hobson"     , "Hopovich"  , "Trollope" , "Winthrop" ,
-        "Thobias"
+        "Thobias"  , "Orlof"      , "Orlop"
 };
+static int num_names = ARRAY_SIZE(names);
 
 
 /**
@@ -71,14 +76,9 @@ const char *names[]={
  */
 void pick_name(struct noun_t *noun)
 {
-        static int n = ARRAY_SIZE(names);
         int k;
 
-
-        k = roll_fair(n-1);
-
-        /*wprintw(DIAGNOSTIC_WIN, "k of %d in %d\n", k, n);*/
-
+        k = roll_fair(num_names-1);
         noun->name = cdup(names[k]);
 }
         
@@ -138,14 +138,14 @@ int modify_hopper(void *obj)
                 noun->animate(noun, &hop_u);
                 break;
         case SM_GoDown:
-                if (flip_biased(0.4))
-                        picksay(icon[CALM], &phrase);
+                if (flip_biased(0.3))
+                        say_speak(icon[CALM], phrase[(roll_fair(num_phrases-2))]);
                 noun->animate(noun, &hop_d);
                 break;
         case SM_GoLeft:
                 noun->animate(noun, &hop_l);
-                if (flip_biased(0.4))
-                        picksay(icon[YELL], &phrase);
+                if (flip_biased(0.3))
+                        say_speak(icon[YELL], phrase[(roll_fair(num_phrases-2))]);
                 break;
         case SM_GoRight:
                 noun->animate(noun, &hop_r);

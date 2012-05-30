@@ -1,4 +1,3 @@
-#pragma once
 #ifndef __NOUN_MODEL_HUMAN_H
 #define __NOUN_MODEL_HUMAN_H
 

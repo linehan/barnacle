@@ -196,15 +196,6 @@ void method_item_put(void *self, int y, int x)
         place_item_tile(item);
 }
 
-
-
-
-
-
-
-
-        
-
 /** 
  * METHOD DROP
  * method_item_drop -- move an item from a noun's inventory to the map
@@ -218,10 +209,10 @@ void noun_item_drop(struct noun_t *noun)
 
         x = pos_x(noun->pos);
         y = pos_y(noun->pos);
-        n = roll1d(4);
+        n = roll_fair(4);
 
         for (i=0; i<n; i++) {
-                struct item_t *item = make_item(4+roll1d(4));
+                struct item_t *item = make_item(4+roll_fair(5));
 
                 switch (i) { 
                 case 0:

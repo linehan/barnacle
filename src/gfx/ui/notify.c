@@ -27,19 +27,12 @@
 #include "../../test/test.h"
 
 
-void picksay(const wchar_t *icon, struct phrase_t *phrase)
-{
-        int choice;
-        choice = (roll_fair(phrase->n)%phrase->n);
-        say_speak(icon, phrase->say[choice]);
-}
-
 
 /*
  * alert -- create a gloss object to do the talking 
  * @msg: the message to be used in the gloss object
  */
-void alert(enum alerts tag, char *msg)
+void alert(enum alerts tag, const char *msg)
 {
         wchar_t wcs[200];
 

@@ -41,7 +41,7 @@ void new_rope(void *self)
         #define ROPE_S_ICON L"∮"
         #define ROPE_M_ICON L"∯"
         #define ROPE_L_ICON L"∰"
-        #define ROPE_L_LEN 9 
+        #define ROPE_L_LEN 20
 
         ITEM_OBJECT(item, self);
 
@@ -83,11 +83,14 @@ void use_rope(void *self, struct noun_t *noun)
         x     = pos_x(noun->pos);
 
         /* Decide which way the rope will dangle */
-        if (pos_hdg(noun->pos) == WEST) {
+        if ((TILE(ACTIVE, MIN(y+1, LINES), MAX(x-1, 0)) == CAVEFLOOR)
+        || (pos_hdg(noun->pos) == WEST)) {
+
                 tile = L_ROPE_ANCHOR;
                 DEC(x, 0);
         }
-        else if (pos_hdg(noun->pos) == EAST) {
+        else if ((TILE(ACTIVE, MIN(y+1, LINES), MIN(x+1, COLS-1)) == CAVEFLOOR)
+        ||      (pos_hdg(noun->pos) == EAST)) {
                 tile = R_ROPE_ANCHOR;
                 INC(x, COLS);
         }
@@ -229,9 +232,6 @@ void new_torch(void *self)
         #define TORCH_Hr 2
         #define TORCH_Wr 3
         #define TORCH_WCH L"༈"
-        /*static const short WOOD_pair[3] = {LIGHTP1, LIGHTP2, LIGHTP3};*/
-        /*static const short WOOD_bg[3]   = {LIGHTB1, LIGHTB2, LIGHTB3};*/
-        /*static const short WOOD_fg[3]   = {LIGHT1, LIGHT2, LIGHT3};*/
 
         ITEM_OBJECT(item, self);
         struct torch_t *new;
@@ -239,7 +239,7 @@ void new_torch(void *self)
 
         new = calloc(1, sizeof(struct torch_t));
 
-        new->light = new_light(TORCH_H, TORCH_W, LINES/2, COLS/2, SUN_BASE);
+        new->light = new_light(TORCH_H, TORCH_W, LINES/2, COLS/2, TORCH_BASE);
 
         item->data  = new;
         item->tag   = ITEM_TORCH;

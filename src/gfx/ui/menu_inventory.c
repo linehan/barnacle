@@ -41,7 +41,7 @@ static inline void print_item(struct item_t *item, short pair)
 {
         top_panel(equipped_pan);
         wcolor_set(equipped_win, pair, NULL);
-        mvwadd_wch(equipped_win, 0, 1, mkcch(item->icon, 0, pair));
+        mvwcch(equipped_win, 0, 1, item->icon, 0, pair);
         mvwprintw(equipped_win, 0, 3, "%s\n", item->name);
         invmenu->icons(invmenu, 1, 1);
 }
@@ -205,7 +205,7 @@ static inline int operate_on(void *current, int mode)
                 break;
         }
 
-        equipped = item;
+        equipped = current;
 
         scr_refresh();
         return return_value;

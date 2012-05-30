@@ -4,11 +4,6 @@
 
 #include "../../txt/gloss.h"
 
-struct phrase_t {
-        int n; /* Number of phrases in 'say' */
-        const char *say[];
-};
-
 
 enum alerts {
         I_FIND,
@@ -16,9 +11,8 @@ enum alerts {
 };
 
 
-void alert(enum alerts tag, char *msg);
+void alert(enum alerts tag, const char *msg);
 void alertf(short co, short hi, const wchar_t *wfmt, ...);
-void picksay(const wchar_t *icon, struct phrase_t *phrase);
 
 
 #endif

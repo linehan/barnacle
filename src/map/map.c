@@ -79,6 +79,7 @@ struct map_t *new_map(int h, int w)
 
         /* Build some stuff */
         new->id     = mt_random();
+        new->tag    = MAP2DF;
         new->tile   = new_matrix(h, w);
         new->mobs   = new_matrix(h, w);
         new->door   = new_matrix(h, w);

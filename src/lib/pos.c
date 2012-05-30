@@ -135,7 +135,7 @@ void method_delete(void *self)
 struct pos_t *new_pos(int ufo_h, int ufo_w, int ufo_y, int ufo_x, 
                       int box_h, int box_w, int box_y, int box_x)
 {
-        struct pos_t *new = malloc(sizeof(struct pos_t));
+        struct pos_t *new = calloc(1, sizeof(struct pos_t));
 
         new->ufo = new_rec(ufo_h, ufo_w, ufo_y, ufo_x);
         new->box = new_rec(box_h, box_w, box_y, box_x);
