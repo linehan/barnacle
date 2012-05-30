@@ -59,7 +59,7 @@ void noun_animate(struct noun_t *noun)
 
         /* Move the panel if this is the move frame */
         if (noun->animation->msg_at == noun->frame)
-                noun->_step(noun, noun->animation->msg);
+                noun->step(noun, noun->animation->msg);
 
         /* Increment the current frame and/or terminate the animation */
         if (++noun->frame == noun->animation->len) {

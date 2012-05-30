@@ -68,7 +68,7 @@ void render_human(void *self)
         struct item_t *item;
 
         noun_animate(noun);
-        noun->_fall(noun);
+        noun->fall(noun);
         glow_light(doorlight, noun, false);
 
         list_for_each(&noun->inv, item, node) {
@@ -97,72 +97,72 @@ int modify_human(void *self)
         { 
         /* ==================================== message response */
         case SM_DigUp:
-                noun->_animate(noun, &dig_u);
+                noun->animate(noun, &dig_u);
                 break;
         case SM_DigDown:
-                noun->_animate(noun, &dig_d);
+                noun->animate(noun, &dig_d);
                 break;
         case SM_DigLeft:
-                noun->_animate(noun, &dig_l);
+                noun->animate(noun, &dig_l);
                 break;
         case SM_DigRight:
-                noun->_animate(noun, &dig_r);
+                noun->animate(noun, &dig_r);
                 break;
         case SM_GoUp:
-                noun->_animate(noun, &walk_u);
+                noun->animate(noun, &walk_u);
                 break;
         case SM_GoDown:
-                noun->_animate(noun, &walk_d);
+                noun->animate(noun, &walk_d);
                 break;
         case SM_GoLeft:
-                noun->_animate(noun, &walk_l);
+                noun->animate(noun, &walk_l);
                 break;
         case SM_GoRight:
-                noun->_animate(noun, &walk_r);
+                noun->animate(noun, &walk_r);
                 break;
         case SM_RunUp:
-                noun->_animate(noun, &run_u);
+                noun->animate(noun, &run_u);
                 break;
         case SM_RunDown:
-                noun->_animate(noun, &run_d);
+                noun->animate(noun, &run_d);
                 break;
         case SM_RunLeft:
-                noun->_animate(noun, &run_l);
+                noun->animate(noun, &run_l);
                 break;
         case SM_RunRight:
-                noun->_animate(noun, &run_r);
+                noun->animate(noun, &run_r);
                 break;
         case SM_PickUp:
-                noun->_animate(noun, &pickup);
-                noun->_take(noun, pos_y(noun->pos), pos_x(noun->pos));
+                noun->animate(noun, &pickup);
+                noun->pickup(noun);
                 break;
         case SM_DodgeDown:
-                noun->_animate(noun, &dodge_d);
+                noun->animate(noun, &dodge_d);
                 break;
         case SM_JumpUpLeft:
-                noun->_animate(noun, &jump_ul);
+                noun->animate(noun, &jump_ul);
                 break;
         case SM_JumpUpRight:
-                noun->_animate(noun, &jump_ur);
+                noun->animate(noun, &jump_ur);
                 break;
         case SM_GetHit:
                 HP_SUB(&noun->vitals, sm_mag(noun->sm));
                 say_stats(noun->vitals);
                 break;
         case SM_PokeUp:
-                noun->_animate(noun, &poke_u);
+                noun->animate(noun, &poke_u);
                 emit_to_noun(noun, 'u', SM_GetHit | SM_Wait(3));
                 break;
         case SM_PokeDown:
-                noun->_animate(noun, &poke_d);
+                noun->animate(noun, &poke_d);
                 emit_to_noun(noun, 'd', SM_GetHit | SM_Wait(3));
                 break;
         case SM_PokeLeft:
-                noun->_animate(noun, &poke_l);
+                noun->animate(noun, &poke_l);
                 emit_to_noun(noun, 'l', SM_GetHit | SM_Wait(3));
                 break;
         case SM_PokeRight:
-                noun->_animate(noun, &poke_r);
+                noun->animate(noun, &poke_r);
                 emit_to_noun(noun, 'r', SM_GetHit | SM_Wait(3));
                 break;
         /* ==================================== keyboard input */

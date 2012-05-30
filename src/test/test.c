@@ -169,6 +169,8 @@ int inspect_control(int dir)
                 move_cursor('d', 4);
                 break;
         case '?':
+                hide_panel(INSPECTORMSGPAN);
+                hide_panel(INSPECTORPAN);
                 return MODE_RELEASE;
         }
 

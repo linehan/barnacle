@@ -48,7 +48,7 @@ void door_trigger(struct noun_t *noun, uint32_t key)
         /* Mob is at src map */
         if (noun->map_id == door->src->id) {
                 map_set_extra(door->dst);
-                noun->_setyx(noun, door->dstrec->y+1, door->dstrec->x);
+                noun->setyx(noun, door->dstrec->y+1, door->dstrec->x);
                 noun->map_id = door->dst->id;
                 top_panel(doorlight->pan);
                 doorlight->lit = true;
@@ -57,7 +57,7 @@ void door_trigger(struct noun_t *noun, uint32_t key)
         /* Mob is at dst map */
         } else {
                 map_set_extra(door->src);
-                noun->_setyx(noun, door->srcrec->y+1, door->srcrec->x);
+                noun->setyx(noun, door->srcrec->y+1, door->srcrec->x);
                 noun->map_id = door->src->id;
                 doorlight->lit = false;
                 hide_panel(doorlight->pan);

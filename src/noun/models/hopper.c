@@ -21,6 +21,8 @@
 #include "../models.h"
 #include "../../gfx/ui/notify.h"
 #include "hopper.h"
+#include "../../lib/textutils.h"
+#include "../../lib/stoc/stoc.h"
 
 /****************************************************************************** 
  * MODEL: Hopper 
@@ -47,6 +49,44 @@ static struct phrase_t phrase = {3,{
          "I'm hoppin' right for ya!",
          "This hop's for you!"
 }};
+
+
+const char *names[]={
+        "Hopcroft" , "Chopin"     , "Chopra"    , "Poppo"    , "Popetet"  ,
+        "Focco"    , "Fokko"      , "Popo"      , "Poppiko"  , "Puppe"    ,
+        "Vocco"    , "Rabbod"     , "Ratbod"    , "Rathbod"  , "Redbod"   ,
+        "Ruotbodo" , "Folcmar"    , "Jakop"     , "Joopi"    , "Joper"    ,
+        "Jopi"     , "Joppa"      , "Joppe"     , "Juoppo"   , "Koppi"    ,
+        "Loptr"    , "Roope"      , "Roopert"   , "Roopi"    , "Ruoppo"   ,
+        "Skopti"   , "Topi"       , "Topia"     , "Topias"   , "Topija"   ,
+        "Toppe"    , "Toppi"      , "Toppu"     , "Hope"     , "Hopkins"  ,
+        "Cropper"  , "Copernicus" , "Hopkinson" , "Hopkin"   , "Hopson"   ,
+        "Hobbes"   , "Hobson"     , "Hopovich"  , "Trollope" , "Winthrop" ,
+        "Thobias"
+};
+
+
+/**
+ * pick_name -- assign a name to a spawned hopper
+ */
+void pick_name(struct noun_t *noun)
+{
+        static int n = ARRAY_SIZE(names);
+        int k;
+
+
+        k = roll_fair(n-1);
+
+        /*wprintw(DIAGNOSTIC_WIN, "k of %d in %d\n", k, n);*/
+
+        noun->name = cdup(names[k]);
+}
+        
+void spawn_hopper(void *obj)
+{
+        struct noun_t *noun = (struct noun_t *)obj;
+        pick_name(noun);
+}
 
 
 
@@ -83,44 +123,44 @@ int modify_hopper(void *obj)
         switch (state)
         {
         case SM_GetHit:
-                noun->_animate(noun, &die);
+                noun->animate(noun, &die);
                 sm_msg(noun->sm, SM_SELF, SM_Destroy|SM_Wait(wait_for(noun))|SM_Pri(9));
                 sm_screen(noun->sm, 9);
                 say_speak(icon[HURT], "Nooo!");
                 break;
         case SM_Attack:
                 if (flip_biased(0.8))
-                        noun->_animate(noun, &hit1);
-                else    noun->_animate(noun, &hit2);
+                        noun->animate(noun, &hit1);
+                else    noun->animate(noun, &hit2);
                 sm_msgmag(noun->sm, nbr, SM_GetHit | SM_Wait(3), 3);
                 break;
         case SM_GoUp:
-                noun->_animate(noun, &hop_u);
+                noun->animate(noun, &hop_u);
                 break;
         case SM_GoDown:
                 if (flip_biased(0.4))
                         picksay(icon[CALM], &phrase);
-                noun->_animate(noun, &hop_d);
+                noun->animate(noun, &hop_d);
                 break;
         case SM_GoLeft:
-                noun->_animate(noun, &hop_l);
+                noun->animate(noun, &hop_l);
                 if (flip_biased(0.4))
                         picksay(icon[YELL], &phrase);
                 break;
         case SM_GoRight:
-                noun->_animate(noun, &hop_r);
+                noun->animate(noun, &hop_r);
                 break;
         case SM_Destroy:
                 alert(I_KILL, noun->name);
                 noun_item_drop(noun);
-                noun->_doom(noun);
+                noun->doom(noun);
                 say_speak(L"", "");
                 break;
         case SM_Seek:
                 if (nbr != NONOUN)
                         sm_msg(noun->sm, SM_SELF, SM_Attack);
                 else
-                        noun->_seek(noun, get_noun("Guy"));
+                        noun->seek(noun, get_noun("Guy"));
 
                 sm_msg(noun->sm, SM_SELF, SM_Seek | SM_Wait(20) | SM_Pri(1));
                 break;

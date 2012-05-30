@@ -38,6 +38,8 @@ void stdmenu_prev(void *self);
 void stdmenu_next(void *self);
 void stdmenu_pgup(void *self);
 void stdmenu_pgdn(void *self);
+void stdmenu_first(void *self);
+void stdmenu_last(void *self);
 void stdmenu_print_icons(void *self, int yofs, int xofs);
 
 
@@ -184,10 +186,10 @@ struct stdmenu_t *new_stdmenu(char **name, char **desc, wchar_t **icon, void **u
         new->prev    = &stdmenu_prev;
         new->pgup    = &stdmenu_pgup;
         new->pgdn    = &stdmenu_pgdn;
+        new->first   = &stdmenu_first;
+        new->last    = &stdmenu_last;
 
-        new->build(new, name, desc, icon, usrptr, n);
-
-        return (new);
+        return new;
 }
 
 
@@ -282,10 +284,15 @@ void stdmenu_cfg(struct stdmenu_t *smenu, int opt, bool set, const char *ch)
 /* NOT_METHOD Assignments to be completed on cursor movement */
 void stdmenu_onmove(struct stdmenu_t *smenu)
 {
+        smenu->old_item = smenu->cur_item;
         smenu->cur_item = current_item(smenu->menu);
+
+        smenu->old_ptr  = smenu->cur_ptr;
         smenu->cur_ptr  = item_userptr(smenu->cur_item);
+
         smenu->cur_row  = item_index(smenu->cur_item);
-        smenu->cur_top  = top_row(smenu->menu);
+        smenu->top_row  = top_row(smenu->menu);
+        smenu->cursor   = (smenu->cur_row - smenu->top_row);
 }
 
 /* "Open" the menu, i.e. make the panel visible */
@@ -328,8 +335,6 @@ void stdmenu_unfocus(void *self)
         smenu->has_focus = false;
 }
 
-
-
 /* Post the menu associated with the stdpan (see man 3 curs_menu) */
 void stdmenu_post(void *self)
 {
@@ -344,6 +349,7 @@ void stdmenu_unpost(void *self)
 {
         struct stdmenu_t *smenu = STDMENU(self);
         unpost_menu(smenu->menu);
+        werase(smenu->win);
         smenu->is_posted = false;
 }
 
@@ -360,6 +366,22 @@ void stdmenu_next(void *self)
 {
         struct stdmenu_t *smenu = STDMENU(self);
         menu_driver(smenu->menu, REQ_NEXT_ITEM);
+        stdmenu_onmove(smenu);
+}
+
+/* Select the first item in the menu */
+void stdmenu_first(void *self)
+{
+        struct stdmenu_t *smenu = STDMENU(self);
+        menu_driver(smenu->menu, REQ_FIRST_ITEM);
+        stdmenu_onmove(smenu);
+}
+
+/* Select the last item in the menu */
+void stdmenu_last(void *self)
+{
+        struct stdmenu_t *smenu = STDMENU(self);
+        menu_driver(smenu->menu, REQ_LAST_ITEM);
         stdmenu_onmove(smenu);
 }
 
@@ -393,12 +415,10 @@ void stdmenu_print_icons(void *self, int yofs, int xofs)
         short pair;          
         int i;
 
-        for (i=smenu->cur_top; i<smenu->n; i++) {
-
+        for (i=smenu->top_row ; i<smenu->n; i++) {
                 pair = (i == smenu->cur_row) ? ____PUR_GREY : ____PUR_PURPLE;
                 setcchar(&cch, smenu->icon[i], 0, pair, NULL);
-                
-                mvwadd_wch(smenu->win, yofs+(i-smenu->cur_top), xofs, &cch);
+                mvwadd_wch(smenu->win, yofs+(i-smenu->top_row), xofs, &cch);
         }
 }
 

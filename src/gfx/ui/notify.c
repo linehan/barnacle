@@ -58,3 +58,22 @@ void alert(enum alerts tag, char *msg)
 }
 
 
+/*
+ * alert -- create a gloss object to do the talking 
+ * @msg: the message to be used in the gloss object
+ */
+void alertf(short co, short hi, const wchar_t *wfmt, ...)
+{
+        va_list args;
+        wchar_t buf[200];
+        wclean(buf, 200);
+
+        /* Write formatted output to stream */
+        va_start(args, wfmt);
+        vswprintf(buf, 200, wfmt, args);
+        va_end(args);
+
+        say_alert(buf, co, hi);
+}
+
+

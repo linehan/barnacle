@@ -68,6 +68,8 @@ static inline void sayw(WINDOW *win, const wchar_t *wch)
         copywin(PEEK(map->W), map->win, pos_y((map)->pos), pos_x((map)->pos), 0, 0, LINES-1, COLS-1, 0); \
         doupdate();\
 
+#define CENT_X (COLS/2)
+#define CENT_Y (LINES/2)
 
 void geojug_start(void);
 void build_gpkg(struct gpkg *g);

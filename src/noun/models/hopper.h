@@ -4,6 +4,7 @@
 
 void render_hopper(void *self);
 int  modify_hopper(void *obj);
+void spawn_hopper(void *obj);
 
 #endif
 

@@ -59,8 +59,10 @@ struct stdmenu_t {
         ITEM *cur_item;
         ITEM *old_item;
         void *cur_ptr;
-        int cur_top;
+        void *old_ptr;
+        int top_row;
         int cur_row;
+        int cursor;
         /*---------------------------- Methods */
         void (*del)(void *self);
         void (*build)(void *self, char **name, char **desc, wchar_t **icon, void **userptr, int n);
@@ -74,6 +76,8 @@ struct stdmenu_t {
         void (*icons)(void *self, int yofs, int xofs);
         void (*prev)(void *self);
         void (*next)(void *self);
+        void (*first)(void *self);
+        void (*last)(void *self);
         void (*pgup)(void *self);
         void (*pgdn)(void *self);
 };

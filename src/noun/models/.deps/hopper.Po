@@ -58,7 +58,18 @@ noun/models/hopper.o: noun/models/hopper.c noun/models/../noun.h \
  noun/models/../../ai/../map/../lib/list.h noun/models/../animate.h \
  noun/models/../combat.h noun/models/../stats.h \
  noun/models/../../eng/bytes.h noun/models/../models.h \
- noun/models/../../gfx/ui/notify.h noun/models/hopper.h
+ noun/models/../../gfx/ui/notify.h \
+ noun/models/../../gfx/ui/../../txt/gloss.h \
+ noun/models/../../gfx/ui/../../txt/../com/barnacle.h \
+ noun/models/../../gfx/ui/../../txt/effects.h noun/models/hopper.h \
+ noun/models/../../lib/textutils.h \
+ noun/models/../../lib/../com/barnacle.h \
+ noun/models/../../lib/stoc/stoc.h \
+ noun/models/../../lib/stoc/../../com/barnacle.h \
+ noun/models/../../lib/stoc/brnoise.h \
+ noun/models/../../lib/stoc/mersenne.h noun/models/../../lib/stoc/dice.h \
+ noun/models/../../lib/stoc/noise.h noun/models/../../lib/stoc/shuffle.h \
+ noun/models/../../lib/stoc/smooth.h
 
 noun/models/../noun.h:
 
@@ -268,4 +279,30 @@ noun/models/../models.h:
 
 noun/models/../../gfx/ui/notify.h:
 
+noun/models/../../gfx/ui/../../txt/gloss.h:
+
+noun/models/../../gfx/ui/../../txt/../com/barnacle.h:
+
+noun/models/../../gfx/ui/../../txt/effects.h:
+
 noun/models/hopper.h:
+
+noun/models/../../lib/textutils.h:
+
+noun/models/../../lib/../com/barnacle.h:
+
+noun/models/../../lib/stoc/stoc.h:
+
+noun/models/../../lib/stoc/../../com/barnacle.h:
+
+noun/models/../../lib/stoc/brnoise.h:
+
+noun/models/../../lib/stoc/mersenne.h:
+
+noun/models/../../lib/stoc/dice.h:
+
+noun/models/../../lib/stoc/noise.h:
+
+noun/models/../../lib/stoc/shuffle.h:
+
+noun/models/../../lib/stoc/smooth.h:

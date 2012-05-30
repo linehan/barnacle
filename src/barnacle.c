@@ -38,6 +38,10 @@
 #include "eng/error.h"
 #include "txt/gloss.h"
 #include "gfx/ui/dock.h"
+#include "town/bldg.h"
+
+
+#define __CHECKER__
 
 
 int main(int argc, char *argv[]) 
@@ -64,24 +68,19 @@ int main(int argc, char *argv[])
         init_pair(FLEX, BLACK, WHITE);
         init_pair(FLEX2, BLACK, WHITE);
 
-        new_noun("Guy", HUMAN, 0);
-        nn("Guy")->mobile(true);
-        nn("Guy")->player(true);
-        nn("Guy")->step('d');
-        nn("Guy")->step('d');
-        nn("Guy")->step('d');
+        new_noun("Guy", HUMAN);
+        nn("Guy")->mobile(nn("Guy"), true);
+        nn("Guy")->player(nn("Guy"), true);
+        nn("Guy")->step(nn("Guy"), 'd');
+        nn("Guy")->step(nn("Guy"), 'd');
+        nn("Guy")->step(nn("Guy"), 'd');
 
-        new_noun("Dummy", HOPPER, 0);
-        nn("Dummy")->mobile(true);
-        nn("Dummy")->step('u');
-
-        new_noun("Dorky", HOPPER, 0);
-        nn("Dorky")->mobile(true);
-        nn("Dorky")->step('r');
-        nn("Dorky")->step('r');
-        nn("Dorky")->step('r');
+        spawn_noun(HOPPER, CENT_Y-2, CENT_X+1, true);
+        spawn_noun(HOPPER, CENT_Y, CENT_X, true);
 
         inventory_mkmenu(&nn("Guy")->inv);
+
+        /*bldg_test(); // draws a shack */
 
         enter_event_loop(); 
 

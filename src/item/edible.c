@@ -20,6 +20,8 @@
 #include <stdlib.h>
 #include "../com/barnacle.h"
 #include "item.h"
+#include "../gfx/ui/menu_inventory.h"
+#include "../gfx/ui/notify.h"
 
 
 /* CLASS DATA 
@@ -60,6 +62,15 @@ void method_use_edible(void *self, struct noun_t *noun)
         AP_ADD(&noun->vitals, AP(edible->attr));
 
         say_stats(noun->vitals);
+
+        if (HP(edible->attr))
+                alertf(__HULK, L"%s gives HP +%d!", item->name, HP(edible->attr));
+        if (SP(edible->attr))
+                alertf(__HULK, L"%s gives SP +%d!", item->name, SP(edible->attr));
+        if (AP(edible->attr))
+                alertf(__HULK, L"%s gives AP +%d!", item->name, AP(edible->attr));
+
+        inventory_menu_control(EAT_ITEM);
 }
         
 

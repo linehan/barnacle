@@ -86,8 +86,8 @@ am_barnacle_OBJECTS = barnacle.$(OBJEXT) eng/init.$(OBJEXT) \
 	noun/animate.$(OBJEXT) noun/combat.$(OBJEXT) \
 	noun/models.$(OBJEXT) noun/models/human.$(OBJEXT) \
 	noun/models/hopper.$(OBJEXT) item/item.$(OBJEXT) \
-	item/tools.$(OBJEXT) item/edible.$(OBJEXT) test/test.$(OBJEXT) \
-	test/looptest.$(OBJEXT)
+	item/tools.$(OBJEXT) item/edible.$(OBJEXT) town/bldg.$(OBJEXT) \
+	test/test.$(OBJEXT) test/looptest.$(OBJEXT)
 barnacle_OBJECTS = $(am_barnacle_OBJECTS)
 barnacle_LDADD = $(LDADD)
 DEFAULT_INCLUDES = -I.@am__isrc@
@@ -253,6 +253,7 @@ barnacle_SOURCES = barnacle.c                   \
                    item/item.c                  \
                    item/tools.c                 \
                    item/edible.c                \
+                   town/bldg.c                  \
                    test/test.c                  \
                    test/looptest.c              
 
@@ -508,6 +509,14 @@ item/tools.$(OBJEXT): item/$(am__dirstamp) \
 	item/$(DEPDIR)/$(am__dirstamp)
 item/edible.$(OBJEXT): item/$(am__dirstamp) \
 	item/$(DEPDIR)/$(am__dirstamp)
+town/$(am__dirstamp):
+	@$(MKDIR_P) town
+	@: > town/$(am__dirstamp)
+town/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) town/$(DEPDIR)
+	@: > town/$(DEPDIR)/$(am__dirstamp)
+town/bldg.$(OBJEXT): town/$(am__dirstamp) \
+	town/$(DEPDIR)/$(am__dirstamp)
 test/$(am__dirstamp):
 	@$(MKDIR_P) test
 	@: > test/$(am__dirstamp)
@@ -576,6 +585,7 @@ mostlyclean-compile:
 	-rm -f noun/noun.$(OBJEXT)
 	-rm -f test/looptest.$(OBJEXT)
 	-rm -f test/test.$(OBJEXT)
+	-rm -f town/bldg.$(OBJEXT)
 	-rm -f txt/effects.$(OBJEXT)
 	-rm -f txt/gloss.$(OBJEXT)
 
@@ -635,6 +645,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@noun/models/$(DEPDIR)/human.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@test/$(DEPDIR)/looptest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@test/$(DEPDIR)/test.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@town/$(DEPDIR)/bldg.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@txt/$(DEPDIR)/effects.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@txt/$(DEPDIR)/gloss.Po@am__quote@
 
@@ -813,6 +824,8 @@ distclean-generic:
 	-rm -f noun/models/$(am__dirstamp)
 	-rm -f test/$(DEPDIR)/$(am__dirstamp)
 	-rm -f test/$(am__dirstamp)
+	-rm -f town/$(DEPDIR)/$(am__dirstamp)
+	-rm -f town/$(am__dirstamp)
 	-rm -f txt/$(DEPDIR)/$(am__dirstamp)
 	-rm -f txt/$(am__dirstamp)
 
@@ -824,7 +837,7 @@ clean: clean-am
 clean-am: clean-binPROGRAMS clean-generic mostlyclean-am
 
 distclean: distclean-am
-	-rm -rf ./$(DEPDIR) ai/$(DEPDIR) eng/$(DEPDIR) gfx/$(DEPDIR) gfx/ui/$(DEPDIR) item/$(DEPDIR) lib/$(DEPDIR) lib/fsm/$(DEPDIR) lib/redblack/$(DEPDIR) lib/sort/$(DEPDIR) lib/stoc/$(DEPDIR) map/$(DEPDIR) map/special/$(DEPDIR) noun/$(DEPDIR) noun/models/$(DEPDIR) test/$(DEPDIR) txt/$(DEPDIR)
+	-rm -rf ./$(DEPDIR) ai/$(DEPDIR) eng/$(DEPDIR) gfx/$(DEPDIR) gfx/ui/$(DEPDIR) item/$(DEPDIR) lib/$(DEPDIR) lib/fsm/$(DEPDIR) lib/redblack/$(DEPDIR) lib/sort/$(DEPDIR) lib/stoc/$(DEPDIR) map/$(DEPDIR) map/special/$(DEPDIR) noun/$(DEPDIR) noun/models/$(DEPDIR) test/$(DEPDIR) town/$(DEPDIR) txt/$(DEPDIR)
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
 	distclean-tags
@@ -870,7 +883,7 @@ install-ps-am:
 installcheck-am:
 
 maintainer-clean: maintainer-clean-am
-	-rm -rf ./$(DEPDIR) ai/$(DEPDIR) eng/$(DEPDIR) gfx/$(DEPDIR) gfx/ui/$(DEPDIR) item/$(DEPDIR) lib/$(DEPDIR) lib/fsm/$(DEPDIR) lib/redblack/$(DEPDIR) lib/sort/$(DEPDIR) lib/stoc/$(DEPDIR) map/$(DEPDIR) map/special/$(DEPDIR) noun/$(DEPDIR) noun/models/$(DEPDIR) test/$(DEPDIR) txt/$(DEPDIR)
+	-rm -rf ./$(DEPDIR) ai/$(DEPDIR) eng/$(DEPDIR) gfx/$(DEPDIR) gfx/ui/$(DEPDIR) item/$(DEPDIR) lib/$(DEPDIR) lib/fsm/$(DEPDIR) lib/redblack/$(DEPDIR) lib/sort/$(DEPDIR) lib/stoc/$(DEPDIR) map/$(DEPDIR) map/special/$(DEPDIR) noun/$(DEPDIR) noun/models/$(DEPDIR) test/$(DEPDIR) town/$(DEPDIR) txt/$(DEPDIR)
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 

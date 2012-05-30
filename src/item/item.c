@@ -31,11 +31,10 @@
 #include "../lib/hash/hash.h"
 #include "../map/tile.h"
 #include "../gfx/ui/notify.h"
+#include "../gfx/ui/menu_inventory.h"
 #include "item.h"
 #include "tools.h"
 #include "edible.h"
-
-
 
 void (*item_novum[])(void *self) = {
         &new_rope, 
@@ -118,7 +117,7 @@ struct item_t *make_item(enum items tag)
 
 
 
-/* METHOD HELPERS
+/* ITEM DRAWING (ON THE MAP) 
 ``````````````````````````````````````````````````````````````````````````````*/
 /* Add tile label on the map */ 
 inline void place_item_label(struct item_t *eq)
@@ -142,22 +141,33 @@ inline void place_item_tile(struct item_t *eq)
         mvwcch(PLATE(ACTIVE, BGR), eq->y, eq->x, eq->icon, 0, eq->pair);
 }
 
+
+
+/* ITEM-NOUN INTERACTION
+``````````````````````````````````````````````````````````````````````````````*/
 /* Add an item to a noun's inventory */
-inline void add_to_noun(struct noun_t *noun, struct item_t *item)
+void inventory_add(struct list_head *inv, struct item_t *item)
 {
-        assert(noun || !"Noun is NULL");
+        assert(inv  || !"Inventory is NULL");
         assert(item || !"Item is NULL");
 
         clean_item_label(item);
-        list_add(&noun->inv, &item->node);
+        list_add(inv, &item->node);
 }
 
+/* Add an item to a noun's inventory */
+void inventory_del(struct list_head *inv, struct item_t *item)
+{
+        assert(inv  || !"Inventory is NULL");
+        assert(item || !"Item is NULL");
+
+        list_del_from(inv, &item->node);
+}
 
 
 /* METHODS
 ``````````````````````````````````````````````````````````````````````````````*/
 /**
- * DUMMY METHOD
  * method_item_dummy -- for inheritance
  */
 void DUMMY_METHOD(void *self, struct noun_t *noun) 
@@ -166,7 +176,6 @@ void DUMMY_METHOD(void *self, struct noun_t *noun)
 }
 
 /**
- * METHOD EQUIP 
  * method_item_equip -- make an item "equipped" or active
  */
 void method_item_equip(void *self, bool yn)
@@ -176,7 +185,6 @@ void method_item_equip(void *self, bool yn)
 }
 
 /** 
- * METHOD PUT
  * method_item_put -- places a piece of item at a location on the map
  */
 void method_item_put(void *self, int y, int x)
@@ -189,32 +197,11 @@ void method_item_put(void *self, int y, int x)
 }
 
 
-/** 
- * METHOD TAKE
- * method_item_take -- move an item from the map to a noun's inventory
- */
-void method_noun_take(void *self, int y, int x)
-{
-        struct noun_t *noun = (struct noun_t *)self;
-        struct item_t *item;
 
-        item = yx_item(ACTIVE, y, x);
 
-        if (!item)
-                return;
 
-        add_to_noun(noun, item);
-        inventory_to_menu(&noun->inv);
-        alert(I_FIND, item->name);
-}
 
-/**
- * CONSUME
- * method_item_consume -- use an item, then destroy it
- */
-/*void method_item_consume(void *self)*/
-/*{*/
-        /*ITEM_OBJECT(item, self);*/
+
 
         
 

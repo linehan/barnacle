@@ -64,6 +64,8 @@ struct item_t *yx_item(struct map_t *map, int y, int x);
 
 void noun_item_drop(struct noun_t *noun);
 
-void method_noun_take(void *self, int y, int x);
+void inventory_add(struct list_head *inv, struct item_t *item);
+void inventory_del(struct list_head *inv, struct item_t *item);
+
 
 #endif

@@ -65,6 +65,7 @@ barnacle_SOURCES = barnacle.c                   \
                    item/item.c                  \
                    item/tools.c                 \
                    item/edible.c                \
+                   town/bldg.c                  \
                    test/test.c                  \
                    test/looptest.c              
 

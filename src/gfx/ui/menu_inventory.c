@@ -20,6 +20,7 @@
 #include "../../com/barnacle.h"
 #include "stdmenu.h"
 #include "../../item/item.h"
+#include "menu_inventory.h"
 
 struct stdmenu_t *invmenu; /* The inventory menu */
 struct item_t *equipped;   /* Currently equipped item */
@@ -58,7 +59,22 @@ inline void add_test_items(struct list_head *inv)
                 list_add(inv, &test[i]->node);
 }
 
+/*
+ * SETUP
+ * Create the windows and panels and set the backgrounds
+ */
+inline void inventory_setup(void)
+{
+        equipped_win = newwin(1, MENU_W, LINES-1, 1);
+        wbkgrnd(equipped_win, &PURPLE[2]);
+        equipped_pan = new_panel(equipped_win);
+}
 
+
+/**
+ * inventory_to_menu -- generate an inventory menu from a list of items 
+ * @inv: linked list of items (inventory)
+ */
 void inventory_to_menu(struct list_head *inv)
 {
         INVENTORY_ITEM **item;
@@ -99,21 +115,12 @@ void inventory_to_menu(struct list_head *inv)
 }
 
 
-/*
- * SETUP
- * Create the windows and panels and set the backgrounds
- */
-inline void inventory_setup(void)
-{
-        equipped_win = newwin(1, MENU_W, LINES-1, 1);
-        wbkgrnd(equipped_win, &PURPLE[2]);
-        equipped_pan = new_panel(equipped_win);
-}
+
 
 
 /* 
  * CONSTRUCTOR
- * inventory_mkmenu -- generate an inventory menu 
+ * inventory_mkmenu -- generate an inventory menu for the first time
  */ 
 void inventory_mkmenu(struct list_head *inv)
 {
@@ -137,10 +144,37 @@ void inventory_mkmenu(struct list_head *inv)
 }
 
 
+struct item_t *invmenu_curitem(void)
+{
+        return (struct item_t *)invmenu->cur_ptr;
+}
 
-enum mobmode { INVENTORY_START, INVENTORY_EXIT, INVENTORY_DEFAULT };
+struct item_t *invmenu_previtem(void)
+{
+        return (struct item_t *)invmenu->old_ptr;
+}
+
+
+
+
+enum mobmode { INVENTORY_START, INVENTORY_EXIT, INVENTORY_DEFAULT, INVENTORY_USE };
 bool print_description;
 
+
+
+void inventory_seek(int n)
+{
+        int last = -1;
+        int seek;
+                
+        invmenu->first(invmenu);
+
+        while (seek=invmenu->cursor, (seek != n) && (seek != last)) {
+                last = seek; 
+                invmenu->next(invmenu);
+        }
+
+}
 
 
 static inline int operate_on(void *current, int mode)
@@ -165,14 +199,20 @@ static inline int operate_on(void *current, int mode)
                 invmenu->close(invmenu);
                 return_value = MODE_RESTORE;
                 break;
+        case INVENTORY_USE:
+                item->use(item, PLAYER);
+                return_value = MODE_PERSIST;
+                break;
         }
 
-        equipped = current;
+        equipped = item;
 
         scr_refresh();
         return return_value;
 }
 
+struct item_t *oldie;
+int nnn;
 
 int inventory_menu_control(int input)
 {
@@ -209,9 +249,16 @@ int inventory_menu_control(int input)
                         say_speak(L"", "");
                 }
                 break;
+        case EAT_ITEM:
+                nnn = invmenu->cursor;
+                PLAYER->eat(PLAYER);
+                inventory_seek(nnn);
+                break;
+        case ' ':
+                mode = INVENTORY_USE;
+                break;
         case KEY_ESC:
         case 'm':
-        case ' ':
                 mode = INVENTORY_EXIT;
                 break;
         }

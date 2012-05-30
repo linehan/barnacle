@@ -40,14 +40,14 @@ void apply_noun_model(struct noun_t *noun)
                 HP_SET(&noun->vitals, 25);
                 SP_SET(&noun->vitals, 13);
                 AP_SET(&noun->vitals, 2);
-                noun->_modify = &modify_human;
-                noun->_render = &render_human;
+                noun->modify = &modify_human;
+                noun->render = &render_human;
                 noun->sprite = wdup(L"ⰾ");
                 noun->color  = FLEX;
                 break;
         case HOPPER:
-                noun->_modify = &modify_hopper;
-                noun->_render = &render_hopper;
+                noun->modify = &modify_hopper;
+                noun->render = &render_hopper;
                 sm_msg(noun->sm, SM_SELF, SM_Seek | SM_Wait(20));
                 noun->sprite = wdup(L"Ⰹ");
                 noun->color  = FLEX;
