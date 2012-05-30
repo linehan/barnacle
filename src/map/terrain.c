@@ -77,8 +77,7 @@ void label_regions(struct map_t *map)
 
                 mx_seed(map->tile, i, j, &seed);
 
-                if (map->pmap[i][j] < SHOAL) place_ocean_label(seed.cur); else
-                if (map->pmap[i][j] < BEACH) place_shoal_label(seed.cur); else
+                if (map->pmap[i][j] < BEACH) place_ocean_label(seed.cur); else
                 if (map->pmap[i][j] < TERRA) place_beach_label(seed.cur); else
                                              place_terra_label(seed.cur);
         }
@@ -256,7 +255,6 @@ void label_shorelines(struct map_t *map)
                 if ((LAYER(*seed.cur, 1, TOP))
                 ||  (LAYER(*seed.cur, 1, DRP))
                 ||  (LAYER(*seed.cur, 1, BEA))
-                ||  (LAYER(*seed.cur, 1, SHO))
                 ||  (LAYER(*seed.cur, 1, TTO))
                 ||  (LAYER(*seed.cur, 1, TTR)))
                         continue;
@@ -304,13 +302,7 @@ void label_shorelines(struct map_t *map)
                 }
 
                 for (k=0; k<SURF_FRAMES; k++) {
-                        /*TRY {*/
-                                /*which = roll1d(10);*/
-                                /*if (which > 10)*/
-                                        /*THROW(8);*/
-                        /*} CATCH("Jeez, rolled a %d...", which);*/
                         which = roll1d(10);
-
                         mvwcch(PEEK(map->L[RIM]), i, j, &wch[which], attr, color);
                         NEXT(map->L[RIM]);
                 }

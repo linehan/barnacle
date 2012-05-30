@@ -30,7 +30,7 @@
 #define LAYER(val,n,...) or_byte(val, (LAB), n, __VA_ARGS__)
 //#define  ELEV(val,n,...) or_byte(val, ALT, n, __VA_ARGS__)
 
-static const int   OCTAVES =  6;      /* Number of octaves to smooth */
+static const int   OCTAVES  =  6;      /* Number of octaves to smooth */
 static const double PERSIST =  0.99;   /* Persistence factor */
 static const double SHOAL   = -0.003;  /* Shoal isoline */
 static const double BEACH   =  0.00;   /* Beach isoline */
