@@ -28,6 +28,7 @@ enum map_labels {
         L_ROPE_ANCHOR,
         R_ROPE_ANCHOR,
         MEADOW,
+        LOWMEADOW,
 };                                                                      
 
 #endif

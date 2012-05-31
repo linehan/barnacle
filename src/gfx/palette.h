@@ -1,7 +1,9 @@
 #pragma once
 #ifndef __PALETTE_H
 #define __PALETTE_H
+
 /* The system's colors go from 0-7 */
+
 enum arne_colors {
         BLACK      = 17,
         DGREY      = 18,
@@ -20,288 +22,179 @@ enum arne_colors {
         PINK       = 31,
         BEIGE      = 32,
         WHITE      = 33,
-        DSEA       = 34, 
-        SEA        = 35,
-        LSEA       = 36,
-        LWOOD      = 37,
-        WOOD       = 38,
-        SHADOW     = 39, 
-        DARK_RED   = 42, 
-        DARK_BROWN = 43,
+        DARK_RED   = 34, 
 };
 
-enum arne_shadow1 {
+enum arne_shade1 {
         /*_BLACK  = 43, black is always black */
-        _DGREY  = 44,
-        _GREY   = 45,
-        _LGREY  = 46,
-        _DBLUE  = 47,
-        _BLUE   = 48,
-        _LBLUE  = 49,
-        _DGREEN = 50,
-        _GREEN  = 51,
-        _LGREEN = 52,
-        _BROWN  = 53,
-        _ORANGE = 54,
-        _YELLOW = 55,
-        _RED    = 56,
-        _PINK   = 57,
-        _BEIGE  = 58,
-        _WHITE  = 59,
-        _DSEA   = 60,
-        _SEA    = 61,
-        _LSEA   = 62,
-        _LWOOD  = 64,
-        _WOOD   = 65,
-        _SHADOW = 66,
-        _DARK_RED = 67
+        _DGREY  = 35,
+        _GREY   = 36,
+        _LGREY  = 37,
+        _DBLUE  = 38,
+        _BLUE   = 39,
+        _LBLUE  = 40,
+        _DGREEN = 41,
+        _GREEN  = 42,
+        _LGREEN = 43,
+        _BROWN  = 44,
+        _ORANGE = 45,
+        _YELLOW = 46,
+        _RED    = 47,
+        _PINK   = 48,
+        _BEIGE  = 49,
+        _WHITE  = 50,
+        _DARK_RED =51 
 };
 
-enum arne_shadow2 {
+enum arne_shade2 {
         /*__BLACK  = 68, black is always black */
-        __DGREY  = 69,
-        __GREY   = 70,
-        __LGREY  = 71,
-        __DBLUE  = 72,
-        __BLUE   = 73,
-        __LBLUE  = 74,
-        __DGREEN = 75,
-        __GREEN  = 76,
-        __LGREEN = 77,
-        __BROWN  = 78,
-        __ORANGE = 79,
-        __YELLOW = 80,
-        __RED    = 81,
-        __PINK   = 82,
-        __BEIGE  = 83,
-        __WHITE  = 84,
-        __DSEA   = 85,
-        __SEA    = 86,
-        __LSEA   = 87,
-        __LWOOD  = 88,
-        __WOOD   = 89,
-        __SHADOW = 90,
-        __DARK_RED = 91,
-        __BG = 97,
-        CELESTIALBLUE = 92,
-        CERULEAN = 93,
-        WILDBLUEYONDER = 94,
-        BLASTOFFBRONZE = 95,
-        METALYELLOW    = 96,
-        ZEN_BG = 97,
-        TESTFG = 98,
-        TESTBG = 99,
-        SANDY = 100,
-        SHALLOW = 101,
-        LSHALLOW= 102,
-        A_SAND_LAGOON = 103,
-        B_SAND_LAGOON = 104,
-        C_SAND_LAGOON = 105,
-        D_SAND_LAGOON = 106,
-        A_CLIFF = 107,
-        B_CLIFF = 108,
-        C_CLIFF = 109,
-        D_CLIFF = 110,
-        WATER_HINT = 111,
-        PAL1 = 112,
-        PAL2 = 113,
-        PAL3 = 114,
-        PAL4 = 115,
-        PAL5 = 116,
-        DARK_SAND0 = 117,
-        DARK_SAND1 = 118,
-        DARK_SAND2 = 119,
-        DARK_SAND3 = 120,
-        DARK_SAND4 = 121,
-        DARK_SANDZ = 122,
+        __DGREY  = 52,
+        __GREY   = 53,
+        __LGREY  = 54,
+        __DBLUE  = 55,
+        __BLUE   = 56,
+        __LBLUE  = 57,
+        __DGREEN = 58,
+        __GREEN  = 59,
+        __LGREEN = 60,
+        __BROWN  = 61,
+        __ORANGE = 62,
+        __YELLOW = 63,
+        __RED    = 64,
+        __PINK   = 65,
+        __BEIGE  = 66,
+        __WHITE  = 67,
+        __DARK_RED = 68,
 };
+
+enum special_colors {
+        CELESTIALBLUE = 69,
+        CERULEAN = 70,
+        WILDBLUEYONDER = 71,
+        BLASTOFFBRONZE = 72,
+        METALYELLOW    = 73,
+        ZEN_BG = 74,
+        ___DGREY = 75,
+        ____DGREY = 76 
+};
+
+/* TERRAIN COLORS *************************************************/
+
+enum ocean_colors {
+        COCEAN_BG = 77,  /* Background of ocean swells */
+        COCEAN_HI = 78,  /* "High" ocean swell */
+        COCEAN_LO = 79,  /* "Trough" */
+        _COCEAN_BG = 80,
+};
+enum sand_colors {
+        CSAND_BG = 81,
+        CSAND_FG = 82,
+};
+enum grasses {
+        CLGRASS_BG = 83,
+        CLGRASS_FG = 84,
+        CDGRASS_BG = 85,
+        CDGRASS_FG = 86,
+};
+enum tree_colors {
+        CTREETOP_BG = 87,
+        CTREETOP_FG = 88,
+        CTREETRUNK_BG = 89,
+        CTREETRUNK_FG = 90,
+};
+enum cliff_colors {
+        CCLAY_BG = 91,
+        CCLAY_FG = 92,
+};
+
+/** LIGHT SOURCES ***********************************************/
 
 enum torch_light {
-        TORCH_BASE = 123,
-        TORCHF0 = 123,
-        TORCHF1 = 124,
-        TORCHF2 = 125,
-        TORCHF3 = 126,
-        TORCHF4 = 127,
-        TORCHF5 = 128,
-        TORCHB0 = 129,
-        TORCHB1 = 130,
-        TORCHB2 = 131,
-        TORCHB3 = 132,
-        TORCHB4 = 133,
-        TORCHB5 = 134,
+        TORCH_BASE = 93,
+        TORCHF0 = 93,
+        TORCHF1 = 94,
+        TORCHF2 = 95,
+        TORCHF3 = 96,
+        TORCHF4 = 97,
+        TORCHF5 = 98,
+        TORCHB0 = 99,
+        TORCHB1 = 100,
+        TORCHB2 = 101,
+        TORCHB3 = 102,
+        TORCHB4 = 103,
+        TORCHB5 = 104,
 };
 
 enum sun_light {
-        SUN_BASE = 135,
-        SUNF0 = 135,
-        SUNF1 = 136,
-        SUNF2 = 137,
-        SUNF3 = 138,
-        SUNF4 = 139,
-        SUNF5 = 140,
-        SUNB0 = 141,
-        SUNB1 = 142,
-        SUNB2 = 143,
-        SUNB3 = 144,
-        SUNB4 = 145,
-        SUNB5 = 146,
+        SUN_BASE = 105,
+        SUNF0 = 105,
+        SUNF1 = 106,
+        SUNF2 = 107,
+        SUNF3 = 108,
+        SUNF4 = 109,
+        SUNF5 = 110,
+        SUNB0 = 111,
+        SUNB1 = 112,
+        SUNB2 = 113,
+        SUNB3 = 114,
+        SUNB4 = 115,
+        SUNB5 = 116,
 };
 
 
 enum reserved_light1 {
-        RLIGHT1_BASE = 147,
-        RLIGHT1F0 = 147,
-        RLIGHT1F1 = 148,
-        RLIGHT1F2 = 149,
-        RLIGHT1F3 = 150,
-        RLIGHT1F4 = 151,
-        RLIGHT1F5 = 152,
-        RLIGHT1B0 = 153,
-        RLIGHT1B1 = 154,
-        RLIGHT1B2 = 155,
-        RLIGHT1B3 = 156,
-        RLIGHT1B4 = 157,
-        RLIGHT1B5 = 158,
+        RLIGHT1_BASE = 117,
+        RLIGHT1F0 = 118,
+        RLIGHT1F1 = 119,
+        RLIGHT1F2 = 120,
+        RLIGHT1F3 = 121,
+        RLIGHT1F4 = 122,
+        RLIGHT1F5 = 123,
+        RLIGHT1B0 = 124,
+        RLIGHT1B1 = 125,
+        RLIGHT1B2 = 126,
+        RLIGHT1B3 = 127,
+        RLIGHT1B4 = 128,
+        RLIGHT1B5 = 129,
 };
 
 
 enum reserved_light2 {
-        RLIGHT2_BASE = 159,
-        RLIGHT2F0 = 159,
-        RLIGHT2F1 = 160,
-        RLIGHT2F2 = 161,
-        RLIGHT2F3 = 162,
-        RLIGHT2F4 = 163,
-        RLIGHT2F5 = 164,
-        RLIGHT2B0 = 165,
-        RLIGHT2B1 = 166,
-        RLIGHT2B2 = 167,
-        RLIGHT2B3 = 168,
-        RLIGHT2B4 = 169,
-        RLIGHT2B5 = 170,
+        RLIGHT2_BASE = 130,
+        RLIGHT2F0 = 131,
+        RLIGHT2F1 = 132,
+        RLIGHT2F2 = 133,
+        RLIGHT2F3 = 134,
+        RLIGHT2F4 = 135,
+        RLIGHT2F5 = 136,
+        RLIGHT2B0 = 137,
+        RLIGHT2B1 = 138,
+        RLIGHT2B2 = 139,
+        RLIGHT2B3 = 140,
+        RLIGHT2B4 = 141,
+        RLIGHT2B5 = 142,
+};
+
+enum flex {
+        FLEXBG = 143,
+        FLEXFG = 144,
+        FLEXBG_DEFAULT = 145,
+        FLEXFG_DEFAULT = 146 
+};
+
+
+enum lightsandcolors {
+        TORCH_COLOR = 147 
 };
 
 #define GLOW_COLOR_START TORCHF0
 #define GLOW_COLOR_END   RLIGHT2B5
 
 
-enum flex {
-        FLEXBG = 171,
-        FLEXFG = 172,
-        FLEXBG_DEFAULT = 173,
-        FLEXFG_DEFAULT = 174 
-};
 
 
-enum uistuff {
-        ___DGREY = 175,
-        ____DGREY = 176
-};
-
-enum lightsandcolors {
-        TORCH_COLOR = 177
-};
-
-
-enum grasses {
-        GR0 = 178, 
-        ASPARAGUS = 179,
-        PINE = 180,
-        BOTTLE = 181,
-        SEAGREEN = 182,
-        DASPARAGUS = 183,
-        DDASPARAGUS = 184,
-};
-
-enum moors {
-        MOORBASE = 185,
-        MOORDARK = 186,
-        MOORPALE = 187,
-        MOORRICH = 188,
-        HOOKER   = 189,
-};
 
 /* ----- PAIRS ------ */
-
-/* FG_BG color pairs; odd ones are swaps of even ones. */
-enum ramp_pairs {
-        SEA_DARK      = 17,     /* SHADE0 colors for environment */
-        SEA_MED       = 18,
-        BOAT_DEEP     = 19,
-        BOAT_WOOD     = 20, 
-        BOAT_WHITE    = 21,
-        //SAIL_DEEP     = 22,
-        LAND          = 23,
-        TREETOP       = 24,
-        TREETRUNK     = 25,
-        GRASSY        = 26,
-        SOILGRASS     = 27,
-        SEA_LIG       = 28,
-
-        _SEA_DARK      = 29,    /* SHADE1 colors for environemnt */
-        _SEA_MED       = 30,
-        _BOAT_DEEP     = 31,
-        _BOAT_WOOD     = 32, 
-        _BOAT_WHITE    = 33,
-        _SAIL_DEEP     = 34,
-        _LAND          = 35,
-        _TREETOP       = 36,
-        _TREETRUNK     = 37,
-        _GRASSY        = 38,
-        _SOILGRASS     = 39,
-        _SEA_LIG       = 40, 
-
-        __SEA_DARK      = 41,   /* SHADE2 colors for environment */
-        __SEA_MED       = 42,
-        __BOAT_DEEP     = 43,
-        __BOAT_WOOD     = 44, 
-        __BOAT_WHITE    = 45,
-        __SAIL_DEEP     = 46,
-        __LAND          = 47,
-        __TREETOP       = 48,
-        __TREETRUNK     = 49,
-        __GRASSY        = 50,
-        __SOILGRASS     = 51,
-        __SEA_LIG       = 52,
-
-        SEA__MED = 53,
-        SEA___MED = 54,
-
-        CMP_BEIGE     = 55,   /* These colors are for UI elements */
-        CMP_RED       = 56,
-        CMP_WHITE     = 57,
-        CMP_ORANGE    = 58,
-        CMP_GREEN     = 59,
-        CMP_PINK      = 60,
-        CMP_YELLOW    = 61,
-        CMP_SHADOW    = 62,
-        WARNING       = 63,
-        WARNSHADOW    = 64,
-        GUN_FLASH     = 65,
-        GUN_SMOKE     = 66,
-
-        TESTING      = 67,
-        SEA_SAND     = 68,
-        SEA_SHALLOW  = 69,
-        _SEA_SHALLOW = 70,
-        A_SEA_LAGOON = 71,
-        B_SEA_LAGOON = 72,
-        C_SEA_LAGOON = 73,
-        D_SEA_LAGOON = 74,
-        CLIFF_PAIR   = 75,
-};
-
-enum stuff {
-        BSAND = 76,
-        CSAND = 77,
-        DSAND = 78,
-        ESAND = 79,
-        FSAND = 80,
-};
-
-
-
 
 
 
@@ -318,163 +211,144 @@ enum stuff {
 #define PUR_PIN PUR_LRED
 #define PUR_ORA PUR_ORANGE
 #define PUR_BEI PUR_BEIGE
-#define PUR_WOO PUR_WOOD
 #define TITLE_SCREEN PUR_PURPLE
 
 
-void init_palette(int);
+
 
 enum purpairs {
-        PUR_YELLOW      = 81,
-        PUR_ORANGE      = 82,
-        _PUR_YELLOW     = 83,
-        _PUR_ORANGE     = 84,
-        __PUR_YELLOW    = 85,
-        __PUR_ORANGE    = 86,
-//-----
-        PUR_BEIGE       = 87,
-        PUR_BROWN       = 88,
-        _PUR_BEIGE      = 89,
-        _PUR_BROWN      = 90,
-        __PUR_BEIGE     = 91,
-        __PUR_BROWN     = 92,
-//-----
-        PUR_LBLUE       = 93,
-        PUR_BLUE        = 94,
-        PUR_DBLUE       = 95,
-        _PUR_LBLUE      = 96,
-        _PUR_BLUE       = 97,
-        _PUR_DBLUE      = 98,
-        __PUR_LBLUE     = 99,
-        __PUR_BLUE      = 100,
-        __PUR_DBLUE     = 101,
-//-----
-        PUR_LGREEN      = 102,
-        PUR_GREEN       = 103,
-        PUR_DGREEN      = 104,
-        _PUR_LGREEN     = 105,
-        _PUR_GREEN      = 106,
-        _PUR_DGREEN     = 107,
-        __PUR_LGREEN    = 108,
-        __PUR_GREEN     = 109,
-        __PUR_DGREEN    = 110,
-//-----
-        PUR_LRED        = 111,
-        PUR_RED         = 112,
-        PUR_DRED        = 113,
-        _PUR_LRED       = 114,
-        _PUR_RED        = 115,
-        _PUR_DRED       = 116,
-        __PUR_LRED      = 117,
-        __PUR_RED       = 118,
-        __PUR_DRED      = 119,
-//-----
-        PUR_LSEA        = 120,
-        PUR_SEA         = 121,
-        PUR_DSEA        = 122,
-        _PUR_LSEA       = 123,
-        _PUR_SEA        = 124,
-        _PUR_DSEA       = 125,
-        __PUR_LSEA      = 126,
-        __PUR_SEA       = 127,
-        __PUR_DSEA      = 128,
-//-----
-        PUR_LWOOD       = 129,
-        PUR_WOOD        = 130,
-        _PUR_LWOOD      = 131,
-        _PUR_WOOD       = 132,
-        __PUR_LWOOD     = 133,
-        __PUR_WOOD      = 134,
-//-----
-        PUR_SKY         = 135,
-        PUR_BRONZE      = 136,
-        PUR_METALYELLOW = 137,
-        PUR_CELESTIAL   = 138,
-        PUR_CERULEAN    = 139,
-        PUR_BLACK       = 140,
-        PUR_GREY        = 141, 
-        _PUR_GREY       = 142, 
-        __PUR_GREY      = 143, 
-        PUR_WHITE       = 144,
-        PUR_PURPLE      = 145,
-        _PUR_PURPLE     = 146,
-        PUR_ARSENIC     = 147,
-        FLEX            = 148,
-        FLEX2           = 149,
-        PALP1           = 150,
-        PALP2           = 151,
-        PALP3           = 152,
-        PALP4           = 153,
-        PALP5           = 154,
-        PUR_SOLID       = 155,
+        PUR_YELLOW      = 10,
+        PUR_ORANGE      = 11,
+        _PUR_YELLOW     = 12,
+        _PUR_ORANGE     = 13,
+        __PUR_YELLOW    = 14,
+        __PUR_ORANGE    = 15,
+        PUR_BEIGE       = 16,
+        PUR_BROWN       = 17,
+        _PUR_BEIGE      = 18,
+        _PUR_BROWN      = 19,
+        __PUR_BEIGE     = 20,
+        __PUR_BROWN     = 21,
+        PUR_LBLUE       = 22,
+        PUR_BLUE        = 23,
+        PUR_DBLUE       = 24,
+        _PUR_LBLUE      = 25,
+        _PUR_BLUE       = 26,
+        _PUR_DBLUE      = 27,
+        __PUR_LBLUE     = 28,
+        __PUR_BLUE      = 29,
+        __PUR_DBLUE     = 30,
+        PUR_LGREEN      = 31,
+        PUR_GREEN       = 32,
+        PUR_DGREEN      = 33,
+        _PUR_LGREEN     = 34,
+        _PUR_GREEN      = 35,
+        _PUR_DGREEN     = 36,
+        __PUR_LGREEN    = 37,
+        __PUR_GREEN     = 38,
+        __PUR_DGREEN    = 39,
+        PUR_LRED        = 40,
+        PUR_RED         = 41,
+        PUR_DRED        = 42,
+        _PUR_LRED       = 43,
+        _PUR_RED        = 44,
+        _PUR_DRED       = 45,
+        __PUR_LRED      = 46,
+        __PUR_RED       = 47,
+        __PUR_DRED      = 48,
+
+        PUR_SKY         = 49,
+        PUR_BRONZE      = 50,
+        PUR_METALYELLOW = 51,
+        PUR_CELESTIAL   = 52,
+        PUR_CERULEAN    = 53,
+        PUR_BLACK       = 54,
+        PUR_GREY        = 55, 
+        _PUR_GREY       = 56, 
+        __PUR_GREY      = 57, 
+        PUR_WHITE       = 58,
+        PUR_PURPLE      = 59,
+        _PUR_PURPLE     = 60,
+        ___PUR_PURPLE  = 61,
+        ____PUR_PURPLE = 62,
+        ___PUR_GREY    = 63,
+        ____PUR_GREY   = 64,
+        PUR_SOLID       = 65,
 };
+
+enum terrain_pairs {
+        POCEAN_HI = 66,
+        POCEAN_LO = 67,
+        POCEAN_DK = 68,
+
+        PGRASS_HI = 69,
+        PGRASS_LO = 70,
+
+        PTREETOP = 71,
+        PTREETRUNK = 72,
+
+        PBEACHSAND = 73,
+        PCLAYCLIFF = 74,
+
+        PCAVEBLANK = 75,
+        PCAVEBLOCK = 76,
+};
+
+enum flexpairs {
+        FLEX    = 77,
+        FLEX2   = 78,
+};
+
 
 enum light_pairs {
-        TORCHP0 = 156,
-        TORCHP1 = 157,
-        TORCHP2 = 158,
-        TORCHP3 = 159,
-        TORCHP4 = 160,
-        TORCHP5 = 161,
+        TORCHP0 = 79,
+        TORCHP1 = 80,
+        TORCHP2 = 81,
+        TORCHP3 = 82,
+        TORCHP4 = 83,
+        TORCHP5 = 84,
 
-        SUNP0   = 162,
-        SUNP1   = 163,
-        SUNP2   = 164,
-        SUNP3   = 165,
-        SUNP4   = 166,
-        SUNP5   = 167,
+        SUNP0   = 85,
+        SUNP1   = 86,
+        SUNP2   = 87,
+        SUNP3   = 88,
+        SUNP4   = 89,
+        SUNP5   = 90,
 
-        RL1P0   = 168,
-        RL1P1   = 169,
-        RL1P2   = 170,
-        RL1P3   = 171,
-        RL1P4   = 172,
-        RL1P5   = 173,
+        RL1P0   = 91,
+        RL1P1   = 92,
+        RL1P2   = 93,
+        RL1P3   = 94,
+        RL1P4   = 95,
+        RL1P5   = 96,
 
-        RL2P0   = 174,
-        RL2P1   = 175,
-        RL2P2   = 176,
-        RL2P3   = 177,
-        RL2P4   = 178,
-        RL2P5   = 179,
+        RL2P0   = 97,
+        RL2P1   = 98,
+        RL2P2   = 99,
+        RL2P3   = 100,
+        RL2P4   = 101,
+        RL2P5   = 102,
 };
 
-enum black_pair {
-        BLACK_BEIGE = 180,
-};
 
 enum edible_pairs {
-        FLEX_APPLE = 181,
-        FLEX_GRAPEFRUIT = 182,
-        FLEX_LG_POTION = 183,
-        FLEX_SM_POTION = 184,
-        FLEX_ELIXIR = 185,
-        FLEX_PALM = 186,
+        FLEX_APPLE = 103,
+        FLEX_GRAPEFRUIT = 104,
+        FLEX_LG_POTION = 105,
+        FLEX_SM_POTION = 106,
+        FLEX_ELIXIR = 107,
+        FLEX_PALM = 108,
 };
 
-enum uicolors {
-        ___PUR_PURPLE  = 187,
-        ____PUR_PURPLE = 188,
-        ___PUR_GREY    = 189,
-        ____PUR_GREY   = 190,
+enum junk_pairs {
+        WARNING       = 109,
+        WARNSHADOW    = 110,
+        PROPE = 111
 };
 
-enum superblack {
-        BLACK_BLACK = 191
-}; 
-
-enum terraines {
-        AGRASS = 192,
-        BGRASS = 193,
-        MOORTREE = 194,
-};
-
-void darken_colors(int step);
 
 short bgcolor(short pair);
 short fgcolor(short pair);
-
-
 
 static inline 
 void blend(short color1, float i1, short color2, float i2, short dest)
@@ -493,23 +367,8 @@ void blend(short color1, float i1, short color2, float i2, short dest)
         init_color(dest, r1, g1, b1);
 }
 
-
-struct rgb_t {
-        short tag;
-        int r;
-        int g;
-        int b;
-};
-
-//static struct rgb_t wallfg[3] = { {252, 431, 372, 290},{252, 431, 372, 290},{252, 431, 372, 290}};
-//static struct rgb_t wallbg[3] = { {254, 310, 270, 208},{254, 310, 270, 208},{254, 310, 270, 208}};
-//static struct rgb_t backbg[3] = { {254, 310, 270, 208},{254, 310, 270, 208},{254, 310, 270, 208}};
-//static struct rgb_t backfg[3] = { {255, 169, 137, 94},{255, 169, 137, 94},{255, 169, 137, 94}};
-
-//static short FG[3]={255,254,253};
-//static short BG[3]={252,251,250};
-
 void assign_glow_colors(short base, short *fg, short *bg, short *pa);
+void init_palette(int);
 
 #define TITLE_COLOR PUR_BLACK
 

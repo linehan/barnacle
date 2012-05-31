@@ -128,7 +128,7 @@ int barnacle_init(void)
         print_status("Twisting Mersenne...");
         init_stochastics();   /* Start the RNG and helpers */   
         print_status(SUCCESS);
-        init_tiles();
+        /*init_tiles();*/
 
         print_status("Tuning tests...");
         init_test();          /* Start test structures */

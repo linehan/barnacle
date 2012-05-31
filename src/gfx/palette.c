@@ -31,75 +31,6 @@
 #define CTRLD 4
 /******************************************************************************/
 
-inline void set_color(struct rgb_t *color)
-{
-        init_color(color->tag, color->r, color->g, color->b);
-}
-
-
-
-
-
-#define strips 3
-
-
-/*void mix_colors(void)*/
-/*{*/
-        /*int i;*/
-        /*for (i=0; i<strips; i++) {*/
-                /*set_color(&wallbg[i]);*/
-                /*set_color(&wallfg[i]);*/
-                /*set_color(&backbg[i]);*/
-                /*set_color(&backfg[i]);*/
-                /*init_pair(FG[i], wallfg[i].tag, wallbg[i].tag);*/
-                /*init_pair(BG[i], backfg[i].tag, backbg[i].tag);*/
-        /*}*/
-/*}*/
-
-
-inline void darken(struct rgb_t *color, int step)
-{
-        color->r = (color->r - step > 0) ? (color->r - step) : 0;
-        color->g = (color->g - step > 0) ? (color->g - step) : 0;
-        color->b = (color->b - step > 0) ? (color->b - step) : 0;
-
-        set_color(color);
-}
-
-
-/*void darken_colors(int step)*/
-/*{*/
-        /*int i;*/
-        /*for (i=0; i<strips; i++) {*/
-                /*darken(&wallbg[i], (i+step));*/
-                /*darken(&wallfg[i], (i+step));*/
-                /*darken(&backbg[i], (i+step));*/
-                /*darken(&backfg[i], (i+step));*/
-        /*}*/
-/*}*/
-
-/*inline void lighten(struct rgb_t *color, int step)*/
-/*{*/
-        /*color->r = (color->r + step < 1000) ? (color->r + step) : 1000;*/
-        /*color->g = (color->g + step < 1000) ? (color->g + step) : 1000;*/
-        /*color->b = (color->b + step < 1000) ? (color->b + step) : 1000;*/
-
-        /*set_color(color);*/
-/*}*/
-
-/*void lighten_colors(int step)*/
-/*{*/
-        /*int i;*/
-        /*for (i=0; i<strips; i++) {*/
-                /*lighten(&wallbg[i], (i+step));*/
-                /*lighten(&wallfg[i], (i+step));*/
-                /*lighten(&backbg[i], (i+step));*/
-                /*lighten(&backfg[i], (i+step));*/
-        /*}*/
-/*}*/
-
-
-
 #define COLOR_BLOCK_SIZE (12)
 #define PAIR_BLOCK_SIZE  (6)
 #define FGBG_OFFSET      (6)
@@ -163,7 +94,7 @@ void assign_glow_colors(short base, short *fg, short *bg, short *pa)
 }
 
 
-void torch_colors(void)
+void build_torch_colors(void)
 {
         /* Light sources */
         /*init_color(TORCH_COLOR, 851, 490, 235);*/
@@ -177,36 +108,110 @@ void torch_colors(void)
 }
 
 
+void build_ui_pairs(void)
+{
+        /* Greys -------------------------------------------*/
+        init_pair(PUR_BLACK       , BLACK          , __DGREY);
+        init_pair(PUR_GREY        , GREY           , __DGREY);
+        init_pair(_PUR_GREY       , _GREY          , __DGREY);
+        init_pair(__PUR_GREY      , __GREY         , __DGREY);
+        init_pair(PUR_WHITE       , WHITE          , __DGREY);
+        init_pair(PUR_PURPLE      , DGREY          , __DGREY);
+        init_pair(_PUR_PURPLE     , _DGREY         , __DGREY);
+        /* Yellow/Orange -----------------------------------*/
+        init_pair(PUR_YELLOW      , YELLOW         , __DGREY);
+        init_pair(PUR_ORANGE      , ORANGE         , __DGREY);
+        init_pair(_PUR_YELLOW     , _YELLOW        , __DGREY);
+        init_pair(_PUR_ORANGE     , _ORANGE        , __DGREY);
+        init_pair(__PUR_YELLOW    , __YELLOW       , __DGREY);
+        init_pair(__PUR_ORANGE    , __ORANGE       , __DGREY);
+        /* Browns ------------------------------------------*/
+        init_pair(PUR_BEIGE       , BEIGE          , __DGREY);
+        init_pair(PUR_BROWN       , BROWN          , __DGREY);
+        init_pair(_PUR_BEIGE      , _BEIGE         , __DGREY);
+        init_pair(_PUR_BROWN      , _BROWN         , __DGREY);
+        init_pair(__PUR_BEIGE     , __BEIGE        , __DGREY);
+        init_pair(__PUR_BROWN     , __BROWN        , __DGREY);
+        /* Blues -------------------------------------------*/
+        init_pair(PUR_LBLUE       , LBLUE          , __DGREY);
+        init_pair(PUR_BLUE        , BLUE           , __DGREY);
+        init_pair(PUR_DBLUE       , DBLUE          , __DGREY);
+        init_pair(_PUR_LBLUE      , _LBLUE         , __DGREY);
+        init_pair(_PUR_BLUE       , _BLUE          , __DGREY);
+        init_pair(_PUR_DBLUE      , _DBLUE         , __DGREY);
+        init_pair(__PUR_LBLUE     , __LBLUE        , __DGREY);
+        init_pair(__PUR_BLUE      , __BLUE         , __DGREY);
+        init_pair(__PUR_DBLUE     , __DBLUE        , __DGREY);
+        /* Greens ------------------------------------------*/
+        init_pair(PUR_LGREEN      , LGREEN         , __DGREY);
+        init_pair(PUR_GREEN       , GREEN          , __DGREY);
+        init_pair(PUR_DGREEN      , DGREEN         , __DGREY);
+        init_pair(_PUR_LGREEN     , _LGREEN        , __DGREY);
+        init_pair(_PUR_GREEN      , _GREEN         , __DGREY);
+        init_pair(_PUR_DGREEN     , _DGREEN        , __DGREY);
+        init_pair(__PUR_LGREEN    , __LGREEN       , __DGREY);
+        init_pair(__PUR_GREEN     , __GREEN        , __DGREY);
+        init_pair(__PUR_DGREEN    , __DGREEN       , __DGREY);
+        /* Reds --------------------------------------------*/
+        init_pair(PUR_LRED        , PINK           , __DGREY);
+        init_pair(PUR_RED         , RED            , __DGREY);
+        init_pair(PUR_DRED        , DARK_RED       , __DGREY);
+        init_pair(_PUR_LRED       , _PINK          , __DGREY);
+        init_pair(_PUR_RED        , _RED           , __DGREY);
+        init_pair(_PUR_DRED       , _DARK_RED      , __DGREY);
+        init_pair(__PUR_LRED      , __PINK         , __DGREY);
+        init_pair(__PUR_RED       , __RED          , __DGREY);
+        init_pair(__PUR_DRED      , __DARK_RED     , __DGREY);
+        /* Special -----------------------------------------*/ 
+        init_pair(PUR_SOLID       , __DGREY        , __DGREY);
+        init_pair(___PUR_PURPLE   , _DGREY         , ___DGREY);
+        init_pair(____PUR_PURPLE  , _DGREY         , ____DGREY);
+        init_pair(___PUR_GREY     , GREY           , ___DGREY);
+        init_pair(____PUR_GREY    , GREY           , ____DGREY);
+        /* Specific -----------------------------------------*/ 
+        init_pair(PUR_SKY         , WILDBLUEYONDER , __DGREY);
+        init_pair(PUR_BRONZE      , BLASTOFFBRONZE , __DGREY);
+        init_pair(PUR_METALYELLOW , METALYELLOW    , __DGREY);
+        init_pair(PUR_CELESTIAL   , CELESTIALBLUE  , __DGREY);
+        init_pair(PUR_CERULEAN    , CERULEAN       , __DGREY);
+}
+
+
+void build_terrain_pairs(void)
+{
+        init_pair(PGRASS_HI, CDGRASS_FG, CDGRASS_BG);
+        init_pair(PGRASS_LO, CLGRASS_FG, CLGRASS_BG);
+
+        init_pair(POCEAN_HI, COCEAN_HI, COCEAN_BG);
+        init_pair(POCEAN_LO, COCEAN_LO, COCEAN_BG);
+        init_pair(POCEAN_DK, COCEAN_HI, _COCEAN_BG);
+
+        init_pair(PTREETOP, CTREETOP_FG, CTREETOP_BG);
+        init_pair(PTREETRUNK, CTREETRUNK_FG, CTREETRUNK_BG);
+
+        init_pair(PBEACHSAND, CSAND_FG, CSAND_BG);
+        init_pair(PCLAYCLIFF, CCLAY_FG, CCLAY_BG);
+
+        init_pair(PCAVEBLANK, BLACK, BLACK);
+        init_pair(PCAVEBLOCK, __DGREY, BLACK);
+}
+
+
+void build_special_pairs(void)
+{
+        init_pair(WARNING, WHITE, RED);
+        init_pair(WARNSHADOW, RED, DARK_RED);
+
+        init_pair(PROPE, __BROWN, BLACK);
+}
+
 
 /******************************************************************************/
 /* Initialize the color palette with R,G,B values from 0-1000 and the color
  * pairs with the initialized colors. */
-void init_palette(int set)
+void init_my_colors(void)
 {
-/* Hexadecimal values for colors used
-
-                                SHADOW 1        SHADOW 2
-        DARK GREY (PURPLE)      2c272e          141214
-        GREY                    7d7d7d          636363
-        LIGHT GREY (WHITE)      d4d3cb          bababa
-        DARK BLUE               38408f          343a75
-        BLUE                    4088d6          427dbd  
-        LIGHT BLUE              89c8e0          83b4c7
-        DARK GREEN              154026          0f2618
-        GREEN (TEAL)            2c6351          244a3e
-        LIGHT GREEN             85ad49          759446
-        YELLOW                  edd14e          d4bd50
-        BROWN                   785223          5e4320
-        ORANGE                  bf733d          a6693d
-        RED                     91313d          782f38
-        PINK                    a86070          8f5965
-        BEIGE                   d1af86          b89e7f
-        OCEAN (DARK)            202b28          0e1211
-        OCEAN                   415c54          32423e
-        OCEAN (LIGHT)           5e7d7a          506362          */
-
-
-        /* Color inits */
+        /* Init basic palette (Arne's Palette) */
         init_color(BLACK,        0,    0,    0);
         init_color(DGREY,      239,  204,  251);
         init_color(GREY,       564,  564,  564);
@@ -223,42 +228,7 @@ void init_palette(int set)
         init_color(RED,        643,  192,  247);
         init_color(PINK,       729,  384,  463);
         init_color(BEIGE,      886,  725,  529);
-        init_color(LSEA,       572,  678,  662);
-        init_color(SEA,        439,  565,  502);
-        init_color(DSEA,       165,  235,  211);
-        init_color(LWOOD,      851,  647,  443);
-        init_color(WOOD,       769,  545,  321);
-        init_color(__WOOD, 673, 497, 329);
         init_color(WHITE,      902,  894,  835);
-        init_color(SHADOW,     372,  349,  376);
-        init_color(DARK_RED,   416,  141,  176);
-        init_color(DARK_BROWN, 282, 220, 137);
-        init_color(CELESTIALBLUE, 353, 537, 784);
-        init_color(CERULEAN, 0, 482, 655);
-        init_color(WILDBLUEYONDER, 635, 678, 815);
-        init_color(BLASTOFFBRONZE, 647, 443, 392);
-        init_color(METALYELLOW, 972, 972, 576);
-        init_color(ZEN_BG, 247, 247, 247);
-
-        init_color(__DGREY,     78,   71,   78);
-        init_color(__BG,     74, 74, 74);
-        init_color(__GREY,     388,  388,  388);
-        init_color(__LGREY,    729,  729,  729);
-        init_color(__DBLUE,    204,  227,  459);
-        init_color(__BLUE,     259,  490,  741);
-        init_color(__LBLUE,    514,  706,  780);
-        init_color(__DGREEN,    59,  149,   94);
-        init_color(__GREEN,    141,  290,  243);
-        init_color(__LGREEN,   459,  580,  274);
-        init_color(__YELLOW,   831,  741,  314);
-        init_color(__BROWN,    368,  263,  125);
-        init_color(__ORANGE,   651,  412,  239);
-        init_color(__RED,      470,  184,  220);
-        init_color(__PINK,     561,  349,  396);
-        init_color(__BEIGE,    721,  619,  498);
-        init_color(__DSEA,      55,   71,   67);
-        init_color(__SEA,      196,  259,  243);
-        init_color(__LSEA,     314,  388,  384);
 
         init_color(_DGREY,     172,  153,  180);
         init_color(_GREY,      490,  490,  490);
@@ -275,14 +245,8 @@ void init_palette(int set)
         init_color(_RED,       568,  192,  239);
         init_color(_PINK,      659,  376,  439);
         init_color(_BEIGE,     819,  686,  525);
-        init_color(_DSEA,       153,    220,    196);
-        init_color(_SEA,        314, 427,  396);
-        init_color(_LSEA,      368,  490,  478);
-        init_color(_WOOD,       721,    521,    325);
-        init_color(_LWOOD,       721,    521,    325);
 
         init_color(__DGREY,     78,   71,   78);
-        init_color(__BG,     74, 74, 74);
         init_color(__GREY,     388,  388,  388);
         init_color(__LGREY,    729,  729,  729);
         init_color(__DBLUE,    204,  227,  459);
@@ -297,198 +261,56 @@ void init_palette(int set)
         init_color(__RED,      470,  184,  220);
         init_color(__PINK,     561,  349,  396);
         init_color(__BEIGE,    721,  619,  498);
-        init_color(__DSEA,      55,   71,   67);
-        init_color(__SEA,      196,  259,  243);
-        init_color(__LSEA,     314,  388,  384);
 
-        init_color(SANDY, 886,  741,  568);
-        init_color(SHALLOW, 188,  270,  243);
-        init_color(LSHALLOW, 400,  526,  472);
-        init_color(A_SAND_LAGOON, 800, 694, 541);
-        init_color(B_SAND_LAGOON, 635, 623, 506);
-        init_color(C_SAND_LAGOON, 259, 361, 318);
-        init_color(D_SAND_LAGOON, 188, 267, 235);
-        init_color(WATER_HINT, 223, 310, 274);
-
+        /* Special colors for experiments */
+        init_color(DARK_RED       , 416 , 141 , 176);
+        init_color(CELESTIALBLUE  , 353 , 537 , 784);
+        init_color(CERULEAN       , 0   , 482 , 655);
+        init_color(WILDBLUEYONDER , 635 , 678 , 815);
+        init_color(BLASTOFFBRONZE , 647 , 443 , 392);
+        init_color(METALYELLOW    , 972 , 972 , 576);
+        init_color(ZEN_BG         , 247 , 247 , 247);
+        init_color(___DGREY       , 90  , 87  , 90);
+        init_color(____DGREY      , 60  , 58  , 60);
 
 
+        /* Environment element colors */
+        init_color(COCEAN_BG, 165, 235, 211);
+        init_color(COCEAN_HI, 259, 361, 318);
+        init_color(COCEAN_LO, 223, 310, 274);
+        init_color(_COCEAN_BG, 153, 220, 196);
+
+        init_color(CSAND_BG, 800, 694, 541); /* Uses A_REVERSE attribute */
+        init_color(CSAND_FG, 635, 623, 506);
+
+        init_color(CLGRASS_BG, 208, 478, 270); 
+        init_color(CLGRASS_FG, 480, 620, 370);
+        init_color(CDGRASS_BG, 404, 568, 329);
+        init_color(CDGRASS_FG, 500, 640, 329);
+
+        init_color(CTREETOP_BG, 172, 388, 318);
+        init_color(CTREETOP_FG, 537, 690, 310);
+
+        init_color(CTREETRUNK_BG, 239, 204, 251);
+        init_color(CTREETRUNK_FG, 769, 545, 321);
+
+        init_color(CCLAY_BG, 600, 431, 212);
+        init_color(CCLAY_FG, 670, 482, 255);
+
+
+        /* FLEX colors */
         init_color(FLEXBG, 0, 0, 0);
         init_color(FLEXFG, 0, 0, 0);
         init_color(FLEXBG_DEFAULT, 0, 0, 0);
         init_color(FLEXFG_DEFAULT, 0, 0, 0);
-        init_color(___DGREY, 90, 87, 90);
-        init_color(____DGREY, 60, 58, 60);
-
-        /* UI COLOR PAIRS */
-        init_pair(CMP_BEIGE, BEIGE, ORANGE);
-        init_pair(CMP_RED, RED, ORANGE);
-        init_pair(CMP_WHITE, WHITE, ORANGE);
-        init_pair(CMP_ORANGE, BEIGE, ORANGE);
-        init_pair(CMP_GREEN, LGREEN, __DGREY);
-        init_pair(CMP_PINK, BEIGE, BEIGE);
-        init_pair(CMP_YELLOW, YELLOW, __DGREY);
-        init_pair(CMP_SHADOW, DGREY, ORANGE);
-        init_pair(WARNING, WHITE, RED);
-        init_pair(WARNSHADOW, RED, DARK_RED);
-
-        init_pair(GUN_FLASH, WHITE, RED);
-        init_pair(GUN_SMOKE, WHITE, DSEA);
-
-        init_pair(PUR_BLACK       , BLACK          , __DGREY);
-        init_pair(PUR_GREY        , GREY           , __DGREY);
-        init_pair(_PUR_GREY       , _GREY          , __DGREY);
-        init_pair(__PUR_GREY      , __GREY         , __DGREY);
-        init_pair(PUR_WHITE       , WHITE          , __DGREY);
-        init_pair(PUR_PURPLE      , DGREY          , __DGREY);
-        init_pair(_PUR_PURPLE     , _DGREY         , __DGREY);
-//-----
-        init_pair(PUR_YELLOW      , YELLOW         , __DGREY);
-        init_pair(PUR_ORANGE      , ORANGE         , __DGREY);
-        init_pair(_PUR_YELLOW     , _YELLOW        , __DGREY);
-        init_pair(_PUR_ORANGE     , _ORANGE        , __DGREY);
-        init_pair(__PUR_YELLOW    , __YELLOW       , __DGREY);
-        init_pair(__PUR_ORANGE    , __ORANGE       , __DGREY);
-//-----
-        init_pair(PUR_BEIGE       , BEIGE          , __DGREY);
-        init_pair(PUR_BROWN       , BROWN          , __DGREY);
-        init_pair(_PUR_BEIGE      , _BEIGE         , __DGREY);
-        init_pair(_PUR_BROWN      , _BROWN         , __DGREY);
-        init_pair(__PUR_BEIGE     , __BEIGE        , __DGREY);
-        init_pair(__PUR_BROWN     , __BROWN        , __DGREY);
-//-----
-        init_pair(PUR_LBLUE       , LBLUE          , __DGREY);
-        init_pair(PUR_BLUE        , BLUE           , __DGREY);
-        init_pair(PUR_DBLUE       , DBLUE          , __DGREY);
-        init_pair(_PUR_LBLUE      , _LBLUE         , __DGREY);
-        init_pair(_PUR_BLUE       , _BLUE          , __DGREY);
-        init_pair(_PUR_DBLUE      , _DBLUE         , __DGREY);
-        init_pair(__PUR_LBLUE     , __LBLUE        , __DGREY);
-        init_pair(__PUR_BLUE      , __BLUE         , __DGREY);
-        init_pair(__PUR_DBLUE     , __DBLUE        , __DGREY);
-//-----
-        init_pair(PUR_LGREEN      , LGREEN         , __DGREY);
-        init_pair(PUR_GREEN       , GREEN          , __DGREY);
-        init_pair(PUR_DGREEN      , DGREEN         , __DGREY);
-        init_pair(_PUR_LGREEN     , _LGREEN        , __DGREY);
-        init_pair(_PUR_GREEN      , _GREEN         , __DGREY);
-        init_pair(_PUR_DGREEN     , _DGREEN        , __DGREY);
-        init_pair(__PUR_LGREEN    , __LGREEN       , __DGREY);
-        init_pair(__PUR_GREEN     , __GREEN        , __DGREY);
-        init_pair(__PUR_DGREEN    , __DGREEN       , __DGREY);
-//-----
-        init_pair(PUR_LRED        , PINK           , __DGREY);
-        init_pair(PUR_RED         , RED            , __DGREY);
-        init_pair(PUR_DRED        , DARK_RED       , __DGREY);
-        init_pair(_PUR_LRED       , _PINK          , __DGREY);
-        init_pair(_PUR_RED        , _RED           , __DGREY);
-        init_pair(_PUR_DRED       , _DARK_RED      , __DGREY);
-        init_pair(__PUR_LRED      , __PINK         , __DGREY);
-        init_pair(__PUR_RED       , __RED          , __DGREY);
-        init_pair(__PUR_DRED      , __DARK_RED     , __DGREY);
-//-----
-        init_pair(PUR_LSEA        , LSEA           , __DGREY);
-        init_pair(PUR_SEA         , SEA            , __DGREY);
-        init_pair(PUR_DSEA        , DSEA           , __DGREY);
-        init_pair(_PUR_LSEA       , _LSEA          , __DGREY);
-        init_pair(_PUR_SEA        , _SEA           , __DGREY);
-        init_pair(_PUR_DSEA       , _DSEA          , __DGREY);
-        init_pair(__PUR_LSEA      , __LSEA         , __DGREY);
-        init_pair(__PUR_SEA       , __SEA          , __DGREY);
-        init_pair(__PUR_DSEA      , __DSEA         , __DGREY);
-//-----
-        init_pair(PUR_LWOOD       , LWOOD          , __DGREY);
-        init_pair(PUR_WOOD        , WOOD           , __DGREY);
-        init_pair(_PUR_LWOOD      , _LWOOD         , __DGREY);
-        init_pair(_PUR_WOOD       , _WOOD          , __DGREY);
-        init_pair(__PUR_LWOOD     , __LWOOD        , __DGREY);
-        init_pair(__PUR_WOOD      , __WOOD         , __DGREY);
-//-----
-        init_pair(PUR_SKY         , WILDBLUEYONDER , __DGREY);
-        init_pair(PUR_BRONZE      , BLASTOFFBRONZE , __DGREY);
-        init_pair(PUR_METALYELLOW , METALYELLOW    , __DGREY);
-        init_pair(PUR_CELESTIAL   , CELESTIALBLUE  , __DGREY);
-        init_pair(PUR_CERULEAN    , CERULEAN       , __DGREY);
+}
 
 
-        /* IN-GAME COLOR PAIRS */
-        init_pair(BOAT_WHITE, WHITE, DSEA);
-        init_pair(BOAT_WOOD, LWOOD, DSEA);
-        init_pair(LAND, BROWN, LWOOD);
-        init_pair(TREETOP, LGREEN, GREEN);
-        init_pair(TREETRUNK, WOOD, DGREY);
-        init_pair(GRASSY, LGREEN, GREEN);
-        init_pair(SEA_DARK, GREEN, DSEA);
-        init_pair(SEA_MED, C_SAND_LAGOON, DSEA);
-        init_pair(SEA_LIG, LSEA, DSEA);
-        init_pair(SEA_SAND, SANDY, BEIGE);
-        init_pair(A_SEA_LAGOON, B_SAND_LAGOON, A_SAND_LAGOON);
-        init_pair(B_SEA_LAGOON, C_SAND_LAGOON, D_SAND_LAGOON);
-        init_pair(C_SEA_LAGOON, C_SAND_LAGOON, C_SAND_LAGOON);
-        init_pair(D_SEA_LAGOON, C_SAND_LAGOON, D_SAND_LAGOON);
-        init_pair(SEA_SHALLOW, C_SAND_LAGOON, DSEA);
-        init_pair(_SEA_SHALLOW, C_SAND_LAGOON, _DSEA);
-
-        init_pair(_BOAT_WHITE, _WHITE,  _DSEA);
-        init_pair(_BOAT_WOOD,  _LWOOD,  _DSEA);
-        init_pair(_LAND,       _BROWN,  _BEIGE);
-        init_pair(_TREETOP,    _LGREEN, _GREEN);
-        init_pair(_TREETRUNK,  _WOOD,   _DGREY);
-        init_pair(_GRASSY,     _LGREEN, _GREEN);
-        init_pair(_SEA_DARK,   _GREEN,  _DSEA);
-        init_pair(_SEA_MED,    _SEA,    _DSEA);
-        init_pair(_SEA_LIG,    _LSEA,   _DSEA);
-
-        init_pair(__BOAT_WHITE, __WHITE,  __DSEA);
-        init_pair(__BOAT_WOOD,  __LWOOD,  __DSEA);
-        init_pair(__LAND,       __BROWN,  __BEIGE);
-        init_pair(__TREETOP,    __LGREEN, __GREEN);
-        init_pair(__TREETRUNK,  __WOOD,   __DGREY);
-        init_pair(__GRASSY,     __LGREEN, __GREEN);
-        init_pair(__SEA_DARK,   __GREEN,  __DSEA);
-        init_pair(__SEA_MED,    __SEA,    __DSEA);
-        init_pair(__SEA_LIG,    __LSEA,   __DSEA);
-        init_pair(SEA__MED, WATER_HINT, DSEA);
-        init_pair(SEA___MED, __LSEA, DSEA);
-        init_pair(PUR_SOLID, __DGREY, __DGREY);
-        init_pair(___PUR_PURPLE, _DGREY, ___DGREY);
-        init_pair(____PUR_PURPLE, _DGREY, ____DGREY);
-        init_pair(___PUR_GREY,  GREY, ___DGREY);
-        init_pair(____PUR_GREY, GREY, ____DGREY);
-
-        init_color(DARK_SANDZ, 741,  643,  502);
-        init_color(DARK_SAND0, 670,  580,  455);
-        init_color(DARK_SAND1, 541,  466,  365);
-        init_color(DARK_SAND2, 431,  372,  290);
-        init_color(DARK_SAND3, 259,  216,  157);
-        init_color(DARK_SAND4, 169,  137,  94);
-
-        init_pair(BSAND, DARK_SANDZ, A_SAND_LAGOON);
-        init_pair(CSAND, DARK_SANDZ, A_SAND_LAGOON);
-        init_pair(DSAND, DARK_SANDZ, DARK_SAND0);
-        init_pair(ESAND, DARK_SAND1, DARK_SAND2);
-        init_pair(FSAND, DARK_SAND4, DARK_SAND3);
-
-        init_pair(BLACK_BEIGE, __BROWN, BLACK);
-        init_pair(BLACK_BLACK, BLACK, BLACK);
-
-        init_color(GR0, 455, 764, 396);
-        init_color(ASPARAGUS, 529, 662, 419); 
-        init_color(PINE, 4, 474, 435);
-        init_color(BOTTLE, 0, 416, 306);
-        init_color(SEAGREEN, 180, 545, 341);
-        init_color(DASPARAGUS, 500, 640, 390);
-        init_color(DDASPARAGUS, 480, 620, 370);
-
-        init_color(MOORBASE, 419, 541, 302);
-        /*init_color(MOORDARK, 321, 435, 172);*/
-        init_color(MOORDARK, 388, 474, 314);
-        init_color(MOORPALE, 510, 545, 396);
-        init_color(MOORRICH, 251, 318, 172);
-        init_color(HOOKER, 286, 474, 419);
-
-        init_pair(AGRASS, ASPARAGUS, DDASPARAGUS);
-        init_pair(BGRASS, DDASPARAGUS, MOORBASE);
-        init_pair(MOORTREE, DDASPARAGUS, BOTTLE);
-
-        torch_colors();
+void init_palette(int set)
+{
+        init_my_colors();
+        build_ui_pairs();
+        build_terrain_pairs();
+        build_special_pairs();
+        build_torch_colors();
 }

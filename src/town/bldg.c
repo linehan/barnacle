@@ -52,7 +52,7 @@ void bldg_test(void)
 
         init_pair(peakpair, __DGREEN, bgcolor_yx(PLATE(ACTIVE, BGR), 30, 40));
         init_pair(roofpair, __GREEN, __DGREEN);
-        init_pair(wallpair, _WOOD, BROWN);
+        /*init_pair(wallpair, _WOOD, BROWN);*/
 
         mvcwpumpw(PLATE(ACTIVE, BGR), peakpair, 30, 40, L"%ls", peak);
         mvcwpumpw(PLATE(ACTIVE, BGR), roofpair, 31, 40, L"%ls", roof);

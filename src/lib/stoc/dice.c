@@ -73,9 +73,8 @@ int flip_biased(double b)
  */
 int roll_fair(int n)                                                          
 {                                       
-        n = (n > 0) ? (n-1) : n;
-
-        return (floor(mt_normalize() * (double)n));
+        /*n = (n > 0) ? (n-1) : n;*/
+        return (int)(floor(mt_normalize() * (double)n))%n;
 }                
 
 

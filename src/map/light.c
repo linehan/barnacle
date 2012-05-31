@@ -142,7 +142,7 @@ void glow_light(struct light_t *light, struct noun_t *noun, bool move)
                 if (r < MAX_RADIUS)
                         mvwchgat(light->win, i, j, 1, 0, light->pair[r], NULL);
                 else if (is_blank(light->win, i, j))
-                        mvwchgat(light->win, i, j, 1, 0, BLACK_BLACK, NULL);
+                        mvwchgat(light->win, i, j, 1, 0, PCAVEBLANK, NULL);
         }
         }
         show_panel(light->pan);

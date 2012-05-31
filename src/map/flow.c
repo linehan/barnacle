@@ -141,7 +141,7 @@ void *render_flow(struct map_t *map)
                                 continue;
 
                         if (z[i][j] > 0.00) {
-                                mvwadd_wch(PLATE(flowmap, BGR), i, j, &hibase);
+                                place_swell_tile(flowmap, i, j);
                         }
                         /*
                          * Don't bother to draw the non-highlighted background,
@@ -149,7 +149,7 @@ void *render_flow(struct map_t *map)
                          * as part of map_refresh()
                          */
                         else
-                                mvwchgat(PLATE(flowmap, BGR), i, j, 1, 0, SEA_MED, NULL);
+                                place_ocean_tile(flowmap, i, j);
                 }
         }
         return NULL;

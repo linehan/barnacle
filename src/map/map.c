@@ -251,6 +251,10 @@ void map_label(struct map_t *map, int opt)
         print_status(SUCCESS);
 
         print_status("Combing beaches...");
+        label_beaches(map);
+        print_status(SUCCESS);
+
+        print_status("Lining shores...");
         label_shorelines(map);
         print_status(SUCCESS);
 

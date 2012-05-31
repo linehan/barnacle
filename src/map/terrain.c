@@ -77,7 +77,7 @@ void label_regions(struct map_t *map)
                 mx_seed(map->tile, i, j, &seed);
 
                 if (map->pmap[i][j] < BEACH) place_ocean_label(seed.cur); else
-                if (map->pmap[i][j] < TERRA) place_beach_label(seed.cur); else
+                if (map->pmap[i][j] < TERRA) place_grass_label(seed.cur); else
                                              place_terra_label(seed.cur);
         }
         }
@@ -215,6 +215,49 @@ void label_treetrunks(struct map_t *map)
 }
 
 
+#define n_is(layer, seed) (LAYER(*(seed).n, 1, (layer))) ? true : false
+#define s_is(layer, seed) (LAYER(*(seed).s, 1, (layer))) ? true : false
+#define e_is(layer, seed) (LAYER(*(seed).e, 1, (layer))) ? true : false
+#define w_is(layer, seed) (LAYER(*(seed).w, 1, (layer))) ? true : false
+#define nw_is(layer, seed) (LAYER(*(seed).nw, 1, (layer))) ? true : false
+#define ne_is(layer, seed) (LAYER(*(seed).ne, 1, (layer))) ? true : false
+#define sw_is(layer, seed) (LAYER(*(seed).sw, 1, (layer))) ? true : false
+#define se_is(layer, seed) (LAYER(*(seed).se, 1, (layer))) ? true : false
+
+
+void label_beaches(struct map_t *map)
+{
+        struct seed_t seed;
+        int i;
+        int j;
+
+        for (i=0; i<pos_h(map->pos); i++) {
+        for (j=0; j<pos_w(map->pos); j++) {
+
+                mx_seed(map->tile, i, j, &seed);
+
+                if (!LAYER(*seed.cur, 1, MEADOW))
+                        continue;
+
+                if ((n_is(OCN, seed))
+                ||  (s_is(OCN, seed))
+                ||  (e_is(OCN, seed))
+                ||  (w_is(OCN, seed)))
+                /*||  (nw_is(OCN, seed))*/
+                /*||  (ne_is(OCN, seed))*/
+                /*||  (sw_is(OCN, seed))*/
+                /*||  (se_is(OCN, seed)))*/
+                        place_beach_label(seed.cur);
+
+        }
+        }
+}
+
+
+
+
+
+
 /* 
  * Now we focus our attention on the edges of the SHOAL tiles,
  * that is, the threshold between the background "sea level" 
@@ -224,23 +267,14 @@ void label_treetrunks(struct map_t *map)
  */
 void label_shorelines(struct map_t *map)
 {
-        #define SURF_FRAMES 4
+
 
         struct seed_t seed;
-        wchar_t *wch = NULL;
         short color;
         attr_t attr;
         int i;
         int j;
         int k; 
-        int which;
-        static wchar_t *shore[6]={L"⠁⠈⠉⠑⠃⠘⠁⠈⠉⠑⠃⠘⠁⠈⠉⠑⠃⠘⠁⠈⠉⠑⠃⠘⠉⠑⠃⠘⠘", 
-                                  L"⡀⢀⣀⢄⡄⢠⡀⢀⣀⢄⡄⢠⡀⢀⣀⢄⡄⢠⡀⢀⢀⣀⢄⡄⢠⣀⢄⡄⢠", 
-                                  L"⠁⠁⠂⠂⠁⠁⠂⠂⠄⡀⠃⠅⠆⠄⡀⠃⡂⠄⠃⠅⠆⡁⡂⡀⠃⠅⠆⡁⡂",
-                                  L"⠈⠐⠠⢀⠘⠈⠐⠠⢀⠘⠨⠰⠰⢈⢈⢐⢠⢠⠨⠨⠰⠰⢈⢐⢠⠰⠰⢐⢠",
-                                  L"⠁⠁⠂⠂⠁⠁⠂⠂⠁⠁⠂⠂⠁⠁⠂⠂⠁⠁⠂⠂⠂⠁⠁⠂⠂⠁⠁⠂⠂", 
-                                  L"⠈⠐⠐⠘⠈⠘⠈⠑⠐⠐⠘⠈⠐⠑⠑⠈⠐⠘⠈⠐⠐⠑⠑⠈⠐⠑⠑⠈⠐" 
-        };
 
         attr = 0;
         
@@ -254,6 +288,7 @@ void label_shorelines(struct map_t *map)
                 if ((LAYER(*seed.cur, 1, TOP))
                 ||  (LAYER(*seed.cur, 1, DRP))
                 ||  (LAYER(*seed.cur, 1, BEA))
+                ||  (LAYER(*seed.cur, 1, MEADOW))
                 ||  (LAYER(*seed.cur, 1, TTO))
                 ||  (LAYER(*seed.cur, 1, TTR)))
                         continue;
@@ -268,44 +303,38 @@ void label_shorelines(struct map_t *map)
 
                 /* Draw an edge if the following conditions apply... */
 
-                if (LAYER(*seed.n, 1, DRP)) {
-                        wch = shore[0];
-                        color = _SEA_SHALLOW;
+                if (LAYER(*seed.n, 1, DRP)) 
+                {
+                        place_surf_label(seed.cur);
+                        place_southsurf_tile(map, i, j);
                 }
                 else if ((LAYER(*seed.e, 1, TOP))
                      ||  (LAYER(*seed.e, 1, DRP)))
                 {
-                        wch = shore[3];
-                        color = SEA_MED;
+                        place_surf_label(seed.cur);
+                        place_westsurf_tile(map, i, j);
                 }
                 else if ((LAYER(*seed.w, 1, TOP))
                      ||  (LAYER(*seed.w, 1, DRP)))
                 {
-                        wch = shore[2];
-                        color = SEA_MED;
+                        place_surf_label(seed.cur);
+                        place_eastsurf_tile(map, i, j);
                 }
                 else if ((LAYER(*seed.nw, 1, TOP))
                      ||  (LAYER(*seed.nw, 1, DRP)))
                 {
-                        wch = shore[4];
-                        color = SEA_MED;
+                        place_surf_label(seed.cur);
+                        place_northwestsurf_tile(map, i, j);
                 }
                 else if ((LAYER(*seed.ne, 1, TOP))
                      ||  (LAYER(*seed.ne, 1, DRP)))
                 {
-                        wch = shore[5];
-                        color = SEA_MED;
+                        place_surf_label(seed.cur);
+                        place_northeastsurf_tile(map, i, j);
                 }
                 else {
                         continue; /* Arrest any wild ones */
                 }
-
-                for (k=0; k<SURF_FRAMES; k++) {
-                        which = roll1d(10);
-                        mvwcch(PEEK(map->L[RIM]), i, j, &wch[which], attr, color);
-                        NEXT(map->L[RIM]);
-                }
-                set_byte(seed.cur, LAB, RIM);
         }
         }
 }

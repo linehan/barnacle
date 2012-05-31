@@ -43,6 +43,7 @@ void label_cliffs(struct map_t *map);
 void label_treetops(struct map_t *map);
 void label_treetops_trim(struct map_t *map);
 void label_treetrunks(struct map_t *map);
+void label_beaches(struct map_t *map);
 void label_shorelines(struct map_t *map);
 
 #endif
