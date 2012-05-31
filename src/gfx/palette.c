@@ -291,7 +291,8 @@ void init_my_colors(void)
         init_color(CTREETOP_BG, 172, 388, 318);
         init_color(CTREETOP_FG, 537, 690, 310);
 
-        init_color(CTREETRUNK_BG, 239, 204, 251);
+        /*init_color(CTREETRUNK_BG, 239, 204, 251);*/ /* Old shadow */
+        init_color(CTREETRUNK_BG, 235, 239, 255);
         init_color(CTREETRUNK_FG, 769, 545, 321);
 
         init_color(CCLAY_BG, 600, 431, 212);
