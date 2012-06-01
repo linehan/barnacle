@@ -54,7 +54,8 @@ noun/models/hopper.o: noun/models/hopper.c noun/models/../noun.h \
  noun/models/../../lib/fsm/../list.h \
  noun/models/../../lib/fsm/../../com/barnacle.h \
  noun/models/../../lib/fsm/../bheap.h noun/models/../../lib/fsm/states.h \
- noun/models/../../ai/astar.h noun/models/../../ai/../map/cell.h \
+ noun/models/../../ai/astar.h noun/models/../../ai/../lib/bheap.h \
+ noun/models/../../ai/../map/cell.h \
  noun/models/../../ai/../map/../lib/list.h noun/models/../animate.h \
  noun/models/../combat.h noun/models/../stats.h \
  noun/models/../../eng/bytes.h noun/models/../models.h \
@@ -262,6 +263,8 @@ noun/models/../../lib/fsm/../bheap.h:
 noun/models/../../lib/fsm/states.h:
 
 noun/models/../../ai/astar.h:
+
+noun/models/../../ai/../lib/bheap.h:
 
 noun/models/../../ai/../map/cell.h:
 

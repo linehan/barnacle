@@ -48,6 +48,7 @@ town/bldg.o: town/bldg.c town/../com/barnacle.h \
  town/../map/../noun/../lib/fsm/../bheap.h \
  town/../map/../noun/../lib/fsm/states.h \
  town/../map/../noun/../ai/astar.h \
+ town/../map/../noun/../ai/../lib/bheap.h \
  town/../map/../noun/../ai/../map/cell.h \
  town/../map/../noun/../ai/../map/../lib/list.h \
  town/../map/../noun/animate.h town/../map/../noun/combat.h \
@@ -248,6 +249,8 @@ town/../map/../noun/../lib/fsm/../bheap.h:
 town/../map/../noun/../lib/fsm/states.h:
 
 town/../map/../noun/../ai/astar.h:
+
+town/../map/../noun/../ai/../lib/bheap.h:
 
 town/../map/../noun/../ai/../map/cell.h:
 

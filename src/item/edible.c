@@ -92,7 +92,7 @@ void new_apple(void *self)
         item->icon = L"ⴰ";
         item->transparent = true;
         item->pair = FLEX_APPLE;
-        item->fg   = PINK;
+        item->fg   = RED;
         item->data = new_edible(apple);
         item->use  = &method_use_edible;
 }

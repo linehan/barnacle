@@ -48,7 +48,7 @@ enum {                   CALM, YELL, ORLY, HURT};
 static const char *phrase[]={
         "I'm gonna hop all over you!",
         "It's hoppin' time!",
-        "You're shoppin' for a hoppin'!",
+        "I'm shoppin' for a hoppin'!",
         "Get fucked!",
         "I'm hoppin' right for ya!",
         "This hop's for you!"

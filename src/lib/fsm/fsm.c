@@ -64,7 +64,7 @@ struct sm_t {
         int screen;            /* Messages with priority < screen ignored */
         enum sm_tag tag;       /* Current state in the sm */
         int mag;               /* Optional magnitude value */
-        struct bh_t *state;
+        struct bheap_t *state;
         struct list_head delayed;
         bool (*route)(void *msg);     /* 'route' callback */
 };

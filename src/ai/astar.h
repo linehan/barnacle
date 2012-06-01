@@ -12,8 +12,8 @@ struct astar_t {
         struct cell_t *goal; 
         struct cell_t *current;
         struct list_head path;
-        struct bh_t *OPEN;
-        struct bh_t *CLOSED;
+        struct bheap_t *OPEN;
+        struct bheap_t *CLOSED;
 };
 
 
