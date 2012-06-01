@@ -49,7 +49,7 @@ void apply_noun_model(struct noun_t *noun)
         case HOPPER:
                 noun->modify = &modify_hopper;
                 noun->render = &render_hopper;
-                sm_msg(noun->sm, SM_SELF, SM_Spawn | SM_Wait(1));
+                sm_set(noun->sm, SM_Spawn, 0);
                 noun->sprite = wdup(L"Ⰹ");
                 noun->color  = FLEX;
                 break;
