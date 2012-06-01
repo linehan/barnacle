@@ -242,15 +242,36 @@ void label_beaches(struct map_t *map)
                 if ((n_is(OCN, seed))
                 ||  (s_is(OCN, seed))
                 ||  (e_is(OCN, seed))
-                ||  (w_is(OCN, seed)))
-                /*||  (nw_is(OCN, seed))*/
-                /*||  (ne_is(OCN, seed))*/
-                /*||  (sw_is(OCN, seed))*/
-                /*||  (se_is(OCN, seed)))*/
+                ||  (w_is(OCN, seed))
+                ||  (nw_is(OCN, seed))
+                ||  (ne_is(OCN, seed))
+                ||  (sw_is(OCN, seed))
+                ||  (se_is(OCN, seed)))
                         place_beach_label(seed.cur);
 
         }
         }
+
+
+        /*for (i=0; i<pos_h(map->pos); i++) {*/
+        /*for (j=0; j<pos_w(map->pos); j++) {*/
+
+                /*mx_seed(map->tile, i, j, &seed);*/
+
+                /*if (!LAYER(*seed.cur, 1, MEADOW))*/
+                        /*continue;*/
+
+                /*if ((n_is(BEA, seed))*/
+                /*||  (s_is(BEA, seed))*/
+                /*||  (e_is(BEA, seed))*/
+                /*||  (w_is(BEA, seed))*/
+                /*||  (nw_is(BEA, seed))*/
+                /*||  (ne_is(BEA, seed))*/
+                /*||  (sw_is(BEA, seed))*/
+                /*||  (se_is(BEA, seed)))*/
+                        /*place_beach_label(seed.cur);*/
+        /*}*/
+        /*}*/
 }
 
 

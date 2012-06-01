@@ -29,7 +29,8 @@
  * NOTES: Test unit for combat and collision
  ******************************************************************************/
 /*----------------------------------------------------------------------------*/
-static struct ani_t roll  = {L"ⰹⰹⰺⰺⰊⰊⰋⰋⰝⰝⰝⰋⰋⰹⰹⰺⰺⰉ"};
+static struct ani_t spawn = {L"᙮❁❁✺✺ⳋⳊ∮∯∰∯∳∲ⰶⰶⰆⰆⰆⰹⰹⰉ"};
+/*static struct ani_t roll  = {L"ⰹⰹⰺⰺⰊⰊⰋⰋⰝⰝⰝⰋⰋⰹⰹⰺⰺⰉ"};*/
 static struct ani_t hit1  = {L"ⰹⰹⰶⰶⰶⰆⰆⰆⰹⰹⰉ"};
 static struct ani_t hit2  = {L"ⰹⰹⰆⰆⰆⰶⰶⰶⰆⰆⰆⰹⰹⰉ"};
 static struct ani_t hop_u = {L"ⰹⰹⰺⰺⰹⰹⰹⰉ", 4, 'u'};
@@ -164,7 +165,9 @@ int modify_hopper(void *obj)
 
                 sm_msg(noun->sm, SM_SELF, SM_Seek | SM_Wait(20) | SM_Pri(1));
                 break;
-        case SM_Default:
+        case SM_Spawn:
+                noun->animate(noun, &spawn);
+                sm_msg(noun->sm, SM_SELF, SM_Seek | SM_Wait(20));
                 break;
         }
 

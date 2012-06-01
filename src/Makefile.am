@@ -59,6 +59,7 @@ barnacle_SOURCES = barnacle.c                   \
                    noun/noun.c                  \
                    noun/animate.c               \
                    noun/combat.c                \
+                   noun/spawn.c                 \
                    noun/models.c                \
                    noun/models/human.c          \
                    noun/models/hopper.c         \

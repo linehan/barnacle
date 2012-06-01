@@ -78,6 +78,12 @@ int roll_fair(int n)
 }                
 
 
+int flip_sign(double bias)
+{
+        return (flip_biased(bias)) ? -1 : 1;
+}
+
+
 
 /* 
  * The Vose alias method is an algorithm used to efficiently construct

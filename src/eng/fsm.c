@@ -33,6 +33,7 @@
 #include "loop.h"
 #include "tick.h"
 #include "../test/looptest.h"
+#include "../noun/spawn.h"
 
 enum uimodes { 
         UI_COMPASS,
@@ -174,6 +175,9 @@ void director(int input)
                         break;
                 case '_':
                         MAPBOOK->render(ACTIVE);
+                        break;
+                case '&':
+                        spawn(HOPPER);
                         break;
                 case '@':
                         loop_test(true);

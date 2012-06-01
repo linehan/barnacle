@@ -146,6 +146,7 @@ struct map_t *new_inset(struct map_t *map, int h, int w, int y, int x)
         return (new);
 }
 
+
 /*
  * new_mapbook -- allocate and initialize a new mapbook
  */

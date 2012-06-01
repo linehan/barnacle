@@ -19,6 +19,16 @@
 int vose_alias(int n, double *prob_array);
 int roll_fair(int n);
 int flip_biased(double bias);
+int flip_sign(double bias);
+
+static inline int flip(double bias)
+{
+        return flip_biased(bias);
+}
+static inline int roll(int n)
+{
+        return roll_fair(n);
+}
 
 
 #endif

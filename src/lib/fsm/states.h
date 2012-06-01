@@ -43,7 +43,9 @@ enum sm_tag {
         SM_DodgeRight,
 
         SM_JumpUpLeft,
-        SM_JumpUpRight
+        SM_JumpUpRight,
+
+        SM_Spawn,
 };
 
 #endif

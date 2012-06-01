@@ -282,8 +282,10 @@ static const wchar_t heath_tuft[]=L"ᕽᖅᕀ";
 static const wchar_t marsh_tuft[]=L"ᔿᖅ";
 static const wchar_t scrub_tuft[]=L"༝༞༟༝༟༝";
 static const wchar_t flower[]=L"⋇";
+static const short flowerpair[]={RED_FLOWER, BLUE_FLOWER, YELLOW_FLOWER};
 
 #define GRASS_FUN .15f
+#define FLOWER_FUN .002f
 
 /**
  * Place high (elevated/dark green) grass tile 

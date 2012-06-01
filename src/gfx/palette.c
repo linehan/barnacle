@@ -193,7 +193,7 @@ void build_terrain_pairs(void)
         init_pair(PCLAYCLIFF, CCLAY_FG, CCLAY_BG);
 
         init_pair(PCAVEBLANK, BLACK, BLACK);
-        init_pair(PCAVEBLOCK, __DGREY, BLACK);
+        init_pair(PCAVEBLOCK, BLACK, __DGREY);
 }
 
 
@@ -203,6 +203,10 @@ void build_special_pairs(void)
         init_pair(WARNSHADOW, RED, DARK_RED);
 
         init_pair(PROPE, __BROWN, BLACK);
+
+        init_pair(RED_FLOWER, RED,       CDGRASS_BG);
+        init_pair(BLUE_FLOWER, BLUE,     CDGRASS_BG);
+        init_pair(YELLOW_FLOWER, YELLOW, CDGRASS_BG);
 }
 
 
@@ -297,7 +301,6 @@ void init_my_colors(void)
 
         init_color(CCLAY_BG, 600, 431, 212);
         init_color(CCLAY_FG, 670, 482, 255);
-
 
         /* FLEX colors */
         init_color(FLEXBG, 0, 0, 0);

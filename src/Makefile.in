@@ -84,10 +84,11 @@ am_barnacle_OBJECTS = barnacle.$(OBJEXT) eng/init.$(OBJEXT) \
 	map/light.$(OBJEXT) ai/astar.$(OBJEXT) txt/gloss.$(OBJEXT) \
 	txt/effects.$(OBJEXT) noun/noun.$(OBJEXT) \
 	noun/animate.$(OBJEXT) noun/combat.$(OBJEXT) \
-	noun/models.$(OBJEXT) noun/models/human.$(OBJEXT) \
-	noun/models/hopper.$(OBJEXT) item/item.$(OBJEXT) \
-	item/tools.$(OBJEXT) item/edible.$(OBJEXT) town/bldg.$(OBJEXT) \
-	test/test.$(OBJEXT) test/looptest.$(OBJEXT)
+	noun/spawn.$(OBJEXT) noun/models.$(OBJEXT) \
+	noun/models/human.$(OBJEXT) noun/models/hopper.$(OBJEXT) \
+	item/item.$(OBJEXT) item/tools.$(OBJEXT) item/edible.$(OBJEXT) \
+	town/bldg.$(OBJEXT) test/test.$(OBJEXT) \
+	test/looptest.$(OBJEXT)
 barnacle_OBJECTS = $(am_barnacle_OBJECTS)
 barnacle_LDADD = $(LDADD)
 DEFAULT_INCLUDES = -I.@am__isrc@
@@ -247,6 +248,7 @@ barnacle_SOURCES = barnacle.c                   \
                    noun/noun.c                  \
                    noun/animate.c               \
                    noun/combat.c                \
+                   noun/spawn.c                 \
                    noun/models.c                \
                    noun/models/human.c          \
                    noun/models/hopper.c         \
@@ -485,6 +487,8 @@ noun/animate.$(OBJEXT): noun/$(am__dirstamp) \
 	noun/$(DEPDIR)/$(am__dirstamp)
 noun/combat.$(OBJEXT): noun/$(am__dirstamp) \
 	noun/$(DEPDIR)/$(am__dirstamp)
+noun/spawn.$(OBJEXT): noun/$(am__dirstamp) \
+	noun/$(DEPDIR)/$(am__dirstamp)
 noun/models.$(OBJEXT): noun/$(am__dirstamp) \
 	noun/$(DEPDIR)/$(am__dirstamp)
 noun/models/$(am__dirstamp):
@@ -583,6 +587,7 @@ mostlyclean-compile:
 	-rm -f noun/models/hopper.$(OBJEXT)
 	-rm -f noun/models/human.$(OBJEXT)
 	-rm -f noun/noun.$(OBJEXT)
+	-rm -f noun/spawn.$(OBJEXT)
 	-rm -f test/looptest.$(OBJEXT)
 	-rm -f test/test.$(OBJEXT)
 	-rm -f town/bldg.$(OBJEXT)
@@ -641,6 +646,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@noun/$(DEPDIR)/combat.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@noun/$(DEPDIR)/models.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@noun/$(DEPDIR)/noun.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@noun/$(DEPDIR)/spawn.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@noun/models/$(DEPDIR)/hopper.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@noun/models/$(DEPDIR)/human.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@test/$(DEPDIR)/looptest.Po@am__quote@
