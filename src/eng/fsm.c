@@ -45,7 +45,8 @@ enum uimodes {
         UI_MOB,
         UI_BOAT,
         UI_BUILD,
-        UI_INVENTORY
+        UI_INVENTORY,
+        UI_INSET,
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -118,6 +119,9 @@ void operate_on(int input)
         case UI_INVENTORY:
                 inventory_menu_control(input);
                 break;
+        case UI_INSET:
+                inset_cursor(input);
+                break;
         }
 }
 
@@ -139,7 +143,7 @@ void director(int input)
                         dock_toggle();
                         break;
                 case '^':
-                        map_swap();
+                        map_cycle();
                         break;
                 case 'm':
                         setmode(UI_MOB);
@@ -181,6 +185,10 @@ void director(int input)
                         break;
                 case '@':
                         loop_test(true);
+                        break;
+                case '#':
+                        setmode(UI_INSET);
+                        setmode(MODE_STARTED);
                         break;
                 case 'T':
                         switch (getchar()) {

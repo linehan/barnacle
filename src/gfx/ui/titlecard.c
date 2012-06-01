@@ -114,8 +114,13 @@ void print_title(const char *title)
         }
 }
 
+bool nomoretitle = false;
+
 void show_title(void)
 {
+        if (nomoretitle)
+                return;
+
         show_panel(ppan);
         show_panel(hpan);
         show_panel(bpan);
@@ -125,6 +130,9 @@ void show_title(void)
 
 void print_status(const char *status)
 {
+        if (nomoretitle)
+                return;
+
         show_title();
         wprintw(bwin, " %s", status);
         wrefresh(bwin);
@@ -141,6 +149,7 @@ void hide_title(void)
                 hide_panel(bpan);
                 scr_refresh();
         }
+        nomoretitle = true;
 }
 
 

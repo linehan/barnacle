@@ -50,6 +50,8 @@ void (*item_novum[])(void *self) = {
 };
 
 
+//ߜߡߋߘߛߝߥ߷⬩⬪⬫⫾⨞ᱸᱹރވދތޒ࿃⌳๏ⵙ
+
 
 /* STORAGE AND ACCESS
 ``````````````````````````````````````````````````````````````````````````````*/
@@ -209,7 +211,7 @@ void noun_item_drop(struct noun_t *noun)
 
         x = pos_x(noun->pos);
         y = pos_y(noun->pos);
-        n = roll_fair(4);
+        n = roll_fair(2);
 
         for (i=0; i<n; i++) {
                 struct item_t *item = make_item(4+roll_fair(5));

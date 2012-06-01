@@ -192,6 +192,12 @@ void take_bkgrnd(WINDOW *dst, WINDOW *src, short pair)
 }
 
 
+void take_bgcolor_yx(WINDOW *win, int y, int x, short pair)
+{
+        short fg = fgcolor(pair);
+        init_pair(pair, fg, bgcolor_yx(win, y, x));
+}
+
 
 
 

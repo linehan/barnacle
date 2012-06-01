@@ -99,6 +99,8 @@ void spawn_hopper(void *obj)
 void render_hopper(void *self)
 {
         struct noun_t *noun = (struct noun_t *)self;
+        if (noun->map_id == ACTIVE->id)
+                top_panel(noun->pan);
         noun_animate(noun);
 }
 

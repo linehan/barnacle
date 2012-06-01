@@ -241,5 +241,38 @@ void smooth_cycle(double **pmap, int h, int w, float lim, int opt, int cycle)
 
 
 
+/* 
+ * DejaVu Mono, the font this program is designed to use, has an
+ * aspect ratio of 0.55, with an x-width of 0.54, at 100pt.
+ * That is, a given character -- or more precisely, the uniform
+ * rectangle that holds each individual glyph -- is a little over
+ * half as wide as it is tall.
+ */
+/*double **fit_char(int h, int w)*/
+/*{*/
+        /*double **big;*/
+        /*double **pmap;*/
+        /*int i;*/
+        /*int j;*/
+        /*int k;*/
+        /*int w2 = w * 2;*/
+
+        /*[>big  = simplex_matrix(h, w2);<]*/
+        /*pmap = simplex_matrix(h, w);*/
+
+        /*[>k = 0;<]*/
+        /*for (i=0; i<h; i++) {*/
+        /*for (j=0; j<w; j++) {*/
+                /*if (i < h-1) {*/
+                        /*pmap[i][j] = ((pmap[i][j] + pmap[i+1][j]) / 2.0);*/
+                        /*[>k = k+2;<]*/
+                /*}*/
+        /*}*/
+        /*}*/
+
+        /*return pmap;*/
+/*}*/
+
+
 
 

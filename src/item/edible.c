@@ -112,7 +112,7 @@ void new_grapefruit(void *self)
         item->icon = L"ⵙ";
         item->transparent = true;
         item->pair = FLEX_GRAPEFRUIT;
-        item->fg   = _ORANGE;
+        item->fg   = __ORANGE;
         item->data = new_edible(grapefruit);
         item->use  = &method_use_edible;
 }

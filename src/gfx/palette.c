@@ -207,6 +207,11 @@ void build_special_pairs(void)
         init_pair(RED_FLOWER, RED,       CDGRASS_BG);
         init_pair(BLUE_FLOWER, BLUE,     CDGRASS_BG);
         init_pair(YELLOW_FLOWER, YELLOW, CDGRASS_BG);
+
+        init_pair(INSET_UL, RASPBERRY, BLACK);
+        init_pair(INSET_UR, RASPBERRY, BLACK);
+        init_pair(INSET_DL, RASPBERRY, BLACK);
+        init_pair(INSET_DR, RASPBERRY, BLACK);
 }
 
 
@@ -276,6 +281,8 @@ void init_my_colors(void)
         init_color(ZEN_BG         , 247 , 247 , 247);
         init_color(___DGREY       , 90  , 87  , 90);
         init_color(____DGREY      , 60  , 58  , 60);
+        /*init_color(RASPBERRY      , 780 , 172 , 282); */
+        init_color(RASPBERRY      , 811 , 227 , 333);
 
 
         /* Environment element colors */

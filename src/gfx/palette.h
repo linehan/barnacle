@@ -67,16 +67,7 @@ enum arne_shade2 {
         __DARK_RED,
 };
 
-enum special_colors {
-        CELESTIALBLUE = 69,
-        CERULEAN = 70,
-        WILDBLUEYONDER = 71,
-        BLASTOFFBRONZE = 72,
-        METALYELLOW    = 73,
-        ZEN_BG = 74,
-        ___DGREY = 75,
-        ____DGREY = 76 
-};
+
 
 /* TERRAIN COLORS *************************************************/
 
@@ -105,6 +96,19 @@ enum tree_colors {
 enum cliff_colors {
         CCLAY_BG = 91,
         CCLAY_FG = 92,
+};
+
+
+enum special_colors {
+        CELESTIALBLUE = 93,
+        CERULEAN,
+        WILDBLUEYONDER,
+        BLASTOFFBRONZE,
+        METALYELLOW,
+        ZEN_BG,
+        ___DGREY,
+        ____DGREY,
+        RASPBERRY,
 };
 
 
@@ -187,6 +191,9 @@ enum flex {
 enum lightsandcolors {
         TORCH_COLOR = 248 
 };
+
+
+
 
 #define GLOW_COLOR_START TORCHF0
 #define GLOW_COLOR_END   RLIGHT2B5
@@ -350,7 +357,11 @@ enum flower_pairs {
 enum junk_pairs {
         WARNING       = 112,
         WARNSHADOW    = 113,
-        PROPE = 114 
+        PROPE = 114,
+        INSET_UL = 115,
+        INSET_UR = 116,
+        INSET_DL = 117,
+        INSET_DR = 118,
 };
 
 

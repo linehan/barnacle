@@ -37,6 +37,7 @@ short winpair_yx(WINDOW *win, int y, int x);
 short bgcolor_yx(WINDOW *win, int y, int x);
 short fgcolor_yx(WINDOW *win, int y, int x);
 void take_bkgrnd(WINDOW *dst, WINDOW *src, short pair);
+void take_bgcolor_yx(WINDOW *win, int y, int x, short pair);
 
 
 /**

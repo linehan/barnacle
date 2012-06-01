@@ -67,6 +67,9 @@ void render_human(void *self)
         struct noun_t *noun = (struct noun_t *)self;
         struct item_t *item;
 
+        if (noun->map_id == ACTIVE->id)
+                top_panel(noun->pan);
+
         noun_animate(noun);
         noun->fall(noun);
         glow_light(doorlight, noun, false);

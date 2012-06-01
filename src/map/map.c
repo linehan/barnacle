@@ -1,5 +1,21 @@
 /*
  * map.c -- All that terrain
+ *
+ * Copyright (C) 2012 Jason Linehan 
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software Foundation, 
+ * Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  ******************************************************************************
  * A 'map' in this program refers to the persistent data structure that 
  * organizes the terrain, climate, and other spatial features in a regularly
@@ -16,29 +32,14 @@
  * same square grid. One is rendering meant to be drawn to the screen (L[16]),
  * while the other is labeling, meant to be traversed, interpreted, or
  * altered by terrain algorithms.
- ******************************************************************************
- * Copyright (C) 2012 Jason Linehan 
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software Foundation, 
- * Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
- */
+ ******************************************************************************/
 #include <stdlib.h>
 #include "../gfx/gfx.h"
 #include "../gfx/ui/titlecard.h"
 #include "../lib/stoc/stoc.h"
 #include "../test/test.h"
 #include "map.h"
+#include "inset.h"
 #include "terrain.h"
 #include "tile.h"
 
@@ -96,55 +97,6 @@ struct map_t *new_map(int h, int w)
         return (new);
 }
 
-
-/*
- * new_inset -- generates a map which is a scaled-up inset of another map
- * @map: the "parent" map which will be used to generate the inset
- * @h: height of the inset
- * @w: width of the inset
- * @y: y-coordinate of the inset's top-left corner
- * @x: x-coordinate of the inset's top-left corner
- * 
- * Notes
- * Uses a simple linear transformation that goes something like this:
- *      old_range = (old_max - old_min)
- *      new_range = (new_max - new_min)
- *      new_value = (((old_value-old_min)*new_range) / old_range) + new_min
- */
-struct map_t *new_inset(struct map_t *map, int h, int w, int y, int x)
-{
-        struct map_t *new;
-        double **val;
-        int old_h_range;
-        int old_w_range;
-        int new_h_range;
-        int new_w_range;
-        int scaled_h;
-        int scaled_w;
-        int i;
-        int j;
-
-        val = empty_simplex_matrix(FULLSCREEN);
-
-        old_h_range = (LINES - 0);
-        old_w_range = (COLS - 0);
-        new_h_range = (h - 0);
-        new_w_range = (w - 0);
-
-        for (i=0; i<LINES; i++) {
-        for (j=0; j<COLS; j++) {
-                scaled_h = (((i - 0) * new_h_range) / old_h_range) + y;
-                scaled_w = (((j - 0) * new_w_range) / old_w_range) + x;
-
-                val[i][j] = map->pmap[scaled_h][scaled_w];
-        }
-        }
-
-        new = new_map(FULLSCREEN);
-        map_gen(new, val, MAP_NOSMOOTH);
-
-        return (new);
-}
 
 
 /*
@@ -348,6 +300,29 @@ void map_swap(void)
         map_refresh(ACTIVE);
         MAPBOOK->show(ACTIVE);
 }
+
+void map_cycle(void)
+{
+        MAPBOOK->hide(ACTIVE);
+
+        MAPBOOK->page = (MAPBOOK->page+1)%3;
+
+        switch (MAPBOOK->page) {
+        case MAP_WORLD:
+                ACTIVE = WORLD;
+                break;
+        case MAP_FIELD:
+                ACTIVE = FIELD; 
+                break;
+        case MAP_EXTRA:
+                ACTIVE = EXTRA;
+                break;
+        }
+        MAPBOOK->show(ACTIVE);
+        map_restack(ACTIVE);
+        map_refresh(ACTIVE);
+}
+
 
 
 /*

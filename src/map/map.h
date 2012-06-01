@@ -18,6 +18,7 @@
 #include "door.h"
 
 enum map_class { MAP2DF, MAP2DP };
+enum map_page  { MAP_WORLD, MAP_EXTRA, MAP_FIELD };
 
 #define WORLD_HEIGHT   (LINES*3)
 #define WORLD_WIDTH    (COLS*3)
@@ -67,6 +68,7 @@ struct mapbook {
         struct map_t *extra;
         struct map_t *active;
         /*---------------------------- Toggle */
+        enum map_page page;
         bool field_is_active;
         bool extra_is_active;   
         /*---------------------------- Methods */
@@ -111,6 +113,7 @@ bool mob_hit(struct map_t *map, struct noun_t *noun);
 void map_trigger(struct map_t *map, struct mob_t *mob);
 void map_roll(struct map_t *map, int dir);
 void map_swap(void);
+void map_cycle(void);
 void map_set_extra(void *mymap);
 
 
