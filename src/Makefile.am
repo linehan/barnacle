@@ -54,7 +54,7 @@ barnacle_SOURCES = barnacle.c                   \
                    map/special/cave.c           \
                    map/flow.c                   \
                    map/light.c                  \
-                   map/inset.c                  \
+                   map/control.c                \
                    ai/astar.c                   \
                    txt/gloss.c                  \
                    txt/effects.c                \

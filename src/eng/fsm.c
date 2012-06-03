@@ -46,7 +46,6 @@ enum uimodes {
         UI_BOAT,
         UI_BUILD,
         UI_INVENTORY,
-        UI_INSET,
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -104,8 +103,6 @@ void operate_on(int input)
         {
         case UI_NOUN:
                 break;
-        case UI_WORLDMAP:
-                break;
         case UI_INSPECTOR:
                 inspect_control(input);
                 break;
@@ -119,8 +116,8 @@ void operate_on(int input)
         case UI_INVENTORY:
                 inventory_menu_control(input);
                 break;
-        case UI_INSET:
-                inset_cursor(input);
+        case UI_WORLDMAP:
+                map_control(input);
                 break;
         }
 }
@@ -187,7 +184,7 @@ void director(int input)
                         loop_test(true);
                         break;
                 case '#':
-                        setmode(UI_INSET);
+                        setmode(UI_WORLDMAP);
                         setmode(MODE_STARTED);
                         break;
                 case 'T':

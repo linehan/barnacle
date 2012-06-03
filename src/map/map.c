@@ -24,7 +24,7 @@
 #include "../test/test.h"
 #include "../lib/list.h"
 #include "map.h"
-#include "inset.h"
+#include "control.h"
 #include "terrain.h"
 #include "tile.h"
 
@@ -103,7 +103,7 @@ struct mapbook_t *new_mapbook(void)
         map_gen(new->world, NULL, MAP_DOSMOOTH);
 
         /* Field map */
-        new->field = new_inset(new->world, FIELD_HEIGHT, FIELD_WIDTH, 0, 0);
+        new->field = new_zoom(new->world, 0, 0);
 
         /* Render and restack both */
         new->render(new->world);

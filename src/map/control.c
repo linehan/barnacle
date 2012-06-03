@@ -1,5 +1,5 @@
 /*
- * inset.c -- generate zoomed insets of a map
+ * map/control.c -- pan and zoom over the world map, track location
  *
  * Copyright (C) 2012 Jason Linehan 
  *
@@ -22,33 +22,44 @@
 #include "../test/test.h"
 #include "../gfx/ui/cursor.h"
 #include "map.h"
-#include "inset.h"
+#include "control.h"
 #include "terrain.h"
 #include "tile.h"
 
+/******************************************************************************
+ * ZOOMING
+ * 
+ * "Zooming in" creates a new map which is a transformation of the 
+ * currently active one. The new map is pushed to the top of a stack, 
+ * the "zoom stack", and becomes the currently active map. 
+ *
+ * "Zooming out" pops the topmost map of the zoom stack, and discards
+ * it, unless it is the last map in the stack. The new topmost map
+ * on the zoom stack becomes the currently active map.
+ ******************************************************************************/
 
 /**
- * new_inset -- generates a map which is a scaled-up inset of another map
+ * new_zoom -- generates a map which is a scaled-up rendering of another map
  * @map: the "parent" map which will be used to generate the inset
  * @h: height of the inset
  * @w: width of the inset
  * @y: y-coordinate of the inset's top-left corner
  * @x: x-coordinate of the inset's top-left corner
  * 
- * Notes
+ * Note
  * Uses a simple linear transformation that goes something like this:
  *      old_range = (old_max - old_min)
  *      new_range = (new_max - new_min)
  *      new_value = (((old_value-old_min)*new_range) / old_range) + new_min
  */
-struct map_t *new_inset(struct map_t *map, int h, int w, int y, int x)
+struct map_t *new_zoom(struct map_t *map, int y, int x)
 {
+        #define h_scale_factor 6
+        #define w_scale_factor 8
+        #define h_screen LINES
+        #define w_screen COLS
         struct map_t *new;
         double **val;
-        int old_h_range;
-        int old_w_range;
-        int new_h_range;
-        int new_w_range;
         int scaled_h;
         int scaled_w;
         int i;
@@ -56,15 +67,10 @@ struct map_t *new_inset(struct map_t *map, int h, int w, int y, int x)
 
         val = empty_simplex_matrix(FULLSCREEN);
 
-        old_h_range = (LINES - 0);
-        old_w_range = (COLS - 0);
-        new_h_range = (h - 0);
-        new_w_range = (w - 0);
-
-        for (i=0; i<LINES; i++) {
-        for (j=0; j<COLS; j++) {
-                scaled_h = (((i - 0) * new_h_range) / old_h_range) + y;
-                scaled_w = (((j - 0) * new_w_range) / old_w_range) + x;
+        for (i=0; i<h_screen; i++) {
+        for (j=0; j<w_screen; j++) {
+                scaled_h = (((i - 0) * h_scale_factor) / h_screen) + y;
+                scaled_w = (((j - 0) * w_scale_factor) / w_screen) + x;
 
                 val[i][j] = map->pmap[scaled_h][scaled_w];
         }
@@ -103,7 +109,7 @@ void zoom_in(struct mapbook_t *mapbook, int y, int x)
 
         /* Create an inset of the currently active map
          * in the mapbook. */
-        newzoom = new_inset(mapbook->active, 6, 8, y, x);
+        newzoom = new_zoom(mapbook->active, y, x);
 
         /* If this is the base zoom level, the currently
          * active map becomes the root node. */
@@ -145,11 +151,18 @@ void zoom_out(struct mapbook_t *mapbook)
 }
 
 
+/******************************************************************************
+ * MAP CURSOR 
+ * 
+ * The map can be scrolled and zoomed with a cursor operating on the
+ * movement keys.
+ ******************************************************************************/
 
 /**
- * inset_cursor -- draw an inset cursor on the screen and allow movement
+ * map_control -- draw a cursor on the screen and accept control from FSM
+ * @ch: the input word from the FSM
  */
-int inset_cursor(int ch)
+int map_control(int ch)
 {
         #define frame_w 6 
         #define frame_h 3
@@ -157,6 +170,8 @@ int inset_cursor(int ch)
         static PANEL  *frame_pan;
         static int y;
         static int x;
+        static int y_map;
+        static int x_map;
 
         if (!frame_win) {
                 frame_win = newwin(frame_h, frame_w, 0, 0);
@@ -214,9 +229,15 @@ int inset_cursor(int ch)
                 hide_panel(frame_pan);
                 return MODE_RELEASE;
         }
+
+        y_map = pos_y(ACTIVE->pos) + y;
+        x_map = pos_x(ACTIVE->pos) + x;
+
         /*------------------------------------------------------------*/
-        copywin(PLATE(ACTIVE, BGR), frame_win, y, x, 0, 0, frame_h-1, frame_w-1, 0);
-        copywin(PLATE(ACTIVE, RIM), frame_win, y, x, 0, 0, frame_h-1, frame_w-1, 1);
+        copywin(PLATE(ACTIVE, BGR), frame_win, 
+                      y_map, x_map, 0, 0, frame_h-1, frame_w-1, 0);
+        copywin(PLATE(ACTIVE, RIM), frame_win, 
+                      y_map, x_map, 0, 0, frame_h-1, frame_w-1, 1);
         /*------------------------------------------------------------*/
         take_bgcolor_yx(frame_win , 0         , 0         , INSET_UL);
         take_bgcolor_yx(frame_win , 0         , frame_w-1 , INSET_UR);
@@ -231,5 +252,3 @@ int inset_cursor(int ch)
 
         return MODE_PERSIST;
 }
-        
-
