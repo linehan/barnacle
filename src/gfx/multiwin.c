@@ -56,9 +56,6 @@ void prev_window(void *self)
 
 
 
-
-
-
 /*
  * Allocate and initialize a new struct multiwin_t.
  */

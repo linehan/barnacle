@@ -48,6 +48,7 @@ struct map_t {
         struct matrix_t *elev;
         double **pmap;
         struct pos_t *pos;
+        struct list_node node;
 };
 
 
@@ -57,14 +58,14 @@ struct map_t {
  * that may be active at any given time: the world map, and the field map,
  * which is derived from the world map.
  */
-struct mapbook {
+struct mapbook_t {
         /*---------------------------- Map members */
         struct list_head zoom;
         struct map_t *active;
         struct map_t *world;
         struct map_t *field;
         struct map_t *extra;
-        /*---------------------------- Toggle */
+        /*---------------------------- Cycle */
         enum map_page page;
         /*---------------------------- Methods */
         void (*render)(void *self);
@@ -78,7 +79,7 @@ struct mapbook {
  * This is the mapbook pointer; it has global scope and is the only
  * mapbook that should be active at any given time.
  */
-struct mapbook *MAPBOOK;
+struct mapbook_t *MAPBOOK;
 #define WORLD  (MAPBOOK->world)  /* Accesses the world map */
 #define FIELD  (MAPBOOK->field)  /* Accesses the field map */
 #define EXTRA  (MAPBOOK->extra)
@@ -92,7 +93,7 @@ static bool gravity_enabled = true;
 /*Map creation functions
 ````````````````````````````````````````````````````````````````````````````` */
 struct map_t   *new_map(int h, int w);
-struct mapbook *new_mapbook(void);
+struct mapbook_t *new_mapbook(void);
 struct map_t   *new_inset(struct map_t *map, int h, int w, int y, int x);
 
 /* Map drawing and labeling functions
@@ -105,7 +106,7 @@ void map_render(void *mymap);
 ````````````````````````````````````````````````````````````````````````````` */
 bool map_hit(struct map_t *map, struct noun_t *noun);
 bool mob_hit(struct map_t *map, struct noun_t *noun);
-void map_roll(struct map_t *map, int dir);
+void map_scroll(struct map_t *map, int dir);
 void map_swap(void);
 void map_cycle(void);
 void map_set_extra(void *mymap);

@@ -71,8 +71,8 @@ void label_regions(struct map_t *map)
         int i;
         int j;
 
-        for (i=0; i<pos_h(map->pos); i++) {
-        for (j=0; j<pos_w(map->pos); j++) {
+        for (i=0; i<pos_boxh(map->pos); i++) {
+        for (j=0; j<pos_boxw(map->pos); j++) {
 
                 mx_seed(map->tile, i, j, &seed);
 
@@ -95,8 +95,8 @@ void label_cliffs(struct map_t *map)
         int i;
         int j;
 
-        for (i=0; i<pos_h(map->pos); i++) {
-        for (j=0; j<pos_w(map->pos); j++) {
+        for (i=0; i<pos_boxh(map->pos); i++) {
+        for (j=0; j<pos_boxw(map->pos); j++) {
 
                 mx_seed(map->tile, i, j, &seed);
 
@@ -117,8 +117,8 @@ void label_treetops(struct map_t *map)
         int i;
         int j;
 
-        for (i=0; i<pos_h(map->pos); i++) {
-        for (j=0; j<pos_w(map->pos); j++) {
+        for (i=0; i<pos_boxh(map->pos); i++) {
+        for (j=0; j<pos_boxw(map->pos); j++) {
 
                 mx_seed(map->tile, i, j, &seed);
 
@@ -158,8 +158,8 @@ void label_treetops_trim(struct map_t *map)
         int i;
         int j;
 
-        for (i=0; i<pos_h(map->pos); i++) {
-        for (j=0; j<pos_w(map->pos); j++) {
+        for (i=0; i<pos_boxh(map->pos); i++) {
+        for (j=0; j<pos_boxw(map->pos); j++) {
 
                 mx_seed(map->tile, i, j, &seed);
 
@@ -193,8 +193,8 @@ void label_treetrunks(struct map_t *map)
         int i;
         int j;
 
-        for (i=0; i<pos_h(map->pos); i++) {
-        for (j=0; j<pos_w(map->pos); j++) {
+        for (i=0; i<pos_boxh(map->pos); i++) {
+        for (j=0; j<pos_boxw(map->pos); j++) {
 
                 mx_seed(map->tile, i, j, &seed);
 
@@ -231,8 +231,8 @@ void label_beaches(struct map_t *map)
         int i;
         int j;
 
-        for (i=0; i<pos_h(map->pos); i++) {
-        for (j=0; j<pos_w(map->pos); j++) {
+        for (i=0; i<pos_boxh(map->pos); i++) {
+        for (j=0; j<pos_boxw(map->pos); j++) {
 
                 mx_seed(map->tile, i, j, &seed);
 
@@ -251,29 +251,7 @@ void label_beaches(struct map_t *map)
 
         }
         }
-
-
-        /*for (i=0; i<pos_h(map->pos); i++) {*/
-        /*for (j=0; j<pos_w(map->pos); j++) {*/
-
-                /*mx_seed(map->tile, i, j, &seed);*/
-
-                /*if (!LAYER(*seed.cur, 1, MEADOW))*/
-                        /*continue;*/
-
-                /*if ((n_is(BEA, seed))*/
-                /*||  (s_is(BEA, seed))*/
-                /*||  (e_is(BEA, seed))*/
-                /*||  (w_is(BEA, seed))*/
-                /*||  (nw_is(BEA, seed))*/
-                /*||  (ne_is(BEA, seed))*/
-                /*||  (sw_is(BEA, seed))*/
-                /*||  (se_is(BEA, seed)))*/
-                        /*place_beach_label(seed.cur);*/
-        /*}*/
-        /*}*/
 }
-
 
 
 
@@ -300,8 +278,8 @@ void label_shorelines(struct map_t *map)
         attr = 0;
         
         /*mx_foreach_seed(&seed, map->tile) {*/
-        for (i=0; i<pos_h(map->pos); i++) {
-        for (j=0; j<pos_w(map->pos); j++) {
+        for (i=0; i<pos_boxh(map->pos); i++) {
+        for (j=0; j<pos_boxw(map->pos); j++) {
 
                 mx_seed(map->tile, i, j, &seed);
 

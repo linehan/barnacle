@@ -66,6 +66,26 @@ static inline void pos_r(struct pos_t *pos)
 {
         pos->move_r(pos);
 }
+static inline void pos_ustep(struct pos_t *pos, int steps)
+{
+        while (steps-->0)
+                pos->move_u(pos);
+}
+static inline void pos_dstep(struct pos_t *pos, int steps)
+{
+        while (steps-->0)
+                pos->move_d(pos);
+}
+static inline void pos_lstep(struct pos_t *pos, int steps)
+{
+        while (steps-->0)
+                pos->move_l(pos);
+}
+static inline void pos_rstep(struct pos_t *pos, int steps)
+{
+        while (steps-->0)
+                pos->move_r(pos);
+}
 static inline int pos_ymax(struct pos_t *pos)
 {
         return (pos->ymax);

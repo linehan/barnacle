@@ -60,8 +60,8 @@ int main(int argc, char *argv[])
         print_status("\n ALL OK\n");
         print_hold("Press any key to continue");
 
-        map_roll(ACTIVE, 0);
-        map_roll(ACTIVE, 0);
+        map_scroll(ACTIVE, 0);
+        map_scroll(ACTIVE, 0);
 
         dock_toggle();
 

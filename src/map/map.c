@@ -85,10 +85,10 @@ struct map_t *new_map(int h, int w)
 /**
  * new_mapbook -- allocate and initialize a new mapbook
  */
-struct mapbook *new_mapbook(void)
+struct mapbook_t *new_mapbook(void)
 {
-        struct mapbook *new;
-        new = malloc(sizeof(struct mapbook));
+        struct mapbook_t *new;
+        new = malloc(sizeof(struct mapbook_t));
 
         /* Methods */
         new->render  = &map_render;  /* see terrain.c */
@@ -224,8 +224,8 @@ void map_render(void *mymap)
         int i;
         int j;
 
-        for (i=0; i<map->tile->itr.rows; i++) {
-        for (j=0; j<map->tile->itr.cols; j++) {
+        for (i=0; i<pos_boxh(map->pos); i++) {
+        for (j=0; j<pos_boxw(map->pos); j++) {
                 place_tile(map, i, j, get_byte(mx_val(map->tile, i, j), LAB));
         }
         }
@@ -315,24 +315,36 @@ void map_set_extra(void *mymap)
 }
 
 /*
-   map_roll -- move the map around
+ * map_scroll -- move the map around
  * @map: pointer to the map you want to move
  * @dir: 'lrud' directional motion char
  */
-void map_roll(struct map_t *map, int dir)
+void map_scroll(struct map_t *map, int dir)
 {
         switch (dir) {
-        case 'l': 
-                pos_l(map->pos);
-                break;
-        case 'r': 
-                pos_r(map->pos);
-                break;
-        case 'u': 
+        case 'w': 
                 pos_u(map->pos);
                 break;
-        case 'd': 
+        case 'a': 
+                pos_l(map->pos);
+                break;
+        case 's': 
                 pos_d(map->pos);
+                break;
+        case 'd': 
+                pos_r(map->pos);
+                break;
+        case 'W': 
+                pos_ustep(map->pos, 3);
+                break;
+        case 'A': 
+                pos_lstep(map->pos, 4);
+                break;
+        case 'S': 
+                pos_dstep(map->pos, 3);
+                break;
+        case 'D': 
+                pos_rstep(map->pos, 4);
                 break;
         }
         map_refresh(map);

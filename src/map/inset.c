@@ -27,7 +27,7 @@
 #include "tile.h"
 
 
-/*
+/**
  * new_inset -- generates a map which is a scaled-up inset of another map
  * @map: the "parent" map which will be used to generate the inset
  * @h: height of the inset
@@ -78,17 +78,71 @@ struct map_t *new_inset(struct map_t *map, int h, int w, int y, int x)
 
 
 /**
- * zoom_in -- draw an inset for the next zoom level of the screen
+ * current_zoom_map -- return the map of the current zoom level
+ * @mapbook: pointer to the mapbook structure
  */
-/*void zoom_in(struct mapbook_t *mapbook, int y, int x)*/
-/*{*/
-        /*struct map_t *newzoom;*/
+struct map_t *current_zoom_map(struct mapbook_t *mapbook)
+{
+        struct map_t *tmp;
 
-        /*newzoom = new_inset(mapbook->active, 6, 8, y, x);*/
+        tmp = list_top(&mapbook->zoom, struct map_t, node);
 
-        /*list_add(&mapbook->zoom, &newzoom->node);*/
-/*}*/
+        return tmp ? tmp : NULL;
+}
 
+
+/**
+ * zoom_in -- draw an inset for the next zoom level of the screen
+ * @mapbook: pointer to the mapbook structure
+ * @y      : y0 coordinate of zoom frame
+ * @x      : x0 coordinate of zoom frame
+ */
+void zoom_in(struct mapbook_t *mapbook, int y, int x)
+{
+        struct map_t *newzoom;
+
+        /* Create an inset of the currently active map
+         * in the mapbook. */
+        newzoom = new_inset(mapbook->active, 6, 8, y, x);
+
+        /* If this is the base zoom level, the currently
+         * active map becomes the root node. */
+        if (list_empty(&mapbook->zoom))
+                list_add(&mapbook->zoom, &mapbook->active->node);
+
+        /* Push the new inset to the zoom stack */
+        list_add(&mapbook->zoom, &newzoom->node);
+
+        /* Set it as the active map */
+        mapbook->active = current_zoom_map(mapbook);
+        mapbook->render(mapbook->active);
+        mapbook->restack(mapbook->active);
+        mapbook->show(mapbook->active);
+}
+
+
+/**
+ * zoom_out -- remove an inset from the zoom list
+ * @mapbook: pointer to the mapbook structure
+ */
+void zoom_out(struct mapbook_t *mapbook)
+{
+        struct map_t *top;
+
+        /* If this is the base zoom level, we can't zoom 
+         * out any more. */
+        if (list_empty(&mapbook->zoom))
+                return; 
+
+        /* Remove the current zoom level from the stack */
+        mapbook->hide(mapbook->active);
+        top = current_zoom_map(mapbook);
+        list_del_from(&mapbook->zoom, &top->node);
+
+        /* Set the new zoom level as the active map */
+        mapbook->active = current_zoom_map(mapbook);
+        mapbook->show(mapbook->active);
+}
 
 
 
@@ -108,11 +162,22 @@ int inset_cursor(int ch)
                 frame_win = newwin(frame_h, frame_w, 0, 0);
                 frame_pan = new_panel(frame_win);
         }
+        top_panel(frame_pan);
 
         switch (ch) 
         {
         case MODE_STARTED:
                 show_panel(frame_pan);
+                break;
+        case 'w':
+        case 'a':
+        case 's':
+        case 'd':
+        case 'W':
+        case 'A':
+        case 'S':
+        case 'D':
+                map_scroll(MAPBOOK->active, ch);
                 break;
         case 'h':
                 move_cursor(frame_pan, &y, &x, 'l', 1);
@@ -138,18 +203,17 @@ int inset_cursor(int ch)
         case 'J':
                 move_cursor(frame_pan, &y, &x, 'd', 4);
                 break;
-        case '?':
         case '\n':
+                zoom_in(MAPBOOK, y, x);
+                break;
+        case ' ':
+                zoom_out(MAPBOOK);
+                break;
         case KEY_ESC:
-                FIELD = new_inset(ACTIVE, frame_h, frame_w, y, x);
-                MAPBOOK->render(FIELD);
-                MAPBOOK->restack(FIELD);
-                ACTIVE = FIELD;
-                MAPBOOK->page = MAP_FIELD;
+        case 'm':
                 hide_panel(frame_pan);
                 return MODE_RELEASE;
         }
-
         /*------------------------------------------------------------*/
         copywin(PLATE(ACTIVE, BGR), frame_win, y, x, 0, 0, frame_h-1, frame_w-1, 0);
         copywin(PLATE(ACTIVE, RIM), frame_win, y, x, 0, 0, frame_h-1, frame_w-1, 1);
