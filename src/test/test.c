@@ -121,16 +121,16 @@ static inline void move_cursor(int dir, int step)
 {
         switch (dir) {
         case 'l':
-                while (step-->0) DEC(cur_x,0);
+                while (step-->0) dec(cur_x,0);
                 break;
         case 'r':
-                while (step-->0) INC(cur_x, COLS);
+                while (step-->0) inc(cur_x, COLS);
                 break;
         case 'u':
-                while (step-->0) DEC(cur_y,0);
+                while (step-->0) dec(cur_y,0);
                 break;
         case 'd':
-                while (step-->0) INC(cur_y, LINES);
+                while (step-->0) inc(cur_y, LINES);
                 break;
         }
 

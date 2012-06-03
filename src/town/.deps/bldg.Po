@@ -29,7 +29,8 @@ town/bldg.o: town/bldg.c town/../com/barnacle.h \
  /usr/include/bits/string.h /usr/include/bits/string2.h \
  town/../map/../gfx/sprite.h town/../map/../gfx/palette.h \
  town/../map/../gfx/multiwin.h town/../map/../gfx/gfx.h \
- town/../map/../gfx/../test/test.h town/../map/../gfx/../lib/pos.h \
+ town/../map/../gfx/../test/test.h town/../map/../gfx/../map/map.h \
+ town/../map/../gfx/../lib/pos.h \
  town/../map/../gfx/../lib/../com/barnacle.h \
  town/../map/../gfx/../lib/rec.h town/../map/../gfx/ui/dock.h \
  town/../map/../gfx/ui/stdpan.h town/../map/../gfx/ui/../gfx.h \
@@ -39,12 +40,13 @@ town/bldg.o: town/bldg.c town/../com/barnacle.h \
  /usr/include/bits/siginfo.h /usr/include/bits/sigaction.h \
  /usr/include/bits/sigcontext.h /usr/include/bits/sigstack.h \
  /usr/include/sys/ucontext.h /usr/include/bits/sigthread.h \
- /usr/include/setjmp.h /usr/include/bits/setjmp.h town/../map/terrain.h \
- town/../map/tag.h town/../map/special/arena.h town/../map/door.h \
+ /usr/include/setjmp.h /usr/include/bits/setjmp.h \
+ town/../map/../lib/list.h town/../map/terrain.h town/../map/map.h \
+ town/../map/tag.h town/../map/special/arena.h \
+ town/../map/special/../map.h town/../map/door.h \
  town/../map/../noun/noun.h town/../map/../noun/../com/barnacle.h \
- town/../map/../noun/../lib/fsm/fsm.h \
+ town/../map/../noun/../map/map.h town/../map/../noun/../lib/fsm/fsm.h \
  town/../map/../noun/../lib/fsm/../list.h \
- town/../map/../noun/../lib/fsm/../../com/barnacle.h \
  town/../map/../noun/../lib/fsm/../bheap.h \
  town/../map/../noun/../lib/fsm/states.h \
  town/../map/../noun/../ai/astar.h \
@@ -186,6 +188,8 @@ town/../map/../gfx/gfx.h:
 
 town/../map/../gfx/../test/test.h:
 
+town/../map/../gfx/../map/map.h:
+
 town/../map/../gfx/../lib/pos.h:
 
 town/../map/../gfx/../lib/../com/barnacle.h:
@@ -226,11 +230,17 @@ town/../map/../lib/../eng/error.h:
 
 /usr/include/bits/setjmp.h:
 
+town/../map/../lib/list.h:
+
 town/../map/terrain.h:
+
+town/../map/map.h:
 
 town/../map/tag.h:
 
 town/../map/special/arena.h:
+
+town/../map/special/../map.h:
 
 town/../map/door.h:
 
@@ -238,11 +248,11 @@ town/../map/../noun/noun.h:
 
 town/../map/../noun/../com/barnacle.h:
 
+town/../map/../noun/../map/map.h:
+
 town/../map/../noun/../lib/fsm/fsm.h:
 
 town/../map/../noun/../lib/fsm/../list.h:
-
-town/../map/../noun/../lib/fsm/../../com/barnacle.h:
 
 town/../map/../noun/../lib/fsm/../bheap.h:
 

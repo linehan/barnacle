@@ -549,7 +549,7 @@ void method_noun_fall(void *self)
         if (TILE(ACTIVE, y, x) == ROPE)
                 return;
 
-        INC(y, pos_ymax(noun->pos));
+        inc(y, pos_ymax(noun->pos));
 
         if (TILE(ACTIVE, y, x) == CAVEFLOOR)
                 noun->step(noun, 'd');
@@ -658,16 +658,16 @@ void noun_set_signal_delayed(struct noun_t *noun, uint32_t state, int dir)
         
         switch (dir) {
         case 'u':
-                DEC(y, pos_ymin(noun->pos));
+                dec(y, pos_ymin(noun->pos));
                 break;
         case 'd':
-                INC(y, pos_ymax(noun->pos));
+                inc(y, pos_ymax(noun->pos));
                 break;
         case 'l':
-                DEC(x, pos_xmin(noun->pos));
+                dec(x, pos_xmin(noun->pos));
                 break;
         case 'r':
-                INC(x, pos_xmax(noun->pos));
+                inc(x, pos_xmax(noun->pos));
                 break;
         default:
                 break; /* Signal will be sent to the sender */
@@ -688,16 +688,16 @@ void emit_to_noun(struct noun_t *noun, int dir, uint32_t state)
         
         switch (dir) {
         case 'u':
-                DEC(y, pos_ymin(noun->pos));
+                dec(y, pos_ymin(noun->pos));
                 break;
         case 'd':
-                INC(y, pos_ymax(noun->pos));
+                inc(y, pos_ymax(noun->pos));
                 break;
         case 'l':
-                DEC(x, pos_xmin(noun->pos));
+                dec(x, pos_xmin(noun->pos));
                 break;
         case 'r':
-                INC(x, pos_xmax(noun->pos));
+                inc(x, pos_xmax(noun->pos));
                 break;
         default:
                 break; /* Signal will be sent to the sender */

@@ -45,6 +45,7 @@ barnacle_SOURCES = barnacle.c                   \
                    gfx/ui/titlecard.c           \
                    gfx/ui/menu_inventory.c      \
                    gfx/ui/notify.c              \
+                   gfx/ui/cursor.c              \
                    map/terrain.c                \
                    map/map.c                    \
                    map/cell.c                   \

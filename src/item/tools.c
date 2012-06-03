@@ -83,16 +83,16 @@ void use_rope(void *self, struct noun_t *noun)
         x     = pos_x(noun->pos);
 
         /* Decide which way the rope will dangle */
-        if ((TILE(ACTIVE, MIN(y+1, LINES), MAX(x-1, 0)) == CAVEFLOOR)
+        if ((TILE(ACTIVE, min(y+1, LINES), max(x-1, 0)) == CAVEFLOOR)
         || (pos_hdg(noun->pos) == WEST)) {
 
                 tile = L_ROPE_ANCHOR;
-                DEC(x, 0);
+                dec(x, 0);
         }
-        else if ((TILE(ACTIVE, MIN(y+1, LINES), MIN(x+1, COLS-1)) == CAVEFLOOR)
+        else if ((TILE(ACTIVE, min(y+1, LINES), min(x+1, COLS-1)) == CAVEFLOOR)
         ||      (pos_hdg(noun->pos) == EAST)) {
                 tile = R_ROPE_ANCHOR;
-                INC(x, COLS);
+                inc(x, COLS);
         }
 
         /* Don't draw anything if the tile isn't the floor */
@@ -109,9 +109,9 @@ void use_rope(void *self, struct noun_t *noun)
 
                 struct cell_t *new;
 
-                INC(y, LINES);
+                inc(y, LINES);
                 /* Look ahead */
-                if (TILE(ACTIVE, ADDONE(y, LINES), x) == CAVESOLID)
+                if (TILE(ACTIVE, clamp(y+1, 0, LINES), x) == CAVESOLID)
                        break; 
                 
                 new         = new_cell(y, x);
@@ -152,19 +152,19 @@ void use_pickaxe(void *self, struct noun_t *noun)
 
         switch (noun->pos->hdg) {
         case NORTH:
-                DEC(y, 0);
+                dec(y, 0);
                 noun_set_signal(noun, SM_DigUp, '*');
                 break;
         case SOUTH:
-                INC(y, LINES);
+                inc(y, LINES);
                 noun_set_signal(noun, SM_DigDown, '*');
                 break;
         case EAST:
-                INC(x, COLS);
+                inc(x, COLS);
                 noun_set_signal(noun, SM_DigRight, '*');
                 break;
         case WEST:
-                DEC(x, 0);
+                dec(x, 0);
                 noun_set_signal(noun, SM_DigLeft, '*');
                 break;
         }

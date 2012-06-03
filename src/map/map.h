@@ -1,16 +1,13 @@
-#pragma once
 #ifndef __MAP_H
 #define __MAP_H
 /*
- *
  * map.h -- objects and methods for graphical representation of terrain 
- *
  */
 #include "../com/barnacle.h"
 #include "../eng/bytes.h"
 #include "../gfx/gfx.h"
 #include "../lib/matrix.h"
-
+#include "../lib/list.h"
 #include "../lib/pos.h"
 #include "terrain.h"
 #include "tag.h"
@@ -27,9 +24,8 @@ enum map_page  { MAP_WORLD, MAP_EXTRA, MAP_FIELD };
 #define FULLSCREEN     LINES+1, COLS+1
 #define PLATE(map,tag) PEEK(((map)->L[(tag)]))
 
-struct mob_t;
 
-/*
+/**
  * A map_t holds all the data necessary to fill a screen with terrain.
  * It contains matrices which hold "tag" or "label" values cooresponding
  * to a set of tokens which can be read by the raster parser, which
@@ -55,7 +51,7 @@ struct map_t {
 };
 
 
-/*
+/**
  * The mapbook is a unique object that serves as a scaffold for various
  * rendering and UI functions. It contains pointers to the two map screens
  * that may be active at any given time: the world map, and the field map,
@@ -63,14 +59,13 @@ struct map_t {
  */
 struct mapbook {
         /*---------------------------- Map members */
+        struct list_head zoom;
+        struct map_t *active;
         struct map_t *world;
         struct map_t *field;
         struct map_t *extra;
-        struct map_t *active;
         /*---------------------------- Toggle */
         enum map_page page;
-        bool field_is_active;
-        bool extra_is_active;   
         /*---------------------------- Methods */
         void (*render)(void *self);
         void (*restack)(void *self);
@@ -110,7 +105,6 @@ void map_render(void *mymap);
 ````````````````````````````````````````````````````````````````````````````` */
 bool map_hit(struct map_t *map, struct noun_t *noun);
 bool mob_hit(struct map_t *map, struct noun_t *noun);
-void map_trigger(struct map_t *map, struct mob_t *mob);
 void map_roll(struct map_t *map, int dir);
 void map_swap(void);
 void map_cycle(void);

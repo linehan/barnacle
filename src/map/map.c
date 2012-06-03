@@ -16,28 +16,13 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software Foundation, 
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
- ******************************************************************************
- * A 'map' in this program refers to the persistent data structure that 
- * organizes the terrain, climate, and other spatial features in a regularly
- * addressable manner. In many ways it is the most important data structure
- * in the program, since it holds the context within which most other actions 
- * are executed, and to which most decisions refer.
- *
- * There are two primary members of a map structure: 
- *
- *      WINDOW *L[16]   An array of 16 pads (see curs_pad(3X))
- *      MATRIX *mx      A matrix containing label values
- *      
- * Essentially, the map stores two kinds of information, addressed to the
- * same square grid. One is rendering meant to be drawn to the screen (L[16]),
- * while the other is labeling, meant to be traversed, interpreted, or
- * altered by terrain algorithms.
- ******************************************************************************/
+ */
 #include <stdlib.h>
 #include "../gfx/gfx.h"
 #include "../gfx/ui/titlecard.h"
 #include "../lib/stoc/stoc.h"
 #include "../test/test.h"
+#include "../lib/list.h"
 #include "map.h"
 #include "inset.h"
 #include "terrain.h"
@@ -45,12 +30,10 @@
 
 
 
-/* -------------------------------------------------------------------------- */
 void map_restack(void *mymap);
 void map_render(void *mymap);
 void map_show(void *mymap);
 void map_hide(void *mymap);
-/* -------------------------------------------------------------------------- */
 
 
 
@@ -62,7 +45,7 @@ void map_hide(void *mymap);
  *
  ******************************************************************************/ 
 
-/*
+/**
  * new_map -- allocate and initialize new map structure 
  * @h: the desired map height
  * @w: the desired map width
@@ -88,8 +71,8 @@ struct map_t *new_map(int h, int w)
         new->pos    = new_pos(SCR_HEIGHT, SCR_WIDTH, SCR_Y0, SCR_X0, h, w, 0, 0);
 
         /* Build windows, pads, and panels */
-        new->win = newwin(LINES, COLS, 0, 0); /* Fullscreen */
-        new->pan = new_panel(new->win);
+        new->win    = newwin(LINES, COLS, 0, 0); /* Fullscreen */
+        new->pan    = new_panel(new->win);
         new->L[RIM] = new_multiwin(h, w, 0, 0, 4);
         new->L[BGR] = new_multiwin(h, w, 0, 0, 1);
         new->W      = new_multiwin(h, w, 0, 0, 2);
@@ -99,7 +82,7 @@ struct map_t *new_map(int h, int w)
 
 
 
-/*
+/**
  * new_mapbook -- allocate and initialize a new mapbook
  */
 struct mapbook *new_mapbook(void)
@@ -112,6 +95,8 @@ struct mapbook *new_mapbook(void)
         new->restack = &map_restack;
         new->show    = &map_show;
         new->hide    = &map_hide;
+
+        list_head_init(&new->zoom);
 
         /* World map */
         new->world = new_map(WORLD_HEIGHT, WORLD_WIDTH);
@@ -128,7 +113,6 @@ struct mapbook *new_mapbook(void)
 
         /* Set world as the active map */
         new->active = new->world;
-        new->field_is_active = false;
 
         return (new);
 }
@@ -142,7 +126,7 @@ struct mapbook *new_mapbook(void)
  *
  ******************************************************************************/ 
 
-/*
+/**
  * map_gen -- fill a new map with generated data that can be parsed
  * @map: pointer to a previously-allocated map
  * @pmap: matrix of doubles used for labeling. If NULL, simplex noise is used
@@ -161,7 +145,7 @@ void map_gen(struct map_t *map, double **pmap, int opt)
         map_label(map, opt); 
 }
 
-/*
+/**
  * map_label -- parse the generated noise values and apply labels
  * @map: pointer to a previously-allocated map
  * @opt: some option
@@ -226,7 +210,7 @@ void map_label(struct map_t *map, int opt)
  *
  ******************************************************************************/ 
 
-/*
+/**
  * map_render (METHOD) -- draw the graphics for all labels in the map matrix
  * @mymap: void * pointer to a previously-allocated map
  *
@@ -248,7 +232,7 @@ void map_render(void *mymap)
 }
 
 
-/*
+/**
  * map_restack (METHOD) -- re-draw the visual layers in their sorted order
  * @mymap: void * pointer to a previously-allocated map
  *
@@ -264,7 +248,7 @@ void map_restack(void *mymap)
         overlay(PEEK(map->L[RIM]), PEEK(map->W));
 }
 
-/*
+/**
  * map_hide (METHOD) -- hide the panel associated with a map
  * @mymap: void * pointer to a previously-allocated map
  */
@@ -274,7 +258,7 @@ void map_hide(void *mymap)
         hide_panel(map->pan);
 }
 
-/*
+/**
  * map_show (METHOD) -- show the panel associated with a map
  * @mymap: void * pointer to a previously-allocated map
  */
@@ -284,23 +268,9 @@ void map_show(void *mymap)
         show_panel(map->pan);
 }
 
-/*
- * map_swap (METHOD) -- exchange the current active map for the inactive one 
+/**
+ * map_cycle -- cycle through pages of the mapbook
  */
-void map_swap(void)
-{
-        MAPBOOK->hide(ACTIVE);
-        MAPBOOK->field_is_active ^= true;
-
-        if (MAPBOOK->field_is_active)
-                ACTIVE = FIELD;
-        else
-                ACTIVE = WORLD;
-
-        map_refresh(ACTIVE);
-        MAPBOOK->show(ACTIVE);
-}
-
 void map_cycle(void)
 {
         MAPBOOK->hide(ACTIVE);
@@ -324,8 +294,7 @@ void map_cycle(void)
 }
 
 
-
-/*
+/**
  * map_set_extra -- set a special map to be displayed
  */
 void map_set_extra(void *mymap)
@@ -335,10 +304,8 @@ void map_set_extra(void *mymap)
         MAPBOOK->hide(ACTIVE);
 
         if (EXTRA == NULL) {
-                MAPBOOK->extra_is_active = false;
-                ACTIVE = (MAPBOOK->field_is_active) ? FIELD : WORLD;
+                ACTIVE = (MAPBOOK->page == MAP_WORLD) ? FIELD : WORLD;
         } else {
-                MAPBOOK->extra_is_active = true;
                 ACTIVE = EXTRA;
         }
 
@@ -372,7 +339,7 @@ void map_roll(struct map_t *map, int dir)
 }
 
 
-/*
+/**
  * map_hit -- crudely detect collisions
  * @map: pointer to a map structure
  * @rec: the bounding rectangle of the object being tested

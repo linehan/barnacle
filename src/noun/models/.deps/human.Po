@@ -34,6 +34,7 @@ noun/models/human.o: noun/models/human.c noun/models/../noun.h \
  noun/models/../../map/../gfx/multiwin.h \
  noun/models/../../map/../gfx/gfx.h \
  noun/models/../../map/../gfx/../test/test.h \
+ noun/models/../../map/../gfx/../map/map.h \
  noun/models/../../map/../gfx/../lib/pos.h \
  noun/models/../../map/../gfx/../lib/../com/barnacle.h \
  noun/models/../../map/../gfx/../lib/rec.h \
@@ -48,11 +49,11 @@ noun/models/human.o: noun/models/human.c noun/models/../noun.h \
  /usr/include/bits/sigaction.h /usr/include/bits/sigcontext.h \
  /usr/include/bits/sigstack.h /usr/include/sys/ucontext.h \
  /usr/include/bits/sigthread.h /usr/include/setjmp.h \
- /usr/include/bits/setjmp.h noun/models/../../map/terrain.h \
+ /usr/include/bits/setjmp.h noun/models/../../map/../lib/list.h \
+ noun/models/../../map/terrain.h noun/models/../../map/map.h \
  noun/models/../../map/tag.h noun/models/../../map/special/arena.h \
- noun/models/../../map/door.h noun/models/../../lib/fsm/fsm.h \
- noun/models/../../lib/fsm/../list.h \
- noun/models/../../lib/fsm/../../com/barnacle.h \
+ noun/models/../../map/special/../map.h noun/models/../../map/door.h \
+ noun/models/../../lib/fsm/fsm.h noun/models/../../lib/fsm/../list.h \
  noun/models/../../lib/fsm/../bheap.h noun/models/../../lib/fsm/states.h \
  noun/models/../../ai/astar.h noun/models/../../ai/../lib/bheap.h \
  noun/models/../../ai/../map/cell.h \
@@ -194,6 +195,8 @@ noun/models/../../map/../gfx/gfx.h:
 
 noun/models/../../map/../gfx/../test/test.h:
 
+noun/models/../../map/../gfx/../map/map.h:
+
 noun/models/../../map/../gfx/../lib/pos.h:
 
 noun/models/../../map/../gfx/../lib/../com/barnacle.h:
@@ -234,19 +237,23 @@ noun/models/../../map/../lib/../eng/error.h:
 
 /usr/include/bits/setjmp.h:
 
+noun/models/../../map/../lib/list.h:
+
 noun/models/../../map/terrain.h:
+
+noun/models/../../map/map.h:
 
 noun/models/../../map/tag.h:
 
 noun/models/../../map/special/arena.h:
+
+noun/models/../../map/special/../map.h:
 
 noun/models/../../map/door.h:
 
 noun/models/../../lib/fsm/fsm.h:
 
 noun/models/../../lib/fsm/../list.h:
-
-noun/models/../../lib/fsm/../../com/barnacle.h:
 
 noun/models/../../lib/fsm/../bheap.h:
 

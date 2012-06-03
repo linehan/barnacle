@@ -78,17 +78,17 @@ am_barnacle_OBJECTS = barnacle.$(OBJEXT) eng/init.$(OBJEXT) \
 	gfx/ui/dock.$(OBJEXT) gfx/ui/stdpan.$(OBJEXT) \
 	gfx/ui/stdmenu.$(OBJEXT) gfx/ui/titlecard.$(OBJEXT) \
 	gfx/ui/menu_inventory.$(OBJEXT) gfx/ui/notify.$(OBJEXT) \
-	map/terrain.$(OBJEXT) map/map.$(OBJEXT) map/cell.$(OBJEXT) \
-	map/door.$(OBJEXT) map/special/arena.$(OBJEXT) \
-	map/special/cave.$(OBJEXT) map/flow.$(OBJEXT) \
-	map/light.$(OBJEXT) map/inset.$(OBJEXT) ai/astar.$(OBJEXT) \
-	txt/gloss.$(OBJEXT) txt/effects.$(OBJEXT) noun/noun.$(OBJEXT) \
-	noun/animate.$(OBJEXT) noun/combat.$(OBJEXT) \
-	noun/spawn.$(OBJEXT) noun/models.$(OBJEXT) \
-	noun/models/human.$(OBJEXT) noun/models/hopper.$(OBJEXT) \
-	item/item.$(OBJEXT) item/tools.$(OBJEXT) item/edible.$(OBJEXT) \
-	town/bldg.$(OBJEXT) test/test.$(OBJEXT) \
-	test/looptest.$(OBJEXT)
+	gfx/ui/cursor.$(OBJEXT) map/terrain.$(OBJEXT) \
+	map/map.$(OBJEXT) map/cell.$(OBJEXT) map/door.$(OBJEXT) \
+	map/special/arena.$(OBJEXT) map/special/cave.$(OBJEXT) \
+	map/flow.$(OBJEXT) map/light.$(OBJEXT) map/inset.$(OBJEXT) \
+	ai/astar.$(OBJEXT) txt/gloss.$(OBJEXT) txt/effects.$(OBJEXT) \
+	noun/noun.$(OBJEXT) noun/animate.$(OBJEXT) \
+	noun/combat.$(OBJEXT) noun/spawn.$(OBJEXT) \
+	noun/models.$(OBJEXT) noun/models/human.$(OBJEXT) \
+	noun/models/hopper.$(OBJEXT) item/item.$(OBJEXT) \
+	item/tools.$(OBJEXT) item/edible.$(OBJEXT) town/bldg.$(OBJEXT) \
+	test/test.$(OBJEXT) test/looptest.$(OBJEXT)
 barnacle_OBJECTS = $(am_barnacle_OBJECTS)
 barnacle_LDADD = $(LDADD)
 DEFAULT_INCLUDES = -I.@am__isrc@
@@ -234,6 +234,7 @@ barnacle_SOURCES = barnacle.c                   \
                    gfx/ui/titlecard.c           \
                    gfx/ui/menu_inventory.c      \
                    gfx/ui/notify.c              \
+                   gfx/ui/cursor.c              \
                    map/terrain.c                \
                    map/map.c                    \
                    map/cell.c                   \
@@ -437,6 +438,8 @@ gfx/ui/menu_inventory.$(OBJEXT): gfx/ui/$(am__dirstamp) \
 	gfx/ui/$(DEPDIR)/$(am__dirstamp)
 gfx/ui/notify.$(OBJEXT): gfx/ui/$(am__dirstamp) \
 	gfx/ui/$(DEPDIR)/$(am__dirstamp)
+gfx/ui/cursor.$(OBJEXT): gfx/ui/$(am__dirstamp) \
+	gfx/ui/$(DEPDIR)/$(am__dirstamp)
 map/$(am__dirstamp):
 	@$(MKDIR_P) map
 	@: > map/$(am__dirstamp)
@@ -548,6 +551,7 @@ mostlyclean-compile:
 	-rm -f gfx/multiwin.$(OBJEXT)
 	-rm -f gfx/palette.$(OBJEXT)
 	-rm -f gfx/sprite.$(OBJEXT)
+	-rm -f gfx/ui/cursor.$(OBJEXT)
 	-rm -f gfx/ui/dock.$(OBJEXT)
 	-rm -f gfx/ui/menu_inventory.$(OBJEXT)
 	-rm -f gfx/ui/notify.$(OBJEXT)
@@ -610,6 +614,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@gfx/$(DEPDIR)/multiwin.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@gfx/$(DEPDIR)/palette.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@gfx/$(DEPDIR)/sprite.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@gfx/ui/$(DEPDIR)/cursor.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@gfx/ui/$(DEPDIR)/dock.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@gfx/ui/$(DEPDIR)/menu_inventory.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@gfx/ui/$(DEPDIR)/notify.Po@am__quote@

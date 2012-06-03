@@ -72,6 +72,14 @@ static inline void sayw(WINDOW *win, const wchar_t *wch)
 #define CENT_X (COLS/2)
 #define CENT_Y (LINES/2)
 
+#define TOGPAN(pan)              \
+        if (panel_hidden(pan))   \
+                show_panel(pan); \
+        else    hide_panel(pan)  
+
+#define CENTERED ((LINES)/2), ((COLS)/2)
+
+
 void geojug_start(void);
 void build_gpkg(struct gpkg *g);
 

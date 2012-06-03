@@ -20,6 +20,7 @@
 #include "../com/barnacle.h"
 #include "../lib/stoc/stoc.h"
 #include "../test/test.h"
+#include "../gfx/ui/cursor.h"
 #include "map.h"
 #include "inset.h"
 #include "terrain.h"
@@ -76,28 +77,22 @@ struct map_t *new_inset(struct map_t *map, int h, int w, int y, int x)
 }
 
 
-static inline void move_cursor(PANEL *pan, int *cur_y, int *cur_x, int dir, int step)
-{
-        switch (dir) {
-        case 'l':
-                while (step-->0) DEC(*cur_x,0);
-                break;
-        case 'r':
-                while (step-->0) INC(*cur_x, COLS);
-                break;
-        case 'u':
-                while (step-->0) DEC(*cur_y,0);
-                break;
-        case 'd':
-                while (step-->0) INC(*cur_y, LINES);
-                break;
-        }
-        move_panel(pan, *cur_y, *cur_x);
-        top_panel(pan);
-        doupdate();
-}
+/**
+ * zoom_in -- draw an inset for the next zoom level of the screen
+ */
+/*void zoom_in(struct mapbook_t *mapbook, int y, int x)*/
+/*{*/
+        /*struct map_t *newzoom;*/
 
-/*
+        /*newzoom = new_inset(mapbook->active, 6, 8, y, x);*/
+
+        /*list_add(&mapbook->zoom, &newzoom->node);*/
+/*}*/
+
+
+
+
+/**
  * inset_cursor -- draw an inset cursor on the screen and allow movement
  */
 int inset_cursor(int ch)
@@ -146,7 +141,7 @@ int inset_cursor(int ch)
         case '?':
         case '\n':
         case KEY_ESC:
-                FIELD = new_inset(ACTIVE, FIELD_HEIGHT, FIELD_WIDTH, y, x);
+                FIELD = new_inset(ACTIVE, frame_h, frame_w, y, x);
                 MAPBOOK->render(FIELD);
                 MAPBOOK->restack(FIELD);
                 ACTIVE = FIELD;
@@ -155,6 +150,7 @@ int inset_cursor(int ch)
                 return MODE_RELEASE;
         }
 
+        /*------------------------------------------------------------*/
         copywin(PLATE(ACTIVE, BGR), frame_win, y, x, 0, 0, frame_h-1, frame_w-1, 0);
         copywin(PLATE(ACTIVE, RIM), frame_win, y, x, 0, 0, frame_h-1, frame_w-1, 1);
         /*------------------------------------------------------------*/
@@ -172,7 +168,4 @@ int inset_cursor(int ch)
         return MODE_PERSIST;
 }
         
-
-
-
 

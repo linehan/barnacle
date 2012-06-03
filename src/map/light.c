@@ -29,7 +29,7 @@
  */
 int radius(int y1, int x1, int y2, int x2)
 {
-        return (MAX(x1,x2) - MIN(x1,x2)) + (MAX(y1,y2) - MIN(y1,y2));
+        return (max(x1,x2) - min(x1,x2)) + (max(y1,y2) - min(y1,y2));
 }
 
 

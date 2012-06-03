@@ -220,7 +220,7 @@ static inline void add_byte(uint32_t *word, int b, int n)
 {
         int byte = get_byte(*word, b);
 
-        if (byte < (MAX(255,n) - MIN(255,n)))
+        if (byte < (max(255,n) - min(255,n)))
                 byte += n;
         else
                 byte = 255;

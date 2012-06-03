@@ -65,7 +65,7 @@ void _r_method(void *self)
         struct pos_t *pos = POS(self);
 
         pos_save(pos);
-        INC(pos->ufo->x, pos->xmax);
+        inc(pos->ufo->x, pos->xmax);
         pos->hdg = EAST;
 }
 
@@ -77,7 +77,7 @@ void _l_method(void *self)
         struct pos_t *pos = POS(self);
 
         pos_save(pos);
-        DEC(pos->ufo->x, pos->xmin);
+        dec(pos->ufo->x, pos->xmin);
         pos->hdg = WEST;
 }
 
@@ -89,7 +89,7 @@ void _u_method(void *self)
         struct pos_t *pos = POS(self);
 
         pos_save(pos);
-        DEC(pos->ufo->y, pos->ymin);
+        dec(pos->ufo->y, pos->ymin);
         pos->hdg = NORTH;
 }
 
@@ -102,7 +102,7 @@ void _d_method(void *self)
         struct pos_t *pos = POS(self);
 
         pos_save(pos);
-        INC(pos->ufo->y, pos->ymax);
+        inc(pos->ufo->y, pos->ymax);
         pos->hdg = SOUTH;
 }
 

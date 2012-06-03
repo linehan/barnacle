@@ -281,9 +281,7 @@ void init_my_colors(void)
         init_color(ZEN_BG         , 247 , 247 , 247);
         init_color(___DGREY       , 90  , 87  , 90);
         init_color(____DGREY      , 60  , 58  , 60);
-        /*init_color(RASPBERRY      , 780 , 172 , 282); */
         init_color(RASPBERRY      , 811 , 227 , 333);
-
 
         /* Environment element colors */
         init_color(COCEAN_BG, 165, 235, 211);
@@ -302,7 +300,6 @@ void init_my_colors(void)
         init_color(CTREETOP_BG, 172, 388, 318);
         init_color(CTREETOP_FG, 537, 690, 310);
 
-        /*init_color(CTREETRUNK_BG, 239, 204, 251);*/ /* Old shadow */
         init_color(CTREETRUNK_BG, 235, 239, 255);
         init_color(CTREETRUNK_FG, 769, 545, 321);
 
