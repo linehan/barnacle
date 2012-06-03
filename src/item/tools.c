@@ -256,6 +256,10 @@ void equip_torch(void *self, bool yn)
         ITEM_OBJECT(item, self);
         struct torch_t *torch = (struct torch_t *)item->data;
 
+        /* Just caves for now */
+        if (ACTIVE->tag != MAP_CAVE)
+                return;
+
         item->equipped = yn;
 
         if (item->equipped) {

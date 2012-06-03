@@ -14,7 +14,7 @@
 #include "special/arena.h"
 #include "door.h"
 
-enum map_class { MAP2DF, MAP2DP };
+enum map_class { MAP2DF, MAP_CAVE };
 enum map_page  { MAP_WORLD, MAP_EXTRA, MAP_FIELD };
 
 #define WORLD_HEIGHT   (LINES*3)

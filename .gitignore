@@ -13,6 +13,7 @@
 
 # gprof
         *.out
+        */*.out
 
 # objdump
         *.s

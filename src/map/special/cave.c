@@ -166,7 +166,7 @@ struct map_t *new_cave(void)
         cave = new_map(FULLSCREEN);
         cave->pmap = simplex_matrix(FULLSCREEN);        
 
-        cave->tag = MAP2DP;
+        cave->tag = MAP_CAVE;
         
         /*special_cave(cave);*/
         gen_cavern(cave);
