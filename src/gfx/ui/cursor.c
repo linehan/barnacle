@@ -28,6 +28,7 @@
  */
 void method_cursor_hide(void *self);
 void method_cursor_show(void *self);
+void method_cursor_stamp(void *self, WINDOW *win);
 void method_cursor_move(void *self, int input);
 
 
@@ -60,9 +61,10 @@ struct cursor_t *new_cursor(int h_cur, int w_cur, int y_cur, int x_cur,
         new->keys = keys;
         new->step = DEFAULT_CURSOR_STEP;
 
-        new->Show = &method_cursor_show;
-        new->Hide = &method_cursor_hide;
-        new->Move = &method_cursor_move;
+        new->Show  = &method_cursor_show;
+        new->Hide  = &method_cursor_hide;
+        new->Stamp = &method_cursor_stamp;
+        new->Move  = &method_cursor_move;
 
         return (new);
 }
@@ -96,6 +98,24 @@ void method_cursor_show(void *self)
 {
         struct cursor_t *cursor = (struct cursor_t *)self;
         show_panel(cursor->pan);
+}
+
+
+/**
+ * method_cursor_stamp -- copy the cursor into the desired WINDOW below 
+ * @self: self object
+ * @win : WINDOW to which the cursor will be copied (at pos_y, pos_x)
+ */
+void method_cursor_stamp(void *self, WINDOW *win)
+{
+        struct cursor_t *cursor = (struct cursor_t *)self;
+
+        copywin(cursor->win, win,
+                0, 0,                                           /* srcmin   */ 
+                pos_y(cursor->pos), pos_x(cursor->pos),         /* dstmin   */ 
+                pos_y(cursor->pos) + pos_h(cursor->pos) - 1,    /* dstmax y */
+                pos_x(cursor->pos) + pos_w(cursor->pos) - 1,    /* dstmax x */
+                0);                                             /* overlay? */
 }
 
 
@@ -169,4 +189,6 @@ void method_cursor_move(void *self, int input)
         }
         move_panel(cursor->pan, pos_y(cursor->pos), pos_x(cursor->pos));
 }
+
+
 

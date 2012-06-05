@@ -1,6 +1,7 @@
 #ifndef __CURSOR_H
 #define __CURSOR_H
 #include "../../lib/pos.h"
+#include "../../com/barnacle.h"
 
 enum keycluster { HJKL, WASD, ARROWS, NUMPAD };
 
@@ -13,6 +14,7 @@ struct cursor_t {
         int step;
         void (*Hide)(void *self);
         void (*Show)(void *self);
+        void (*Stamp)(void *self, WINDOW *win);
         void (*Move)(void *self, int input);
 };
 

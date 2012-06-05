@@ -76,9 +76,7 @@ int main(int argc, char *argv[])
         /*spawn_noun(HOPPER, CENT_Y-2, CENT_X+1, true);*/
         /*spawn_noun(HOPPER, CENT_Y, CENT_X, true);*/
 
-        bldg_test(); // draws a shack 
-
-        /*init_flow(MAPBOOK->map[WORLD]);*/
+        /*bldg_test(); // draws a shack */
 
         enter_event_loop(); 
 

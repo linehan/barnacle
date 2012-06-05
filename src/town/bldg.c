@@ -1,3 +1,24 @@
+/*                                 
+ *  ▁▁▁▁▁▁                       
+ * ⎛⎛⎛⎛⎞⎞⎞⎞  bldg.c:  huts and buildings 
+ * ᛞ⋿ᛞᗶᗶᛞ⋿ᛞ  ----------------------------
+ *
+ * Copyright (C) 2012 Jason Linehan 
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software Foundation, 
+ * Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+ */
 #include "../com/barnacle.h"
 #include "../map/map.h"
 #include "../test/test.h"
@@ -5,88 +26,36 @@
 #include "../gfx/ui/cursor.h"
 
 
+// ᗯᗰᗼᗻᕰᕱᗵᗶᗷᗸᗹᗺ⦀⟱∰∭ᛤᛥᛞᛦ༊ᓬ⧎⋿ⰞⱎⲶⲷ∎⑉⬢⫹⫺⎱⎰⎠⎛⎝⎞⎠
+//   ▁▂▃▄▅▆▇█▉▊▋▌▍▎▏░▒▓ ▐ ▔▕ ▖▗ ▘▙ ▚ ▛ ▜▝ ▞ ▟
 
 
-/*
- ▁▁▁▁▁▁
-⎛⎛⎛⎛⎞⎞⎞⎞
-ᛞ⋿ᛞᗶᗶᛞ⋿ᛞ
-
-ᗯᗰ
-⦀
-▁ ▂
-⟱⟱⟱⟱⟱⟱⟱⟱⟱
-⬢⬢⬢⬢⬢⬢⬢⬢⬢
-▕༊༊༊༊༊༊༊༊༊▏
-∰∰∰∰∰∰∰∰∰
-ὡὢὣὤὤὡὥὦὧ
-ᛦᛦᛦᛦᛦᛦᛦᛦᛦ
-⎠⎛⎝⎞⎠
-ἘἙἚἛἜἝ
-ᾐᾑᾒᾓᾔᾕᾖᾗ
-ὠὡὢὣὤὥὦὧ
-ᾚᾛᾜᾝᾞᾟ∎⧎
-⋳⋴⋵⋶⋷⋸⋹⋺⋻⋼⋽⋾⋿
-∭ᛤᓬⰞⱎⰞⱎⰞⱎⰞⱎⰞⱎⰞᗼᗻᗻᗼ
-ᕰᕱᗵᗶᗷᗸᗹᗺᗻᗼᗽ
-ⲷⲷⲷⲷⲷⲷⲷⲷⲷⲷⲷⲷⲷⲷ
-ⲶⲶⲶⲶⲶⲶⲶⲶⲶⲶⲶⲶⲶⲶ
-▏▕⑉⑉
-Ⲿ⑉Ⲿ༊
-ⲾⲿⲾⲿ
-▛ ▜
-⫹⫺
-⎱∰⎰
-ᗻᗻᗻᗻᗻᗻᗻᗻ
-ᗼᗼᗼᗼᗼᗼᗼᗼ
-ᗻᗻᗻᗻᗻᗻᗻᗻ
-ᛥᛥᛥᛥᛥᛥᛥᛥᛥ
-ᛞ
-▁ ▂ ▃ ▄ ▅ ▆ ▇ █ ▉ ▊ ▋ ▌ ▍ ▎ ▏
-
-▐ ░ ▒ ▓ ▔▕ ▖ ▗ ▘ ▙ ▚ ▛ ▜ ▝ ▞ ▟
-*/
-/*void mv_bldg_cursor(PANEL *pan, struct pos_t *pos, int dir)*/
-/*{*/
-        /*switch (dir) {*/
-        /*case 'h':*/
-                /*pos_l(pos);*/
-                /*break;*/
-        /*case 'H':*/
-                /*pos_lstep(pos, 4);*/
-                /*break;*/
-        /*case 'l':*/
-                /*pos_r(pos);*/
-                /*break;*/
-        /*case 'L':*/
-                /*pos_rstep(pos, 4);*/
-                /*break;*/
-        /*case 'k':*/
-                /*pos_u(pos);*/
-                /*break;*/
-        /*case 'K':*/
-                /*pos_ustep(pos, 4);*/
-                /*break;*/
-        /*case 'j':*/
-                /*pos_d(pos);*/
-                /*break;*/
-        /*case 'J':*/
-                /*pos_dstep(pos, 4);*/
-                /*break;*/
-        /*}*/
-        /*move_panel(pan, pos_y(pos), pos_x(pos));*/
-/*}*/
-
-/*WINDOW *bldg_win;*/
-/*PANEL  *bldg_pan;*/
-/*struct pos_t *bldg_pos;*/
 struct cursor_t *bldg;
+
+void draw_bldg(WINDOW *win, int y, int x)
+{
+        static const wchar_t *roof=L"▅▅▅";
+        static const wchar_t *wall=L"█▅█";
+        static const int wallpair = 254;
+        static const int roofpair = 253;
+
+        init_pair(roofpair, HOUSEROOF, CDGRASS_BG);
+        init_pair(wallpair, HOUSEWALL, HOUSEROOF);
+
+        mvcwpumpw(win, roofpair, y, x, L"%ls", roof);
+        mvcwpumpw(win, wallpair, y+1, x, L"%ls", wall);
+
+        mvwchgat(win, y+1, x+1, 1, A_REVERSE, wallpair, NULL);
+}
+
 
 
 int place_building(int dir)
 {
-        if (!bldg)
+        if (!bldg) {
                 bldg = new_cursor(2, 3, 0, 0, LINES, COLS, 0, 0, HJKL);
+                draw_bldg(bldg->win, 0, 0);
+        }
 
         switch (dir) {
         case MODE_STARTED:
@@ -95,6 +64,9 @@ int place_building(int dir)
         case 'm':
                 bldg->Hide(bldg); 
                 return MODE_RELEASE;
+        case ' ':
+                bldg->Stamp(bldg, MAPBOOK->active->L[BGR]->peek);
+                break;
         default:
                 bldg->Move(bldg, dir);
                 break;
@@ -103,28 +75,24 @@ int place_building(int dir)
         return MODE_PERSIST;
 }
 
-
-
         
 
-void bldg_test(void)
-{
+/*void bldg_test(void)*/
+/*{*/
+        /*const wchar_t *roof=L"▅▅▅";*/
+        /*const wchar_t *wall=L"█▅█";*/
 
+        /*const int wallpair = 254;*/
+        /*const int roofpair = 253;*/
 
-        const wchar_t *roof=L"▅▅▅";
-        const wchar_t *wall=L"█▅█";
+        /*init_pair(roofpair, HOUSEROOF, bgcolor_yx(PLATE(ACTIVE, BGR), 30, 40));*/
+        /*init_pair(wallpair, HOUSEWALL, HOUSEROOF);*/
 
-        const int wallpair = 254;
-        const int roofpair = 253;
+        /*mvcwpumpw(PLATE(ACTIVE, BGR), roofpair, 31, 40, L"%ls", roof);*/
+        /*mvcwpumpw(PLATE(ACTIVE, BGR), wallpair, 32, 40, L"%ls", wall);*/
 
-        init_pair(roofpair, HOUSEROOF, bgcolor_yx(PLATE(ACTIVE, BGR), 30, 40));
-        init_pair(wallpair, HOUSEWALL, HOUSEROOF);
-
-        mvcwpumpw(PLATE(ACTIVE, BGR), roofpair, 31, 40, L"%ls", roof);
-        mvcwpumpw(PLATE(ACTIVE, BGR), wallpair, 32, 40, L"%ls", wall);
-
-        mvwchgat(PLATE(ACTIVE, BGR), 32, 41, 1, A_REVERSE, wallpair, NULL);
-}
+        /*mvwchgat(PLATE(ACTIVE, BGR), 32, 41, 1, A_REVERSE, wallpair, NULL);*/
+/*}*/
 
 
 
