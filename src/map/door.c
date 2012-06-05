@@ -47,7 +47,7 @@ void door_trigger(struct noun_t *noun, uint32_t key)
 
         /* Mob is at src map */
         if (noun->map_id == door->src->id) {
-                map_set_extra(door->dst);
+                map_set(EXTRA, door->dst);
                 noun->setyx(noun, door->dstrec->y+1, door->dstrec->x);
                 noun->map_id = door->dst->id;
                 top_panel(doorlight->pan);
@@ -56,7 +56,7 @@ void door_trigger(struct noun_t *noun, uint32_t key)
 
         /* Mob is at dst map */
         } else {
-                map_set_extra(door->src);
+                map_set(EXTRA, door->src);
                 noun->setyx(noun, door->srcrec->y+1, door->srcrec->x);
                 noun->map_id = door->src->id;
                 doorlight->lit = false;
@@ -109,124 +109,4 @@ struct door_t *get_door(uint32_t key)
 {
         return (struct door_t *)htab_get(doortbl, key);
 }
-
-/*int radius(int y1, int x1, int y2, int x2)*/
-/*{*/
-        /*return (abs(x1 - x2) + abs(y1 - y2));*/
-/*}*/
-
-
-
-/*struct light_t *new_light(int y, int x)*/
-/*{*/
-        /*#define TORCH_H 5*/
-        /*#define TORCH_W 7*/
-        /*#define TORCH_Hr 2*/
-        /*#define TORCH_Wr 3*/
-        /*static const short SUN_pair[3] = {SUNP1, SUNP2, SUNP3};*/
-        /*static const short SUN_bg[3]   = {SUNB1, SUNB2, SUNB3};*/
-        /*static const short SUN_fg[3]   = {SUN1, SUN2, SUN3};*/
-        /*struct light_t *new;*/
-
-        /*int i;*/
-
-        /*new = calloc(1, sizeof(struct light_t));*/
-
-        /*new->h  = TORCH_H;*/
-        /*new->w  = TORCH_W;*/
-        /*new->hr = TORCH_Hr;*/
-        /*new->wr = TORCH_Wr;*/
-
-        /*for (i=0; i<3; i++) {*/
-                /*new->pair[i] = SUN_pair[i];*/
-                /*new->fg[i]   = SUN_fg[i];*/
-                /*new->bg[i]   = SUN_bg[i];*/
-        /*}*/
-
-        /*new->win = newwin(new->h, new->w, 0, 0);*/
-        /*new->pan = new_panel(new->win);*/
-        /*hide_panel(new->pan);*/
-
-        /*return (new);*/
-/*}*/
-
-
-/*void door_light(struct noun_t *noun)*/
-/*{*/
-        /*int i;*/
-        /*int j;*/
-        /*int x0;*/
-        /*int y0;*/
-        /*int light_h;*/
-        /*int light_w;*/
-        /*int y;*/
-        /*int x;*/
-
-        /*if (!lightok)*/
-                /*return;*/
-
-        /*y = lighty;*/
-        /*x = lightx;*/
-
-        /*[>[> -------------------------------------- y-adjustments <]<]*/
-        /*if (y < light->hr+1) {*/
-                /*light_h = (light->hr + y);*/
-                /*y0 = light->hr - y;*/
-        /*}*/
-        /*else if (y > LINES-(light->hr+1)) {*/
-                /*light_h = light->hr + (LINES-y);*/
-                /*y0 = y - light->hr;*/
-        /*}*/
-        /*else {*/
-                /*light_h = light->h;*/
-                /*y0 = y - light->hr;*/
-        /*}*/
-        /*[>[> -------------------------------------- x-adjustments <]<]*/
-        /*if (x < light->wr) */
-        /*{*/
-                /*light_w = (light->wr + x);*/
-                /*x0 = light->wr - x;*/
-        /*}*/
-        /*else if (x > COLS-light->wr) {*/
-                /*light_w = light->wr+ (COLS-x);*/
-                /*x0 = x - light->wr;*/
-        /*}*/
-        /*else {*/
-                /*light_w = light->w;*/
-                /*x0 = x - light->wr;*/
-        /*}*/
-
-        /*if (wresize(light->win, light_h, light_w));*/
-                /*replace_panel(light->pan, light->win);*/
-
-        /*move_panel(light->pan, y0, x0);*/
-
-        /*[>[> -------------------------------------- copy bg to torch buffer <]<]*/
-        /*copywin(PLATE(ACTIVE, BGR), light->win, y0, x0, 0, 0, light_h-1, light_w-1, 0);*/
-        /*overwrite(noun->win, light->win);*/
-
-        /*[>[> -------------------------------------- re-color the copied wchars <]<]*/
-        /*for (i=0; i<light_h; i++) {*/
-        /*for (j=0; j<light_w; j++) {*/
-                /*mvwprintw(light->win, i, j, "%d", radius(i, j, light_h/2, light_w/2));*/
-                /*[>if ((i==0 && j==0)<]*/
-                /*[>||  (i==0 && j==1)<]*/
-                /*[>||  (i==0 && j==light_w-1)<]*/
-                /*[>||  (i==0 && j==light_w-2)<]*/
-                /*[>||  (i==light_h-1 && j==0)<]*/
-                /*[>||  (i==light_h-1 && j==1)<]*/
-                /*[>||  (i==light_h-1 && j==light_w-1)<]*/
-                /*[>||  (i==light_h-1 && j==light_w-2))<]*/
-                /*[>{<]*/
-                        /*[>mvwchgat(light->win, i, j, 1, 0, light->pair[2], NULL);<]*/
-                /*[>}<]*/
-                /*[>else if (i==0 || i==light_h-1 || j==0 || j==1 || j==light_w-1 || j==light_w-2)<]*/
-                        /*[>mvwchgat(light->win, i, j, 1, 0, light->pair[1], NULL);<]*/
-                /*[>else <]*/
-                        /*[>mvwchgat(light->win, i, j, 1, 0, light->pair[0], NULL);<]*/
-        /*}*/
-        /*}*/
-        /*show_panel(light->pan);*/
-/*}*/
-
 

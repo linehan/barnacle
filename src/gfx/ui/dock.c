@@ -186,9 +186,10 @@ void init_dock(void)
 /**
  * view_dock -- make the dock panels visible at the bottom of the screen
  */
-void view_dock(void)
+void show_dock(void)
 {
         show_panel(dock_pan);
+        show_panel(equipped_pan);
         scr_refresh();
 }
 
@@ -198,6 +199,7 @@ void view_dock(void)
 void hide_dock(void)
 {
         hide_panel(dock_pan);
+        hide_panel(equipped_pan);
         scr_refresh();
 }
 
@@ -206,7 +208,7 @@ void hide_dock(void)
  */
 void dock_toggle(void) 
 {
-        (panel_hidden(dock_pan)) ? view_dock() : hide_dock();
+        (panel_hidden(dock_pan)) ? show_dock() : hide_dock();
 }
 
 /**
@@ -216,6 +218,7 @@ void dock_update(void)
 {
         if (!panel_hidden(dock_pan)) {
                 top_panel(dock_pan);
+                top_panel(equipped_pan);
         }
 }
 

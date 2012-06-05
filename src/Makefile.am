@@ -55,6 +55,7 @@ barnacle_SOURCES = barnacle.c                   \
                    map/flow.c                   \
                    map/light.c                  \
                    map/control.c                \
+                   map/zoom.c                   \
                    ai/astar.c                   \
                    txt/gloss.c                  \
                    txt/effects.c                \

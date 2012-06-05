@@ -75,9 +75,9 @@ void render_cb(EV_P_ ev_timer *w, int revents)
         update_nouns();
 
         dock_update();
-        update_inventory_menu();
 
         print_dock();
+        update_map_control();
         update_panels();  /* Were slowing down performance, unnecessary */
         doupdate();
         MAPBOOK->restack(ACTIVE);
@@ -99,7 +99,7 @@ void flow_cb(EV_P_ ev_timer *w, int revents)
 {
         spin_flow_loop();
 
-        do_flow(ACTIVE);
+        do_flow(MAPBOOK->active);
 
         ev_timer_again(EV_DEFAULT, w);
 }

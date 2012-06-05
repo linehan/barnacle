@@ -26,218 +26,132 @@
 #include "terrain.h"
 #include "tile.h"
 
-/******************************************************************************
- * ZOOMING
- * 
- * "Zooming in" creates a new map which is a transformation of the 
- * currently active one. The new map is pushed to the top of a stack, 
- * the "zoom stack", and becomes the currently active map. 
- *
- * "Zooming out" pops the topmost map of the zoom stack, and discards
- * it, unless it is the last map in the stack. The new topmost map
- * on the zoom stack becomes the currently active map.
- ******************************************************************************/
+static WINDOW *nav_win;
+static PANEL  *nav_pan;
+static WINDOW *frame_win;
+static PANEL  *frame_pan;
+#define frame_h (3)
+#define frame_w (6)
+#define nav_h (1)
+#define nav_w (COLS)
+static int y_frame;
+static int x_frame;
+static int y_map;
+static int x_map;
+static int zoomlevel;
+static const char *page[]={"World map", "Regional map", "Local map", "Extra map"};
 
-/**
- * new_zoom -- generates a map which is a scaled-up rendering of another map
- * @map: the "parent" map which will be used to generate the inset
- * @h: height of the inset
- * @w: width of the inset
- * @y: y-coordinate of the inset's top-left corner
- * @x: x-coordinate of the inset's top-left corner
- * 
- * Note
- * Uses a simple linear transformation that goes something like this:
- *      old_range = (old_max - old_min)
- *      new_range = (new_max - new_min)
- *      new_value = (((old_value-old_min)*new_range) / old_range) + new_min
- */
-struct map_t *new_zoom(struct map_t *map, int y, int x)
-{
-        #define h_scale_factor 6
-        #define w_scale_factor 8
-        #define h_screen LINES
-        #define w_screen COLS
-        struct map_t *new;
-        double **val;
-        int scaled_h;
-        int scaled_w;
-        int i;
-        int j;
+struct pos_t *cursor;
 
-        val = empty_simplex_matrix(FULLSCREEN);
-
-        for (i=0; i<h_screen; i++) {
-        for (j=0; j<w_screen; j++) {
-                scaled_h = (((i - 0) * h_scale_factor) / h_screen) + y;
-                scaled_w = (((j - 0) * w_scale_factor) / w_screen) + x;
-
-                val[i][j] = map->pmap[scaled_h][scaled_w];
-        }
-        }
-
-        new = new_map(FULLSCREEN);
-        map_gen(new, val, MAP_NOSMOOTH);
-
-        return (new);
-}
-
-
-/**
- * current_zoom_map -- return the map of the current zoom level
- * @mapbook: pointer to the mapbook structure
- */
-struct map_t *current_zoom_map(struct mapbook_t *mapbook)
-{
-        struct map_t *tmp;
-
-        tmp = list_top(&mapbook->zoom, struct map_t, node);
-
-        return tmp ? tmp : NULL;
-}
-
-
-/**
- * zoom_in -- draw an inset for the next zoom level of the screen
- * @mapbook: pointer to the mapbook structure
- * @y      : y0 coordinate of zoom frame
- * @x      : x0 coordinate of zoom frame
- */
-void zoom_in(struct mapbook_t *mapbook, int y, int x)
-{
-        struct map_t *newzoom;
-
-        /* Create an inset of the currently active map
-         * in the mapbook. */
-        newzoom = new_zoom(mapbook->active, y, x);
-
-        /* If this is the base zoom level, the currently
-         * active map becomes the root node. */
-        if (list_empty(&mapbook->zoom))
-                list_add(&mapbook->zoom, &mapbook->active->node);
-
-        /* Push the new inset to the zoom stack */
-        list_add(&mapbook->zoom, &newzoom->node);
-
-        /* Set it as the active map */
-        mapbook->active = current_zoom_map(mapbook);
-        mapbook->render(mapbook->active);
-        mapbook->restack(mapbook->active);
-        mapbook->show(mapbook->active);
-}
-
-
-/**
- * zoom_out -- remove an inset from the zoom list
- * @mapbook: pointer to the mapbook structure
- */
-void zoom_out(struct mapbook_t *mapbook)
-{
-        struct map_t *top;
-
-        /* If this is the base zoom level, we can't zoom 
-         * out any more. */
-        if (list_empty(&mapbook->zoom))
-                return; 
-
-        /* Remove the current zoom level from the stack */
-        mapbook->hide(mapbook->active);
-        top = current_zoom_map(mapbook);
-        list_del_from(&mapbook->zoom, &top->node);
-
-        /* Set the new zoom level as the active map */
-        mapbook->active = current_zoom_map(mapbook);
-        mapbook->show(mapbook->active);
-}
+bool map_controls_active;
 
 
 /******************************************************************************
- * MAP CURSOR 
+ * SCROLLING 
  * 
- * The map can be scrolled and zoomed with a cursor operating on the
- * movement keys.
+ * Scrolling the map is accomplished by copying the contents of the map
+ * pad, which extends beyond the screen boundaries, into the screen
+ * buffer. The initial coordinates (upper-left) of the copy box are
+ * shifted by the keystrokes so that a new portion of the pad is copied
+ * into the screen buffer on the next call to map_refresh();
+ * 
  ******************************************************************************/
 
 /**
- * map_control -- draw a cursor on the screen and accept control from FSM
- * @ch: the input word from the FSM
+ * map_scroll -- move the map around
+ * @map: pointer to the map you want to move
+ * @dir: 'lrud' directional motion char
  */
-int map_control(int ch)
+void map_scroll(struct map_t *map, int dir)
 {
-        #define frame_w 6 
-        #define frame_h 3
-        static WINDOW *frame_win;
-        static PANEL  *frame_pan;
-        static int y;
-        static int x;
-        static int y_map;
-        static int x_map;
-
-        if (!frame_win) {
-                frame_win = newwin(frame_h, frame_w, 0, 0);
-                frame_pan = new_panel(frame_win);
+        switch (dir) {
+        case 'w': 
+                pos_u(map->pos);
+                break;
+        case 'a': 
+                pos_l(map->pos);
+                break;
+        case 's': 
+                pos_d(map->pos);
+                break;
+        case 'd': 
+                pos_r(map->pos);
+                break;
+        case 'W': 
+                pos_ustep(map->pos, 4);
+                break;
+        case 'A': 
+                pos_lstep(map->pos, 5);
+                break;
+        case 'S': 
+                pos_dstep(map->pos, 4);
+                break;
+        case 'D': 
+                pos_rstep(map->pos, 5);
+                break;
         }
-        top_panel(frame_pan);
+        map_refresh(map);
+}
 
-        switch (ch) 
-        {
-        case MODE_STARTED:
-                show_panel(frame_pan);
-                break;
-        case 'w':
-        case 'a':
-        case 's':
-        case 'd':
-        case 'W':
-        case 'A':
-        case 'S':
-        case 'D':
-                map_scroll(MAPBOOK->active, ch);
-                break;
+/**
+ * mv_zoom_frame -- move the zoom frame in a given direction 
+ */
+void mv_zoom_frame(int dir)
+{
+        switch (dir) {
         case 'h':
-                move_cursor(frame_pan, &y, &x, 'l', 1);
+                pos_l(cursor);
                 break;
         case 'H':
-                move_cursor(frame_pan, &y, &x, 'l', 4);
+                pos_lstep(cursor, 4);
                 break;
         case 'l':
-                move_cursor(frame_pan, &y, &x, 'r', 1);
+                pos_r(cursor);
                 break;
         case 'L':
-                move_cursor(frame_pan, &y, &x, 'r', 4);
+                pos_rstep(cursor, 4);
                 break;
         case 'k':
-                move_cursor(frame_pan, &y, &x, 'u', 1);
+                pos_u(cursor);
                 break;
         case 'K':
-                move_cursor(frame_pan, &y, &x, 'u', 4);
+                pos_ustep(cursor, 4);
                 break;
         case 'j':
-                move_cursor(frame_pan, &y, &x, 'd', 1);
+                pos_d(cursor);
                 break;
         case 'J':
-                move_cursor(frame_pan, &y, &x, 'd', 4);
+                pos_dstep(cursor, 4);
                 break;
-        case '\n':
-                zoom_in(MAPBOOK, y, x);
-                break;
-        case ' ':
-                zoom_out(MAPBOOK);
-                break;
-        case KEY_ESC:
-        case 'm':
-                hide_panel(frame_pan);
-                return MODE_RELEASE;
         }
+        move_panel(frame_pan, pos_y(cursor), pos_x(cursor));
+}
 
-        y_map = pos_y(ACTIVE->pos) + y;
-        x_map = pos_x(ACTIVE->pos) + x;
 
+
+/******************************************************************************
+ * MAP NAVIGATION 
+ * 
+ * Cursors are rendered and map information is printed to a special
+ * map navigation dock.
+ ******************************************************************************/
+
+
+void map_cursor_init(void)
+{
+        cursor = new_pos(frame_h, frame_w, 0, 0, LINES-1, COLS-1, 0, 0);
+        nav_win = newwin(nav_h, nav_w, LINES-nav_h, CENT_X-(nav_w/2));
+        nav_pan = new_panel(nav_win);
+        frame_win = newwin(frame_h, frame_w, 0, 0);
+        frame_pan = new_panel(frame_win);
+        wbkgrnd(nav_win, &PURPLE[2]);
+}
+
+void draw_zoom_box(struct map_t *map, int y, int x)
+{
         /*------------------------------------------------------------*/
-        copywin(PLATE(ACTIVE, BGR), frame_win, 
-                      y_map, x_map, 0, 0, frame_h-1, frame_w-1, 0);
-        copywin(PLATE(ACTIVE, RIM), frame_win, 
-                      y_map, x_map, 0, 0, frame_h-1, frame_w-1, 1);
+        copywin(PLATE(map, BGR), frame_win, y, x, 0, 0, frame_h-1, frame_w-1, 0);
+        copywin(PLATE(map, RIM), frame_win, y, x, 0, 0, frame_h-1, frame_w-1, 1);
         /*------------------------------------------------------------*/
         take_bgcolor_yx(frame_win , 0         , 0         , INSET_UL);
         take_bgcolor_yx(frame_win , 0         , frame_w-1 , INSET_UR);
@@ -249,6 +163,96 @@ int map_control(int ch)
         mvwcch(frame_win , frame_h-1 , 0         , L"▙" , 0 , INSET_DL);
         mvwcch(frame_win , frame_h-1 , frame_w-1 , L"▟" , 0 , INSET_DR);
         /*------------------------------------------------------------*/
+}
+
+
+void print_map_control(int y, int x)
+{
+        werase(nav_win);
+        mvwpumpw(nav_win, 0, 2,  L"y:%03d, x:%03d", pos_y(ACTIVE->pos), pos_x(ACTIVE->pos));
+        mvwpumpw(nav_win, 0, 16, L"▏ ymax:%d xmax:%d", ACTIVE->pos->ymax, ACTIVE->pos->xmax);
+        mvwpumpw(nav_win, 0, COLS-17, L"▕  %s", page[zoomlevel]);
+}
+
+void update_map_control(void)
+{
+        if (!map_controls_active)
+                return;
+
+        hide_dock();
+        show_panel(nav_pan);
+        top_panel(nav_pan);
+}
+
+
+
+/******************************************************************************
+ * MAP CURSOR CONTROL
+ * 
+ * The map can be scrolled and zoomed with a cursor operating on the
+ * movement keys.
+ ******************************************************************************/
+
+/**
+ * map_control -- draw a cursor on the screen and accept control from FSM
+ * @ch: the input word from the FSM
+ */
+int map_control(int ch)
+{
+        bool dozoom = false;
+        struct map_t *tmp;
+
+        if (!nav_win)
+                map_cursor_init();
+
+        top_panel(frame_pan);
+        top_panel(nav_pan);
+
+        switch (ch) 
+        {
+        case MODE_STARTED:
+                map_controls_active = true;
+                show_panel(frame_pan);
+                show_panel(nav_pan);
+                break;
+                
+        /* Scroll the map in a direction */
+        case 'w': case 'a': case 's': case 'd':
+        case 'W': case 'A': case 'S': case 'D':
+                map_scroll(MAPBOOK->active, ch);
+                break;
+
+        /* Move the zoom frame in a direction */
+        case 'h': case 'j': case 'k': case 'l':
+        case 'H': case 'J': case 'K': case 'L':
+                mv_zoom_frame(ch);
+                break;
+
+        /* Select the current zoom frame */
+        case '\n':
+                dozoom = true;
+                break;
+
+        case KEY_ESC:
+        case 'm':
+                map_controls_active = false;
+                show_dock();
+                hide_panel(frame_pan);
+                hide_panel(nav_pan);
+                return MODE_RELEASE;
+        }
+
+        /* Adjust for changing y0 or x0 of the map pad */
+        y_map = pos_y(cursor) + pos_y(ACTIVE->pos);
+        x_map = pos_x(cursor) + pos_x(ACTIVE->pos);
+        zoomlevel = MAPBOOK->page;
+
+        print_map_control(y_map, x_map);
+        draw_zoom_box(ACTIVE, y_map, x_map);
+
+        if (dozoom)
+                set_zoom(MAPBOOK, y_map, x_map);
 
         return MODE_PERSIST;
 }
+

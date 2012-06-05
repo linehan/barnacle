@@ -81,13 +81,14 @@ am_barnacle_OBJECTS = barnacle.$(OBJEXT) eng/init.$(OBJEXT) \
 	map/map.$(OBJEXT) map/cell.$(OBJEXT) map/door.$(OBJEXT) \
 	map/special/arena.$(OBJEXT) map/special/cave.$(OBJEXT) \
 	map/flow.$(OBJEXT) map/light.$(OBJEXT) map/control.$(OBJEXT) \
-	ai/astar.$(OBJEXT) txt/gloss.$(OBJEXT) txt/effects.$(OBJEXT) \
-	noun/noun.$(OBJEXT) noun/animate.$(OBJEXT) \
-	noun/combat.$(OBJEXT) noun/spawn.$(OBJEXT) \
-	noun/models.$(OBJEXT) noun/models/human.$(OBJEXT) \
-	noun/models/hopper.$(OBJEXT) item/item.$(OBJEXT) \
-	item/tools.$(OBJEXT) item/edible.$(OBJEXT) town/bldg.$(OBJEXT) \
-	test/test.$(OBJEXT) test/looptest.$(OBJEXT)
+	map/zoom.$(OBJEXT) ai/astar.$(OBJEXT) txt/gloss.$(OBJEXT) \
+	txt/effects.$(OBJEXT) noun/noun.$(OBJEXT) \
+	noun/animate.$(OBJEXT) noun/combat.$(OBJEXT) \
+	noun/spawn.$(OBJEXT) noun/models.$(OBJEXT) \
+	noun/models/human.$(OBJEXT) noun/models/hopper.$(OBJEXT) \
+	item/item.$(OBJEXT) item/tools.$(OBJEXT) item/edible.$(OBJEXT) \
+	town/bldg.$(OBJEXT) test/test.$(OBJEXT) \
+	test/looptest.$(OBJEXT)
 barnacle_OBJECTS = $(am_barnacle_OBJECTS)
 barnacle_LDADD = $(LDADD)
 DEFAULT_INCLUDES = -I.@am__isrc@
@@ -242,6 +243,7 @@ barnacle_SOURCES = barnacle.c                   \
                    map/flow.c                   \
                    map/light.c                  \
                    map/control.c                \
+                   map/zoom.c                   \
                    ai/astar.c                   \
                    txt/gloss.c                  \
                    txt/effects.c                \
@@ -463,6 +465,7 @@ map/flow.$(OBJEXT): map/$(am__dirstamp) map/$(DEPDIR)/$(am__dirstamp)
 map/light.$(OBJEXT): map/$(am__dirstamp) map/$(DEPDIR)/$(am__dirstamp)
 map/control.$(OBJEXT): map/$(am__dirstamp) \
 	map/$(DEPDIR)/$(am__dirstamp)
+map/zoom.$(OBJEXT): map/$(am__dirstamp) map/$(DEPDIR)/$(am__dirstamp)
 ai/$(am__dirstamp):
 	@$(MKDIR_P) ai
 	@: > ai/$(am__dirstamp)
@@ -587,6 +590,7 @@ mostlyclean-compile:
 	-rm -f map/special/arena.$(OBJEXT)
 	-rm -f map/special/cave.$(OBJEXT)
 	-rm -f map/terrain.$(OBJEXT)
+	-rm -f map/zoom.$(OBJEXT)
 	-rm -f noun/animate.$(OBJEXT)
 	-rm -f noun/combat.$(OBJEXT)
 	-rm -f noun/models.$(OBJEXT)
@@ -648,6 +652,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@map/$(DEPDIR)/light.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@map/$(DEPDIR)/map.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@map/$(DEPDIR)/terrain.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@map/$(DEPDIR)/zoom.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@map/special/$(DEPDIR)/arena.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@map/special/$(DEPDIR)/cave.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@noun/$(DEPDIR)/animate.Po@am__quote@

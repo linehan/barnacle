@@ -87,7 +87,7 @@ void inventory_to_menu(struct list_head *inv)
         if (list_empty(inv))
                 return;
 
-        list_count(n, inv, tmp, node); 
+        list_count(inv, tmp, node, n); 
 
         name = calloc(n, sizeof(char *));      /* Item names */
         icon = calloc(n, sizeof(wchar_t *));
@@ -263,12 +263,5 @@ int inventory_menu_control(int input)
                 break;
         }
         return operate_on(invmenu->cur_ptr, mode);
-}
-
-
-void update_inventory_menu(void)
-{
-        if (equipped_pan)
-                top_panel(equipped_pan);
 }
 

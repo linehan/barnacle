@@ -14,8 +14,9 @@
 #include "special/arena.h"
 #include "door.h"
 
+
 enum map_class { MAP2DF, MAP_CAVE };
-enum map_page  { MAP_WORLD, MAP_EXTRA, MAP_FIELD };
+enum map_page  { WORLD, ZOOM, EXTRA};
 
 #define WORLD_HEIGHT   (LINES*3)
 #define WORLD_WIDTH    (COLS*3)
@@ -60,11 +61,9 @@ struct map_t {
  */
 struct mapbook_t {
         /*---------------------------- Map members */
-        struct list_head zoom;
         struct map_t *active;
-        struct map_t *world;
-        struct map_t *field;
-        struct map_t *extra;
+        struct map_t *map[4];
+        struct pos_t *cursor;
         /*---------------------------- Cycle */
         enum map_page page;
         /*---------------------------- Methods */
@@ -80,9 +79,6 @@ struct mapbook_t {
  * mapbook that should be active at any given time.
  */
 struct mapbook_t *MAPBOOK;
-#define WORLD  (MAPBOOK->world)  /* Accesses the world map */
-#define FIELD  (MAPBOOK->field)  /* Accesses the field map */
-#define EXTRA  (MAPBOOK->extra)
 #define ACTIVE (MAPBOOK->active) /* Accesses whichever is active */
 
 enum map_label_opts { MAP_DOSMOOTH, MAP_NOSMOOTH };

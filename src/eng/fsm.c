@@ -34,6 +34,7 @@
 #include "tick.h"
 #include "../test/looptest.h"
 #include "../noun/spawn.h"
+#include "../town/bldg.h"
 
 enum uimodes { 
         UI_COMPASS,
@@ -119,6 +120,9 @@ void operate_on(int input)
         case UI_WORLDMAP:
                 map_control(input);
                 break;
+        case UI_BUILD:
+                place_building(input);                
+                break;
         }
 }
 
@@ -141,6 +145,10 @@ void director(int input)
                         break;
                 case '^':
                         map_cycle();
+                        break;
+                case '+':
+                        MAPBOOK->active = MAPBOOK->map[ZOOM];
+                        MAPBOOK->show(MAPBOOK->active);
                         break;
                 case 'm':
                         setmode(UI_MOB);
@@ -174,11 +182,19 @@ void director(int input)
                 case 'G':
                         gravity_enabled ^= true;
                         break;
+                case 'g':
+                        nn("Guy")->setyx(nn("Guy"), CENT_Y, CENT_X);
+                        top_panel(nn("Guy")->pan);
+                        break;
                 case '_':
                         MAPBOOK->render(ACTIVE);
                         break;
                 case '&':
                         spawn(HOPPER);
+                        break;
+                case 'B':
+                        setmode(UI_BUILD);
+                        setmode(MODE_STARTED);
                         break;
                 case '@':
                         loop_test(true);

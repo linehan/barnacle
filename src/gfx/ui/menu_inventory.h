@@ -12,7 +12,6 @@ PANEL  *equipped_pan;
 void inventory_mkmenu(struct list_head *inv);
 void inventory_to_menu(struct list_head *inv);
 int inventory_menu_control(int input);
-void update_inventory_menu(void);
 struct item_t *invmenu_curitem(void);
 struct item_t *invmenu_previtem(void);
 

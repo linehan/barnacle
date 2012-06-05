@@ -51,17 +51,14 @@ int main(int argc, char *argv[])
         MAPBOOK = new_mapbook();
 
         if (!argv[1])
-                map_set_extra(map_preset_arena());
+                map_set(EXTRA, map_preset_arena());
         else if (strcmp(argv[1], "-arena") == 0)
-                map_set_extra(map_preset_arena());
+                map_set(EXTRA, map_preset_arena());
         else if (strcmp(argv[1], "-cave") == 0)
-                map_set_extra(new_cave());
+                map_set(EXTRA, new_cave());
 
         print_status("\n ALL OK\n");
         print_hold("Press any key to continue");
-
-        map_scroll(ACTIVE, 0);
-        map_scroll(ACTIVE, 0);
 
         dock_toggle();
 
@@ -76,10 +73,12 @@ int main(int argc, char *argv[])
         nn("Guy")->step(nn("Guy"), 'd');
         inventory_mkmenu(&nn("Guy")->inv);
 
-        spawn_noun(HOPPER, CENT_Y-2, CENT_X+1, true);
-        spawn_noun(HOPPER, CENT_Y, CENT_X, true);
+        /*spawn_noun(HOPPER, CENT_Y-2, CENT_X+1, true);*/
+        /*spawn_noun(HOPPER, CENT_Y, CENT_X, true);*/
 
-        /*bldg_test(); // draws a shack */
+        bldg_test(); // draws a shack 
+
+        /*init_flow(MAPBOOK->map[WORLD]);*/
 
         enter_event_loop(); 
 

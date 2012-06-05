@@ -42,6 +42,10 @@ static inline int pos_x(struct pos_t *pos)
 {
         return (pos->ufo->x);
 }
+static inline void pos_setyx(struct pos_t *pos, int y, int x)
+{
+        pos->setyx(pos, y, x);
+}
 static inline int pos_h(struct pos_t *pos)
 {
         return (pos->ufo->h);
@@ -122,6 +126,7 @@ static inline int pos_saved_x(struct pos_t *pos)
 {
         return (pos->saved_x);
 }
+
 
 
 /* 

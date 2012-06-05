@@ -96,26 +96,22 @@ struct mapbook_t *new_mapbook(void)
         new->show    = &map_show;
         new->hide    = &map_hide;
 
-        list_head_init(&new->zoom);
+        /* Make the world map */
+        new->map[WORLD] = new_map(WORLD_HEIGHT, WORLD_WIDTH);
+        map_gen(new->map[WORLD], NULL, MAP_DOSMOOTH);
 
-        /* World map */
-        new->world = new_map(WORLD_HEIGHT, WORLD_WIDTH);
-        map_gen(new->world, NULL, MAP_DOSMOOTH);
+        /* Make the zoom map */
+        new->map[ZOOM] = gen_zoom(new->map[WORLD]);
 
-        /* Field map */
-        new->field = new_zoom(new->world, 0, 0);
-
-        /* Render and restack both */
-        new->render(new->world);
-        new->restack(new->world);
-        new->render(new->field);
-        new->restack(new->field);
+        new->render(new->map[WORLD]);
+        new->restack(new->map[WORLD]);
 
         /* Set world as the active map */
-        new->active = new->world;
+        new->active = new->map[WORLD];
 
         return (new);
 }
+
 
 
 /******************************************************************************
@@ -266,6 +262,8 @@ void map_show(void *mymap)
 {
         struct map_t *map = (struct map_t *)mymap;
         show_panel(map->pan);
+        map_restack(ACTIVE);
+        map_refresh(ACTIVE);
 }
 
 /**
@@ -273,82 +271,39 @@ void map_show(void *mymap)
  */
 void map_cycle(void)
 {
-        MAPBOOK->hide(ACTIVE);
-
-        MAPBOOK->page = (MAPBOOK->page+1)%3;
-
         switch (MAPBOOK->page) {
-        case MAP_WORLD:
-                ACTIVE = WORLD;
+        case EXTRA:
+                MAPBOOK->page = WORLD;
                 break;
-        case MAP_FIELD:
-                ACTIVE = FIELD; 
+        case WORLD:
+                MAPBOOK->page = ZOOM;
                 break;
-        case MAP_EXTRA:
-                ACTIVE = EXTRA;
+        case ZOOM:
+                MAPBOOK->page = EXTRA;
                 break;
         }
+
+        MAPBOOK->hide(ACTIVE);
+        if (MAPBOOK->map[MAPBOOK->page])
+                MAPBOOK->active = MAPBOOK->map[MAPBOOK->page];
         MAPBOOK->show(ACTIVE);
-        map_restack(ACTIVE);
-        map_refresh(ACTIVE);
 }
 
 
 /**
  * map_set_extra -- set a special map to be displayed
  */
-void map_set_extra(void *mymap)
+void map_set(enum map_page pg, void *mymap)
 {
-        EXTRA = (struct map_t *)mymap;
+        MAPBOOK->map[pg] = (struct map_t *)mymap;
+        MAPBOOK->page = pg;
 
         MAPBOOK->hide(ACTIVE);
-
-        if (EXTRA == NULL) {
-                ACTIVE = (MAPBOOK->page == MAP_WORLD) ? FIELD : WORLD;
-        } else {
-                ACTIVE = EXTRA;
-        }
-
+        MAPBOOK->active = MAPBOOK->map[pg];
         MAPBOOK->show(ACTIVE);
-        map_restack(ACTIVE);
-        map_refresh(ACTIVE);
 }
 
-/*
- * map_scroll -- move the map around
- * @map: pointer to the map you want to move
- * @dir: 'lrud' directional motion char
- */
-void map_scroll(struct map_t *map, int dir)
-{
-        switch (dir) {
-        case 'w': 
-                pos_u(map->pos);
-                break;
-        case 'a': 
-                pos_l(map->pos);
-                break;
-        case 's': 
-                pos_d(map->pos);
-                break;
-        case 'd': 
-                pos_r(map->pos);
-                break;
-        case 'W': 
-                pos_ustep(map->pos, 3);
-                break;
-        case 'A': 
-                pos_lstep(map->pos, 4);
-                break;
-        case 'S': 
-                pos_dstep(map->pos, 3);
-                break;
-        case 'D': 
-                pos_rstep(map->pos, 4);
-                break;
-        }
-        map_refresh(map);
-}
+
 
 
 /**

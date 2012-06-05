@@ -1,5 +1,5 @@
 /* 
- * terrain.c -- Generalized "light source" objects.
+ * terrain.c -- terrain generation.
  *
  * These routines perform "terrain generation" by traversing a matrix
  * structure and labeling components based on a comparison criteria.

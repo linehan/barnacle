@@ -391,9 +391,8 @@ static inline const void *list_tail_(const struct list_head *h, size_t off)
  * 
  * Added 05-29-2012
  */
-#define list_count(n, h, i, member)					\
-	list_for_each_off(h, i, list_off_var_(i, member)) { n++; }
-
+#define list_count(h, i, member, n)					\
+	n=0; list_for_each_off(h, i, list_off_var_(i, member)) { n++; }
 
 /**
  * list_for_each_off - iterate through a list of memory regions.

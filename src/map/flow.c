@@ -73,8 +73,8 @@ void init_flow(struct map_t *map)
         B = (2 - 4*A);
 
         flowmap = map;
-        rows = pos_h(map->pos) - 1;
-        cols = pos_w(map->pos) - 1;
+        rows = pos_boxh(map->pos) - 1;
+        cols = pos_boxw(map->pos) - 1;
 
         /* Allocate the two matrices */
         z  = simplex_matrix(rows+1, cols+1);
@@ -170,11 +170,5 @@ void do_flow(struct map_t *map)
         flow(map);
         render_flow(map);
 }
-
-
-/*void fork_flow(void)*/
-/*{*/
-        /*pthread_create(&flowth, NULL, &flow, ACTIVE);*/
-/*}*/
 
 
