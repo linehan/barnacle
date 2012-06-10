@@ -18,6 +18,7 @@
 enum map_class { MAP2DF, MAP_CAVE };
 enum map_page  { WORLD, ZOOM, EXTRA};
 
+
 #define WORLD_HEIGHT   (LINES*3)
 #define WORLD_WIDTH    (COLS*3)
 #define FIELD_HEIGHT   16

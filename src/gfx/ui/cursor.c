@@ -102,7 +102,7 @@ void method_cursor_show(void *self)
 
 
 /**
- * method_cursor_stamp -- copy the cursor into the desired WINDOW below 
+ * method_cursor_stamp -- copy the cursor into the desired WINDOW 
  * @self: self object
  * @win : WINDOW to which the cursor will be copied (at pos_y, pos_x)
  */

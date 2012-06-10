@@ -19,20 +19,6 @@
  * Labels identify the tile's rendering
  */
 
-//static wchar_t base[]=L"⠀";
-//cchar_t lobase;
-//cchar_t hibase;
-
-//static inline void init_tiles(void)
-//{
-        //#define lobase_pair SEA_MED
-        //#define hibase_pair SEA__MED
-
-        //setcchar(&lobase, base, 0, lobase_pair, NULL);
-        //setcchar(&hibase, base, 0, hibase_pair, NULL);
-//}
-
-
 static inline void wipe_label(uint32_t *val)
 {
         set_byte(val, LAB, 0);
@@ -284,7 +270,7 @@ static const wchar_t scrub_tuft[]=L"༝༞༟༝༟༝";
 static const wchar_t flower[]=L"⋇";
 static const short flowerpair[]={RED_FLOWER, BLUE_FLOWER, YELLOW_FLOWER};
 
-#define GRASS_FUN .15f
+#define GRASS_FUN .07f
 #define FLOWER_FUN .002f
 
 /**

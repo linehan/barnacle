@@ -154,19 +154,19 @@ int modify_human(void *self)
                 break;
         case SM_PokeUp:
                 noun->animate(noun, &poke_u);
-                emit_to_noun(noun, 'u', SM_GetHit | SM_Wait(3));
+                emit_to_noun(noun, 'u', SM_GetHit | SM_Wait(2));
                 break;
         case SM_PokeDown:
                 noun->animate(noun, &poke_d);
-                emit_to_noun(noun, 'd', SM_GetHit | SM_Wait(3));
+                emit_to_noun(noun, 'd', SM_GetHit | SM_Wait(2));
                 break;
         case SM_PokeLeft:
                 noun->animate(noun, &poke_l);
-                emit_to_noun(noun, 'l', SM_GetHit | SM_Wait(3));
+                emit_to_noun(noun, 'l', SM_GetHit | SM_Wait(2));
                 break;
         case SM_PokeRight:
                 noun->animate(noun, &poke_r);
-                emit_to_noun(noun, 'r', SM_GetHit | SM_Wait(3));
+                emit_to_noun(noun, 'r', SM_GetHit | SM_Wait(2));
                 break;
         /* ==================================== keyboard input */
         /* ------------------------------------ walk (step) */
@@ -184,16 +184,16 @@ int modify_human(void *self)
                 break;
         /* ------------------------------------ combat */
         case SM_Key('w'):
-                sm_msg(noun->sm, SM_SELF, SM_PokeUp);
+                sm_msg(noun->sm, SM_SELF, SM_PokeUp | SM_Wait(wait_for(noun)));
                 break;
         case SM_Key('a'):
-                sm_msg(noun->sm, SM_SELF, SM_PokeLeft);
+                sm_msg(noun->sm, SM_SELF, SM_PokeLeft | SM_Wait(wait_for(noun)));
                 break;
         case SM_Key('s'):
-                sm_msg(noun->sm, SM_SELF, SM_PokeDown);
+                sm_msg(noun->sm, SM_SELF, SM_PokeDown | SM_Wait(wait_for(noun)));
                 break;
         case SM_Key('d'):
-                sm_msg(noun->sm, SM_SELF, SM_PokeRight);
+                sm_msg(noun->sm, SM_SELF, SM_PokeRight | SM_Wait(wait_for(noun)));
                 break;
         /* ------------------------------------ advanced movement */
         case SM_Key('u'):

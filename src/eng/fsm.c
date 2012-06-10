@@ -58,7 +58,7 @@ static int oldmode;
 
 static void setmode(int newmode)
 {
-        #define DEFAULT UI_WORLDMAP
+        #define DEFAULT UI_NOUN 
 
         if (mode == newmode) return;
         if (mode == NOTOUCH) return;

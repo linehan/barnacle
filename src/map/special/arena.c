@@ -89,7 +89,7 @@ struct map_t *map_preset_arena(void)
         map_gen(arena, armap, MAP_NOSMOOTH);
 
         /* Make a cave entrance */
-        cave = new_cave();
+        cave = new_dungeon();
         put_door(CAVE_DOOR, arena, cave, 
                  1, 1, ARENA_H/2-1, COLS/2,
                  1, 1, LINES/2-10, COLS/2);

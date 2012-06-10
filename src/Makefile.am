@@ -52,6 +52,7 @@ barnacle_SOURCES = barnacle.c                   \
                    map/door.c                   \
                    map/special/arena.c          \
                    map/special/cave.c           \
+                   map/special/dungeon.c        \
                    map/flow.c                   \
                    map/light.c                  \
                    map/control.c                \

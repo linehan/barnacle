@@ -284,6 +284,7 @@ void init_my_colors(void)
         init_color(RASPBERRY      , 811 , 227 , 333);
         init_color(HOUSEWALL      , 474 , 172 , 86);
         init_color(HOUSEROOF      , 604 , 255 , 161);
+        init_color(HOUSEDOOR      , 251 ,  74 ,  24);
 
         /* Environment element colors */
         init_color(COCEAN_BG, 165, 235, 211);

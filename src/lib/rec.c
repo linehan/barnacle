@@ -21,6 +21,7 @@
 #include <assert.h>
 #include <stdbool.h>
 #include "rec.h"
+#include "stoc/stoc.h"
 
 /*
  * Create a new struct rec_t to describe a rectangle, and initialize
@@ -77,5 +78,15 @@ bool rec_intersect(struct rec_t *a, struct rec_t *b)
                 return false;
         else
                 return true;
+}
+
+
+bool rec_contains_yx(struct rec_t *rec, int y, int x)
+{
+        if ((rec->y <= y && rec->h >= y)
+        &&  (rec->x <= x && rec->w >= x))
+                return true;
+        else
+                return false;
 }
 

@@ -41,7 +41,7 @@ static int x_map;
 static int zoomlevel;
 static const char *page[]={"World map", "Regional map", "Local map", "Extra map"};
 
-struct pos_t *cursor;
+struct cursor_t *cursor;
 
 bool map_controls_active;
 
@@ -93,40 +93,6 @@ void map_scroll(struct map_t *map, int dir)
         map_refresh(map);
 }
 
-/**
- * mv_zoom_frame -- move the zoom frame in a given direction 
- */
-void mv_zoom_frame(int dir)
-{
-        switch (dir) {
-        case 'h':
-                pos_l(cursor);
-                break;
-        case 'H':
-                pos_lstep(cursor, 4);
-                break;
-        case 'l':
-                pos_r(cursor);
-                break;
-        case 'L':
-                pos_rstep(cursor, 4);
-                break;
-        case 'k':
-                pos_u(cursor);
-                break;
-        case 'K':
-                pos_ustep(cursor, 4);
-                break;
-        case 'j':
-                pos_d(cursor);
-                break;
-        case 'J':
-                pos_dstep(cursor, 4);
-                break;
-        }
-        move_panel(frame_pan, pos_y(cursor), pos_x(cursor));
-}
-
 
 
 /******************************************************************************
@@ -139,29 +105,27 @@ void mv_zoom_frame(int dir)
 
 void map_cursor_init(void)
 {
-        cursor = new_pos(frame_h, frame_w, 0, 0, LINES-1, COLS-1, 0, 0);
+        cursor = new_cursor(frame_h, frame_w, 0, 0, LINES-1, COLS, 0, 0, HJKL);
         nav_win = newwin(nav_h, nav_w, LINES-nav_h, CENT_X-(nav_w/2));
         nav_pan = new_panel(nav_win);
-        frame_win = newwin(frame_h, frame_w, 0, 0);
-        frame_pan = new_panel(frame_win);
         wbkgrnd(nav_win, &PURPLE[2]);
 }
 
 void draw_zoom_box(struct map_t *map, int y, int x)
 {
         /*------------------------------------------------------------*/
-        copywin(PLATE(map, BGR), frame_win, y, x, 0, 0, frame_h-1, frame_w-1, 0);
-        copywin(PLATE(map, RIM), frame_win, y, x, 0, 0, frame_h-1, frame_w-1, 1);
+        copywin(PLATE(map, BGR), cursor->win, y, x, 0, 0, frame_h-1, frame_w-1, 0);
+        copywin(PLATE(map, RIM), cursor->win, y, x, 0, 0, frame_h-1, frame_w-1, 1);
         /*------------------------------------------------------------*/
-        take_bgcolor_yx(frame_win , 0         , 0         , INSET_UL);
-        take_bgcolor_yx(frame_win , 0         , frame_w-1 , INSET_UR);
-        take_bgcolor_yx(frame_win , frame_h-1 , 0         , INSET_DL);
-        take_bgcolor_yx(frame_win , frame_h-1 , frame_w-1 , INSET_DR);
+        take_bgcolor_yx(cursor->win, 0         , 0         , INSET_UL);
+        take_bgcolor_yx(cursor->win, 0         , frame_w-1 , INSET_UR);
+        take_bgcolor_yx(cursor->win, frame_h-1 , 0         , INSET_DL);
+        take_bgcolor_yx(cursor->win, frame_h-1 , frame_w-1 , INSET_DR);
         /*------------------------------------------------------------*/
-        mvwcch(frame_win , 0         , 0         , L"▛" , 0 , INSET_UL);
-        mvwcch(frame_win , 0         , frame_w-1 , L"▜" , 0 , INSET_UR);
-        mvwcch(frame_win , frame_h-1 , 0         , L"▙" , 0 , INSET_DL);
-        mvwcch(frame_win , frame_h-1 , frame_w-1 , L"▟" , 0 , INSET_DR);
+        mvwcch(cursor->win, 0         , 0         , L"▛" , 0 , INSET_UL);
+        mvwcch(cursor->win, 0         , frame_w-1 , L"▜" , 0 , INSET_UR);
+        mvwcch(cursor->win, frame_h-1 , 0         , L"▙" , 0 , INSET_DL);
+        mvwcch(cursor->win, frame_h-1 , frame_w-1 , L"▟" , 0 , INSET_DR);
         /*------------------------------------------------------------*/
 }
 
@@ -205,14 +169,13 @@ int map_control(int ch)
         if (!nav_win)
                 map_cursor_init();
 
-        top_panel(frame_pan);
         top_panel(nav_pan);
 
         switch (ch) 
         {
         case MODE_STARTED:
                 map_controls_active = true;
-                show_panel(frame_pan);
+                cursor->Show(cursor);
                 show_panel(nav_pan);
                 break;
                 
@@ -225,7 +188,7 @@ int map_control(int ch)
         /* Move the zoom frame in a direction */
         case 'h': case 'j': case 'k': case 'l':
         case 'H': case 'J': case 'K': case 'L':
-                mv_zoom_frame(ch);
+                cursor->Move(cursor, ch);
                 break;
 
         /* Select the current zoom frame */
@@ -237,14 +200,14 @@ int map_control(int ch)
         case 'm':
                 map_controls_active = false;
                 show_dock();
-                hide_panel(frame_pan);
+                cursor->Hide(cursor);
                 hide_panel(nav_pan);
                 return MODE_RELEASE;
         }
 
         /* Adjust for changing y0 or x0 of the map pad */
-        y_map = pos_y(cursor) + pos_y(ACTIVE->pos);
-        x_map = pos_x(cursor) + pos_x(ACTIVE->pos);
+        y_map = pos_y(cursor->pos) + pos_y(ACTIVE->pos);
+        x_map = pos_x(cursor->pos) + pos_x(ACTIVE->pos);
         zoomlevel = MAPBOOK->page;
 
         print_map_control(y_map, x_map);

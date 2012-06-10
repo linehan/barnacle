@@ -110,7 +110,8 @@ enum special_colors {
         ____DGREY,
         RASPBERRY,
         HOUSEWALL,
-        HOUSEROOF
+        HOUSEROOF,
+        HOUSEDOOR
 };
 
 

@@ -73,11 +73,6 @@ int main(int argc, char *argv[])
         nn("Guy")->step(nn("Guy"), 'd');
         inventory_mkmenu(&nn("Guy")->inv);
 
-        /*spawn_noun(HOPPER, CENT_Y-2, CENT_X+1, true);*/
-        /*spawn_noun(HOPPER, CENT_Y, CENT_X, true);*/
-
-        /*bldg_test(); // draws a shack */
-
         enter_event_loop(); 
 
         endwin(); /* end curses mode */

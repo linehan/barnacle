@@ -5,7 +5,6 @@
 
 enum keycluster { HJKL, WASD, ARROWS, NUMPAD };
 
-
 struct cursor_t {
         WINDOW *win;
         PANEL  *pan;

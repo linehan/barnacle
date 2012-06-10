@@ -99,7 +99,7 @@ void flow_cb(EV_P_ ev_timer *w, int revents)
 {
         spin_flow_loop();
 
-        do_flow(MAPBOOK->active);
+        do_flow(MAPBOOK->map[WORLD]);
 
         ev_timer_again(EV_DEFAULT, w);
 }

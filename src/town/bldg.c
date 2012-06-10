@@ -26,26 +26,41 @@
 #include "../gfx/ui/cursor.h"
 
 
-// ᗯᗰᗼᗻᕰᕱᗵᗶᗷᗸᗹᗺ⦀⟱∰∭ᛤᛥᛞᛦ༊ᓬ⧎⋿ⰞⱎⲶⲷ∎⑉⬢⫹⫺⎱⎰⎠⎛⎝⎞⎠
+// ᗯᗰᗼᗻᕰᕱᗵᗶᗷᗸᗹᗺ⦀⟱∰∭ᛤᛥᛞᛦ༊ᓬ⧎⋿ⰞⱎⲶⲷ∎⑉⬢⫹⫺⎱⎰⎠⎛⎝⎞⎠╱╲
 //   ▁▂▃▄▅▆▇█▉▊▋▌▍▎▏░▒▓ ▐ ▔▕ ▖▗ ▘▙ ▚ ▛ ▜▝ ▞ ▟
 
 
 struct cursor_t *bldg;
+static const wchar_t *roof[]={L"   ", L"▁▁▁", L"▂▂▂", L"▃▃▃", L"▄▄▄", L"▅▅▅", L"▆▆▆", L"▔▔▔"};
+static const wchar_t *wall[]={L"▁▁▁", L"▂▂▂", L"▃▃▃", L"▄▄▄", L"▅▅▅", L"▆▆▆", L"▇▇▇", L"█▅█"};
 
-void draw_bldg(WINDOW *win, int y, int x)
+static const int wallpair = 254;
+static const int roofpair = 253;
+static const int doorpair = 252;
+
+void draw_bldg(WINDOW *win, int y, int x, int r, int w)
 {
-        static const wchar_t *roof=L"▅▅▅";
-        static const wchar_t *wall=L"█▅█";
-        static const int wallpair = 254;
-        static const int roofpair = 253;
-
         init_pair(roofpair, HOUSEROOF, CDGRASS_BG);
         init_pair(wallpair, HOUSEWALL, HOUSEROOF);
+        init_pair(doorpair, HOUSEDOOR, HOUSEWALL);
 
-        mvcwpumpw(win, roofpair, y, x, L"%ls", roof);
-        mvcwpumpw(win, wallpair, y+1, x, L"%ls", wall);
+        werase(win);
 
-        mvwchgat(win, y+1, x+1, 1, A_REVERSE, wallpair, NULL);
+        mvcwpumpw(win, roofpair, y, x, L"%ls", roof[r]);
+        mvcwpumpw(win, wallpair, y+1, x, L"%ls", wall[w]);
+
+        if (w == 7) {
+                mvwchgat(win, y, x, 3, A_REVERSE, roofpair, NULL);
+                mvwchgat(win, y+1, x+1, 1, 0, doorpair, NULL);
+        }
+}
+
+void draw_well(WINDOW *win, int y, int x)
+{
+        static const wchar_t *well[]={L"▛▜"};
+
+        werase(win);
+        mvcwpumpw(win, wallpair, y, x, L"%ls", well[0]);
 }
 
 
@@ -54,7 +69,7 @@ int place_building(int dir)
 {
         if (!bldg) {
                 bldg = new_cursor(2, 3, 0, 0, LINES, COLS, 0, 0, HJKL);
-                draw_bldg(bldg->win, 0, 0);
+                draw_bldg(bldg->win, 0, 0, 0, 0);
         }
 
         switch (dir) {
@@ -67,6 +82,33 @@ int place_building(int dir)
         case ' ':
                 bldg->Stamp(bldg, MAPBOOK->active->L[BGR]->peek);
                 break;
+        case 'w':
+                draw_well(bldg->win, 0, 0);
+                break;
+        case '0':
+                draw_bldg(bldg->win, 0, 0, 0, 0);
+                break;
+        case '1':
+                draw_bldg(bldg->win, 0, 0, 1, 1);
+                break;
+        case '2':
+                draw_bldg(bldg->win, 0, 0, 2, 2);
+                break;
+        case '3':
+                draw_bldg(bldg->win, 0, 0, 3, 3);
+                break;
+        case '4':
+                draw_bldg(bldg->win, 0, 0, 4, 4);
+                break;
+        case '5':
+                draw_bldg(bldg->win, 0, 0, 5, 5);
+                break;
+        case '6':
+                draw_bldg(bldg->win, 0, 0, 6, 6);
+                break;
+        case '7':
+                draw_bldg(bldg->win, 0, 0, 7, 7);
+                break;
         default:
                 bldg->Move(bldg, dir);
                 break;
@@ -74,31 +116,5 @@ int place_building(int dir)
 
         return MODE_PERSIST;
 }
-
-        
-
-/*void bldg_test(void)*/
-/*{*/
-        /*const wchar_t *roof=L"▅▅▅";*/
-        /*const wchar_t *wall=L"█▅█";*/
-
-        /*const int wallpair = 254;*/
-        /*const int roofpair = 253;*/
-
-        /*init_pair(roofpair, HOUSEROOF, bgcolor_yx(PLATE(ACTIVE, BGR), 30, 40));*/
-        /*init_pair(wallpair, HOUSEWALL, HOUSEROOF);*/
-
-        /*mvcwpumpw(PLATE(ACTIVE, BGR), roofpair, 31, 40, L"%ls", roof);*/
-        /*mvcwpumpw(PLATE(ACTIVE, BGR), wallpair, 32, 40, L"%ls", wall);*/
-
-        /*mvwchgat(PLATE(ACTIVE, BGR), 32, 41, 1, A_REVERSE, wallpair, NULL);*/
-/*}*/
-
-
-
-
-
-
-
 
 

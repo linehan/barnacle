@@ -169,7 +169,7 @@ int modify_hopper(void *obj)
                 break;
         case SM_Spawn:
                 noun->animate(noun, &spawn);
-                sm_msg(noun->sm, SM_SELF, SM_Seek | SM_Wait(20));
+                sm_msg(noun->sm, SM_SELF, SM_Seek | SM_Wait(wait_for(noun)));
                 break;
         }
 
